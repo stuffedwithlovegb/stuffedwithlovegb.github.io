@@ -1,0 +1,49 @@
+:root {
+    --primary: #6b4f3b;   /* warm brown */
+    --secondary: #c2a385; /* tan */
+    --accent: #8fbf9f;    /* soft eco green */
+    --bg: #fbf6ef;
+    --text: #2b2b2b;
+    --white: #ffffff;
+    --shadow: 0 6px 18px rgba(0,0,0,0.08);
+}
+
+body {
+    margin: 0;
+    font-family: 'Nunito', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+}
+
+nav {
+    background: var(--white);
+    box-shadow: var(--shadow);
+    padding: 1rem 2rem;
+    position: sticky;
+    top: 0;
+}
+
+a {
+    text-decoration: none;
+    color: var(--primary);
+    font-weight: 600;
+}
+
+.btn {
+    padding: 0.8rem 1.5rem;
+    border-radius: 30px;
+    background: var(--primary);
+    color: white;
+    display: inline-block;
+}
+
+.btn:hover {
+    background: #4e382a;
+}
+
+.footer {
+    background: var(--primary);
+    color: white;
+    padding: 2rem;
+    text-align: center;
+}
