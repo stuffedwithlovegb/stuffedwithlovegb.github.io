@@ -272,22 +272,45 @@ body {
         }
 
         .hero-content h1 {
-            font-family: 'Quicksand', sans-serif;
-            font-size: 3.5rem;
-            font-weight: 700;
-            line-height: 1.2;
-            margin-bottom: 1.5rem;
-            color: var(--text-dark);
-        }
+    font-family: 'Quicksand', sans-serif;
+    font-size: 4rem;
+    font-weight: 800;
+    margin-bottom: 1.5rem;
+    position: relative;
+    display: inline-block;
+    line-height: 1.1;
+}
 
-        .hero-content h1 .green {
-            color: var(--primary);
-        }
+.hero-content h1 span {
+    position: relative;
+    z-index: 2;
+    color: #5a4a42;
+    padding: 0.6rem 1.5rem;
+}
 
-        .hero-content h1 .gold {
-            color: var(--secondary);
-            text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
-        }
+.hero-content h1::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: -20px;
+    right: -20px;
+    height: 90px;
+    transform: translateY(-50%);
+    background: #ffd6e7;
+    border: 4px dashed #ff9ec7;
+    border-radius: 12px;
+    z-index: 1;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.12);
+}
+
+.hero-content h1::after {
+    content: '🧸';
+    position: absolute;
+    right: -15px;
+    top: -15px;
+    font-size: 1.8rem;
+    z-index: 3;
+}
 
         .hero-content p {
             font-size: 1.25rem;
