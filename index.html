@@ -1,218 +1,1160 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cuddle Friends | Handcrafted Plushies for Little Ones</title>
+    <link href="[fonts.googleapis.com](https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&family=Quicksand:wght@400;500;600;700&display=swap)" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #7c3aed;
+            --primary-light: #a78bfa;
+            --primary-dark: #5b21b6;
+            --secondary: #f472b6;
+            --accent: #fbbf24;
+            --bg-cream: #fefce8;
+            --bg-lavender: #f5f3ff;
+            --text-dark: #1f2937;
+            --text-light: #6b7280;
+            --white: #ffffff;
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
 
-<title>Stuffed With Love | Mobile Plushie Experience</title>
-<meta name="description" content="Stuffed With Love brings a mobile plushie experience to your event. Custom stuffed animals, built at your party, school, or home." />
-<meta name="keywords" content="plushie party, mobile build a bear, stuffed animals, kids party entertainment" />
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-<!-- Open Graph (social preview) -->
-<meta property="og:title" content="Stuffed With Love" />
-<meta property="og:description" content="A mobile plushie experience that comes to you." />
-<meta property="og:type" content="website" />
+        html {
+            scroll-behavior: smooth;
+        }
 
-<style>
-  body {
-    margin: 0;
-    font-family: Arial, Helvetica, sans-serif;
-    background: #0b0f19;
-    color: white;
-    line-height: 1.6;
-  }
+        body {
+            font-family: 'Nunito', sans-serif;
+            color: var(--text-dark);
+            line-height: 1.6;
+            background: var(--white);
+        }
 
-  .hero {
-    text-align: center;
-    padding: 120px 20px;
-    background: radial-gradient(circle at top, #3a1f4a, #0b0f19);
-  }
+        /* Navigation */
+        nav {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            background: var(--white);
+            box-shadow: var(--shadow);
+            z-index: 1000;
+            padding: 1rem 0;
+        }
 
-  .hero h1 { font-size: 3rem; margin-bottom: 10px; }
-  .hero p { max-width: 700px; margin: auto; color: #c9c9c9; }
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
 
-  .btn {
-    display: inline-block;
-    margin-top: 20px;
-    padding: 12px 22px;
-    background: #ff4fa3;
-    color: white;
-    text-decoration: none;
-    border-radius: 10px;
-  }
+        .logo {
+            font-family: 'Quicksand', sans-serif;
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: var(--primary);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
 
-  section {
-    max-width: 1100px;
-    margin: auto;
-    padding: 70px 20px;
-  }
+        .logo span {
+            color: var(--secondary);
+        }
 
-  h2 { color: #ff4fa3; }
+        .nav-links {
+            display: flex;
+            list-style: none;
+            gap: 2rem;
+            align-items: center;
+        }
 
-  .grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-    gap: 20px;
-  }
+        .nav-links a {
+            text-decoration: none;
+            color: var(--text-dark);
+            font-weight: 600;
+            transition: color 0.3s ease;
+        }
 
-  .card {
-    background: #151c2e;
-    border-radius: 12px;
-    padding: 20px;
-    border: 1px solid #222b3f;
-  }
+        .nav-links a:hover {
+            color: var(--primary);
+        }
 
-  img {
-    width: 100%;
-    border-radius: 12px;
-    margin-top: 10px;
-  }
+        /* Dropdown */
+        .dropdown {
+            position: relative;
+        }
 
-  /* PRICING */
-  .price {
-    font-size: 1.5rem;
-    color: #ff4fa3;
-  }
+        .dropdown-toggle {
+            background: none;
+            border: none;
+            font-family: inherit;
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--text-dark);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+            transition: color 0.3s ease;
+        }
 
-  /* FORM */
-  input, select, textarea {
-    width: 100%;
-    padding: 10px;
-    margin-top: 8px;
-    margin-bottom: 15px;
-    border-radius: 8px;
-    border: none;
-  }
+        .dropdown-toggle:hover {
+            color: var(--primary);
+        }
 
-  button {
-    background: #ff4fa3;
-    color: white;
-    padding: 12px;
-    border: none;
-    border-radius: 10px;
-    cursor: pointer;
-  }
+        .dropdown-toggle::after {
+            content: '▼';
+            font-size: 0.6rem;
+            transition: transform 0.3s ease;
+        }
 
-  footer {
-    text-align: center;
-    padding: 40px;
-    color: #777;
-    border-top: 1px solid #1f2a44;
-  }
-</style>
+        .dropdown:hover .dropdown-toggle::after {
+            transform: rotate(180deg);
+        }
+
+        .dropdown-menu {
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--white);
+            min-width: 180px;
+            border-radius: 12px;
+            box-shadow: var(--shadow-lg);
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+            padding: 0.5rem 0;
+            margin-top: 0.5rem;
+        }
+
+        .dropdown:hover .dropdown-menu {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .dropdown-menu a {
+            display: block;
+            padding: 0.75rem 1.5rem;
+            color: var(--text-dark);
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .dropdown-menu a:hover {
+            background: var(--bg-lavender);
+            color: var(--primary);
+        }
+
+        /* Mobile menu */
+        .mobile-toggle {
+            display: none;
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--primary);
+        }
+
+        /* Hero Section */
+        .hero {
+            min-height: 100vh;
+            background: linear-gradient(135deg, var(--bg-lavender) 0%, var(--bg-cream) 100%);
+            display: flex;
+            align-items: center;
+            padding: 8rem 2rem 4rem;
+        }
+
+        .hero-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 4rem;
+            align-items: center;
+        }
+
+        .hero-content h1 {
+            font-family: 'Quicksand', sans-serif;
+            font-size: 3.5rem;
+            font-weight: 700;
+            line-height: 1.2;
+            margin-bottom: 1.5rem;
+            color: var(--text-dark);
+        }
+
+        .hero-content h1 span {
+            color: var(--primary);
+        }
+
+        .hero-content p {
+            font-size: 1.25rem;
+            color: var(--text-light);
+            margin-bottom: 2rem;
+            max-width: 500px;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 1rem 2.5rem;
+            border-radius: 50px;
+            font-weight: 700;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            border: none;
+            font-size: 1rem;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: var(--white);
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .btn-secondary {
+            background: transparent;
+            color: var(--primary);
+            border: 2px solid var(--primary);
+            margin-left: 1rem;
+        }
+
+        .btn-secondary:hover {
+            background: var(--primary);
+            color: var(--white);
+        }
+
+        .hero-images {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+        }
+
+        .hero-images img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            border-radius: 20px;
+            box-shadow: var(--shadow-lg);
+            transition: transform 0.3s ease;
+        }
+
+        .hero-images img:hover {
+            transform: scale(1.05);
+        }
+
+        .hero-images img:first-child {
+            grid-row: span 2;
+            height: 100%;
+        }
+
+        /* Section Styling */
+        section {
+            padding: 6rem 2rem;
+        }
+
+        .section-header {
+            text-align: center;
+            max-width: 600px;
+            margin: 0 auto 4rem;
+        }
+
+        .section-header h2 {
+            font-family: 'Quicksand', sans-serif;
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--text-dark);
+            margin-bottom: 1rem;
+        }
+
+        .section-header p {
+            color: var(--text-light);
+            font-size: 1.1rem;
+        }
+
+        .section-header .accent {
+            color: var(--primary);
+        }
+
+        /* Who We Are */
+        #about {
+            background: var(--white);
+        }
+
+        .about-grid {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 4rem;
+            align-items: center;
+        }
+
+        .about-image {
+            position: relative;
+        }
+
+        .about-image img {
+            width: 100%;
+            height: 500px;
+            object-fit: cover;
+            border-radius: 30px;
+            box-shadow: var(--shadow-lg);
+        }
+
+        .about-image::before {
+            content: '';
+            position: absolute;
+            top: -20px;
+            left: -20px;
+            width: 100%;
+            height: 100%;
+            background: var(--primary-light);
+            border-radius: 30px;
+            z-index: -1;
+            opacity: 0.3;
+        }
+
+        .about-content h3 {
+            font-size: 1.75rem;
+            color: var(--primary);
+            margin-bottom: 1rem;
+        }
+
+        .about-content p {
+            color: var(--text-light);
+            margin-bottom: 1.5rem;
+            font-size: 1.1rem;
+        }
+
+        .about-features {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1.5rem;
+            margin-top: 2rem;
+        }
+
+        .feature-item {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .feature-icon {
+            width: 40px;
+            height: 40px;
+            background: var(--bg-lavender);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.25rem;
+        }
+
+        /* Gallery */
+        #gallery {
+            background: var(--bg-lavender);
+        }
+
+        .gallery-grid {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1.5rem;
+        }
+
+        .gallery-item {
+            position: relative;
+            overflow: hidden;
+            border-radius: 20px;
+            box-shadow: var(--shadow);
+            cursor: pointer;
+        }
+
+        .gallery-item img {
+            width: 100%;
+            height: 250px;
+            object-fit: cover;
+            transition: transform 0.5s ease;
+        }
+
+        .gallery-item:hover img {
+            transform: scale(1.1);
+        }
+
+        .gallery-item:nth-child(1),
+        .gallery-item:nth-child(6) {
+            grid-column: span 2;
+        }
+
+        .gallery-overlay {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(to top, rgba(124, 58, 237, 0.8), transparent);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            display: flex;
+            align-items: flex-end;
+            padding: 1.5rem;
+        }
+
+        .gallery-item:hover .gallery-overlay {
+            opacity: 1;
+        }
+
+        .gallery-overlay span {
+            color: var(--white);
+            font-weight: 600;
+        }
+
+        /* Pricing */
+        #pricing {
+            background: var(--white);
+        }
+
+        .pricing-grid {
+            max-width: 1000px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 2rem;
+        }
+
+        .pricing-card {
+            background: var(--white);
+            border-radius: 24px;
+            padding: 2.5rem;
+            text-align: center;
+            box-shadow: var(--shadow);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            position: relative;
+        }
+
+        .pricing-card:hover {
+            transform: translateY(-10px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .pricing-card.featured {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: var(--white);
+            transform: scale(1.05);
+        }
+
+        .pricing-card.featured:hover {
+            transform: scale(1.05) translateY(-10px);
+        }
+
+        .pricing-badge {
+            position: absolute;
+            top: -12px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--accent);
+            color: var(--text-dark);
+            padding: 0.5rem 1.5rem;
+            border-radius: 50px;
+            font-weight: 700;
+            font-size: 0.85rem;
+        }
+
+        .pricing-card h3 {
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .pricing-card .price {
+            font-size: 3rem;
+            font-weight: 800;
+            margin: 1.5rem 0;
+        }
+
+        .pricing-card .price span {
+            font-size: 1rem;
+            font-weight: 400;
+        }
+
+        .pricing-card ul {
+            list-style: none;
+            margin: 2rem 0;
+            text-align: left;
+        }
+
+        .pricing-card ul li {
+            padding: 0.75rem 0;
+            border-bottom: 1px solid rgba(0,0,0,0.1);
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .pricing-card.featured ul li {
+            border-color: rgba(255,255,255,0.2);
+        }
+
+        .pricing-card ul li::before {
+            content: '✓';
+            color: var(--primary);
+            font-weight: bold;
+        }
+
+        .pricing-card.featured ul li::before {
+            color: var(--accent);
+        }
+
+        .pricing-card .btn {
+            width: 100%;
+        }
+
+        .pricing-card.featured .btn {
+            background: var(--white);
+            color: var(--primary);
+        }
+
+        /* Testimonials */
+        #testimonials {
+            background: var(--bg-cream);
+        }
+
+        .testimonial-grid {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 2rem;
+        }
+
+        .testimonial-card {
+            background: var(--white);
+            padding: 2rem;
+            border-radius: 20px;
+            box-shadow: var(--shadow);
+            position: relative;
+        }
+
+        .testimonial-card::before {
+            content: '"';
+            position: absolute;
+            top: 1rem;
+            right: 2rem;
+            font-size: 5rem;
+            color: var(--primary-light);
+            opacity: 0.3;
+            font-family: Georgia, serif;
+            line-height: 1;
+        }
+
+        .testimonial-content {
+            margin-bottom: 1.5rem;
+            color: var(--text-light);
+            font-style: italic;
+            position: relative;
+            z-index: 1;
+        }
+
+        .testimonial-author {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .testimonial-author img {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        .testimonial-author h4 {
+            font-size: 1rem;
+            margin-bottom: 0.25rem;
+        }
+
+        .testimonial-author span {
+            font-size: 0.85rem;
+            color: var(--text-light);
+        }
+
+        .stars {
+            color: var(--accent);
+            margin-bottom: 1rem;
+        }
+
+        /* Contact */
+        #contact {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: var(--white);
+        }
+
+        #contact .section-header h2,
+        #contact .section-header p {
+            color: var(--white);
+        }
+
+        .contact-container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .contact-form {
+            background: var(--white);
+            padding: 3rem;
+            border-radius: 24px;
+            box-shadow: var(--shadow-lg);
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1.5rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group.full-width {
+            grid-column: span 2;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: var(--text-dark);
+        }
+
+        .form-group input,
+        .form-group textarea {
+            width: 100%;
+            padding: 1rem;
+            border: 2px solid #e5e7eb;
+            border-radius: 12px;
+            font-family: inherit;
+            font-size: 1rem;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 150px;
+        }
+
+        .contact-form .btn {
+            width: 100%;
+            padding: 1.25rem;
+            font-size: 1.1rem;
+        }
+
+        .contact-info {
+            display: flex;
+            justify-content: center;
+            gap: 3rem;
+            margin-top: 3rem;
+        }
+
+        .contact-info-item {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            color: var(--white);
+        }
+
+        .contact-info-item span {
+            font-size: 1.5rem;
+        }
+
+        /* Footer */
+        footer {
+            background: var(--text-dark);
+            color: var(--white);
+            padding: 3rem 2rem;
+            text-align: center;
+        }
+
+        .footer-content {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .footer-logo {
+            font-family: 'Quicksand', sans-serif;
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+        }
+
+        .footer-logo span {
+            color: var(--secondary);
+        }
+
+        .social-links {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin: 1.5rem 0;
+        }
+
+        .social-links a {
+            width: 40px;
+            height: 40px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--white);
+            text-decoration: none;
+            transition: background 0.3s ease;
+        }
+
+        .social-links a:hover {
+            background: var(--primary);
+        }
+
+        .footer-bottom {
+            margin-top: 2rem;
+            padding-top: 2rem;
+            border-top: 1px solid rgba(255,255,255,0.1);
+            color: var(--text-light);
+            font-size: 0.9rem;
+        }
+
+        /* Responsive */
+        @media (max-width: 968px) {
+            .hero-container,
+            .about-grid {
+                grid-template-columns: 1fr;
+                text-align: center;
+            }
+
+            .hero-content {
+                order: 2;
+            }
+
+            .hero-images {
+                order: 1;
+            }
+
+            .hero-content p {
+                margin: 0 auto 2rem;
+            }
+
+            .pricing-grid,
+            .testimonial-grid {
+                grid-template-columns: 1fr;
+                max-width: 400px;
+            }
+
+            .pricing-card.featured {
+                transform: none;
+            }
+
+            .gallery-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .gallery-item:nth-child(1),
+            .gallery-item:nth-child(6) {
+                grid-column: span 1;
+            }
+
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .form-group.full-width {
+                grid-column: span 1;
+            }
+
+            .contact-info {
+                flex-direction: column;
+                align-items: center;
+                gap: 1rem;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none;
+            }
+
+            .mobile-toggle {
+                display: block;
+            }
+
+            .hero-content h1 {
+                font-size: 2.5rem;
+            }
+
+            .hero-images {
+                grid-template-columns: 1fr;
+            }
+
+            .hero-images img:first-child {
+                grid-row: span 1;
+            }
+
+            .about-features {
+                grid-template-columns: 1fr;
+            }
+
+            .gallery-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Mobile Menu */
+        .mobile-menu {
+            display: none;
+            position: fixed;
+            top: 70px;
+            left: 0;
+            right: 0;
+            background: var(--white);
+            padding: 2rem;
+            box-shadow: var(--shadow-lg);
+            z-index: 999;
+        }
+
+        .mobile-menu.active {
+            display: block;
+        }
+
+        .mobile-menu a {
+            display: block;
+            padding: 1rem;
+            color: var(--text-dark);
+            text-decoration: none;
+            font-weight: 600;
+            border-bottom: 1px solid #eee;
+        }
+
+        .mobile-menu a:hover {
+            color: var(--primary);
+        }
+    </style>
 </head>
-
 <body>
+    <!-- Navigation -->
+    <nav>
+        <div class="nav-container">
+            <a href="#" class="logo">🧸 Cuddle<span>Friends</span></a>
+            <ul class="nav-links">
+                <li><a href="#home">Home</a></li>
+                <li class="dropdown">
+                    <button class="dropdown-toggle">Explore</button>
+                    <div class="dropdown-menu">
+                        <a href="#about">About Us</a>
+                        <a href="#gallery">Gallery</a>
+                        <a href="#pricing">Pricing</a>
+                        <a href="#testimonials">Testimonials</a>
+                        <a href="#contact">Contact</a>
+                    </div>
+                </li>
+                <li><a href="#gallery">Gallery</a></li>
+                <li><a href="#pricing">Pricing</a></li>
+                <li><a href="#contact" class="btn btn-primary">Get Started</a></li>
+            </ul>
+            <button class="mobile-toggle" onclick="toggleMobile()">☰</button>
+        </div>
+    </nav>
 
-<!-- HERO -->
-<div class="hero">
-  <h1>Stuffed With Love</h1>
-  <p>
-    A mobile plushie experience that comes directly to your event.
-    We bring custom stuffed animals, creativity, and fun to you.
-  </p>
-  <a class="btn" href="#book">Book Now</a>
-</div>
-
-<!-- ABOUT -->
-<section>
-  <h2>What We Do</h2>
-  <div class="card">
-    We bring a full plushie-making experience to your party, school, or event.
-    Kids design, stuff, and customize their own plush animals on the spot.
-  </div>
-</section>
-
-<!-- GALLERY (REAL STOCK IMAGES) -->
-<section>
-  <h2>Happy Moments</h2>
-
-  <div class="grid">
-    <div class="card">
-      <img src="https://images.unsplash.com/photo-1601758003122-58eaa7a89d5c?w=800" />
-      <p>Kids creating their own plush friends.</p>
+    <!-- Mobile Menu -->
+    <div class="mobile-menu" id="mobileMenu">
+        <a href="#home" onclick="toggleMobile()">Home</a>
+        <a href="#about" onclick="toggleMobile()">About Us</a>
+        <a href="#gallery" onclick="toggleMobile()">Gallery</a>
+        <a href="#pricing" onclick="toggleMobile()">Pricing</a>
+        <a href="#testimonials" onclick="toggleMobile()">Testimonials</a>
+        <a href="#contact" onclick="toggleMobile()">Contact</a>
     </div>
 
-    <div class="card">
-      <img src="https://images.unsplash.com/photo-1603349206295-d4c8a4a9c7d1?w=800" />
-      <p>Custom stuffed animals made at events.</p>
-    </div>
+    <!-- Hero Section -->
+    <section class="hero" id="home">
+        <div class="hero-container">
+            <div class="hero-content">
+                <h1>Handcrafted <span>Plushies</span> Made with Love</h1>
+                <p>We create adorable, huggable companions that bring joy to children everywhere. Each plushie is crafted with premium materials and endless love.</p>
+                <a href="#pricing" class="btn btn-primary">Shop Now</a>
+                <a href="#about" class="btn btn-secondary">Learn More</a>
+            </div>
+            <div class="hero-images">
+                <img src="[images.unsplash.com](https://images.unsplash.com/photo-1566004100631-35d015d6a491?w=600&h=800&fit=crop)" alt="Child hugging teddy bear">
+                <img src="[images.unsplash.com](https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400&h=300&fit=crop)" alt="Colorful plush toys">
+                <img src="[images.unsplash.com](https://images.unsplash.com/photo-1602734846297-9299fc2d4703?w=400&h=300&fit=crop)" alt="Child with stuffed animal">
+            </div>
+        </div>
+    </section>
 
-    <div class="card">
-      <img src="https://images.unsplash.com/photo-1606092195730-5d7b9af1a1a0?w=800" />
-      <p>Unforgettable birthday experiences.</p>
-    </div>
-  </div>
-</section>
+    <!-- About Section -->
+    <section id="about">
+        <div class="section-header">
+            <h2>Who <span class="accent">We Are</span></h2>
+            <p>A family-owned business dedicated to creating magical moments through the art of plushie-making</p>
+        </div>
+        <div class="about-grid">
+            <div class="about-image">
+                <img src="[images.unsplash.com](https://images.unsplash.com/photo-1515488042361-ee00e0ddd4e4?w=600&h=500&fit=crop)" alt="Happy child with plush toy">
+            </div>
+            <div class="about-content">
+                <h3>Bringing Smiles Since 2018</h3>
+                <p>At Cuddle Friends, we believe every child deserves a special companion. Our journey began in a small home studio with a simple mission: to create the softest, most lovable plushies that become lifelong friends.</p>
+                <p>Each plushie is designed with care, using only premium, child-safe materials. From playful pandas to cuddly unicorns, our collection is crafted to spark imagination and provide comfort for years to come.</p>
+                <div class="about-features">
+                    <div class="feature-item">
+                        <div class="feature-icon">🌿</div>
+                        <span>Eco-Friendly Materials</span>
+                    </div>
+                    <div class="feature-item">
+                        <div class="feature-icon">🧵</div>
+                        <span>Handcrafted Quality</span>
+                    </div>
+                    <div class="feature-item">
+                        <div class="feature-icon">👶</div>
+                        <span>Child-Safe Certified</span>
+                    </div>
+                    <div class="feature-item">
+                        <div class="feature-icon">💜</div>
+                        <span>Made with Love</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
 
-<!-- HOW IT WORKS -->
-<section>
-  <h2>How It Works</h2>
-  <div class="grid">
-    <div class="card">1. Choose your plush</div>
-    <div class="card">2. Customize everything</div>
-    <div class="card">3. We bring it to you</div>
-  </div>
-</section>
+    <!-- Gallery Section -->
+    <section id="gallery">
+        <div class="section-header">
+            <h2>Our <span class="accent">Gallery</span></h2>
+            <p>See the joy our plushies bring to children around the world</p>
+        </div>
+        <div class="gallery-grid">
+            <div class="gallery-item">
+                <img src="[images.unsplash.com](https://images.unsplash.com/photo-1530325553241-4f6e7690cf36?w=800&h=500&fit=crop)" alt="Child sleeping with teddy bear">
+                <div class="gallery-overlay"><span>Sweet Dreams Collection</span></div>
+            </div>
+            <div class="gallery-item">
+                <img src="[images.unsplash.com](https://images.unsplash.com/photo-1584727638464-d6cc6a3414c1?w=400&h=400&fit=crop)" alt="Colorful stuffed animals">
+                <div class="gallery-overlay"><span>Rainbow Friends</span></div>
+            </div>
+            <div class="gallery-item">
+                <img src="[images.unsplash.com](https://images.unsplash.com/photo-1563901935883-cb61f5d49be4?w=400&h=400&fit=crop)" alt="Plush bunny toy">
+                <div class="gallery-overlay"><span>Bunny Love</span></div>
+            </div>
+            <div class="gallery-item">
+                <img src="[images.unsplash.com](https://images.unsplash.com/photo-1613679074971-91fc27180061?w=400&h=400&fit=crop)" alt="Child with stuffed animal">
+                <div class="gallery-overlay"><span>Best Friends Forever</span></div>
+            </div>
+            <div class="gallery-item">
+                <img src="[images.unsplash.com](https://images.unsplash.com/photo-1559715541-d4fc97b8d6dd?w=400&h=400&fit=crop)" alt="Teddy bear collection">
+                <div class="gallery-overlay"><span>Classic Bears</span></div>
+            </div>
+            <div class="gallery-item">
+                <img src="[images.unsplash.com](https://images.unsplash.com/photo-1472396961693-142e6e269027?w=800&h=500&fit=crop)" alt="Child playing with plushies">
+                <div class="gallery-overlay"><span>Adventure Time</span></div>
+            </div>
+        </div>
+    </section>
 
-<!-- PRICING -->
-<section>
-  <h2>Packages</h2>
+    <!-- Pricing Section -->
+    <section id="pricing">
+        <div class="section-header">
+            <h2>Our <span class="accent">Collections</span></h2>
+            <p>Find the perfect cuddle companion for every budget</p>
+        </div>
+        <div class="pricing-grid">
+            <div class="pricing-card">
+                <h3>Pocket Pals</h3>
+                <div class="price">$24<span>/each</span></div>
+                <ul>
+                    <li>6-inch mini plushies</li>
+                    <li>Perfect for travel</li>
+                    <li>Premium soft fabric</li>
+                    <li>Machine washable</li>
+                    <li>Gift box included</li>
+                </ul>
+                <a href="#contact" class="btn btn-primary">Order Now</a>
+            </div>
+            <div class="pricing-card featured">
+                <div class="pricing-badge">Most Popular</div>
+                <h3>Cuddle Crew</h3>
+                <div class="price">$49<span>/each</span></div>
+                <ul>
+                    <li>12-inch classic plushies</li>
+                    <li>Ultra-soft premium fill</li>
+                    <li>Embroidered details</li>
+                    <li>Personalization available</li>
+                    <li>Lifetime cuddle guarantee</li>
+                </ul>
+                <a href="#contact" class="btn btn-primary">Order Now</a>
+            </div>
+            <div class="pricing-card">
+                <h3>Mega Hugs</h3>
+                <div class="price">$89<span>/each</span></div>
+                <ul>
+                    <li>24-inch jumbo plushies</li>
+                    <li>Perfect for cuddling</li>
+                    <li>Weighted for comfort</li>
+                    <li>Custom name embroidery</li>
+                    <li>Premium gift packaging</li>
+                </ul>
+                <a href="#contact" class="btn btn-primary">Order Now</a>
+            </div>
+        </div>
+    </section>
 
-  <div class="grid">
+    <!-- Testimonials Section -->
+    <section id="testimonials">
+        <div class="section-header">
+            <h2>Happy <span class="accent">Families</span></h2>
+            <p>See what parents are saying about Cuddle Friends</p>
+        </div>
+        <div class="testimonial-grid">
+            <div class="testimonial-card">
+                <div class="stars">★★★★★</div>
+                <p class="testimonial-content">"My daughter won't go anywhere without her bunny from Cuddle Friends. The quality is amazing and it's survived countless washes!"</p>
+                <div class="testimonial-author">
+                    <img src="[images.unsplash.com](https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&h=100&fit=crop)" alt="Sarah M.">
+                    <div>
+                        <h4>Sarah M.</h4>
+                        <span>Mom of 2</span>
+                    </div>
+                </div>
+            </div>
+            <div class="testimonial-card">
+                <div class="stars">★★★★★</div>
+                <p class="testimonial-content">"We've bought plushies from many places, but nothing compares to the softness and craftsmanship here. Worth every penny!"</p>
+                <div class="testimonial-author">
+                    <img src="[images.unsplash.com](https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&h=100&fit=crop)" alt="Michael T.">
+                    <div>
+                        <h4>Michael T.</h4>
+                        <span>Dad of 3</span>
+                    </div>
+                </div>
+            </div>
+            <div class="testimonial-card">
+                <div class="stars">★★★★★</div>
+                <p class="testimonial-content">"The personalized elephant we ordered for my son's birthday was perfect! He was so excited to see his name on it."</p>
+                <div class="testimonial-author">
+                    <img src="[images.unsplash.com](https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=100&h=100&fit=crop)" alt="Emily R.">
+                    <div>
+                        <h4>Emily R.</h4>
+                        <span>Mom of 1</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
 
-    <div class="card">
-      <h3>Party Package</h3>
-      <div class="price">$499</div>
-      <p>Perfect for birthdays (up to 12 kids)</p>
-    </div>
+    <!-- Contact Section -->
+    <section id="contact">
+        <div class="section-header">
+            <h2>Get In Touch</h2>
+            <p>Have questions or ready to order? We'd love to hear from you!</p>
+        </div>
+        <div class="contact-container">
+            <form class="contact-form">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="name">Your Name</label>
+                        <input type="text" id="name" placeholder="John Doe" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="email">Email Address</label>
+                        <input type="email" id="email" placeholder="john@example.com" required>
+                    </div>
+                    <div class="form-group full-width">
+                        <label for="subject">Subject</label>
+                        <input type="text" id="subject" placeholder="How can we help?">
+                    </div>
+                    <div class="form-group full-width">
+                        <label for="message">Your Message</label>
+                        <textarea id="message" placeholder="Tell us about your perfect plushie..."></textarea>
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-primary">Send Message</button>
+            </form>
+            <div class="contact-info">
+                <div class="contact-info-item">
+                    <span>📧</span>
+                    <p>hello@cuddlefriends.com</p>
+                </div>
+                <div class="contact-info-item">
+                    <span>📱</span>
+                    <p>(555) 123-4567</p>
+                </div>
+                <div class="contact-info-item">
+                    <span>📍</span>
+                    <p>Portland, Oregon</p>
+                </div>
+            </div>
+        </div>
+    </section>
 
-    <div class="card">
-      <h3>Deluxe Experience</h3>
-      <div class="price">$699</div>
-      <p>Up to 20 kids + premium customization</p>
-    </div>
+    <!-- Footer -->
+    <footer>
+        <div class="footer-content">
+            <div class="footer-logo">🧸 Cuddle<span>Friends</span></div>
+            <p>Handcrafted plushies made with love</p>
+            <div class="social-links">
+                <a href="#">📘</a>
+                <a href="#">📸</a>
+                <a href="#">🐦</a>
+                <a href="#">📌</a>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2024 Cuddle Friends. All rights reserved. Made with 💜</p>
+            </div>
+        </div>
+    </footer>
 
-    <div class="card">
-      <h3>VIP Event</h3>
-      <div class="price">$999</div>
-      <p>Full mobile setup + everything included</p>
-    </div>
+    <script>
+        function toggleMobile() {
+            const menu = document.getElementById('mobileMenu');
+            menu.classList.toggle('active');
+        }
 
-  </div>
-</section>
+        // Close mobile menu when clicking outside
+        document.addEventListener('click', function(event) {
+            const menu = document.getElementById('mobileMenu');
+            const toggle = document.querySelector('.mobile-toggle');
+            if (!menu.contains(event.target) && !toggle.contains(event.target)) {
+                menu.classList.remove('active');
+            }
+        });
 
-<!-- TESTIMONIAL -->
-<section>
-  <h2>What Parents Say</h2>
-  <div class="card">
-    “This was the highlight of our daughter’s birthday. The kids absolutely loved it!”
-    <br><br>— Jessica M.
-  </div>
-</section>
-
-<!-- BOOKING FORM -->
-<section id="book">
-  <h2>Book Your Event</h2>
-
-  <div class="card">
-    <form action="https://formsubmit.co/your@email.com" method="POST">
-
-      <input type="text" name="name" placeholder="Your Name" required />
-      <input type="email" name="email" placeholder="Email" required />
-      <input type="text" name="event" placeholder="Event Type (Birthday, School, etc)" />
-      <input type="number" name="guests" placeholder="Number of Kids" />
-
-      <textarea name="message" placeholder="Tell us about your event"></textarea>
-
-      <button type="submit">Submit Booking Request</button>
-    </form>
-  </div>
-</section>
-
-<footer>
-  © 2026 Stuffed With Love — Mobile Plushie Experience
-</footer>
-
+        // Form submission handler
+        document.querySelector('.contact-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            alert('Thank you for your message! We\'ll get back to you soon. 🧸');
+            this.reset();
+        });
+    </script>
 </body>
 </html>
