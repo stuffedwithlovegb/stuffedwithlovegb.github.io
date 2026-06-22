@@ -1,122 +1,189 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <title>StuffedWithLoveGB</title>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Stuffed With Love</title>
 
-    <style>
-        body {
-            margin: 0;
-            font-family: Arial, Helvetica, sans-serif;
-            background: #0b0f19;
-            color: white;
-        }
+<style>
+  body {
+    margin: 0;
+    font-family: Arial, Helvetica, sans-serif;
+    background: #0b0f19;
+    color: white;
+    line-height: 1.6;
+  }
 
-        header {
-            padding: 100px 20px;
-            text-align: center;
-            background: radial-gradient(circle at top, #1f2a44, #0b0f19);
-        }
+  /* HERO */
+  .hero {
+    padding: 120px 20px;
+    text-align: center;
+    background: radial-gradient(circle at top, #3a1f4a, #0b0f19);
+  }
 
-        h1 {
-            font-size: 3rem;
-            margin-bottom: 10px;
-        }
+  .hero h1 {
+    font-size: 3.2rem;
+    margin-bottom: 10px;
+  }
 
-        p {
-            color: #b3b3b3;
-            font-size: 1.2rem;
-            max-width: 600px;
-            margin: 10px auto;
-        }
+  .hero p {
+    max-width: 700px;
+    margin: 0 auto;
+    color: #c9c9c9;
+    font-size: 1.2rem;
+  }
 
-        .button {
-            display: inline-block;
-            margin-top: 25px;
-            padding: 12px 24px;
-            background: #4f7cff;
-            color: white;
-            text-decoration: none;
-            border-radius: 8px;
-            font-weight: bold;
-        }
+  .btn {
+    display: inline-block;
+    margin-top: 25px;
+    padding: 14px 24px;
+    background: #ff4fa3;
+    color: white;
+    text-decoration: none;
+    border-radius: 10px;
+    font-weight: bold;
+  }
 
-        .button:hover {
-            background: #3c63d6;
-        }
+  .btn:hover {
+    background: #e63f92;
+  }
 
-        section {
-            max-width: 900px;
-            margin: auto;
-            padding: 60px 20px;
-        }
+  /* SECTIONS */
+  section {
+    max-width: 1000px;
+    margin: auto;
+    padding: 70px 20px;
+  }
 
-        .card {
-            background: #151c2e;
-            padding: 20px;
-            border-radius: 12px;
-            margin-bottom: 20px;
-        }
+  h2 {
+    color: #ff4fa3;
+    margin-bottom: 20px;
+    font-size: 1.9rem;
+  }
 
-        h2 {
-            color: #4f7cff;
-        }
+  .card {
+    background: #151c2e;
+    border: 1px solid #222b3f;
+    padding: 22px;
+    border-radius: 12px;
+    margin-bottom: 20px;
+  }
 
-        footer {
-            text-align: center;
-            padding: 40px;
-            color: #777;
-            font-size: 0.9rem;
-        }
-    </style>
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 20px;
+  }
+
+  .step {
+    background: #151c2e;
+    border-radius: 12px;
+    padding: 20px;
+    border: 1px solid #222b3f;
+  }
+
+  .badge {
+    display: inline-block;
+    padding: 5px 10px;
+    background: #ff4fa3;
+    border-radius: 999px;
+    font-size: 12px;
+    margin-bottom: 10px;
+  }
+
+  footer {
+    text-align: center;
+    padding: 40px;
+    color: #777;
+    border-top: 1px solid #1f2a44;
+  }
+
+  a { color: #ff4fa3; }
+</style>
 </head>
 
 <body>
 
-<header>
-    <h1>StuffedWithLoveGB</h1>
+<!-- HERO -->
+<div class="hero">
+  <h1>Stuffed With Love</h1>
+  <p>
+    A mobile plushie experience that comes directly to you.
+    We bring the magic of building your own stuffed animal — at your party, school, or event.
+  </p>
+
+  <a class="btn" href="#how">Book an Experience</a>
+</div>
+
+<!-- ABOUT -->
+<section>
+  <h2>What We Are</h2>
+  <div class="card">
     <p>
-        A simple, modern space for ideas, projects, and creations.
+      Stuffed With Love is a mobile plushie service inspired by the Build-A-Bear experience —
+      but instead of going to a store, we bring everything to you.
+      Kids and families design, customize, and create their own stuffed animals on the spot.
+    </p>
+  </div>
+</section>
+
+<!-- HOW IT WORKS -->
+<section id="how">
+  <h2>How It Works</h2>
+
+  <div class="grid">
+
+    <div class="step">
+      <div class="badge">Step 1</div>
+      <h3>Choose Your Plush</h3>
+      <p>Select from a variety of soft, high-quality stuffed animals.</p>
+    </div>
+
+    <div class="step">
+      <div class="badge">Step 2</div>
+      <h3>Customize It</h3>
+      <p>Add outfits, scents, sounds, and personal touches to make it yours.</p>
+    </div>
+
+    <div class="step">
+      <div class="badge">Step 3</div>
+      <h3>We Come to You</h3>
+      <p>We set up everything at your event, party, school, or home.</p>
+    </div>
+
+  </div>
+</section>
+
+<!-- WHY US -->
+<section>
+  <h2>Why People Love It</h2>
+
+  <div class="card">
+    <p>
+      We turn stuffed animals into memories. Every plush is unique because it’s created
+      by the person who owns it. It’s not just a toy — it’s an experience.
+    </p>
+  </div>
+</section>
+
+<!-- CTA -->
+<section>
+  <h2>Book Your Event</h2>
+
+  <div class="card">
+    <p>
+      Ready to bring Stuffed With Love to your event?
+      Contact us to schedule a mobile plushie experience.
     </p>
 
-    <a class="button" href="#about">Explore</a>
-</header>
-
-<section id="about">
-    <h2>About</h2>
-    <div class="card">
-        <p>
-            Welcome to StuffedWithLoveGB. This is where I’ll build and share projects,
-            ideas, and anything I’m working on.
-        </p>
-    </div>
-</section>
-
-<section id="projects">
-    <h2>Projects</h2>
-
-    <div class="card">
-        <h3>Project One</h3>
-        <p>Replace this with your first real project.</p>
-    </div>
-
-    <div class="card">
-        <h3>Project Two</h3>
-        <p>Replace this with your second project.</p>
-    </div>
-</section>
-
-<section id="contact">
-    <h2>Contact</h2>
-
-    <div class="card">
-        <p>Email: youremail@example.com</p>
-    </div>
+    <p>
+      📩 Email: <a href="mailto:hello@stuffedwithlovegb.com">hello@stuffedwithlovegb.com</a>
+    </p>
+  </div>
 </section>
 
 <footer>
-    © 2026 StuffedWithLoveGB
+  © 2026 Stuffed With Love — Mobile Plushie Experiences
 </footer>
 
 </body>
