@@ -1301,6 +1301,32 @@ btn:hover {
 .about-content {
     flex: 1;
 }
+        .hero-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 50px;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 60px 20px;
+}
+
+.hero-content {
+    flex: 1;
+}
+
+.hero-images {
+    flex: 1;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 15px;
+}
+
+.hero-images img {
+    width: 100%;
+    height: auto;
+    border-radius: 15px;
+}
     </style>
 </head>
 <body>
@@ -1342,33 +1368,38 @@ btn:hover {
         <a href="#contact" onclick="toggleMobile()">Book Now</a>
     </div>
 
-    <!-- Hero Section -->
-    <section class="hero" id="home">
-        
-                </div>
-                <h1>Stuffed With <span class="gold">Love</span> </h1>
-                <p>Bringing joy to kids' parties and events with adorable, handmade stuffed animals! A Green Bay family business creating memories that last—not landfill waste.</p>
-                <a href="#contact" class="btn btn-primary">Book Your Party!</a>
-                <a href="about.html" class="btn btn-secondary">Our Story</a>
+   <section class="hero" id="home">
+
+    <div class="hero-container">
+
+        <!-- LEFT SIDE (text) -->
+        <div class="hero-content">
+
+            <h1>Stuffed With <span class="gold">Love</span></h1>
+
+            <p>
+                Bringing joy to kids' parties and events with adorable, handmade stuffed animals!
+                A Green Bay family business creating memories that last—not landfill waste.
+            </p>
+
+            <a href="#contact" class="btn btn-primary">Book Your Party!</a>
+            <a href="about.html" class="btn btn-secondary">Our Story</a>
+
+        </div>
+
+        <!-- RIGHT SIDE (images) -->
+        <div class="hero-images">
+
+            <img class="float-animation" src="plushy1.jpg" alt="Cute plush teddy bear">
+            <img src="plushy2.jpg" alt="Soft plush toys for kids">
+            <img src="plushy3.jpg" alt="Colorful stuffed plush animals">
+            <img class="float-animation" src="plushy4.jpg" alt="Cute plush teddy bear">
+
+        </div>
+
     </div>
-<div class="hero-images">
-    <img class="float-animation" 
-         src="plushy1.jpg" 
-         alt="Cute plush teddy bear">
 
-    <img 
-         src="plushy2.jpg" 
-         alt="Soft plush toys for kids">
-
-    <img 
-         src="plushy3.jpg"
-         alt="Colorful stuffed plush animals">
-
-     <img class="float-animation" 
-         src="plushy4.jpg" 
-         alt="Cute plush teddy bear">
-    
-</div>
+</section>
         </div>
     </section>
     <!-- Services Section -->
