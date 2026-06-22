@@ -286,19 +286,39 @@
 
         .btn {
             display: inline-block;
-            padding: 1rem 2.5rem;
-            border-radius: 50px;
-            font-weight: 700;
-            text-decoration: none;
-            transition: all 0.3s ease;
-            cursor: pointer;
-            border: none;
-            font-size: 1rem;
-        }
+    padding: 1rem 2.5rem;
+    border-radius: 999px;
+    font-weight: 800;
+    text-decoration: none;
+    cursor: pointer;
+    border: none;
+    font-size: 1rem;
+    transition: all 0.25s ease;
 
+    /* plush toy feel */
+    box-shadow:
+        0 6px 0 rgba(90, 58, 34, 0.25),
+        0 10px 18px rgba(0, 0, 0, 0.12);
+
+    position: relative;
+    transform: translateY(0);
+        }
+btn:hover {
+    transform: translateY(-2px);
+    box-shadow:
+        0 8px 0 rgba(90, 58, 34, 0.2),
+        0 14px 22px rgba(0, 0, 0, 0.15);
+}
+
+.btn:active {
+    transform: translateY(3px);
+    box-shadow:
+        0 3px 0 rgba(90, 58, 34, 0.25),
+        0 6px 12px rgba(0, 0, 0, 0.1);
+}
         .btn-primary {
-            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
-            color: var(--white);
+            background: linear-gradient(135deg, #a47148, #8b5e3c);
+    color: #fff8ef;
         }
 
         .btn-primary:hover {
@@ -320,8 +340,8 @@
         }
 
         .btn-gold {
-            background: linear-gradient(135deg, var(--secondary) 0%, var(--secondary-light) 100%);
-            color: var(--primary-dark);
+            background: linear-gradient(135deg, #f7d774, #f2c14e);
+    color: #2b1d14;
         }
 
         .btn-gold:hover {
