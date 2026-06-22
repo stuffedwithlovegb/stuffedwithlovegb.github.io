@@ -1106,7 +1106,30 @@ body {
         .footer-bottom .packers {
             color: var(--secondary);
         }
+.social-icons {
+    display: flex;
+    gap: 12px;
+    margin-top: 15px;
+}
 
+.social-icons a {
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    background: #ffb6c1;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+    font-size: 18px;
+    transition: all 0.3s ease;
+}
+
+.social-icons a:hover {
+    transform: translateY(-3px);
+    background: #ff8fb1;
+}
         /* Responsive */
         @media (max-width: 968px) {
             .hero-container,
