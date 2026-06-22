@@ -1351,38 +1351,6 @@ body {
     to {
         transform: translateY(-120px);
     }
-.about-content p {
-    margin-bottom: 1.2rem;
-    line-height: 1.7;
-}
-.intro-section {
-    padding: 5rem 2rem;
-    background: var(--white);
-}
-
-.intro-container {
-    max-width: 900px;
-    margin: 0 auto;
-    text-align: center;
-}
-
-.intro-container h2 {
-    font-family: 'Quicksand', sans-serif;
-    font-size: 2.2rem;
-    margin-bottom: 1.5rem;
-    color: var(--primary);
-}
-
-.intro-container p {
-    font-size: 1.15rem;
-    color: var(--text-light);
-    line-height: 1.8;
-    margin-bottom: 1.2rem;
-}
-
-.intro-container p:last-child {
-    margin-bottom: 0;
-}
 .intro-section {
     padding: 5rem 2rem;
     background: linear-gradient(135deg, var(--bg-cream), var(--bg-gold-light));
@@ -1390,7 +1358,7 @@ body {
     overflow: hidden;
 }
 
-/* soft floating sparkle dots */
+/* floating sparkles */
 .intro-section::before {
     content: "";
     position: absolute;
@@ -1415,8 +1383,8 @@ body {
     max-width: 900px;
     margin: 0 auto;
     text-align: center;
-    background: rgba(255, 255, 255, 0.75);
-    backdrop-filter: blur(6px);
+    background: rgba(255, 255, 255, 0.82);
+    backdrop-filter: blur(8px);
     border-radius: 28px;
     padding: 3rem 2.5rem;
     box-shadow: var(--shadow-lg);
@@ -1425,23 +1393,21 @@ body {
     border: 1px solid rgba(139, 94, 60, 0.08);
 }
 
-.intro-section h2 {
+.intro-container h2 {
+    font-family: 'Quicksand', sans-serif;
     font-size: 2.2rem;
     margin-bottom: 1.5rem;
     color: var(--primary);
-    font-family: 'Quicksand', sans-serif;
 }
 
-.intro-section p {
-    margin-bottom: 1rem;
+.intro-container p {
+    font-size: 1.1rem;
     color: var(--text-light);
     line-height: 1.8;
-    font-size: 1.05rem;
+    margin-bottom: 1.2rem;
 }
 
-/* optional soft “pill highlight” feel */
-.intro-section h2 span {
-    color: var(--secondary);
-    text-shadow: 1px 1px 2px rgba(0,0,0,0.08);
+.intro-container p:last-child {
+    margin-bottom: 0;
 }
     </style>
