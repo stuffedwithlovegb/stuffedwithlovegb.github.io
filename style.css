@@ -65,7 +65,19 @@
                 radial-gradient(circle at 10% 30%, var(--accent-blue) 1px, transparent 1px);
             background-size: 100px 100px;
         }
+body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 0;
 
+    background-image: radial-gradient(circle, rgba(255,255,255,0.7) 1px, transparent 1px);
+    background-size: 90px 90px;
+
+    animation: sparkleDrift 25s linear infinite;
+    opacity: 0.25;
+}
         /* Navigation */
         nav {
     position: fixed;
@@ -1327,5 +1339,17 @@ body {
     border-radius: 999px;
     display: inline-block;
     box-shadow: var(--shadow);
+}
+body {
+    position: relative;
+    z-index: 1;
+}
+@keyframes sparkleDrift {
+    from {
+        transform: translateY(0px);
+    }
+    to {
+        transform: translateY(-120px);
+    }
 }
     </style>
