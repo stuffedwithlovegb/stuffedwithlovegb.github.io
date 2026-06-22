@@ -1050,73 +1050,53 @@ btn:hover {
             font-size: 1.5rem;
         }
 
-        /* Footer */
-        footer {
-            background: var(--primary-dark);
-            color: var(--white);
-            padding: 3rem 2rem;
-            text-align: center;
-        }
+        .site-footer {
+    background: #1f1f1f;
+    color: white;
+    padding: 60px 20px 20px;
+    margin-top: 60px;
+}
 
-        .footer-content {
-            max-width: 1200px;
-            margin: 0 auto;
-        }
+.footer-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 30px;
+    max-width: 1100px;
+    margin: 0 auto;
+}
 
-        .footer-logo {
-            font-family: 'Quicksand', sans-serif;
-            font-size: 1.5rem;
-            font-weight: 700;
-            margin-bottom: 1rem;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 0.5rem;
-        }
+.footer-column h3,
+.footer-column h4 {
+    margin-bottom: 15px;
+}
 
-        .footer-logo span {
-            color: var(--secondary);
-        }
+.footer-column p {
+    color: #ccc;
+    font-size: 14px;
+    line-height: 1.5;
+}
 
-        .footer-tagline {
-            color: var(--secondary);
-            font-weight: 600;
-            margin-bottom: 1rem;
-        }
+.footer-column a {
+    display: block;
+    color: #bbb;
+    text-decoration: none;
+    margin-bottom: 8px;
+    transition: 0.2s;
+    font-size: 14px;
+}
 
-        .social-links {
-            display: flex;
-            justify-content: center;
-            gap: 1rem;
-            margin: 1.5rem 0;
-        }
+.footer-column a:hover {
+    color: #fff;
+}
 
-        .social-links a {
-            width: 45px;
-            height: 45px;
-            background: rgba(255,255,255,0.1);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: var(--white);
-            text-decoration: none;
-            transition: all 0.3s ease;
-            font-size: 1.25rem;
-        }
-
-        .social-links a:hover {
-            background: var(--secondary);
-            color: var(--primary-dark);
-        }
-
-        .footer-bottom {
-            margin-top: 2rem;
-            padding-top: 2rem;
-            border-top: 1px solid rgba(255,255,255,0.1);
-            color: rgba(255,255,255,0.6);
-            font-size: 0.9rem;
-        }
+.footer-bottom {
+    text-align: center;
+    margin-top: 40px;
+    padding-top: 20px;
+    border-top: 1px solid #333;
+    font-size: 13px;
+    color: #888;
+}
 .hero-images img,
 .image-placeholder img {
     width: 100%;
@@ -1646,22 +1626,48 @@ btn:hover {
     </section>
 
     <!-- Footer -->
-    <footer>
-        <div class="footer-content">
-            <div class="footer-logo">🧸 Stuffed with <span>Love</span></div>
-            <p class="footer-tagline">Creating memories, not landfill 💚</p>
-            <p>A Green Bay family business, 1 mile from Lambeau Field</p>
-            <div class="social-links">
-                <a href="#" aria-label="Facebook">📘</a>
-                <a href="#" aria-label="Instagram">📸</a>
-                <a href="#" aria-label="TikTok">🎵</a>
-            </div>
-            <div class="footer-bottom">
-                <p>&copy; 2026 Stuffed with Love. Made with 💚 in Green Bay, WI</p>
-                <p class="packers">Go Pack Go! 🏈💛💚</p>
-            </div>
+    <footer class="site-footer">
+
+    <div class="footer-container">
+
+        <!-- Brand -->
+        <div class="footer-column">
+            <h3>Stuffed with Love</h3>
+            <p>Green Bay family business creating unforgettable party memories.</p>
         </div>
-    </footer>
+
+        <!-- Navigation -->
+        <div class="footer-column">
+            <h4>Pages</h4>
+            <a href="index.html">Home</a>
+            <a href="about.html">About</a>
+            <a href="index.html#contact">Contact</a>
+        </div>
+
+        <!-- Services -->
+        <div class="footer-column">
+            <h4>Events</h4>
+            <a href="#">Birthday Parties</a>
+            <a href="#">School Events</a>
+            <a href="#">Packers Events</a>
+            <a href="#">Fairs & Festivals</a>
+        </div>
+
+        <!-- Contact -->
+        <div class="footer-column">
+            <h4>Contact</h4>
+            <a href="mailto:stuffedwithlovegb@gmail.com">Email Us</a>
+            <a href="tel:+19205551234">Call Us</a>
+            <a href="about.html">Our Story</a>
+        </div>
+
+    </div>
+
+    <div class="footer-bottom">
+        <p>© 2026 Stuffed with Love. All rights reserved.</p>
+    </div>
+
+</footer>
 
     <script>
         function toggleMobile() {
