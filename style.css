@@ -1106,6 +1106,12 @@ body {
         .footer-bottom .packers {
             color: var(--secondary);
         }
+.footer-social-center {
+    display: flex;
+    justify-content: center;
+    gap: 16px;
+    margin-bottom: 20px;
+}
 .social-icons {
     display: flex;
     gap: 12px;
