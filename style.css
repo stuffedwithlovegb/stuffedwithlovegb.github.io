@@ -1238,5 +1238,31 @@ body {
 .confetti-bg::before {
     animation: floatDots 8s ease-in-out infinite;
 }
-        
+  /* FIX: Hero real images styling */
+.hero-images img {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+    border-radius: 20px;
+    box-shadow: var(--shadow-lg);
+    transition: transform 0.3s ease;
+}
+
+.hero-images img:hover {
+    transform: scale(1.05);
+}
+
+.hero-images img:first-child {
+    grid-row: span 2;
+    height: 100%;
+}
+
+/* FIX: About page image styling */
+.about-image img {
+    width: 100%;
+    height: 500px;
+    object-fit: cover;
+    border-radius: 30px;
+    box-shadow: var(--shadow-lg);
+}      
     </style>
