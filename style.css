@@ -1351,5 +1351,8 @@ body {
     to {
         transform: translateY(-120px);
     }
+.about-content p {
+    margin-bottom: 1.2rem;
+    line-height: 1.7;
 }
     </style>
