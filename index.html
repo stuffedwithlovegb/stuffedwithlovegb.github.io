@@ -3,17 +3,21 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cuddle Friends | Handcrafted Plushies for Little Ones</title>
+    <title>Stuffed with Love | Kids Parties & Events in Green Bay</title>
     <link href="[fonts.googleapis.com](https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&family=Quicksand:wght@400;500;600;700&display=swap)" rel="stylesheet">
     <style>
         :root {
-            --primary: #7c3aed;
-            --primary-light: #a78bfa;
-            --primary-dark: #5b21b6;
-            --secondary: #f472b6;
-            --accent: #fbbf24;
-            --bg-cream: #fefce8;
-            --bg-lavender: #f5f3ff;
+            /* Green Bay Packers inspired palette */
+            --primary: #203731;          /* Packers dark green */
+            --primary-light: #2d4a3e;
+            --primary-dark: #162620;
+            --secondary: #FFB612;         /* Packers gold */
+            --secondary-light: #ffc94d;
+            --accent: #ff6b9d;            /* Playful pink for kids */
+            --accent-blue: #4fc3f7;       /* Fun sky blue */
+            --bg-cream: #fffef5;
+            --bg-green-light: #e8f5e9;
+            --bg-gold-light: #fff8e1;
             --text-dark: #1f2937;
             --text-light: #6b7280;
             --white: #ffffff;
@@ -36,6 +40,18 @@
             color: var(--text-dark);
             line-height: 1.6;
             background: var(--white);
+        }
+
+        /* Fun confetti background pattern */
+        .confetti-bg {
+            background-image: 
+                radial-gradient(circle at 20% 80%, var(--secondary) 2px, transparent 2px),
+                radial-gradient(circle at 80% 20%, var(--accent) 2px, transparent 2px),
+                radial-gradient(circle at 40% 40%, var(--accent-blue) 1.5px, transparent 1.5px),
+                radial-gradient(circle at 60% 70%, var(--secondary) 1.5px, transparent 1.5px),
+                radial-gradient(circle at 90% 90%, var(--accent) 2px, transparent 2px),
+                radial-gradient(circle at 10% 30%, var(--accent-blue) 1px, transparent 1px);
+            background-size: 100px 100px;
         }
 
         /* Navigation */
@@ -67,6 +83,11 @@
             display: flex;
             align-items: center;
             gap: 0.5rem;
+        }
+
+        .logo-img {
+            height: 50px;
+            width: auto;
         }
 
         .logo span {
@@ -155,7 +176,7 @@
         }
 
         .dropdown-menu a:hover {
-            background: var(--bg-lavender);
+            background: var(--bg-green-light);
             color: var(--primary);
         }
 
@@ -172,10 +193,33 @@
         /* Hero Section */
         .hero {
             min-height: 100vh;
-            background: linear-gradient(135deg, var(--bg-lavender) 0%, var(--bg-cream) 100%);
+            background: linear-gradient(135deg, var(--bg-green-light) 0%, var(--bg-gold-light) 50%, var(--bg-cream) 100%);
             display: flex;
             align-items: center;
             padding: 8rem 2rem 4rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: 
+                radial-gradient(circle at 15% 85%, var(--secondary) 4px, transparent 4px),
+                radial-gradient(circle at 85% 15%, var(--accent) 4px, transparent 4px),
+                radial-gradient(circle at 45% 25%, var(--accent-blue) 3px, transparent 3px),
+                radial-gradient(circle at 75% 75%, var(--secondary) 3px, transparent 3px),
+                radial-gradient(circle at 25% 55%, var(--accent) 2px, transparent 2px),
+                radial-gradient(circle at 95% 45%, var(--accent-blue) 2px, transparent 2px),
+                radial-gradient(circle at 5% 15%, var(--secondary) 3px, transparent 3px),
+                radial-gradient(circle at 55% 95%, var(--accent) 2px, transparent 2px);
+            background-size: 200px 200px;
+            opacity: 0.6;
+            pointer-events: none;
         }
 
         .hero-container {
@@ -185,6 +229,8 @@
             grid-template-columns: 1fr 1fr;
             gap: 4rem;
             align-items: center;
+            position: relative;
+            z-index: 1;
         }
 
         .hero-content h1 {
@@ -196,8 +242,13 @@
             color: var(--text-dark);
         }
 
-        .hero-content h1 span {
+        .hero-content h1 .green {
             color: var(--primary);
+        }
+
+        .hero-content h1 .gold {
+            color: var(--secondary);
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
         }
 
         .hero-content p {
@@ -205,6 +256,19 @@
             color: var(--text-light);
             margin-bottom: 2rem;
             max-width: 500px;
+        }
+
+        .hero-tagline {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+            color: var(--white);
+            padding: 0.5rem 1.25rem;
+            border-radius: 50px;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            font-size: 0.95rem;
         }
 
         .btn {
@@ -220,12 +284,12 @@
         }
 
         .btn-primary {
-            background: var(--primary);
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
             color: var(--white);
         }
 
         .btn-primary:hover {
-            background: var(--primary-dark);
+            background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary) 100%);
             transform: translateY(-2px);
             box-shadow: var(--shadow-lg);
         }
@@ -242,28 +306,51 @@
             color: var(--white);
         }
 
+        .btn-gold {
+            background: linear-gradient(135deg, var(--secondary) 0%, var(--secondary-light) 100%);
+            color: var(--primary-dark);
+        }
+
+        .btn-gold:hover {
+            background: linear-gradient(135deg, var(--secondary-light) 0%, var(--secondary) 100%);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+        }
+
         .hero-images {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
             gap: 1rem;
         }
 
-        .hero-images img {
+        .hero-images .image-placeholder {
             width: 100%;
             height: 200px;
-            object-fit: cover;
             border-radius: 20px;
             box-shadow: var(--shadow-lg);
             transition: transform 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
         }
 
-        .hero-images img:hover {
+        .hero-images .image-placeholder:hover {
             transform: scale(1.05);
         }
 
-        .hero-images img:first-child {
+        .hero-images .image-placeholder:first-child {
             grid-row: span 2;
             height: 100%;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+        }
+
+        .hero-images .image-placeholder:nth-child(2) {
+            background: linear-gradient(135deg, var(--secondary) 0%, var(--secondary-light) 100%);
+        }
+
+        .hero-images .image-placeholder:nth-child(3) {
+            background: linear-gradient(135deg, var(--accent) 0%, #ff8fb3 100%);
         }
 
         /* Section Styling */
@@ -290,8 +377,13 @@
             font-size: 1.1rem;
         }
 
-        .section-header .accent {
+        .section-header .accent-green {
             color: var(--primary);
+        }
+
+        .section-header .accent-gold {
+            color: var(--secondary);
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
         }
 
         /* Who We Are */
@@ -312,12 +404,16 @@
             position: relative;
         }
 
-        .about-image img {
+        .about-image .image-placeholder {
             width: 100%;
             height: 500px;
-            object-fit: cover;
             border-radius: 30px;
             box-shadow: var(--shadow-lg);
+            background: linear-gradient(135deg, var(--bg-green-light) 0%, var(--bg-gold-light) 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 6rem;
         }
 
         .about-image::before {
@@ -327,7 +423,7 @@
             left: -20px;
             width: 100%;
             height: 100%;
-            background: var(--primary-light);
+            background: var(--secondary);
             border-radius: 30px;
             z-index: -1;
             opacity: 0.3;
@@ -345,6 +441,20 @@
             font-size: 1.1rem;
         }
 
+        .about-highlight {
+            background: linear-gradient(135deg, var(--bg-green-light) 0%, var(--bg-gold-light) 100%);
+            border-left: 4px solid var(--secondary);
+            padding: 1.25rem;
+            border-radius: 0 12px 12px 0;
+            margin: 1.5rem 0;
+        }
+
+        .about-highlight p {
+            margin: 0;
+            font-weight: 600;
+            color: var(--primary);
+        }
+
         .about-features {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
@@ -359,19 +469,103 @@
         }
 
         .feature-icon {
-            width: 40px;
-            height: 40px;
-            background: var(--bg-lavender);
-            border-radius: 10px;
+            width: 45px;
+            height: 45px;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+            border-radius: 12px;
             display: flex;
             align-items: center;
             justify-content: center;
             font-size: 1.25rem;
         }
 
+        .feature-icon.gold {
+            background: linear-gradient(135deg, var(--secondary) 0%, var(--secondary-light) 100%);
+        }
+
+        /* Services / What We Do */
+        #services {
+            background: linear-gradient(135deg, var(--bg-green-light) 0%, var(--bg-gold-light) 100%);
+            position: relative;
+        }
+
+        #services::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: 
+                radial-gradient(circle at 10% 90%, var(--secondary) 3px, transparent 3px),
+                radial-gradient(circle at 90% 10%, var(--accent) 3px, transparent 3px),
+                radial-gradient(circle at 50% 50%, var(--accent-blue) 2px, transparent 2px);
+            background-size: 150px 150px;
+            opacity: 0.4;
+            pointer-events: none;
+        }
+
+        .services-grid {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 2rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        .service-card {
+            background: var(--white);
+            border-radius: 24px;
+            padding: 2.5rem 2rem;
+            text-align: center;
+            box-shadow: var(--shadow);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .service-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 5px;
+            background: linear-gradient(90deg, var(--primary), var(--secondary), var(--accent));
+        }
+
+        .service-card:hover {
+            transform: translateY(-10px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .service-icon {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, var(--bg-green-light) 0%, var(--bg-gold-light) 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.5rem;
+            margin: 0 auto 1.5rem;
+        }
+
+        .service-card h3 {
+            font-size: 1.5rem;
+            color: var(--primary);
+            margin-bottom: 1rem;
+        }
+
+        .service-card p {
+            color: var(--text-light);
+        }
+
         /* Gallery */
         #gallery {
-            background: var(--bg-lavender);
+            background: var(--white);
         }
 
         .gallery-grid {
@@ -390,15 +584,39 @@
             cursor: pointer;
         }
 
-        .gallery-item img {
+        .gallery-item .image-placeholder {
             width: 100%;
             height: 250px;
-            object-fit: cover;
             transition: transform 0.5s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
         }
 
-        .gallery-item:hover img {
+        .gallery-item:hover .image-placeholder {
             transform: scale(1.1);
+        }
+
+        .gallery-item:nth-child(1) .image-placeholder,
+        .gallery-item:nth-child(6) .image-placeholder {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+        }
+
+        .gallery-item:nth-child(2) .image-placeholder {
+            background: linear-gradient(135deg, var(--secondary) 0%, var(--secondary-light) 100%);
+        }
+
+        .gallery-item:nth-child(3) .image-placeholder {
+            background: linear-gradient(135deg, var(--accent) 0%, #ff8fb3 100%);
+        }
+
+        .gallery-item:nth-child(4) .image-placeholder {
+            background: linear-gradient(135deg, var(--accent-blue) 0%, #81d4fa 100%);
+        }
+
+        .gallery-item:nth-child(5) .image-placeholder {
+            background: linear-gradient(135deg, #a5d6a7 0%, #81c784 100%);
         }
 
         .gallery-item:nth-child(1),
@@ -409,7 +627,7 @@
         .gallery-overlay {
             position: absolute;
             inset: 0;
-            background: linear-gradient(to top, rgba(124, 58, 237, 0.8), transparent);
+            background: linear-gradient(to top, rgba(32, 55, 49, 0.9), transparent);
             opacity: 0;
             transition: opacity 0.3s ease;
             display: flex;
@@ -428,7 +646,7 @@
 
         /* Pricing */
         #pricing {
-            background: var(--white);
+            background: linear-gradient(135deg, var(--bg-gold-light) 0%, var(--bg-cream) 100%);
         }
 
         .pricing-grid {
@@ -469,8 +687,8 @@
             top: -12px;
             left: 50%;
             transform: translateX(-50%);
-            background: var(--accent);
-            color: var(--text-dark);
+            background: var(--secondary);
+            color: var(--primary-dark);
             padding: 0.5rem 1.5rem;
             border-radius: 50px;
             font-weight: 700;
@@ -518,7 +736,7 @@
         }
 
         .pricing-card.featured ul li::before {
-            color: var(--accent);
+            color: var(--secondary);
         }
 
         .pricing-card .btn {
@@ -526,13 +744,17 @@
         }
 
         .pricing-card.featured .btn {
-            background: var(--white);
-            color: var(--primary);
+            background: var(--secondary);
+            color: var(--primary-dark);
+        }
+
+        .pricing-card.featured .btn:hover {
+            background: var(--secondary-light);
         }
 
         /* Testimonials */
         #testimonials {
-            background: var(--bg-cream);
+            background: var(--white);
         }
 
         .testimonial-grid {
@@ -544,7 +766,7 @@
         }
 
         .testimonial-card {
-            background: var(--white);
+            background: linear-gradient(135deg, var(--bg-green-light) 0%, var(--bg-gold-light) 100%);
             padding: 2rem;
             border-radius: 20px;
             box-shadow: var(--shadow);
@@ -557,15 +779,15 @@
             top: 1rem;
             right: 2rem;
             font-size: 5rem;
-            color: var(--primary-light);
-            opacity: 0.3;
+            color: var(--primary);
+            opacity: 0.2;
             font-family: Georgia, serif;
             line-height: 1;
         }
 
         .testimonial-content {
             margin-bottom: 1.5rem;
-            color: var(--text-light);
+            color: var(--text-dark);
             font-style: italic;
             position: relative;
             z-index: 1;
@@ -577,16 +799,22 @@
             gap: 1rem;
         }
 
-        .testimonial-author img {
+        .testimonial-author .avatar {
             width: 50px;
             height: 50px;
             border-radius: 50%;
-            object-fit: cover;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            color: var(--white);
         }
 
         .testimonial-author h4 {
             font-size: 1rem;
             margin-bottom: 0.25rem;
+            color: var(--primary);
         }
 
         .testimonial-author span {
@@ -595,19 +823,91 @@
         }
 
         .stars {
-            color: var(--accent);
+            color: var(--secondary);
             margin-bottom: 1rem;
+        }
+
+        /* Green Bay Pride Section */
+        #greenbay {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: var(--white);
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        #greenbay::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: 
+                radial-gradient(circle at 20% 30%, var(--secondary) 4px, transparent 4px),
+                radial-gradient(circle at 80% 70%, var(--secondary) 4px, transparent 4px),
+                radial-gradient(circle at 50% 10%, var(--secondary) 3px, transparent 3px),
+                radial-gradient(circle at 10% 80%, var(--secondary) 3px, transparent 3px),
+                radial-gradient(circle at 90% 20%, var(--secondary) 2px, transparent 2px);
+            background-size: 200px 200px;
+            opacity: 0.3;
+            pointer-events: none;
+        }
+
+        .greenbay-content {
+            max-width: 800px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 1;
+        }
+
+        .greenbay-content h2 {
+            font-family: 'Quicksand', sans-serif;
+            font-size: 2.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .greenbay-content h2 span {
+            color: var(--secondary);
+        }
+
+        .greenbay-content p {
+            font-size: 1.25rem;
+            opacity: 0.9;
+            margin-bottom: 2rem;
+        }
+
+        .greenbay-stats {
+            display: flex;
+            justify-content: center;
+            gap: 4rem;
+            margin-top: 3rem;
+        }
+
+        .stat-item {
+            text-align: center;
+        }
+
+        .stat-item .number {
+            font-size: 3rem;
+            font-weight: 800;
+            color: var(--secondary);
+        }
+
+        .stat-item .label {
+            font-size: 1rem;
+            opacity: 0.9;
         }
 
         /* Contact */
         #contact {
-            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
-            color: var(--white);
+            background: linear-gradient(135deg, var(--secondary) 0%, var(--secondary-light) 100%);
+            color: var(--primary-dark);
         }
 
         #contact .section-header h2,
         #contact .section-header p {
-            color: var(--white);
+            color: var(--primary-dark);
         }
 
         .contact-container {
@@ -644,7 +944,8 @@
         }
 
         .form-group input,
-        .form-group textarea {
+        .form-group textarea,
+        .form-group select {
             width: 100%;
             padding: 1rem;
             border: 2px solid #e5e7eb;
@@ -655,7 +956,8 @@
         }
 
         .form-group input:focus,
-        .form-group textarea:focus {
+        .form-group textarea:focus,
+        .form-group select:focus {
             outline: none;
             border-color: var(--primary);
         }
@@ -669,6 +971,12 @@
             width: 100%;
             padding: 1.25rem;
             font-size: 1.1rem;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+            color: var(--white);
+        }
+
+        .contact-form .btn:hover {
+            background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary) 100%);
         }
 
         .contact-info {
@@ -682,7 +990,8 @@
             display: flex;
             align-items: center;
             gap: 0.75rem;
-            color: var(--white);
+            color: var(--primary-dark);
+            font-weight: 600;
         }
 
         .contact-info-item span {
@@ -691,7 +1000,7 @@
 
         /* Footer */
         footer {
-            background: var(--text-dark);
+            background: var(--primary-dark);
             color: var(--white);
             padding: 3rem 2rem;
             text-align: center;
@@ -707,10 +1016,20 @@
             font-size: 1.5rem;
             font-weight: 700;
             margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
         }
 
         .footer-logo span {
             color: var(--secondary);
+        }
+
+        .footer-tagline {
+            color: var(--secondary);
+            font-weight: 600;
+            margin-bottom: 1rem;
         }
 
         .social-links {
@@ -721,8 +1040,8 @@
         }
 
         .social-links a {
-            width: 40px;
-            height: 40px;
+            width: 45px;
+            height: 45px;
             background: rgba(255,255,255,0.1);
             border-radius: 50%;
             display: flex;
@@ -730,19 +1049,25 @@
             justify-content: center;
             color: var(--white);
             text-decoration: none;
-            transition: background 0.3s ease;
+            transition: all 0.3s ease;
+            font-size: 1.25rem;
         }
 
         .social-links a:hover {
-            background: var(--primary);
+            background: var(--secondary);
+            color: var(--primary-dark);
         }
 
         .footer-bottom {
             margin-top: 2rem;
             padding-top: 2rem;
             border-top: 1px solid rgba(255,255,255,0.1);
-            color: var(--text-light);
+            color: rgba(255,255,255,0.6);
             font-size: 0.9rem;
+        }
+
+        .footer-bottom .packers {
+            color: var(--secondary);
         }
 
         /* Responsive */
@@ -765,6 +1090,7 @@
                 margin: 0 auto 2rem;
             }
 
+            .services-grid,
             .pricing-grid,
             .testimonial-grid {
                 grid-template-columns: 1fr;
@@ -797,6 +1123,11 @@
                 align-items: center;
                 gap: 1rem;
             }
+
+            .greenbay-stats {
+                flex-direction: column;
+                gap: 2rem;
+            }
         }
 
         @media (max-width: 768px) {
@@ -816,7 +1147,7 @@
                 grid-template-columns: 1fr;
             }
 
-            .hero-images img:first-child {
+            .hero-images .image-placeholder:first-child {
                 grid-row: span 1;
             }
 
@@ -826,6 +1157,10 @@
 
             .gallery-grid {
                 grid-template-columns: 1fr;
+            }
+
+            .services-grid {
+                max-width: 100%;
             }
         }
 
@@ -857,6 +1192,17 @@
 
         .mobile-menu a:hover {
             color: var(--primary);
+            background: var(--bg-green-light);
+        }
+
+        /* Animations */
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .float-animation {
+            animation: float 3s ease-in-out infinite;
         }
     </style>
 </head>
@@ -864,22 +1210,25 @@
     <!-- Navigation -->
     <nav>
         <div class="nav-container">
-            <a href="#" class="logo">🧸 Cuddle<span>Friends</span></a>
+            <a href="#" class="logo">
+                <!-- Replace with your actual logo -->
+                🧸 Stuffed with <span>Love</span>
+            </a>
             <ul class="nav-links">
                 <li><a href="#home">Home</a></li>
                 <li class="dropdown">
                     <button class="dropdown-toggle">Explore</button>
                     <div class="dropdown-menu">
-                        <a href="#about">About Us</a>
+                        <a href="#about">Our Story</a>
+                        <a href="#services">What We Do</a>
                         <a href="#gallery">Gallery</a>
-                        <a href="#pricing">Pricing</a>
-                        <a href="#testimonials">Testimonials</a>
-                        <a href="#contact">Contact</a>
+                        <a href="#pricing">Packages</a>
+                        <a href="#testimonials">Reviews</a>
                     </div>
                 </li>
-                <li><a href="#gallery">Gallery</a></li>
-                <li><a href="#pricing">Pricing</a></li>
-                <li><a href="#contact" class="btn btn-primary">Get Started</a></li>
+                <li><a href="#services">Services</a></li>
+                <li><a href="#pricing">Packages</a></li>
+                <li><a href="#contact" class="btn btn-primary">Book a Party!</a></li>
             </ul>
             <button class="mobile-toggle" onclick="toggleMobile()">☰</button>
         </div>
@@ -888,26 +1237,30 @@
     <!-- Mobile Menu -->
     <div class="mobile-menu" id="mobileMenu">
         <a href="#home" onclick="toggleMobile()">Home</a>
-        <a href="#about" onclick="toggleMobile()">About Us</a>
+        <a href="#about" onclick="toggleMobile()">Our Story</a>
+        <a href="#services" onclick="toggleMobile()">What We Do</a>
         <a href="#gallery" onclick="toggleMobile()">Gallery</a>
-        <a href="#pricing" onclick="toggleMobile()">Pricing</a>
-        <a href="#testimonials" onclick="toggleMobile()">Testimonials</a>
-        <a href="#contact" onclick="toggleMobile()">Contact</a>
+        <a href="#pricing" onclick="toggleMobile()">Packages</a>
+        <a href="#testimonials" onclick="toggleMobile()">Reviews</a>
+        <a href="#contact" onclick="toggleMobile()">Book Now</a>
     </div>
 
     <!-- Hero Section -->
     <section class="hero" id="home">
         <div class="hero-container">
             <div class="hero-content">
-                <h1>Handcrafted <span>Plushies</span> Made with Love</h1>
-                <p>We create adorable, huggable companions that bring joy to children everywhere. Each plushie is crafted with premium materials and endless love.</p>
-                <a href="#pricing" class="btn btn-primary">Shop Now</a>
-                <a href="#about" class="btn btn-secondary">Learn More</a>
+                <div class="hero-tagline">
+                    🏈 Proudly located 1 mile from Lambeau Field!
+                </div>
+                <h1><span class="green">Stuffed</span> with <span class="gold">Love</span> 🧸</h1>
+                <p>Bringing joy to kids' parties and events with adorable, handmade stuffed animals! A Green Bay family business creating memories that last—not landfill waste.</p>
+                <a href="#contact" class="btn btn-primary">Book Your Party!</a>
+                <a href="#about" class="btn btn-secondary">Our Story</a>
             </div>
             <div class="hero-images">
-                <img src="[images.unsplash.com](https://images.unsplash.com/photo-1566004100631-35d015d6a491?w=600&h=800&fit=crop)" alt="Child hugging teddy bear">
-                <img src="[images.unsplash.com](https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400&h=300&fit=crop)" alt="Colorful plush toys">
-                <img src="[images.unsplash.com](https://images.unsplash.com/photo-1602734846297-9299fc2d4703?w=400&h=300&fit=crop)" alt="Child with stuffed animal">
+                <div class="image-placeholder float-animation">🧸</div>
+                <div class="image-placeholder">🎉</div>
+                <div class="image-placeholder">🦄</div>
             </div>
         </div>
     </section>
@@ -915,35 +1268,80 @@
     <!-- About Section -->
     <section id="about">
         <div class="section-header">
-            <h2>Who <span class="accent">We Are</span></h2>
-            <p>A family-owned business dedicated to creating magical moments through the art of plushie-making</p>
+            <h2>Meet <span class="accent-green">Our</span> <span class="accent-gold">Family</span></h2>
+            <p>A Green Bay family turning kids' parties into unforgettable memories</p>
         </div>
         <div class="about-grid">
             <div class="about-image">
-                <img src="[images.unsplash.com](https://images.unsplash.com/photo-1515488042361-ee00e0ddd4e4?w=600&h=500&fit=crop)" alt="Happy child with plush toy">
+                <div class="image-placeholder">👨‍👩‍👧‍👦</div>
             </div>
             <div class="about-content">
-                <h3>Bringing Smiles Since 2018</h3>
-                <p>At Cuddle Friends, we believe every child deserves a special companion. Our journey began in a small home studio with a simple mission: to create the softest, most lovable plushies that become lifelong friends.</p>
-                <p>Each plushie is designed with care, using only premium, child-safe materials. From playful pandas to cuddly unicorns, our collection is crafted to spark imagination and provide comfort for years to come.</p>
+                <h3>Creating Joy, Reducing Waste 💚</h3>
+                <p>We're a local Green Bay family on a mission to make kids' parties more meaningful. As parents ourselves, we noticed something troubling: most party favors are cheap plastic that ends up in the trash within a week.</p>
+                <p>That's why we created Stuffed with Love! Instead of forgettable plastic toys, kids at our events get to create their very own stuffed animal friend—a cuddly companion they'll treasure for years.</p>
+                
+                <div class="about-highlight">
+                    <p>🌍 Every stuffed animal created means less plastic waste in our beautiful Wisconsin community!</p>
+                </div>
+
                 <div class="about-features">
                     <div class="feature-item">
-                        <div class="feature-icon">🌿</div>
-                        <span>Eco-Friendly Materials</span>
+                        <div class="feature-icon">🎈</div>
+                        <span>Kids Parties</span>
                     </div>
                     <div class="feature-item">
-                        <div class="feature-icon">🧵</div>
-                        <span>Handcrafted Quality</span>
+                        <div class="feature-icon gold">🏈</div>
+                        <span>Packers Events</span>
                     </div>
                     <div class="feature-item">
-                        <div class="feature-icon">👶</div>
-                        <span>Child-Safe Certified</span>
+                        <div class="feature-icon">🎪</div>
+                        <span>Local Fairs</span>
                     </div>
                     <div class="feature-item">
-                        <div class="feature-icon">💜</div>
-                        <span>Made with Love</span>
+                        <div class="feature-icon gold">💚</div>
+                        <span>Eco-Friendly</span>
                     </div>
                 </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Services Section -->
+    <section id="services">
+        <div class="section-header">
+            <h2>What We <span class="accent-gold">Do</span></h2>
+            <p>Bringing the stuffed animal party experience to you!</p>
+        </div>
+        <div class="services-grid">
+            <div class="service-card">
+                <div class="service-icon">🎂</div>
+                <h3>Birthday Parties</h3>
+                <p>Make your child's birthday unforgettable! Each guest creates and takes home their very own stuffed animal friend.</p>
+            </div>
+            <div class="service-card">
+                <div class="service-icon">🏈</div>
+                <h3>Packers Events</h3>
+                <p>Game day got even better! We bring the fun to tailgates and Packers-themed celebrations near Lambeau.</p>
+            </div>
+            <div class="service-card">
+                <div class="service-icon">🎪</div>
+                <h3>Fairs & Festivals</h3>
+                <p>Find us at local Green Bay events and community fairs throughout the year!</p>
+            </div>
+            <div class="service-card">
+                <div class="service-icon">🏫</div>
+                <h3>School Events</h3>
+                <p>Perfect for classroom parties, field days, and school fundraisers. Educational and fun!</p>
+            </div>
+            <div class="service-card">
+                <div class="service-icon">🎊</div>
+                <h3>Special Events</h3>
+                <p>Graduations, holidays, family reunions—any celebration is better with stuffed animals!</p>
+            </div>
+            <div class="service-card">
+                <div class="service-icon">🏢</div>
+                <h3>Corporate Events</h3>
+                <p>Team building with heart! Great for company family days and community outreach.</p>
             </div>
         </div>
     </section>
@@ -951,33 +1349,55 @@
     <!-- Gallery Section -->
     <section id="gallery">
         <div class="section-header">
-            <h2>Our <span class="accent">Gallery</span></h2>
-            <p>See the joy our plushies bring to children around the world</p>
+            <h2>Party <span class="accent-gold">Fun</span> in Action!</h2>
+            <p>See the smiles we create at events across Green Bay</p>
         </div>
         <div class="gallery-grid">
             <div class="gallery-item">
-                <img src="[images.unsplash.com](https://images.unsplash.com/photo-1530325553241-4f6e7690cf36?w=800&h=500&fit=crop)" alt="Child sleeping with teddy bear">
-                <div class="gallery-overlay"><span>Sweet Dreams Collection</span></div>
+                <div class="image-placeholder">🎉🧸🎈</div>
+                <div class="gallery-overlay"><span>Birthday Magic</span></div>
             </div>
             <div class="gallery-item">
-                <img src="[images.unsplash.com](https://images.unsplash.com/photo-1584727638464-d6cc6a3414c1?w=400&h=400&fit=crop)" alt="Colorful stuffed animals">
-                <div class="gallery-overlay"><span>Rainbow Friends</span></div>
+                <div class="image-placeholder">🏈</div>
+                <div class="gallery-overlay"><span>Game Day Fun</span></div>
             </div>
             <div class="gallery-item">
-                <img src="[images.unsplash.com](https://images.unsplash.com/photo-1563901935883-cb61f5d49be4?w=400&h=400&fit=crop)" alt="Plush bunny toy">
-                <div class="gallery-overlay"><span>Bunny Love</span></div>
+                <div class="image-placeholder">🦄</div>
+                <div class="gallery-overlay"><span>Unicorn Dreams</span></div>
             </div>
             <div class="gallery-item">
-                <img src="[images.unsplash.com](https://images.unsplash.com/photo-1613679074971-91fc27180061?w=400&h=400&fit=crop)" alt="Child with stuffed animal">
-                <div class="gallery-overlay"><span>Best Friends Forever</span></div>
+                <div class="image-placeholder">👧👦</div>
+                <div class="gallery-overlay"><span>Happy Kids</span></div>
             </div>
             <div class="gallery-item">
-                <img src="[images.unsplash.com](https://images.unsplash.com/photo-1559715541-d4fc97b8d6dd?w=400&h=400&fit=crop)" alt="Teddy bear collection">
-                <div class="gallery-overlay"><span>Classic Bears</span></div>
+                <div class="image-placeholder">🐻</div>
+                <div class="gallery-overlay"><span>Teddy Bears</span></div>
             </div>
             <div class="gallery-item">
-                <img src="[images.unsplash.com](https://images.unsplash.com/photo-1472396961693-142e6e269027?w=800&h=500&fit=crop)" alt="Child playing with plushies">
-                <div class="gallery-overlay"><span>Adventure Time</span></div>
+                <div class="image-placeholder">🎪✨🎊</div>
+                <div class="gallery-overlay"><span>Community Events</span></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Green Bay Pride Section -->
+    <section id="greenbay">
+        <div class="greenbay-content">
+            <h2>Proud to be <span>Green Bay</span> 🏈</h2>
+            <p>Just 1 mile from Lambeau Field, we're a local family supporting our community while helping the planet. Go Pack Go!</p>
+            <div class="greenbay-stats">
+                <div class="stat-item">
+                    <div class="number">500+</div>
+                    <div class="label">Happy Kids</div>
+                </div>
+                <div class="stat-item">
+                    <div class="number">50+</div>
+                    <div class="label">Parties & Events</div>
+                </div>
+                <div class="stat-item">
+                    <div class="number">0</div>
+                    <div class="label">Plastic Waste</div>
+                </div>
             </div>
         </div>
     </section>
@@ -985,46 +1405,46 @@
     <!-- Pricing Section -->
     <section id="pricing">
         <div class="section-header">
-            <h2>Our <span class="accent">Collections</span></h2>
-            <p>Find the perfect cuddle companion for every budget</p>
+            <h2>Party <span class="accent-green">Packages</span></h2>
+            <p>Choose the perfect package for your celebration!</p>
         </div>
         <div class="pricing-grid">
             <div class="pricing-card">
-                <h3>Pocket Pals</h3>
-                <div class="price">$24<span>/each</span></div>
+                <h3>Mini Party</h3>
+                <div class="price">$199<span>/event</span></div>
                 <ul>
-                    <li>6-inch mini plushies</li>
-                    <li>Perfect for travel</li>
-                    <li>Premium soft fabric</li>
-                    <li>Machine washable</li>
-                    <li>Gift box included</li>
+                    <li>Up to 8 stuffed animals</li>
+                    <li>1 hour of party fun</li>
+                    <li>Choice of 3 animal styles</li>
+                    <li>All stuffing supplies included</li>
+                    <li>Birth certificates for each animal</li>
                 </ul>
-                <a href="#contact" class="btn btn-primary">Order Now</a>
+                <a href="#contact" class="btn btn-primary">Book Now</a>
             </div>
             <div class="pricing-card featured">
-                <div class="pricing-badge">Most Popular</div>
-                <h3>Cuddle Crew</h3>
-                <div class="price">$49<span>/each</span></div>
+                <div class="pricing-badge">Most Popular!</div>
+                <h3>Classic Party</h3>
+                <div class="price">$349<span>/event</span></div>
                 <ul>
-                    <li>12-inch classic plushies</li>
-                    <li>Ultra-soft premium fill</li>
-                    <li>Embroidered details</li>
-                    <li>Personalization available</li>
-                    <li>Lifetime cuddle guarantee</li>
+                    <li>Up to 15 stuffed animals</li>
+                    <li>1.5 hours of party fun</li>
+                    <li>Choice of 6 animal styles</li>
+                    <li>Accessories & outfits included</li>
+                    <li>Packers-themed options available!</li>
                 </ul>
-                <a href="#contact" class="btn btn-primary">Order Now</a>
+                <a href="#contact" class="btn btn-gold">Book Now</a>
             </div>
             <div class="pricing-card">
-                <h3>Mega Hugs</h3>
-                <div class="price">$89<span>/each</span></div>
+                <h3>Ultimate Party</h3>
+                <div class="price">$499<span>/event</span></div>
                 <ul>
-                    <li>24-inch jumbo plushies</li>
-                    <li>Perfect for cuddling</li>
-                    <li>Weighted for comfort</li>
-                    <li>Custom name embroidery</li>
-                    <li>Premium gift packaging</li>
+                    <li>Up to 25 stuffed animals</li>
+                    <li>2 hours of party fun</li>
+                    <li>All animal styles available</li>
+                    <li>Premium accessories & outfits</li>
+                    <li>Custom party decorations</li>
                 </ul>
-                <a href="#contact" class="btn btn-primary">Order Now</a>
+                <a href="#contact" class="btn btn-primary">Book Now</a>
             </div>
         </div>
     </section>
@@ -1032,40 +1452,40 @@
     <!-- Testimonials Section -->
     <section id="testimonials">
         <div class="section-header">
-            <h2>Happy <span class="accent">Families</span></h2>
-            <p>See what parents are saying about Cuddle Friends</p>
+            <h2>Happy <span class="accent-gold">Families</span></h2>
+            <p>See what Green Bay parents are saying!</p>
         </div>
         <div class="testimonial-grid">
             <div class="testimonial-card">
                 <div class="stars">★★★★★</div>
-                <p class="testimonial-content">"My daughter won't go anywhere without her bunny from Cuddle Friends. The quality is amazing and it's survived countless washes!"</p>
+                <p class="testimonial-content">"My daughter's 6th birthday was AMAZING! Every kid left with a stuffed animal they made themselves. Way better than the usual plastic goody bags!"</p>
                 <div class="testimonial-author">
-                    <img src="[images.unsplash.com](https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&h=100&fit=crop)" alt="Sarah M.">
+                    <div class="avatar">👩</div>
                     <div>
-                        <h4>Sarah M.</h4>
-                        <span>Mom of 2</span>
+                        <h4>Jessica M.</h4>
+                        <span>Green Bay Mom</span>
                     </div>
                 </div>
             </div>
             <div class="testimonial-card">
                 <div class="stars">★★★★★</div>
-                <p class="testimonial-content">"We've bought plushies from many places, but nothing compares to the softness and craftsmanship here. Worth every penny!"</p>
+                <p class="testimonial-content">"We hired them for our Packers tailgate party and the kids (and adults!) absolutely loved it. So much fun and supporting a local family business!"</p>
                 <div class="testimonial-author">
-                    <img src="[images.unsplash.com](https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&h=100&fit=crop)" alt="Michael T.">
+                    <div class="avatar">👨</div>
                     <div>
-                        <h4>Michael T.</h4>
-                        <span>Dad of 3</span>
+                        <h4>Mike T.</h4>
+                        <span>Packers Fan Dad</span>
                     </div>
                 </div>
             </div>
             <div class="testimonial-card">
                 <div class="stars">★★★★★</div>
-                <p class="testimonial-content">"The personalized elephant we ordered for my son's birthday was perfect! He was so excited to see his name on it."</p>
+                <p class="testimonial-content">"Love that they're eco-friendly! My son still sleeps with the bear he made at his party 6 months ago. That's a real memory, not landfill!"</p>
                 <div class="testimonial-author">
-                    <img src="[images.unsplash.com](https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=100&h=100&fit=crop)" alt="Emily R.">
+                    <div class="avatar">👩</div>
                     <div>
-                        <h4>Emily R.</h4>
-                        <span>Mom of 1</span>
+                        <h4>Sarah K.</h4>
+                        <span>De Pere Mom</span>
                     </div>
                 </div>
             </div>
@@ -1075,43 +1495,55 @@
     <!-- Contact Section -->
     <section id="contact">
         <div class="section-header">
-            <h2>Get In Touch</h2>
-            <p>Have questions or ready to order? We'd love to hear from you!</p>
+            <h2>Book Your Party! 🎉</h2>
+            <p>Ready to create some magical memories? Let's talk!</p>
         </div>
         <div class="contact-container">
             <form class="contact-form">
                 <div class="form-grid">
                     <div class="form-group">
                         <label for="name">Your Name</label>
-                        <input type="text" id="name" placeholder="John Doe" required>
+                        <input type="text" id="name" placeholder="Your name" required>
                     </div>
                     <div class="form-group">
                         <label for="email">Email Address</label>
-                        <input type="email" id="email" placeholder="john@example.com" required>
+                        <input type="email" id="email" placeholder="your@email.com" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="phone">Phone Number</label>
+                        <input type="tel" id="phone" placeholder="(920) 555-1234">
+                    </div>
+                    <div class="form-group">
+                        <label for="event-type">Event Type</label>
+                        <select id="event-type">
+                            <option value="">Select event type...</option>
+                            <option value="birthday">Birthday Party</option>
+                            <option value="packers">Packers Event</option>
+                            <option value="school">School Event</option>
+                            <option value="fair">Fair/Festival</option>
+                            <option value="corporate">Corporate Event</option>
+                            <option value="other">Other</option>
+                        </select>
                     </div>
                     <div class="form-group full-width">
-                        <label for="subject">Subject</label>
-                        <input type="text" id="subject" placeholder="How can we help?">
+                        <label for="date">Preferred Date</label>
+                        <input type="date" id="date">
                     </div>
                     <div class="form-group full-width">
-                        <label for="message">Your Message</label>
-                        <textarea id="message" placeholder="Tell us about your perfect plushie..."></textarea>
+                        <label for="message">Tell Us About Your Event!</label>
+                        <textarea id="message" placeholder="How many kids? Any special themes? Packers-themed animals? We'd love to hear your ideas!"></textarea>
                     </div>
                 </div>
-                <button type="submit" class="btn btn-primary">Send Message</button>
+                <button type="submit" class="btn btn-primary">Send Message 🧸</button>
             </form>
             <div class="contact-info">
                 <div class="contact-info-item">
                     <span>📧</span>
-                    <p>hello@cuddlefriends.com</p>
-                </div>
-                <div class="contact-info-item">
-                    <span>📱</span>
-                    <p>(555) 123-4567</p>
+                    <p>stuffedwithlovegb@gmail.com</p>
                 </div>
                 <div class="contact-info-item">
                     <span>📍</span>
-                    <p>Portland, Oregon</p>
+                    <p>Green Bay, Wisconsin</p>
                 </div>
             </div>
         </div>
@@ -1120,16 +1552,17 @@
     <!-- Footer -->
     <footer>
         <div class="footer-content">
-            <div class="footer-logo">🧸 Cuddle<span>Friends</span></div>
-            <p>Handcrafted plushies made with love</p>
+            <div class="footer-logo">🧸 Stuffed with <span>Love</span></div>
+            <p class="footer-tagline">Creating memories, not landfill 💚</p>
+            <p>A Green Bay family business, 1 mile from Lambeau Field</p>
             <div class="social-links">
-                <a href="#">📘</a>
-                <a href="#">📸</a>
-                <a href="#">🐦</a>
-                <a href="#">📌</a>
+                <a href="#" aria-label="Facebook">📘</a>
+                <a href="#" aria-label="Instagram">📸</a>
+                <a href="#" aria-label="TikTok">🎵</a>
             </div>
             <div class="footer-bottom">
-                <p>&copy; 2024 Cuddle Friends. All rights reserved. Made with 💜</p>
+                <p>&copy; 2026 Stuffed with Love. Made with 💚 in Green Bay, WI</p>
+                <p class="packers">Go Pack Go! 🏈💛💚</p>
             </div>
         </div>
     </footer>
@@ -1152,7 +1585,7 @@
         // Form submission handler
         document.querySelector('.contact-form').addEventListener('submit', function(e) {
             e.preventDefault();
-            alert('Thank you for your message! We\'ll get back to you soon. 🧸');
+            alert('Thank you for your message! We\'ll get back to you soon to plan your amazing party! 🧸💚');
             this.reset();
         });
     </script>
