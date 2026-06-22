@@ -1345,12 +1345,10 @@ body {
     z-index: 1;
 }
 @keyframes sparkleDrift {
-    from {
-        transform: translateY(0px);
-    }
-    to {
-        transform: translateY(-120px);
-    }
+    from { transform: translateY(0px); }
+    to { transform: translateY(-120px); }
+}
+
 .intro-section {
     padding: 5rem 2rem;
     background: linear-gradient(135deg, var(--bg-cream), var(--bg-gold-light));
@@ -1358,7 +1356,6 @@ body {
     overflow: hidden;
 }
 
-/* floating sparkles */
 .intro-section::before {
     content: "";
     position: absolute;
@@ -1368,15 +1365,9 @@ body {
         radial-gradient(circle at 70% 60%, rgba(139, 94, 60, 0.15) 2px, transparent 3px),
         radial-gradient(circle at 40% 80%, rgba(201, 162, 126, 0.2) 1.5px, transparent 2px);
     background-size: 120px 120px;
-    animation: sparkleFloat 12s ease-in-out infinite;
+    animation: sparkleDrift 12s linear infinite;
     pointer-events: none;
     opacity: 0.7;
-}
-
-@keyframes sparkleFloat {
-    0% { transform: translateY(0px); }
-    50% { transform: translateY(-10px); }
-    100% { transform: translateY(0px); }
 }
 
 .intro-container {
@@ -1410,4 +1401,5 @@ body {
 .intro-container p:last-child {
     margin-bottom: 0;
 }
+
     </style>
