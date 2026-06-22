@@ -7,22 +7,31 @@
     <link href="[fonts.googleapis.com](https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&family=Quicksand:wght@400;500;600;700&display=swap)" rel="stylesheet">
     <style>
         :root {
-            /* Green Bay Packers inspired palette */
-            --primary: #203731;          /* Packers dark green */
-            --primary-light: #2d4a3e;
-            --primary-dark: #162620;
-            --secondary: #FFB612;         /* Packers gold */
-            --secondary-light: #ffc94d;
-            --accent: #ff6b9d;            /* Playful pink for kids */
-            --accent-blue: #4fc3f7;       /* Fun sky blue */
-            --bg-cream: #fffef5;
-            --bg-green-light: #e8f5e9;
-            --bg-gold-light: #fff8e1;
-            --text-dark: #1f2937;
-            --text-light: #6b7280;
-            --white: #ffffff;
-            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            /* Warm, inviting bakery-style palette */
+    --primary: #8b5e3c;          /* warm brown */
+    --primary-light: #a47148;    /* lighter brown */
+    --primary-dark: #5a3a22;     /* deep cocoa brown */
+
+    --secondary: #f2c14e;        /* warm golden yellow */
+    --secondary-light: #f7d774;  /* soft butter yellow */
+
+    --accent: #e7a977;           /* warm peachy tan */
+    --accent-blue: #c9a27e;      /* soft neutral tan accent */
+
+    --bg-cream: #fff8ef;         /* warm cream background */
+    --bg-green-light: #f5eadc;   /* replaced green tint with beige */
+    --bg-gold-light: #fff1cc;    /* soft warm glow */
+
+    --text-dark: #2b1d14;        /* deep warm brown text */
+    --text-light: #7a6658;       /* soft brown-gray */
+
+    --white: #ffffff;
+
+    --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.08),
+              0 2px 4px -1px rgba(0, 0, 0, 0.04);
+
+    --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.12),
+                 0 4px 6px -2px rgba(0, 0, 0, 0.08);
         }
 
         * {
@@ -39,7 +48,11 @@
             font-family: 'Nunito', sans-serif;
             color: var(--text-dark);
             line-height: 1.6;
-            background: var(--white);
+            background-color: var(--bg-cream);
+            background-image:
+                radial-gradient(circle at 1px 1px, rgba(139, 94, 60, 0.06) 1px, transparent 0),
+                radial-gradient(circle at 10px 10px, rgba(242, 193, 78, 0.04) 1px, transparent 0);
+            background-size: 24px 24px;
         }
 
         /* Fun confetti background pattern */
