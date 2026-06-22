@@ -1458,5 +1458,22 @@ body {
     padding: 0 20px;
     white-space: nowrap;
 }
+.cta-card {
+    grid-column: 1 / -1;
+    text-align: center;
+    padding: 2.5rem;
+}
 
+.cta-card h3 {
+    font-size: 2rem;
+    margin-bottom: 1rem;
+    color: var(--primary);
+}
+
+.cta-card p {
+    font-size: 1.2rem;
+    max-width: 700px;
+    margin: 0 auto 1.5rem;
+    line-height: 1.7;
+}
     </style>
