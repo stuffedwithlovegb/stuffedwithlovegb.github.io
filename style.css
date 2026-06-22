@@ -1355,4 +1355,32 @@ body {
     margin-bottom: 1.2rem;
     line-height: 1.7;
 }
+.intro-section {
+    padding: 5rem 2rem;
+    background: var(--white);
+}
+
+.intro-container {
+    max-width: 900px;
+    margin: 0 auto;
+    text-align: center;
+}
+
+.intro-container h2 {
+    font-family: 'Quicksand', sans-serif;
+    font-size: 2.2rem;
+    margin-bottom: 1.5rem;
+    color: var(--primary);
+}
+
+.intro-container p {
+    font-size: 1.15rem;
+    color: var(--text-light);
+    line-height: 1.8;
+    margin-bottom: 1.2rem;
+}
+
+.intro-container p:last-child {
+    margin-bottom: 0;
+}
     </style>
