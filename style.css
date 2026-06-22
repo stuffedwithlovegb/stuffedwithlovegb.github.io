@@ -1430,5 +1430,14 @@ body {
 .intro-container p:last-child {
     margin-bottom: 0;
 }
+.header-tagline {
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: #5a4a42;
+    text-align: center;
+    flex: 1;
+    padding: 0 20px;
+    white-space: nowrap;
+}
 
     </style>
