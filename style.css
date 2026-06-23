@@ -381,15 +381,16 @@ body {
         }
 
         .btn-secondary {
-            background: transparent;
-            color: var(--primary);
-            border: 2px solid var(--primary);
-            margin-left: 1rem;
-        }
+    background: white;
+    color: #b88a5a;
+    border: 2px solid #b88a5a;
+    margin-left: 1rem;
+}
 
-        .btn-secondary:hover {
-            background: var(--primary);
-            color: var(--white);
+.btn-secondary:hover {
+    background: #b88a5a;
+    color: white;
+}
         }
 
         .btn-gold {
@@ -1654,5 +1655,14 @@ body {
 .service-note {
     margin-top: 2rem;
     font-style: italic;
+}
+.header-book-btn {
+    background: #f4c542;
+    color: #5a4a42;
+}
+
+.header-book-btn:hover {
+    background: #e8ba35;
+    color: #5a4a42;
 }
     </style>
