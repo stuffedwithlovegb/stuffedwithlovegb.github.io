@@ -5,89 +5,118 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>About | Stuffed with Love</title>
 
-    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&family=Quicksand:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="style.css">
+    <!DOCTYPE html>
+
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>About | Stuffed with Love</title>
+
+```
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&family=Quicksand:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+```
+
 </head>
 
 <body>
 
-<!-- NAV (same as index.html) -->
 <nav>
     <div class="nav-container">
         <a href="index.html" class="logo">
             <img src="stuffedlogo.webp" alt="Stuffed With Love" class="logo-img">
         </a>
 
-        <ul class="nav-links">
-            <li><a href="index.html">Home</a></li>
-            <li><a href="about.html" class="active">About</a></li>
-            <li><a href="index.html#services">Services</a></li>
-            <li><a href="index.html#contact">Contact</a></li>
-        </ul>
-    </div>
+```
+    <ul class="nav-links">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="about.html" class="active">About</a></li>
+        <li><a href="index.html#services">Services</a></li>
+        <li><a href="index.html#contact">Contact</a></li>
+    </ul>
+
+    <button class="mobile-toggle" onclick="toggleMobileMenu()">
+        ☰
+    </button>
+</div>
+```
+
 </nav>
 
-<!-- ABOUT CONTENT ONLY -->
+<div class="mobile-menu" id="mobileMenu">
+    <a href="index.html">Home</a>
+    <a href="about.html">About</a>
+    <a href="index.html#services">Services</a>
+    <a href="index.html#contact">Contact</a>
+</div>
+
 <section id="about">
     <div class="section-header">
         <h2>Meet Our Family</h2>
     </div>
 
-    <div class="about-grid">
+```
+<div class="about-grid">
 
-        <div class="about-image">
-            <img src="famphoto.jpg" alt="Family photo" class="family-photo">
+    <div class="about-image">
+        <img src="famphoto.jpg" alt="Family photo" class="family-photo">
+    </div>
+
+    <div class="about-content">
+
+        <h3>Creating Joy, One Memory at a Time 💛</h3>
+
+        <p>
+            Hi! We're Tawny and Forrest Hiatt, the family behind Stuffed With Love.
+        </p>
+
+        <p>
+            Our story began on Tawny's 27th birthday in Boise, Idaho, where we met through a mutual friend. As lifelong Packers fans, we instantly connected, and after our first trip to Green Bay in 2019, we fell in love with the community and knew it was where we wanted to build our future.
+        </p>
+
+        <p>
+            That dream became reality when we moved to Green Bay in 2022, bought our first home, got married, and welcomed our two amazing children, Mason and Forrest Jr.
+        </p>
+
+        <p>
+            Stuffed With Love was inspired by the things we love most: family, making memories, and of course, our fur babies. Our dogs, Lambeau and Link, and our kitties, Simba and Nala remind us every day of the comfort, companionship, and unconditional love that animals bring into our lives.
+        </p>
+
+        <p>
+            We created Stuffed With Love to give families a fun, hands-on experience that creates more than just a stuffed animal—it creates a special memory. Whether you're celebrating a birthday party, baby shower, school event, holiday gathering, or community celebration, we're honored to be part of those moments and help bring a little extra love to every occasion.
+        </p>
+
+        <p>
+            As a locally owned family business, we are proud to serve Green Bay and the surrounding communities. Our goal is simple: create joyful experiences, lasting memories, and smiles that families will remember long after the event is over.
+        </p>
+
+        <p>
+            From our family to yours, thank you for supporting our small business. We can't wait to celebrate with you. 💛
+        </p>
+
+        <div class="about-highlight">
+            <p>Creating memories that families will treasure for years to come.</p>
         </div>
 
-        <div class="about-content">
-            <h3>Creating Joy, Reducing Waste 💚</h3>
-
-    <p>
-    Hi! We're Tawny and Forrest Hiatt, the family behind Stuffed With Love.
-</p>
-
-<p>
-    Our story began on Tawny's 27th birthday in Boise, Idaho, where we met through a mutual friend. As lifelong Packers fans, we instantly connected, and after our first trip to Green Bay in 2019, we fell in love with the community and knew it was where we wanted to build our future.
-</p>
-
-<p>
-    That dream became reality when we moved to Green Bay in 2022, bought our first home, got married, and welcomed our two amazing children, Mason and Forrest Jr.
-</p>
-
-<p>
-    Stuffed With Love was inspired by the things we love most: family, making memories, and of course, our fur babies. Our dogs, Lambeau and Link, and our kitties, Simba and Nala, remind us every day of the comfort, companionship, and unconditional love that animals bring into our lives.
-</p>
-
-<p>
-    We created Stuffed With Love to give families a fun, hands-on experience that creates more than just a stuffed animal—it creates a special memory. Whether you're celebrating a birthday party, baby shower, school event, holiday gathering, or community celebration, we're honored to be part of those moments and help bring a little extra love to every occasion.
-</p>
-
-<p>
-    As a locally owned family business, we are proud to serve Green Bay and the surrounding communities. Our goal is simple: create joyful experiences, lasting memories, and smiles that families will remember long after the event is over.
-</p>
-
-<p>
-    From our family to yours, thank you for supporting our small business. We can't wait to celebrate with you. 💛
-</p>
-</div>
-
-            <div class="about-highlight">
-                <p>Every stuffed animal means less plastic waste!</p>
-            </div>
-
-            <div class="about-features">
-                <div class="feature-item">🎈 Kids Parties</div>
-                <div class="feature-item">🏈 Packers Events</div>
-                <div class="feature-item">🎪 Local Fairs</div>
-                <div class="feature-item">💚 Eco-Friendly</div>
-            </div>
+        <div class="about-features">
+            <div class="feature-item">🎈 Kids Parties</div>
+            <div class="feature-item">🧸 Stuff-A-Plush Events</div>
+            <div class="feature-item">🎪 Community Events</div>
+            <div class="feature-item">💛 Family Owned</div>
         </div>
 
     </div>
+
+</div>
+```
+
 </section>
+
 <section class="about-cta">
 
-    <h2>Let's Create Something Special Together 🧸</h2>
+```
+<h2>Let's Create Something Special Together 🧸</h2>
 
 <p>
     Stuffed With Love was created to bring families together through fun,
@@ -95,38 +124,49 @@
     your next celebration.
 </p>
 
-    <a href="index.html#contact" class="btn btn-primary">
-        Contact Us
-    </a>
+<a href="index.html#contact" class="btn btn-primary">
+    Contact Us
+</a>
+```
 
 </section>
-<!-- FOOTER (same as index.html) -->
+
 <footer class="site-footer">
     <div class="footer-container">
 
-        <div class="footer-column">
-            <h3>Stuffed with Love</h3>
-            <p>Green Bay family business creating party memories.</p>
-        </div>
-
-        <div class="footer-column">
-            <h4>Pages</h4>
-            <a href="index.html">Home</a>
-            <a href="about.html">About</a>
-            <a href="index.html#contact">Contact</a>
-        </div>
-
-        <div class="footer-column">
-            <h4>Contact</h4>
-            <a href="mailto:stuffedwithlovegb@gmail.com">Email</a>
-        </div>
-
+```
+    <div class="footer-column">
+        <h3>Stuffed with Love</h3>
+        <p>Green Bay family business creating party memories.</p>
     </div>
 
-    <div class="footer-bottom">
-        © 2026 Stuffed with Love
+    <div class="footer-column">
+        <h4>Pages</h4>
+        <a href="index.html">Home</a>
+        <a href="about.html">About</a>
+        <a href="index.html#contact">Contact</a>
     </div>
+
+    <div class="footer-column">
+        <h4>Contact</h4>
+        <a href="mailto:stuffedwithlovegb@gmail.com">Email</a>
+    </div>
+
+</div>
+
+<div class="footer-bottom">
+    © 2026 Stuffed with Love
+</div>
+```
+
 </footer>
+
+<script>
+function toggleMobileMenu() {
+    document.getElementById('mobileMenu').classList.toggle('active');
+}
+</script>
 
 </body>
 </html>
+html>
