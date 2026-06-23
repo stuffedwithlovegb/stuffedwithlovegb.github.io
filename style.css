@@ -1747,5 +1747,17 @@ body {
     .hero {
         padding: 2rem 1.5rem 4rem;
     }
+@media (max-width: 768px) {
 
+    .hero-content .btn {
+        display: block;
+        width: fit-content;
+        margin: 0 auto 1rem auto;
+    }
+
+    .hero-content .btn:last-of-type {
+        margin-bottom: 0;
+    }
+
+}
     </style>
