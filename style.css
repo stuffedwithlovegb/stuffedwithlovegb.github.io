@@ -391,7 +391,6 @@ body {
     background: #b88a5a;
     color: white;
 }
-        }
 
         .btn-gold {
             background: linear-gradient(135deg, #f7d774, #f2c14e);
@@ -753,7 +752,6 @@ body {
 .pricing-card ul {
     flex-grow: 1;
 }
-        }
 
         .pricing-card {
             background: var(--white);
@@ -1740,5 +1738,10 @@ body {
     display: flex;
     justify-content: space-between;
     align-items: center;
+}
+@media (max-width: 768px) {
+    .hero-content h1 {
+        transform: none;
+    }
 }
     </style>
