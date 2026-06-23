@@ -1704,31 +1704,30 @@ body {
 .featured-card {
     border: 3px solid #f4c542;
 }
+.addons-section {
+    margin-top: 3rem;
+    text-align: center;
+}
+
+.addons-section h3 {
+    margin-bottom: 1.5rem;
+    color: var(--primary);
+}
+
 .addons-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
     gap: 1rem;
-    max-width: 1000px;
-    margin: 0 auto;
 }
 
 .addon-item {
     background: white;
-    padding: 1rem 1.5rem;
-    border-radius: 15px;
-    box-shadow: var(--shadow);
+    padding: 1rem;
+    border-radius: 12px;
+    box-shadow: 0 3px 10px rgba(0,0,0,.08);
+
     display: flex;
     justify-content: space-between;
     align-items: center;
-}
-
-.addon-item strong {
-    color: var(--text-dark);
-}
-
-.addon-item span {
-    color: #b88a5a;
-    font-weight: 700;
-    font-size: 1.1rem;
 }
     </style>
