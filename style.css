@@ -1542,4 +1542,22 @@ body {
     color: var(--text-dark);
     line-height: 1.7;
 }
+.gallery-cta {
+    text-align: center;
+    padding: 5rem 2rem;
+    background: var(--bg-green-light);
+    border-radius: 24px;
+    margin: 4rem auto;
+    max-width: 1000px;
+}
+
+.gallery-cta h2 {
+    margin-bottom: 1rem;
+}
+
+.gallery-cta p {
+    max-width: 700px;
+    margin: 0 auto 2rem;
+    line-height: 1.7;
+}
     </style>
