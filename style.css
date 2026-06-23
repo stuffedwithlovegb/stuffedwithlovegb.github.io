@@ -1587,4 +1587,72 @@ body {
     line-height: 1.8;
     color: var(--text-dark);
 }
+#service-areas {
+    background: linear-gradient(
+        135deg,
+        var(--bg-green-light) 0%,
+        var(--bg-cream) 100%
+    );
+}
+
+.service-areas-content {
+    max-width: 1100px;
+    margin: 0 auto;
+    text-align: center;
+}
+
+.service-areas-content h2 {
+    margin-bottom: 1.5rem;
+}
+
+.service-areas-content p {
+    max-width: 800px;
+    margin: 0 auto 1.5rem;
+}
+
+.service-area-box {
+    background: white;
+    padding: 2rem;
+    border-radius: 20px;
+    margin: 3rem auto;
+    max-width: 600px;
+    box-shadow: var(--shadow);
+}
+
+.service-area-box h3 {
+    margin-bottom: 1.5rem;
+    color: var(--primary);
+}
+
+.travel-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 0;
+    border-bottom: 1px solid #eee;
+}
+
+.travel-item:last-child {
+    border-bottom: none;
+}
+
+.city-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 1rem;
+    margin-top: 2rem;
+}
+
+.city-card {
+    background: white;
+    padding: 1rem;
+    border-radius: 16px;
+    font-weight: 700;
+    box-shadow: var(--shadow);
+}
+
+.service-note {
+    margin-top: 2rem;
+    font-style: italic;
+}
     </style>
