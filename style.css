@@ -273,7 +273,7 @@ body {
 
         .hero-content h1 {
     font-family: 'Bubblegum Sans', cursive;
-    font-size: 3.2rem;
+    font-size: 3rem;
     font-weight: normal;
     margin-bottom: 2rem;
     position: relative;
@@ -295,8 +295,8 @@ body {
     content: '';
     position: absolute;
     top: 50%;
-    left: -25px;
-    right: -25px;
+    left: -35px;
+    right: -35px;
     height: 78px;
     transform: translateY(-50%);
     background: #f4c542;
@@ -307,11 +307,12 @@ body {
 }
 
 .hero-content h1::after {
-    content: '🧸';
+    content: '♥';
     position: absolute;
-    right: -18px;
-    top: -18px;
-    font-size: 1.8rem;
+    right: -12px;
+    top: 12px;
+    font-size: 1rem;
+    color: #d62828;
     z-index: 3;
 }
 
