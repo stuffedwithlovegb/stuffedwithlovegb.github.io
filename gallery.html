@@ -8,24 +8,64 @@
     <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&family=Quicksand:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
 </head>
+<script>
+const mobileToggle = document.getElementById('mobileToggle');
+const mobileMenu = document.getElementById('mobileMenu');
 
+mobileToggle.addEventListener('click', () => {
+    mobileMenu.classList.toggle('active');
+});
+
+/* close menu when clicking a link */
+document.querySelectorAll('#mobileMenu a').forEach(link => {
+    link.addEventListener('click', () => {
+        mobileMenu.classList.remove('active');
+    });
+});
+
+/* navbar shrink */
+window.addEventListener('scroll', () => {
+    const nav = document.querySelector('nav');
+
+    if (window.scrollY > 50) {
+        nav.classList.add('shrink');
+    } else {
+        nav.classList.remove('shrink');
+    }
+});
+</script>
 <body>
 
 <!-- NAV (same as index.html) -->
 <nav>
     <div class="nav-container">
+
         <a href="index.html" class="logo">
             <img src="stuffedlogo.webp" alt="Stuffed With Love" class="logo-img">
         </a>
 
         <ul class="nav-links">
             <li><a href="index.html">Home</a></li>
-            <li><a href="about.html" class="active">About</a></li>
+            <li><a href="about.html">About</a></li>
+            <li><a href="gallery.html" class="active">Gallery</a></li>
             <li><a href="index.html#services">Services</a></li>
             <li><a href="index.html#contact">Contact</a></li>
         </ul>
+
+        <button class="mobile-toggle" id="mobileToggle">
+            ☰
+        </button>
+
     </div>
 </nav>
+
+<div class="mobile-menu" id="mobileMenu">
+    <a href="index.html">Home</a>
+    <a href="about.html">About</a>
+    <a href="gallery.html">Gallery</a>
+    <a href="index.html#services">Services</a>
+    <a href="index.html#contact">Contact</a>
+</div>
 <section class="gallery-cta">
 
     <h2>Ready to Create Some Plush Magic? 🧸</h2>
