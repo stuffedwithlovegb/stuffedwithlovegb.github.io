@@ -1810,5 +1810,37 @@ white-space: nowrap;
     max-width: 400px;
 }
 
+.intro-flex{
+    display:flex;
+    gap:3rem;
+    align-items:flex-start;
+}
+
+.intro-content{
+    flex:2;
+}
+
+.newsletter-box{
+    flex:1;
+    background:#fff;
+    padding:2rem;
+    border-radius:20px;
+    box-shadow:0 10px 25px rgba(0,0,0,.08);
+}
+
+.newsletter-box input{
+    width:100%;
+    margin-bottom:1rem;
+}
+        @media (max-width:768px){
+
+    .intro-flex{
+        flex-direction:column;
+    }
+
+    .newsletter-box{
+        width:100%;
+    }
+
 
     </style>
