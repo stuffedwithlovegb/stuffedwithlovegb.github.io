@@ -1682,4 +1682,26 @@ body {
     color: var(--primary);
     margin-bottom: 1rem;
 }
+.feature-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 2rem;
+}
+
+.feature-card {
+    background: #fff;
+    padding: 2rem;
+    border-radius: 20px;
+    box-shadow: var(--shadow);
+    text-align: left;
+}
+
+.feature-card h3 {
+    margin-bottom: 1rem;
+    color: var(--primary);
+}
+
+.featured-card {
+    border: 3px solid #f4c542;
+}
     </style>
