@@ -1743,5 +1743,9 @@ body {
     .hero-content h1 {
         transform: none;
     }
-}
+@media (max-width: 768px) {
+    .hero {
+        padding: 2rem 1.5rem 4rem;
+    }
+
     </style>
