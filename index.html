@@ -155,7 +155,40 @@
             </div>
         </div>
     </section>
+<section id="newsletter">
+    <div class="newsletter-container">
 
+        <h2>Join Our Newsletter</h2>
+
+        <p>
+            Be the first to hear about promotions, new plush arrivals,
+            upcoming events, giveaways, and special offers.
+        </p>
+
+        <form
+            action="https://formspree.io/f/mlgydzwo"
+            method="POST"
+            class="newsletter-form">
+
+            <input
+                type="hidden"
+                name="_subject"
+                value="New Newsletter Subscriber">
+
+            <input
+                type="email"
+                name="email"
+                placeholder="Enter your email address"
+                required>
+
+            <button type="submit" class="btn btn-primary">
+                Subscribe
+            </button>
+
+        </form>
+
+    </div>
+</section>
     <!-- FAQ Section -->
 <section id="faq">
 
@@ -599,6 +632,21 @@
                          </textarea>                    
                     </div>
                 </div>
+                <div class="form-group full-width">
+
+    <label class="newsletter-optin">
+
+        <input
+            type="checkbox"
+            name="newsletter_signup"
+            value="Yes">
+
+        Yes! I'd like to receive occasional promotions, giveaways,
+        event announcements, and special offers from Stuffed With Love.
+
+    </label>
+
+</div>
                 <button type="submit" class="btn btn-primary">Send Message </button>
             </form>
             
