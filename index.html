@@ -306,6 +306,10 @@
             <form class="contact-form"
     action="https://formspree.io/f/mbdvjnow"
     method="POST">
+                <input
+    type="hidden"
+    name="_subject"
+    value="New Stuffed With Love Party Inquiry">
                 <div class="form-grid">
                     <div class="form-group">
                         <label for="name">Your Name</label>
@@ -364,10 +368,7 @@
                 </div>
                 <button type="submit" class="btn btn-primary">Send Message 🧸</button>
             </form>
-            <input
-    type="hidden"
-    name="_subject"
-    value="New Stuffed With Love Party Inquiry">
+            
             <div class="contact-info">
                 <div class="contact-info-item">
                     <span>📧</span>
@@ -471,12 +472,7 @@
             }
         });
 
-        // Form submission handler
-        document.querySelector('.contact-form').addEventListener('submit', function(e) {
-            e.preventDefault();
-            alert('Thank you for your message! We\'ll get back to you soon to plan your amazing party! 🧸💚');
-            this.reset();
-        });
+
     </script>
   <script>
 document.addEventListener("DOMContentLoaded", function () {
