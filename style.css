@@ -1512,4 +1512,34 @@ body {
 .hero-main-image:hover {
     transform: translateY(-6px);
 }
+/* FAQ Section */
+
+#faq {
+    background: var(--bg-cream);
+}
+
+.faq-container {
+    max-width: 1000px;
+    margin: 0 auto;
+    display: grid;
+    gap: 1.5rem;
+}
+
+.faq-item {
+    background: white;
+    padding: 1.75rem;
+    border-radius: 20px;
+    box-shadow: var(--shadow);
+}
+
+.faq-item h3 {
+    color: var(--primary);
+    margin-bottom: 0.75rem;
+    font-size: 1.15rem;
+}
+
+.faq-item p {
+    color: var(--text-dark);
+    line-height: 1.7;
+}
     </style>
