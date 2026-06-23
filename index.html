@@ -303,23 +303,25 @@
             <p>Ready to create some magical memories? Let's talk!</p>
         </div>
         <div class="contact-container">
-            <form class="contact-form">
+            <form class="contact-form"
+    action="https://formspree.io/f/mbdvjnow"
+    method="POST">
                 <div class="form-grid">
                     <div class="form-group">
                         <label for="name">Your Name</label>
-                        <input type="text" id="name" placeholder="Your name" required>
+                        <input type="text" id="name" name="name" placeholder="Your name" required>
                     </div>
                     <div class="form-group">
                         <label for="email">Email Address</label>
-                        <input type="email" id="email" placeholder="your@email.com" required>
+                        <input type="email" id="email" name="email" placeholder="your@email.com" required>
                     </div>
                     <div class="form-group">
                         <label for="phone">Phone Number</label>
-                        <input type="tel" id="phone" placeholder="(920) 555-1234">
+                        <input type="tel" id="phone" name="phone" placeholder="(920) 555-1234">
                     </div>
                     <div class="form-group">
                         <label for="event-type">Event Type</label>
-                        <select id="event-type">
+                        <select id="event-type" name="event_type">
                             <option value="">Select event type...</option>
                             <option value="birthday">Birthday Party</option>
                             <option value="packers">Packers Event</option>
@@ -329,17 +331,43 @@
                             <option value="other">Other</option>
                         </select>
                     </div>
+                    <div class="form-group">
+    <label for="guest-count">Estimated Number of Guests</label>
+    <input
+        type="number"
+        id="guest-count"
+        name="guest_count"
+        min="1"
+        placeholder="12">
+</div>
                     <div class="form-group full-width">
                         <label for="date">Preferred Date</label>
-                        <input type="date" id="date">
+                        <input type="date" id="date" name="preferred_date">
                     </div>
                     <div class="form-group full-width">
+    <label for="location">Event Location</label>
+    <input
+        type="text"
+        id="location"
+        name="event_location"
+        placeholder="Green Bay, De Pere, Appleton, etc.">
+</div>
+                    <div class="form-group full-width">
                         <label for="message">Tell Us About Your Event!</label>
-                        <textarea id="message" placeholder="How many kids? Any special themes? We'd love to hear your ideas!"></textarea>
+                     <textarea
+                         id="message"
+                         name="message"
+                         placeholder="How many kids? Any special themes? We'd love to hear your ideas!">
+                         
+                         </textarea>                    
                     </div>
                 </div>
                 <button type="submit" class="btn btn-primary">Send Message 🧸</button>
             </form>
+            <input
+    type="hidden"
+    name="_subject"
+    value="New Stuffed With Love Party Inquiry">
             <div class="contact-info">
                 <div class="contact-info-item">
                     <span>📧</span>
