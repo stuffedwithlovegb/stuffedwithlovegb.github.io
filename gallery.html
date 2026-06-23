@@ -3,40 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>About | Stuffed with Love</title>
+    <title>Gallery | Stuffed with Love</title>
 
     <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&family=Quicksand:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
 </head>
-<script>
-const mobileToggle = document.getElementById('mobileToggle');
-const mobileMenu = document.getElementById('mobileMenu');
 
-mobileToggle.addEventListener('click', () => {
-    mobileMenu.classList.toggle('active');
-});
-
-/* close menu when clicking a link */
-document.querySelectorAll('#mobileMenu a').forEach(link => {
-    link.addEventListener('click', () => {
-        mobileMenu.classList.remove('active');
-    });
-});
-
-/* navbar shrink */
-window.addEventListener('scroll', () => {
-    const nav = document.querySelector('nav');
-
-    if (window.scrollY > 50) {
-        nav.classList.add('shrink');
-    } else {
-        nav.classList.remove('shrink');
-    }
-});
-</script>
 <body>
 
-<!-- NAV (same as index.html) -->
+<!-- NAV -->
 <nav>
     <div class="nav-container">
 
@@ -59,6 +34,7 @@ window.addEventListener('scroll', () => {
     </div>
 </nav>
 
+<!-- MOBILE MENU -->
 <div class="mobile-menu" id="mobileMenu">
     <a href="index.html">Home</a>
     <a href="about.html">About</a>
@@ -66,40 +42,64 @@ window.addEventListener('scroll', () => {
     <a href="index.html#services">Services</a>
     <a href="index.html#contact">Contact</a>
 </div>
-<!-- ABOUT CONTENT ONLY -->
-<!-- Gallery Section -->
-    <section id="gallery">
-        <div class="section-header">
-            <h2>Party Fun in Action!</h2>
-            <p>See the smiles we create at events across Green Bay</p>
-        </div>
-        <div class="gallery-grid">
-            <div class="gallery-item">
-                <div class="image-placeholder">🎉🧸🎈</div>
-                <div class="gallery-overlay"><span>Birthday Magic</span></div>
-            </div>
-            <div class="gallery-item">
-                <div class="image-placeholder">🏈</div>
-                <div class="gallery-overlay"><span>Game Day Fun</span></div>
-            </div>
-            <div class="gallery-item">
-                <div class="image-placeholder">🦄</div>
-                <div class="gallery-overlay"><span>Unicorn Dreams</span></div>
-            </div>
-            <div class="gallery-item">
-                <div class="image-placeholder">👧👦</div>
-                <div class="gallery-overlay"><span>Happy Kids</span></div>
-            </div>
-            <div class="gallery-item">
-                <div class="image-placeholder">🐻</div>
-                <div class="gallery-overlay"><span>Teddy Bears</span></div>
-            </div>
-            <div class="gallery-item">
-                <div class="image-placeholder">🎪✨🎊</div>
-                <div class="gallery-overlay"><span>Community Events</span></div>
+
+<!-- GALLERY -->
+<section id="gallery">
+
+    <div class="section-header">
+        <h2>Party Fun in Action!</h2>
+        <p>See the smiles we create at events across Green Bay</p>
+    </div>
+
+    <div class="gallery-grid">
+
+        <div class="gallery-item">
+            <div class="image-placeholder">🎉🧸🎈</div>
+            <div class="gallery-overlay">
+                <span>Birthday Magic</span>
             </div>
         </div>
-    </section>
+
+        <div class="gallery-item">
+            <div class="image-placeholder">🏈</div>
+            <div class="gallery-overlay">
+                <span>Game Day Fun</span>
+            </div>
+        </div>
+
+        <div class="gallery-item">
+            <div class="image-placeholder">🦄</div>
+            <div class="gallery-overlay">
+                <span>Unicorn Dreams</span>
+            </div>
+        </div>
+
+        <div class="gallery-item">
+            <div class="image-placeholder">👧👦</div>
+            <div class="gallery-overlay">
+                <span>Happy Kids</span>
+            </div>
+        </div>
+
+        <div class="gallery-item">
+            <div class="image-placeholder">🐻</div>
+            <div class="gallery-overlay">
+                <span>Teddy Bears</span>
+            </div>
+        </div>
+
+        <div class="gallery-item">
+            <div class="image-placeholder">🎪✨🎊</div>
+            <div class="gallery-overlay">
+                <span>Community Events</span>
+            </div>
+        </div>
+
+    </div>
+
+</section>
+
+<!-- CTA -->
 <section class="gallery-cta">
 
     <h2>Ready to Create Some Plush Magic? 🧸</h2>
@@ -114,8 +114,10 @@ window.addEventListener('scroll', () => {
     </a>
 
 </section>
-<!-- FOOTER (same as index.html) -->
+
+<!-- FOOTER -->
 <footer class="site-footer">
+
     <div class="footer-container">
 
         <div class="footer-column">
@@ -140,7 +142,41 @@ window.addEventListener('scroll', () => {
     <div class="footer-bottom">
         © 2026 Stuffed with Love
     </div>
+
 </footer>
+
+<!-- SCRIPT MUST BE AT BOTTOM -->
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+
+    const mobileToggle = document.getElementById('mobileToggle');
+    const mobileMenu = document.getElementById('mobileMenu');
+
+    if (mobileToggle && mobileMenu) {
+
+        mobileToggle.addEventListener('click', function () {
+            mobileMenu.classList.toggle('active');
+        });
+
+        document.querySelectorAll('#mobileMenu a').forEach(link => {
+            link.addEventListener('click', () => {
+                mobileMenu.classList.remove('active');
+            });
+        });
+    }
+
+    window.addEventListener('scroll', () => {
+        const nav = document.querySelector('nav');
+
+        if (window.scrollY > 50) {
+            nav.classList.add('shrink');
+        } else {
+            nav.classList.remove('shrink');
+        }
+    });
+
+});
+</script>
 
 </body>
 </html>
