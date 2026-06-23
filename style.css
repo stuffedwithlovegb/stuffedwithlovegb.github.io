@@ -261,11 +261,11 @@ body {
         }
 
         .hero-container {
-            max-width: 1200px;
+            max-width: 1300px;
             margin: 0 auto;
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 4rem;
+            gap: 5rem;
             align-items: center;
             position: relative;
             z-index: 1;
@@ -1489,5 +1489,27 @@ body {
     color: white;
     font-style: normal;
     line-height: 1.8;
+}
+.hero-image-single {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.hero-main-image {
+    width: 100%;
+    max-width: 650px;
+    height: auto;
+
+    border-radius: 24px;
+
+    box-shadow:
+        0 12px 35px rgba(0,0,0,0.12);
+
+    transition: transform 0.3s ease;
+}
+
+.hero-main-image:hover {
+    transform: translateY(-6px);
 }
     </style>
