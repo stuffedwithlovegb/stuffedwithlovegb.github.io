@@ -1341,7 +1341,7 @@ body {
     height: auto;
     border-radius: 30px;
     box-shadow: var(--shadow-lg);
-}
+
 }
 .about-image {
     display: flex;
@@ -1403,10 +1403,7 @@ body {
     box-shadow: 0 18px 35px rgba(0,0,0,0.15);
 
 }
-body {
-    position: relative;
-    z-index: 1;
-}
+
 @keyframes sparkleDrift {
     from { transform: translateY(0px); }
     to { transform: translateY(-120px); }
@@ -1645,7 +1642,7 @@ body {
     padding: 1rem 0;
     border-bottom: 1px solid #eee;
 }
-}
+
 
 .city-grid {
     display: flex;
@@ -1801,7 +1798,7 @@ body {
         max-width: 400px;
     }
 
- @media (max-width: 768px) {
+ 
     .intro-flex {
         flex-direction: column;
     }
