@@ -1,10 +1,6 @@
 
 <style>
-        .family-photo {
-    width: 500px;
-    height: auto;
-    border-radius: 20px;
-}
+       
         :root {
             /* Warm, inviting bakery-style palette */
     --primary: #8b5e3c;          /* warm brown */
@@ -476,11 +472,11 @@ body {
             background: var(--white);
         }
 
-       .about-grid {
+      .about-grid {
     max-width: 1200px;
     margin: 0 auto;
     display: grid;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: 1.2fr 1fr;
     gap: 4rem;
     align-items: start;
 }
@@ -1340,9 +1336,11 @@ body {
 /* FIX: About page image styling */
 .about-image img {
     width: 100%;
-    height: auto;
+    height: 650px;
+    object-fit: cover;
     border-radius: 30px;
     box-shadow: var(--shadow-lg);
+}
 }
 .about-image {
     display: flex;
@@ -1893,4 +1891,19 @@ body {
     border-radius: 14px;
     box-shadow: var(--shadow);
     font-weight: 700;
+}
+.about-section {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 4rem 2rem;
+}
+
+.about-heading {
+    margin-bottom: 3rem;
+}
+
+.about-heading h2 {
+    font-size: 3rem;
+    color: var(--primary);
+    margin: 0;
 }
