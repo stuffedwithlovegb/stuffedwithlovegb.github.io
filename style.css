@@ -1876,3 +1876,10 @@ body {
 .about-grid {
     margin-top: 3rem;
 }
+.social-column {
+    text-align: center;
+}
+
+.social-column .social-icons {
+    justify-content: center;
+}
