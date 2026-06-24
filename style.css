@@ -1942,7 +1942,7 @@ body {
 .about-image {
     display: flex;
     justify-content: center;
-    margin-bottom: 3rem;
+    margin-bottom: 5rem;
 }
 
 .about-image img {
