@@ -1873,3 +1873,6 @@ body {
 .city-card {
     width: auto !important;
 }
+.about-grid {
+    margin-top: 3rem;
+}
