@@ -476,43 +476,23 @@ body {
             background: var(--white);
         }
 
-        .about-grid {
-            max-width: 1200px;
-            margin: 0 auto;
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 4rem;
-            align-items: center;
-        }
+       .about-grid {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 4rem;
+    align-items: start;
+}
 
         .about-image {
             position: relative;
         }
 
-        .about-image .image-placeholder {
-            width: 100%;
-            height: 500px;
-            border-radius: 30px;
-            box-shadow: var(--shadow-lg);
-            background: linear-gradient(135deg, var(--bg-green-light) 0%, var(--bg-gold-light) 100%);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 6rem;
-        }
 
         .about-image::before {
-            content: '';
-            position: absolute;
-            top: -20px;
-            left: -20px;
-            width: 100%;
-            height: 100%;
-            background: var(--secondary);
-            border-radius: 30px;
-            z-index: -1;
-            opacity: 0.3;
-        }
+    display: none;
+}
 
         .about-content h3 {
             font-size: 1.75rem;
@@ -1360,11 +1340,14 @@ body {
 /* FIX: About page image styling */
 .about-image img {
     width: 100%;
-    height: 500px;
-    object-fit: cover;
+    height: auto;
     border-radius: 30px;
     box-shadow: var(--shadow-lg);
-}  
+}
+.about-image {
+    display: flex;
+    justify-content: center;
+}
 .hero-images {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
