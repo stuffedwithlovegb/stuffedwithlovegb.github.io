@@ -1763,7 +1763,7 @@ body {
 .intro-flex {
     display: flex;
     gap: 3rem;
-    align-items: flex-start;
+    align-items: center;
 }
 
 .intro-content {
@@ -1772,10 +1772,11 @@ body {
 
 .newsletter-box {
     flex: 1;
+    min-width: 450px;
     background: #fff;
-    padding: 2rem;
-    border-radius: 20px;
-    box-shadow: 0 10px 25px rgba(0,0,0,.08);
+    padding: 3rem;
+    border-radius: 30px;
+    box-shadow: var(--shadow-lg);
 }
 
 .newsletter-box input {
@@ -1906,4 +1907,17 @@ body {
     font-size: 3rem;
     color: var(--primary);
     margin: 0;
+}
+.intro-content {
+    background: rgba(255,255,255,0.75);
+    backdrop-filter: blur(8px);
+    padding: 3rem;
+    border-radius: 30px;
+    box-shadow: var(--shadow-lg);
+}
+.intro-content h2 {
+    font-size: 4rem;
+    line-height: 1;
+    margin-bottom: 2rem;
+    color: var(--primary);
 }
