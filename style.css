@@ -1232,7 +1232,7 @@ body {
             }
         }
 
-        @media (max-width: 768px) {
+        @media (max-width: 968px) {
             .nav-links {
                 display: none;
             }
@@ -1984,5 +1984,23 @@ body {
 
     .header-tagline {
         display: none;
+    }
+}
+@media (max-width: 968px) {
+
+    .nav-links {
+        display: none;
+    }
+
+    .mobile-toggle {
+        display: block;
+    }
+
+    .header-tagline {
+        display: none;
+    }
+
+    .nav-container {
+        padding: 0 1rem;
     }
 }
