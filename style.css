@@ -1819,9 +1819,11 @@ body {
         max-width: 400px;
     }
 
+ @media (max-width: 768px) {
     .intro-flex {
         flex-direction: column;
     }
+}
 
     .newsletter-box {
         width: 100%;
@@ -1882,4 +1884,31 @@ body {
 
 .social-column .social-icons {
     justify-content: center;
+}
+.intro-content h2 {
+    font-size: 3rem;
+    color: var(--primary);
+    margin-bottom: 1rem;
+}
+
+.intro-content p {
+    font-size: 1.1rem;
+    line-height: 1.8;
+    margin-bottom: 1.25rem;
+    color: var(--text-dark);
+}
+
+.intro-features {
+    display: grid;
+    grid-template-columns: repeat(2, auto);
+    gap: 12px;
+    margin-top: 2rem;
+}
+
+.intro-features div {
+    background: white;
+    padding: 12px 16px;
+    border-radius: 14px;
+    box-shadow: var(--shadow);
+    font-weight: 700;
 }
