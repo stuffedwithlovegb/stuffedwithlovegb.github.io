@@ -1963,3 +1963,12 @@ body {
     line-height: 1.9;
     margin-bottom: 1.5rem;
 }
+.footer-logo {
+    width: 220px;
+    height: auto;
+    margin-bottom: 1rem;
+}
+
+.footer-brand p {
+    max-width: 260px;
+}
