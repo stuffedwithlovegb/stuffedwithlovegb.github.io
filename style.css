@@ -1645,10 +1645,22 @@ body {
 }
 
 .city-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
     gap: 1rem;
     margin-top: 2rem;
+}
+
+.city-card {
+    background: white;
+    padding: 1rem;
+    border-radius: 16px;
+    font-weight: 700;
+    box-shadow: var(--shadow);
+    min-width: 160px;
+    text-align: center;
+}
 }
 
 .city-card {
