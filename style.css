@@ -1174,6 +1174,25 @@ body {
     transform: translateY(-3px);
     background: #ff8fb1;
 }
+.social-icons a.facebook {
+    background: #1877F2;
+}
+
+.social-icons a.instagram {
+    background: #E4405F;
+}
+
+.social-icons a.tiktok {
+    background: #000000;
+}
+
+.social-icons a.youtube {
+    background: #FF0000;
+}
+
+.social-icons a.pinterest {
+    background: #BD081C;
+}
         /* Responsive */
         @media (max-width: 968px) {
             .hero-container,
