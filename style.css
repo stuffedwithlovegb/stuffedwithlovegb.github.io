@@ -1841,3 +1841,13 @@ body {
     border-radius: 20px;
     box-shadow: var(--shadow);
 }
+.city-grid {
+    display: grid !important;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 160px)) !important;
+    justify-content: center;
+    gap: 1rem;
+}
+
+.city-card {
+    width: auto !important;
+}
