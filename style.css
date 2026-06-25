@@ -2004,3 +2004,16 @@ body {
         padding: 0 1rem;
     }
 }
+.pricing-note {
+    margin-top: 2rem;
+    padding: 1rem 1.5rem;
+    background: var(--bg-cream);
+    border-radius: 12px;
+    text-align: center;
+    font-size: 0.95rem;
+    color: var(--text-dark);
+    max-width: 800px;
+    margin-left: auto;
+    margin-right: auto;
+    line-height: 1.6;
+}
