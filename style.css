@@ -2017,3 +2017,12 @@ body {
     margin-right: auto;
     line-height: 1.6;
 }
+.pricing-preview-footer {
+    text-align: center;
+    margin-top: 3rem;
+}
+
+.pricing-preview-footer p {
+    margin-bottom: 1rem;
+    color: var(--text-light);
+}
