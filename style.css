@@ -2018,3 +2018,20 @@ body {
     margin-bottom: 1rem;
     color: var(--text-light);
 }
+.pricing-cta {
+    max-width: 900px;
+    margin: 5rem auto;
+    padding: 0 2rem;
+    text-align: center;
+}
+
+.pricing-cta h2 {
+    color: var(--text-dark);
+    margin-bottom: 1rem;
+}
+
+.pricing-cta p {
+    color: var(--text-light);
+    font-size: 1.1rem;
+    margin-bottom: 2rem;
+}
