@@ -2836,3 +2836,16 @@ a.button {
 .social-links i {
     color: #ffffff !important;
 }
+/* Make normal mobile header closer to shrink size */
+@media (max-width: 768px) {
+
+    nav {
+        padding: .6rem 0;
+    }
+
+    nav .logo img,
+    nav .logo-img {
+        width: 120px;
+    }
+
+}
