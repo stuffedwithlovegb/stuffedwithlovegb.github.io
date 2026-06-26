@@ -2721,3 +2721,6 @@ nav.shrink .logo-img{
     background: #8b5e3c;
     color: #fff8e7;
 }
+.step-icon i {
+    color: #fff8e7 !important;
+}
