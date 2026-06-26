@@ -1742,6 +1742,7 @@ body {
 
 .addon-item {
     background: white;
+    color: var(--text-dark);
     padding: 1rem;
     border-radius: 12px;
     box-shadow: 0 3px 10px rgba(0,0,0,.08);
@@ -1749,6 +1750,11 @@ body {
     display: flex;
     justify-content: space-between;
     align-items: center;
+}
+
+.addon-item span {
+    color: var(--primary);
+    font-weight: 700;
 }
 .intro-flex {
     display: flex;
@@ -1997,17 +2003,24 @@ body {
     }
 }
 .pricing-note {
-    margin-top: 2rem;
-    padding: 1rem 1.5rem;
-    background: var(--bg-cream);
-    border-radius: 12px;
+    margin: 3rem auto 0;
+    max-width: 850px;
+
+    padding: 1.5rem 2rem;
+
+    background: rgba(255, 255, 255, 0.75);
+    backdrop-filter: blur(4px);
+
+    border: 1px solid rgba(139, 94, 60, 0.15);
+    border-radius: 16px;
+
+    box-shadow: var(--shadow);
+
     text-align: center;
     font-size: 0.95rem;
-    color: var(--text-dark);
-    max-width: 800px;
-    margin-left: auto;
-    margin-right: auto;
-    line-height: 1.6;
+    line-height: 1.7;
+
+    color: var(--text-light);
 }
 .pricing-preview-footer {
     text-align: center;
@@ -2034,4 +2047,18 @@ body {
     color: var(--text-light);
     font-size: 1.1rem;
     margin-bottom: 2rem;
+}
+.pricing-note-box {
+    max-width: 850px;
+    margin: 3rem auto 0;
+    padding: 0 2rem;
+}
+
+.pricing-note {
+    background: rgba(255,255,255,.75);
+    color: var(--text-light);
+    text-align: center;
+    padding: 1.5rem;
+    border-radius: 16px;
+    box-shadow: var(--shadow);
 }
