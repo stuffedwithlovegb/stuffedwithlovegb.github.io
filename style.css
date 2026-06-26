@@ -2830,3 +2830,9 @@ a.button {
 .fa-youtube {
     color: #ff0000 !important;
 }
+/* Restore social media icons to white */
+.social-icons i,
+.footer-social i,
+.social-links i {
+    color: #ffffff !important;
+}
