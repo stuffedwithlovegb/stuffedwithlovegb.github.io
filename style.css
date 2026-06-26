@@ -2853,3 +2853,7 @@ a.button {
 h4 {
     color: #ffffff !important;
 }
+/* Make h4 headings dark brown */
+.step h4 {
+    color: var(--primary-dark) !important;
+}
