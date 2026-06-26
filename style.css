@@ -2143,14 +2143,14 @@ body {
 
 .step h4{
     color:var(--primary);
-    font-size:1.05rem;
+    font-size:1.35rem;
     font-weight:800;
     margin-bottom:.25rem;
 }
 
 .step p{
     color:var(--text-light);
-    font-size:.92rem;
+    font-size:.105rem;
     line-height:1.4;
 }
 
