@@ -2857,3 +2857,15 @@ h4 {
 .step h4 {
     color: var(--primary-dark) !important;
 }
+@media (max-width: 768px) {
+
+    .intro-content {
+        text-align: center;
+        margin: 0 auto;
+    }
+
+    .intro-content h2 {
+        text-align: center;
+    }
+
+}
