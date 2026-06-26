@@ -729,101 +729,93 @@ body {
     flex-grow: 1;
 }
 
-        .pricing-card {
-            background: var(--white);
-            border-radius: 24px;
-            padding: 2.5rem;
-            text-align: center;
-            box-shadow: var(--shadow);
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-            position: relative;
-        }
+.pricing-card {
+    background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+    color: var(--white);
+    border-radius: 24px;
+    padding: 2.5rem;
+    text-align: center;
+    box-shadow: var(--shadow);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    position: relative;
+}
 
-        .pricing-card:hover {
-            transform: translateY(-10px);
-            box-shadow: var(--shadow-lg);
-        }
+.pricing-card:hover {
+    transform: translateY(-10px);
+    box-shadow: var(--shadow-lg);
+}
 
-        .pricing-card.featured {
-            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
-            color: var(--white);
-            transform: scale(1.05);
-        }
+/* Middle card still stands out, but only slightly */
+.pricing-card.featured {
+    transform: translateY(-12px);
+}
 
-        .pricing-card.featured:hover {
-            transform: scale(1.05) translateY(-10px);
-        }
+.pricing-card.featured:hover {
+    transform: translateY(-22px);
+}
 
-        .pricing-badge {
-            position: absolute;
-            top: -12px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: var(--secondary);
-            color: var(--primary-dark);
-            padding: 0.5rem 1.5rem;
-            border-radius: 50px;
-            font-weight: 700;
-            font-size: 0.85rem;
-        }
+.pricing-badge {
+    position: absolute;
+    top: -12px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--secondary);
+    color: var(--primary-dark);
+    padding: 0.5rem 1.5rem;
+    border-radius: 50px;
+    font-weight: 700;
+    font-size: 0.85rem;
+}
 
-        .pricing-card h3 {
-            font-size: 1.5rem;
-            margin-bottom: 0.5rem;
-        }
+.pricing-card h3 {
+    font-size: 1.5rem;
+    margin-bottom: 0.5rem;
+    color: var(--white);
+}
 
-        .pricing-card .price {
-            font-size: 3rem;
-            font-weight: 800;
-            margin: 1.5rem 0;
-        }
+.pricing-card .price {
+    font-size: 3rem;
+    font-weight: 800;
+    margin: 1.5rem 0;
+    color: var(--white);
+}
 
-        .pricing-card .price span {
-            font-size: 1rem;
-            font-weight: 400;
-        }
+.pricing-card .price span {
+    font-size: 1rem;
+    font-weight: 400;
+    color: var(--white);
+}
 
-        .pricing-card ul {
-            list-style: none;
-            margin: 2rem 0;
-            text-align: left;
-        }
+.pricing-card ul {
+    list-style: none;
+    margin: 2rem 0;
+    text-align: left;
+}
 
-        .pricing-card ul li {
-            padding: 0.75rem 0;
-            border-bottom: 1px solid rgba(0,0,0,0.1);
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-        }
+.pricing-card ul li {
+    padding: 0.75rem 0;
+    border-bottom: 1px solid rgba(255,255,255,0.2);
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    color: var(--white);
+}
 
-        .pricing-card.featured ul li {
-            border-color: rgba(255,255,255,0.2);
-        }
+.pricing-card ul li::before {
+    content: "✓";
+    color: var(--secondary);
+    font-weight: bold;
+}
 
-        .pricing-card ul li::before {
-            content: '✓';
-            color: var(--primary);
-            font-weight: bold;
-        }
+.pricing-card .btn {
+    width: 100%;
+    background: var(--secondary);
+    color: var(--primary-dark);
+}
 
-        .pricing-card.featured ul li::before {
-            color: var(--secondary);
-        }
-
-        .pricing-card .btn {
-            width: 100%;
-        }
-
-        .pricing-card.featured .btn {
-            background: var(--secondary);
-            color: var(--primary-dark);
-        }
-
-        .pricing-card.featured .btn:hover {
-            background: var(--secondary-light);
-        }
-
+.pricing-card .btn:hover {
+    background: var(--secondary-light);
+}
         /* Testimonials */
         #testimonials {
             background: var(--white);
