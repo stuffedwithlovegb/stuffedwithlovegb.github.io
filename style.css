@@ -2302,3 +2302,418 @@ body {
     }
 
 }
+/* ==========================================================
+   HOMEPAGE HERO REDESIGN
+   (Paste at the very bottom of style.css)
+========================================================== */
+
+/* ---------- Navigation ---------- */
+
+nav {
+    padding: .7rem 0;
+    transition: all .3s ease;
+}
+
+nav.shrink {
+    padding: .35rem 0;
+}
+
+.logo-img {
+    width: 150px;
+    height: auto;
+    transition: .3s ease;
+}
+
+nav.shrink .logo-img {
+    width: 120px;
+}
+
+/* ---------- Hero ---------- */
+
+.hero {
+    padding-top: 130px;
+    padding-bottom: 70px;
+}
+
+.hero-container {
+    max-width: 1250px;
+    margin: auto;
+    padding: 0 2rem;
+
+    display: grid;
+    grid-template-columns: 1.1fr 1fr;
+    gap: 4rem;
+    align-items: center;
+}
+
+.hero-content h1{
+    font-size:3.5rem;
+    line-height:1.1;
+    color:var(--text-dark);
+    margin-bottom:1rem;
+}
+
+.hero-content h1 span{
+    color:var(--primary);
+}
+
+.hero-subtitle{
+    font-size:1.2rem;
+    color:var(--text-light);
+    max-width:650px;
+    margin-bottom:2.5rem;
+}
+
+/* ---------- Announcement ---------- */
+
+.hero-announcement{
+
+    display:inline-block;
+
+    margin-bottom:1.5rem;
+
+    padding:.8rem 1.5rem;
+
+    background:linear-gradient(
+        135deg,
+        var(--secondary),
+        var(--secondary-light)
+    );
+
+    color:var(--primary-dark);
+
+    font-weight:800;
+
+    border-radius:999px;
+
+    font-size:.95rem;
+
+    box-shadow:var(--shadow);
+
+    letter-spacing:.5px;
+
+}
+
+/* ---------- Buttons ---------- */
+
+.hero-buttons{
+
+    display:flex;
+
+    gap:1rem;
+
+    margin-top:2.5rem;
+
+    flex-wrap:wrap;
+
+}
+
+/* ---------- Hero image ---------- */
+
+.hero-image-single{
+
+    display:flex;
+
+    justify-content:center;
+
+}
+
+.hero-main-image{
+
+    width:100%;
+
+    max-width:560px;
+
+    border-radius:28px;
+
+    box-shadow:var(--shadow-lg);
+
+}
+
+/* ---------- How it works ---------- */
+
+.how-it-works{
+
+    display:flex;
+
+    flex-wrap:wrap;
+
+    justify-content:center;
+
+    align-items:flex-start;
+
+    gap:1rem;
+
+    margin-top:2rem;
+
+}
+
+.step{
+
+    width:110px;
+
+    text-align:center;
+
+}
+
+.step-icon{
+
+    width:64px;
+
+    height:64px;
+
+    margin:auto;
+
+    border-radius:50%;
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    background:linear-gradient(
+        135deg,
+        var(--primary),
+        var(--primary-dark)
+    );
+
+    color:white;
+
+    font-size:1.4rem;
+
+    box-shadow:var(--shadow);
+
+    margin-bottom:.75rem;
+
+}
+
+.step h4{
+
+    color:var(--primary);
+
+    margin-bottom:.25rem;
+
+}
+
+.step p{
+
+    font-size:.9rem;
+
+    color:var(--text-light);
+
+    line-height:1.3;
+
+}
+
+.connector{
+
+    width:40px;
+
+    height:2px;
+
+    background:var(--secondary);
+
+    margin-top:32px;
+
+}
+
+.break{
+
+    flex-basis:100%;
+
+    height:0;
+
+}
+
+/* =====================================================
+   MOBILE
+===================================================== */
+
+@media (max-width:968px){
+
+nav{
+
+    padding:.5rem 0;
+
+}
+
+.logo-img{
+
+    width:165px;
+
+}
+
+nav.shrink .logo-img{
+
+    width:145px;
+
+}
+
+.nav-container{
+
+    padding:0 1rem;
+
+}
+
+.hero{
+
+    padding-top:105px;
+
+    padding-bottom:50px;
+
+}
+
+.hero-container{
+
+    grid-template-columns:1fr;
+
+    gap:2rem;
+
+    text-align:center;
+
+}
+
+.hero-image-single{
+
+    order:-1;
+
+}
+
+.hero-main-image{
+
+    max-width:420px;
+
+    width:100%;
+
+}
+
+.hero-content h1{
+
+    font-size:2.5rem;
+
+}
+
+.hero-subtitle{
+
+    font-size:1rem;
+
+    margin-left:auto;
+
+    margin-right:auto;
+
+}
+
+.hero-announcement{
+
+    display:block;
+
+    width:100%;
+
+    font-size:.95rem;
+
+    padding:.9rem;
+
+    margin-bottom:1.5rem;
+
+}
+
+.hero-buttons{
+
+    justify-content:center;
+
+}
+
+.how-it-works{
+
+    gap:.75rem;
+
+}
+
+.connector{
+
+    display:none;
+
+}
+
+.break{
+
+    display:none;
+
+}
+
+.step{
+
+    width:30%;
+
+    min-width:90px;
+
+}
+
+.step-icon{
+
+    width:56px;
+
+    height:56px;
+
+    font-size:1.2rem;
+
+}
+
+.step h4{
+
+    font-size:.95rem;
+
+}
+
+.step p{
+
+    font-size:.8rem;
+
+}
+
+}
+
+/* =====================================================
+   SMALL PHONES
+===================================================== */
+
+@media (max-width:500px){
+
+.hero{
+
+    padding-top:95px;
+
+}
+
+.hero-content h1{
+
+    font-size:2.15rem;
+
+}
+
+.hero-announcement{
+
+    font-size:.85rem;
+
+}
+
+.step{
+
+    width:46%;
+
+}
+
+.hero-buttons{
+
+    flex-direction:column;
+
+}
+
+.hero-buttons .btn{
+
+    width:100%;
+
+}
+
+}
