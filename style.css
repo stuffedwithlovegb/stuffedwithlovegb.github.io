@@ -2806,3 +2806,27 @@ a.button {
 .package-card p {
     color: var(--text-light);
 }
+/* Restore social media icon colors */
+.social-icons i,
+.footer-social i,
+.social-links i {
+    color: initial !important;
+}
+
+/* Brand colors */
+.fa-facebook,
+.fa-facebook-f {
+    color: #1877f2 !important;
+}
+
+.fa-instagram {
+    color: #e4405f !important;
+}
+
+.fa-tiktok {
+    color: #000000 !important;
+}
+
+.fa-youtube {
+    color: #ff0000 !important;
+}
