@@ -2724,3 +2724,85 @@ nav.shrink .logo-img{
 .step-icon i {
     color: #fff8e7 !important;
 }
+/* ===================================
+   GLOBAL COLOR RESET - BRAND PALETTE
+   =================================== */
+
+html {
+    color: var(--text-dark);
+}
+
+body {
+    color: var(--text-dark);
+}
+
+/* All normal text */
+p,
+span,
+li,
+label,
+small,
+div {
+    color: var(--text-dark);
+}
+
+/* All headings */
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+    color: var(--primary-dark);
+}
+
+/* Links */
+a {
+    color: var(--primary);
+}
+
+a:hover {
+    color: var(--primary-light);
+}
+
+/* Secondary / softer text */
+.subtitle,
+.description,
+.text-light,
+.small-text {
+    color: var(--text-light);
+}
+
+/* Icons */
+i,
+.fa,
+.fas,
+.far,
+.fab {
+    color: var(--primary);
+}
+
+/* Keep buttons readable */
+button,
+.btn,
+.cta-button,
+.book-button,
+a.btn,
+a.button {
+    color: var(--white);
+}
+
+/* Cards / sections that accidentally went black */
+.card,
+.service-card,
+.step,
+.package-card {
+    color: var(--text-dark);
+}
+
+.card p,
+.service-card p,
+.step p,
+.package-card p {
+    color: var(--text-light);
+}
