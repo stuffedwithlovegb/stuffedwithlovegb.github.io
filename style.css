@@ -3644,3 +3644,36 @@ h4 {
 }
 
 }
+/* Newsletter mobile border fix */
+@media (max-width:768px){
+
+  .intro-section{
+    padding-left:1rem !important;
+    padding-right:1rem !important;
+    overflow:visible !important;
+    box-sizing:border-box !important;
+  }
+
+  .intro-flex{
+    width:100% !important;
+    max-width:100% !important;
+    overflow:visible !important;
+    box-sizing:border-box !important;
+  }
+
+  .newsletter-box{
+    width:100% !important;
+    max-width:335px !important;
+    margin:2rem auto 0 !important;
+    padding:1.5rem 1.15rem !important;
+    box-sizing:border-box !important;
+  }
+
+  .newsletter-box h3{
+    font-size:1.45rem !important;
+  }
+
+  .newsletter-box p{
+    font-size:.93rem !important;
+  }
+}
