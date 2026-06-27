@@ -2906,11 +2906,11 @@ h4 {
   }
 
   .hero-content {
-    order: 1 !important;
+    order: 2 !important;
   }
 
   .hero-image-single {
-    order: 2 !important;
+    order: 1 !important;
     width: 100% !important;
   }
 
