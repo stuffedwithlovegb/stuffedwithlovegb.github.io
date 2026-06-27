@@ -3786,3 +3786,108 @@ h4 {
   }
 }
 
+/* MOBILE HERO FIX - Stuffed With Love */
+@media (max-width: 768px) {
+
+  body {
+    padding-top: 78px !important;
+  }
+
+  nav {
+    padding: 0.25rem 0 !important;
+  }
+
+  .nav-container {
+    padding: 0 18px !important;
+  }
+
+  .logo-img {
+    height: 76px !important;
+  }
+
+  .header-tagline {
+    display: none !important;
+  }
+
+  .mobile-menu {
+    top: 78px !important;
+  }
+
+  .hero {
+    min-height: auto !important;
+    padding: 1.25rem 14px 3rem !important;
+    display: block !important;
+  }
+
+  .hero-container {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 1.35rem !important;
+    max-width: 100% !important;
+    width: 100% !important;
+  }
+
+  .hero-content {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    width: 100% !important;
+  }
+
+  .hero-image-single {
+    order: -1 !important;
+    width: 100% !important;
+    margin: 0 auto 1.25rem !important;
+    display: block !important;
+  }
+
+  .hero-main-image {
+    width: 100% !important;
+    max-width: none !important;
+    display: block !important;
+    border-radius: 28px !important;
+    box-shadow: 0 12px 32px rgba(90, 58, 34, 0.16) !important;
+    transform: none !important;
+  }
+
+  .hero-main-image:hover {
+    transform: none !important;
+  }
+
+  .hero-announcement {
+    width: 100% !important;
+    max-width: none !important;
+    margin: 0 0 1.5rem !important;
+    padding: 1rem 1.25rem !important;
+    border-radius: 999px !important;
+    text-align: center !important;
+    font-size: 0.95rem !important;
+    line-height: 1.45 !important;
+  }
+
+  .hero-subtitle {
+    max-width: 100% !important;
+    margin: 0 auto 1.8rem !important;
+    font-size: 1.2rem !important;
+    line-height: 1.65 !important;
+    text-align: center !important;
+    padding: 0 6px !important;
+  }
+
+  .how-it-works {
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+
+  .hero-buttons {
+    width: 100% !important;
+    display: grid !important;
+    grid-template-columns: 1fr !important;
+    gap: 0.9rem !important;
+  }
+
+  .hero-buttons .btn {
+    width: 100% !important;
+    text-align: center !important;
+  }
+}
