@@ -2905,22 +2905,43 @@ h4 {
     padding: 0 !important;
   }
 
+  /* Text below image */
   .hero-content {
     order: 2 !important;
   }
 
+  /* Image on top with more breathing room */
   .hero-image-single {
     order: 1 !important;
     width: 100% !important;
+    margin-bottom: 3rem !important;
   }
 
   .hero-main-image {
     width: 96vw !important;
     max-width: 96vw !important;
+    height: auto !important;
     margin: 0 auto !important;
   }
 
+  /* More spacing below the announcement */
+  .hero-announcement {
+    margin-bottom: 2.75rem !important;
+  }
+
+  /* Keep subtitle nicely separated */
+  .hero-subtitle {
+    margin-bottom: 2.75rem !important;
+  }
+
+  /* Give the steps some breathing room */
+  .how-it-works {
+    margin-bottom: 3rem !important;
+  }
+
+  /* Buttons */
   .hero-buttons {
     justify-content: center !important;
+    margin-top: 3rem !important;
   }
 }
