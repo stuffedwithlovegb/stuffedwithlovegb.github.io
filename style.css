@@ -3112,3 +3112,17 @@ h4 {
     margin-top: 2.5rem !important;
   }
 }
+/* Kill old footer styling */
+.site-footer::before,
+.site-footer::after {
+    display: none !important;
+    content: none !important;
+    background: none !important;
+    animation: none !important;
+}
+
+.site-footer {
+    background: #fff8ee !important;
+    background-image: none !important;
+    color: #6f4e37 !important;
+}
