@@ -3752,3 +3752,8 @@ h4 {
     box-sizing: border-box !important;
   }
 }
+/* Make only pricing card paragraph text white */
+.pricing-card > p,
+.pricing-card.featured > p {
+    color: #fff8EE !important;
+}
