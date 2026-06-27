@@ -3701,3 +3701,19 @@ h4 {
   }
 
 }
+/* Remove giant gap under Service Areas */
+#service-areas{
+    min-height:auto !important;
+    height:auto !important;
+    padding-bottom:4rem !important;
+}
+
+.service-areas-content{
+    min-height:auto !important;
+    height:auto !important;
+}
+
+.service-note{
+    margin:2rem auto 0 !important;
+    max-width:650px;
+}
