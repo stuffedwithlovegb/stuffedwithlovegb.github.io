@@ -4143,3 +4143,50 @@ h4 {
     display: block !important;
   }
 }
+/* UNIVERSAL MOBILE HEADER + HAMBURGER MENU FIX */
+@media (max-width: 768px) {
+
+  body {
+    padding-top: 92px !important;
+  }
+
+  nav {
+    height: 92px !important;
+    padding: 0 !important;
+  }
+
+  .nav-container {
+    height: 92px !important;
+    padding: 0 18px !important;
+    display: flex !important;
+    align-items: center !important;
+  }
+
+  .logo-img {
+    height: 82px !important;
+    max-height: 82px !important;
+    width: auto !important;
+  }
+
+  .mobile-toggle {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    width: 44px !important;
+    height: 44px !important;
+    font-size: 1.9rem !important;
+    line-height: 1 !important;
+    margin-left: auto !important;
+  }
+
+  .mobile-menu {
+    top: 92px !important;
+    max-height: calc(100vh - 92px) !important;
+    overflow-y: auto !important;
+    padding: 0.75rem 1.25rem 1.25rem !important;
+  }
+
+  .mobile-menu a {
+    padding: 0.85rem 1rem !important;
+  }
+}
