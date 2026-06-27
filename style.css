@@ -2869,3 +2869,27 @@ h4 {
     }
 
 }
+/* Make the hero much wider */
+.hero-container {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    padding: 0 2rem;
+    box-sizing: border-box;
+}
+
+.hero-content {
+    width: min(1700px, 95vw) !important;
+    max-width: none !important;
+}
+
+/* Mobile */
+@media (max-width: 768px) {
+    .hero-container {
+        padding: 0 0.75rem !important;
+    }
+
+    .hero-content {
+        width: 98vw !important;
+    }
+}
