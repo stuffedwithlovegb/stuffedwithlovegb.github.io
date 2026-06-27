@@ -3164,3 +3164,49 @@ h4 {
     transform: translateY(-4px) scale(1.08) !important;
     box-shadow: 0 12px 24px rgba(0,0,0,.15) !important;
 }
+/* Remove ugly yellow footer line */
+.site-footer {
+  border-top: none !important;
+}
+
+.site-footer::before,
+.site-footer::after {
+  display: none !important;
+  content: none !important;
+}
+
+/* Social icons back to colored circles with white logos */
+.social-icons a {
+  width: 46px !important;
+  height: 46px !important;
+  border-radius: 50% !important;
+  color: #ffffff !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  font-size: 1.2rem !important;
+  box-shadow: 0 8px 18px rgba(0,0,0,.12) !important;
+  margin-bottom: 0 !important;
+}
+
+/* Brand backgrounds */
+.social-icons a.facebook {
+  background: #1877F2 !important;
+}
+
+.social-icons a.instagram {
+  background: #E1306C !important;
+}
+
+.social-icons a.tiktok {
+  background: #000000 !important;
+}
+
+.social-icons a i {
+  color: #ffffff !important;
+}
+
+.social-icons a:hover {
+  transform: translateY(-4px) scale(1.08) !important;
+  opacity: .9 !important;
+}
