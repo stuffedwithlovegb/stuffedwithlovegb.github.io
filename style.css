@@ -3757,3 +3757,31 @@ h4 {
 .pricing-card.featured > p {
     color: #fff8EE !important;
 }
+/* FINAL newsletter mobile override */
+@media (max-width: 768px) {
+  #what-we-do .intro-flex {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    padding: 0 !important;
+    overflow: visible !important;
+    box-sizing: border-box !important;
+  }
+
+  #what-we-do .newsletter-box {
+    flex: none !important;
+    min-width: 0 !important;
+    width: calc(100vw - 2.5rem) !important;
+    max-width: 315px !important;
+    margin: 2rem auto 0 !important;
+    padding: 1.35rem 1rem !important;
+    box-sizing: border-box !important;
+  }
+
+  #what-we-do .newsletter-box * {
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+  }
+}
