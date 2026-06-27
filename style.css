@@ -3677,3 +3677,27 @@ h4 {
     font-size:.93rem !important;
   }
 }
+/* Fix newsletter box going off screen on mobile */
+@media (max-width:768px){
+
+  .intro-section{
+    overflow:hidden !important;
+  }
+
+  .intro-flex{
+    width:100% !important;
+    max-width:100% !important;
+    padding:0 !important;
+    margin:0 auto !important;
+    box-sizing:border-box !important;
+  }
+
+  .newsletter-box{
+    width:calc(100vw - 2rem) !important;
+    max-width:320px !important;
+    margin:2rem auto 0 !important;
+    padding:1.35rem 1rem !important;
+    box-sizing:border-box !important;
+  }
+
+}
