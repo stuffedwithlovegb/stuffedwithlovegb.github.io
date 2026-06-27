@@ -4111,3 +4111,35 @@ h4 {
     text-align: center !important;
   }
 }
+/* FINAL HERO POSITION TWEAKS */
+
+/* Desktop: push hero image down so header does not cover it */
+@media (min-width: 769px) {
+  .hero {
+    padding-top: 4.5rem !important;
+  }
+
+  .hero-image-single {
+    margin-top: 1.5rem !important;
+  }
+}
+
+/* Mobile: center the bottom buttons */
+@media (max-width: 768px) {
+  .hero-buttons {
+    width: 100% !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 1rem !important;
+  }
+
+  .hero-buttons .btn {
+    width: min(100%, 360px) !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
+    text-align: center !important;
+    display: block !important;
+  }
+}
