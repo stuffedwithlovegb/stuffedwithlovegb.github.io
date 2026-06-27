@@ -3210,3 +3210,98 @@ h4 {
   transform: translateY(-4px) scale(1.08) !important;
   opacity: .9 !important;
 }
+/* ===== Mobile Hero Steps + Buttons Fix ===== */
+
+@media (max-width: 768px) {
+
+  .how-it-works {
+    display: grid !important;
+    grid-template-columns: 1fr 1fr !important;
+    gap: 1.25rem 1rem !important;
+    margin: 1.25rem auto 1.5rem !important;
+    width: 100% !important;
+    max-width: 360px !important;
+    align-items: center !important;
+    justify-items: center !important;
+  }
+
+  .how-it-works .step {
+    width: 100% !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    position: relative !important;
+  }
+
+  .how-it-works .step-icon {
+    width: 62px !important;
+    height: 62px !important;
+    font-size: 1.45rem !important;
+    margin: 0 auto .45rem !important;
+  }
+
+  .how-it-works .step h4 {
+    font-size: 1rem !important;
+    margin: 0 0 .15rem !important;
+  }
+
+  .how-it-works .step p {
+    font-size: .85rem !important;
+    margin: 0 !important;
+    line-height: 1.2 !important;
+  }
+
+  .how-it-works .connector {
+    display: none !important;
+  }
+
+  .how-it-works .step:not(.final-step)::after {
+    content: "" !important;
+    position: absolute !important;
+    top: 31px !important;
+    right: -18px !important;
+    width: 34px !important;
+    height: 3px !important;
+    background: #d4a82d !important;
+    border-radius: 999px !important;
+  }
+
+  .how-it-works .step:nth-of-type(2)::after,
+  .how-it-works .step:nth-of-type(4)::after {
+    display: none !important;
+  }
+
+  .how-it-works .final-step {
+    grid-column: 1 / 3 !important;
+    margin-top: .5rem !important;
+  }
+
+  .how-it-works .final-step .step-icon {
+    width: 74px !important;
+    height: 74px !important;
+    font-size: 1.65rem !important;
+  }
+
+  .how-it-works .final-step h4 {
+    font-size: 1.15rem !important;
+  }
+
+  .hero-buttons {
+    display: flex !important;
+    flex-direction: row !important;
+    justify-content: center !important;
+    gap: .75rem !important;
+    margin-top: 1.25rem !important;
+    margin-bottom: 1.25rem !important;
+    width: 100% !important;
+  }
+
+  .hero-buttons .btn {
+    width: auto !important;
+    flex: 1 1 0 !important;
+    max-width: 165px !important;
+    padding: .85rem .75rem !important;
+    font-size: .9rem !important;
+    text-align: center !important;
+    white-space: nowrap !important;
+  }
+}
