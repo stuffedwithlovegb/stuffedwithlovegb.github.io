@@ -4190,3 +4190,52 @@ h4 {
     padding: 0.85rem 1rem !important;
   }
 }
+/* PERFECT MOBILE HEADER */
+@media (max-width:768px){
+
+    nav{
+        height:92px !important;
+    }
+
+    .nav-container{
+        height:92px !important;
+        display:flex !important;
+        align-items:center !important;
+        justify-content:space-between !important;
+        gap:12px;
+    }
+
+    .logo{
+        flex:0 0 auto;
+    }
+
+    .logo-img{
+        height:72px !important;
+        width:auto !important;
+    }
+
+    .header-tagline{
+        display:block !important;
+
+        flex:1;
+
+        text-align:center;
+
+        font-size:.82rem;
+        font-weight:800;
+
+        color:var(--primary);
+
+        line-height:1.2;
+
+        white-space:normal;
+
+        padding:0 10px;
+    }
+
+    .mobile-toggle{
+        flex:0 0 auto;
+        margin:0 !important;
+        font-size:2rem;
+    }
+}
