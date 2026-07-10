@@ -4345,3 +4345,13 @@ h4 {
     }
 
 }
+.header-book-btn {
+    background-color: #8A6A52;
+    border: 2px solid #8A6A52;
+    color: #ffffff;
+}
+
+.header-book-btn:hover {
+    background-color: #755744;
+    border-color: #755744;
+}
