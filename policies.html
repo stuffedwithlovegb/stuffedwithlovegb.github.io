@@ -1,289 +1,789 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-   <!-- POLICIES / policies.html -->
-<title>Party Policies | Stuffed With Love</title>
-<meta name="description" content="Review Stuffed With Love booking policies, travel information, event expectations, cancellations, deposits, and important details before your mobile stuffed animal party.">
-    <link rel="icon" type="image/png" href="favicon.png">
-<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&family=Quicksand:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="style.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Bubblegum+Sans&display=swap" rel="stylesheet">
-</head>
-    <!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-WQGXFYZVTH"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
 
-  gtag('config', 'G-WQGXFYZVTH');
-</script>
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <!-- POLICIES / policies.html -->
+    <title>Booking Information & Event Policies | Stuffed With Love</title>
+
+    <meta
+        name="description"
+        content="Review Stuffed With Love booking information, deposits, payment terms, travel details, guest counts, cancellations, setup requirements, weather policies, and event expectations."
+    >
+
+    <link rel="icon" type="image/png" href="favicon.png">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+
+    <link
+        rel="preconnect"
+        href="https://fonts.gstatic.com"
+        crossorigin
+    >
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=Bubblegum+Sans&family=Nunito:wght@400;600;700;800&family=Quicksand:wght@400;500;600;700&display=swap"
+        rel="stylesheet"
+    >
+
+    <link rel="stylesheet" href="style.css">
+
+    <link
+        rel="preload"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+        as="style"
+        onload="this.onload=null;this.rel='stylesheet'"
+    >
+
+    <noscript>
+        <link
+            rel="stylesheet"
+            href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+        >
+    </noscript>
+
+    <!-- Google tag (gtag.js) -->
+    <script
+        async
+        src="https://www.googletagmanager.com/gtag/js?id=G-WQGXFYZVTH">
+    </script>
+
+    <script>
+        window.dataLayer = window.dataLayer || [];
+
+        function gtag() {
+            dataLayer.push(arguments);
+        }
+
+        gtag("js", new Date());
+        gtag("config", "G-WQGXFYZVTH");
+    </script>
+</head>
+
 <body>
-    <!-- Navigation -->
-   <nav>
+
+<!-- ===========================
+     Navigation
+=========================== -->
+
+<nav>
     <div class="nav-container">
+
         <a href="index.html" class="logo">
-    <img
-        src="finallogo.webp"
-        alt="Stuffed With Love"
-        class="logo-img">
-</a>
+            <img
+                src="finallogo.webp"
+                alt="Stuffed With Love"
+                class="logo-img"
+            >
+        </a>
 
         <div class="header-tagline">
             We Bring the Plush Party to You!
         </div>
 
         <ul class="nav-links">
-            <li><a href="index.html#home">Home</a></li>
 
-            <li><a href="index.html#contact" class="btn btn-primary header-book-btn">Book a Party!</a></li>
+            <li>
+                <a href="index.html#home">Home</a>
+            </li>
 
-            <li><a href="index.html#what-we-do">What We Do</a></li>
+            <li>
+                <a
+                    href="index.html#contact"
+                    class="btn btn-primary header-book-btn">
+                    Book an Event!
+                </a>
+            </li>
 
-            <li><a href="pricing.html">Pricing</a></li>
+            <li>
+                <a href="index.html#what-we-do">What We Do</a>
+            </li>
+
+            <li>
+                <a href="pricing.html">Pricing</a>
+            </li>
 
             <li class="dropdown">
-                <button class="dropdown-toggle">Explore</button>
+
+                <button
+                    class="dropdown-toggle"
+                    type="button">
+                    Explore
+                </button>
+
                 <div class="dropdown-menu">
                     <a href="about.html">Our Story</a>
                     <a href="index.html#what-we-do">What We Do</a>
                     <a href="gallery.html">Gallery</a>
                     <a href="pricing.html">Packages</a>
                     <a href="policies.html">Policies</a>
+                    <a href="faq.html">FAQ</a>
                 </div>
+
             </li>
+
         </ul>
 
-        <button class="mobile-toggle" onclick="toggleMobile()">☰</button>
+        <button
+            class="mobile-toggle"
+            type="button"
+            onclick="toggleMobile()"
+            aria-label="Open mobile menu">
+            ☰
+        </button>
+
     </div>
 </nav>
-    <!-- Mobile Menu -->
-    <div class="mobile-menu" id="mobileMenu">
-        <a href="index.html#home" onclick="toggleMobile()">Home</a>
-        <a href="about.html" onclick="toggleMobile()">Our Story</a>
-        <a href="index.html#what-we-do" onclick="toggleMobile()">What We Do</a>
-        <a href="gallery.html" onclick="toggleMobile()">Gallery</a>
-        <a href="pricing.html" onclick="toggleMobile()">Pricing</a>
-        <a href="policies.html" onclick="toggleMobile()">Policies</a>
-        <a href="index.html#contact" onclick="toggleMobile()">Book Now</a>
-    </div>
+
+<!-- ===========================
+     Mobile Menu
+=========================== -->
+
+<div class="mobile-menu" id="mobileMenu">
+    <a href="index.html#home" onclick="toggleMobile()">Home</a>
+    <a href="about.html" onclick="toggleMobile()">Our Story</a>
+    <a href="index.html#what-we-do" onclick="toggleMobile()">What We Do</a>
+    <a href="gallery.html" onclick="toggleMobile()">Gallery</a>
+    <a href="pricing.html" onclick="toggleMobile()">Pricing</a>
+    <a href="policies.html" onclick="toggleMobile()">Policies</a>
+    <a href="faq.html" onclick="toggleMobile()">FAQ</a>
+    <a href="index.html#contact" onclick="toggleMobile()">Book an Event</a>
+</div>
+
+<!-- ===========================
+     Policies Page
+=========================== -->
+
 <section class="policy-page">
 
-<div class="section-header">
-    <h2>Booking & Event Policies</h2>
-    <p>Please review the information below before reserving your event.</p>
-</div>
+    <div class="section-header">
 
-<div class="policy-container">
+        <h2>Booking Information & Event Policies</h2>
 
-    <div class="policy-item">
-        <h3>Reservation Deposit</h3>
         <p>
-            A non-refundable $100 deposit is required to reserve your event date and time.
-            Event dates are not guaranteed until the deposit has been received and confirmed.
+            We believe planning your event should be simple and stress-free!
+            The information below explains our booking process, payment schedule,
+            travel details, and event policies so you know exactly what to expect.
+            If you ever have questions, we are always happy to help.
         </p>
+
     </div>
 
-    <div class="policy-item">
-        <h3>Final Payment</h3>
-        <p>
-            The remaining balance is due on the day of the event before the party begins.
-            We accept cash, Venmo, PayPal, and major credit cards.
-        </p>
-    </div>
+    <div class="policy-container">
 
-    <div class="policy-item">
-        <h3>Guest Count</h3>
-        <p>
-            Final guest counts must be provided at least 7 days prior to the event.
-            Additional guests may be accommodated based on availability.
-            Additional plush participants cost is based on package selection.
-        </p>
-    </div>
+        <!-- ===========================
+             Booking
+        =========================== -->
 
-    <div class="policy-item">
-        <h3>Cancellation Policy</h3>
-        <p>
-            All deposits are non-refundable.
-            Events canceled more than 14 days before the scheduled date may transfer
-            their deposit to a new event date within 6 months, subject to availability.
-            Events canceled within 14 days of the scheduled date will forfeit their deposit.
-        </p>
-    </div>
+        <div class="policy-group-heading">
+            <h2>Booking Your Event</h2>
+        </div>
 
-    <div class="policy-item">
-        <h3>Rescheduling Policy</h3>
-        <p>
-            One complimentary reschedule is permitted when requested at least 14 days
-            before the event date. Additional reschedule requests may be subject to a fee.
-        </p>
-    </div>
+        <div class="policy-item">
 
-    <div class="policy-item">
-        <h3>Travel Policy</h3>
-        <p>
-            Travel within 15 miles of Green Bay is included at no additional charge.
-            Events located beyond 15 miles may be subject to an additional travel fee.
-            Most locations within 60 miles can be accommodated for an additional $20 travel fee.
-        </p>
-    </div>
+            <h3>Reservation Deposit</h3>
 
-    <div class="policy-item">
-        <h3>Arrival & Setup</h3>
-        <p>
-            Stuffed With Love typically arrives 30–45 minutes before the scheduled
-            event time to complete setup. Hosts should ensure the designated setup
-            area is available and accessible upon arrival.
-        </p>
-    </div>
+            <p>
+                A non-refundable $100 deposit is required to reserve your event
+                date and time. Event dates are not guaranteed until the deposit
+                has been received and your booking has been confirmed by
+                Stuffed With Love.
+            </p>
 
-    <div class="policy-item">
-        <h3>Equipment & Supplies</h3>
-        <p>
-            We strive to provide the plush styles, clothing, and accessories requested
-            for your event. Due to availability and inventory changes, Stuffed With Love
-            reserves the right to substitute plush animals, clothing, or accessories with
-            comparable options of equal value when necessary.
-        </p>
-    </div>
-<div class="policy-item"> <h3>Custom Items & Themes</h3> <p> We love helping bring your vision to life! Custom vinyl designs, themed items, personalized apparel, and other special requests require a minimum of 14 days' notice before your event. While we will make every reasonable effort to accommodate custom requests, availability, design complexity, materials, and production timelines may limit what we are able to provide. Stuffed With Love reserves the right to decline or modify custom requests when necessary, but we'll always do our best to create something you'll love. </p> </div>
-    <div class="policy-item">
-        <h3>Party Space Requirements</h3>
-        <p>
-            Hosts must provide adequate indoor space for guests, equipment, and event
-            activities. The setup area should be clean, dry, and accessible upon arrival.
-        </p>
-    </div>
+        </div>
 
-    <div class="policy-item">
-        <h3>Adult Supervision</h3>
-        <p>
-            A responsible adult must remain present throughout the duration of the event.
-            Stuffed With Love staff are not responsible for supervising children.
-        </p>
-    </div>
+        <div class="policy-item">
 
-    <div class="policy-item">
-        <h3>Weather Policy</h3>
-        <p>
-            Outdoor events are weather permitting. In the event of severe weather or
-            unsafe conditions, events may be moved indoors or rescheduled.
-        </p>
-    </div>
+            <h3>Final Payment</h3>
 
-    <div class="policy-item">
-        <h3>Photography</h3>
-        <p>
-            Stuffed With Love may take photographs during events for promotional and
-            marketing purposes. Parents or guardians may request that their child not
-            be photographed, and we will gladly honor those requests.
-        </p>
-    </div>
+            <p>
+                The remaining balance is due on or before the event unless other
+                arrangements have been made in advance.
+            </p>
 
-</div>
+            <p>
+                Corporate, school, daycare, nonprofit, and community organizations
+                may be invoiced according to the payment terms agreed upon during
+                the booking process.
+            </p>
+
+            <p>
+                We accept major credit cards and other approved electronic payment
+                methods.
+            </p>
+
+        </div>
+
+        <div class="policy-item">
+
+            <h3>Guest Count</h3>
+
+            <p>
+                Final guest counts must be provided at least 7 days before the event.
+                Your selected package reserves the included number of participants.
+            </p>
+
+            <p>
+                Additional participants may be accommodated based on supply and
+                staffing availability and will be billed according to your package
+                pricing.
+            </p>
+
+            <p>
+                Please notify us as early as possible if your guest count changes so
+                we can prepare enough plushes, hearts, certificates, take-home bags,
+                and supplies.
+            </p>
+
+        </div>
+
+        <!-- ===========================
+             Changes and Cancellations
+        =========================== -->
+
+        <div class="policy-group-heading">
+            <h2>Changes & Cancellations</h2>
+        </div>
+
+        <div class="policy-item">
+
+            <h3>Cancellation Policy</h3>
+
+            <p>
+                All reservation deposits are non-refundable.
+            </p>
+
+            <p>
+                Events canceled more than 14 days before the scheduled event may
+                transfer their deposit to one new event date within 6 months,
+                subject to availability.
+            </p>
+
+            <p>
+                Events canceled within 14 days of the scheduled event will forfeit
+                their deposit. Custom, personalized, or special-order items already
+                purchased or created for the event may also be non-refundable.
+            </p>
+
+        </div>
+
+        <div class="policy-item">
+
+            <h3>Rescheduling Policy</h3>
+
+            <p>
+                One complimentary reschedule is permitted when requested at least
+                14 days before the original event date.
+            </p>
+
+            <p>
+                The new event date must be selected within 6 months and is subject
+                to availability. Additional rescheduling requests may be subject
+                to a fee.
+            </p>
+
+        </div>
+
+        <div class="policy-item">
+
+            <h3>Unforeseen Circumstances</h3>
+
+            <p>
+                In the rare event that circumstances beyond our reasonable control
+                prevent Stuffed With Love from providing your event, we will work
+                with you to reschedule or provide an appropriate solution.
+            </p>
+
+            <p>
+                These circumstances may include severe weather, unsafe travel
+                conditions, power outages, government restrictions, equipment
+                failure, illness, emergencies, or other unexpected situations.
+            </p>
+
+        </div>
+
+        <!-- ===========================
+             Travel and Event Day
+        =========================== -->
+
+        <div class="policy-group-heading">
+            <h2>Travel & Event Day</h2>
+        </div>
+
+        <div class="policy-item">
+
+            <h3>Travel Policy</h3>
+
+            <p>
+                Travel within 15 miles of Green Bay is included at no additional
+                charge.
+            </p>
+
+            <p>
+                Events outside our standard service area may be subject to a travel
+                fee. Any applicable travel charge will always be discussed and
+                approved before your booking is finalized.
+            </p>
+
+        </div>
+
+        <div class="policy-item">
+
+            <h3>Arrival & Setup</h3>
+
+            <p>
+                Stuffed With Love typically arrives approximately 30–45 minutes
+                before the scheduled event start time to complete setup.
+            </p>
+
+            <p>
+                Larger events, custom installations, or events with additional
+                experience stations may require more setup time.
+            </p>
+
+            <p>
+                Hosts must ensure that the designated setup area is clean, dry,
+                accessible, and available when our team arrives.
+            </p>
+
+        </div>
+
+        <div class="policy-item">
+
+            <h3>Event Space Requirements</h3>
+
+            <p>
+                Our full Stuffed With Love experience fits comfortably in an area
+                about the size of one standard parking space.
+            </p>
+
+            <p>
+                We can set up indoors or outdoors and are happy to customize our
+                layout for smaller spaces whenever possible. The setup area must
+                be level, clean, dry, accessible, and free from hazards.
+            </p>
+
+            <p>
+                Stuffed With Love brings its own portable power source, so an
+                electrical outlet is not typically required.
+            </p>
+
+        </div>
+
+        <div class="policy-item">
+
+            <h3>Event Start Time</h3>
+
+            <p>
+                Events will begin at the scheduled time whenever possible.
+            </p>
+
+            <p>
+                If guests or the host are delayed, the event may still need to end
+                at the originally scheduled time so we can honor other bookings
+                and staffing commitments.
+            </p>
+
+        </div>
+
+        <div class="policy-item">
+
+            <h3>Weather Policy</h3>
+
+            <p>
+                Outdoor events require a safe weather backup plan.
+            </p>
+
+            <p>
+                If rain, strong wind, extreme temperatures, storms, or other unsafe
+                conditions are expected, we will work with you to move the event
+                indoors or reschedule when possible.
+            </p>
+
+            <p>
+                A covered pavilion or tent may be acceptable depending on the
+                weather, but it must fully protect our equipment, plushes,
+                paperwork, activity stations, staff, and guests.
+            </p>
+
+            <p>
+                The safety of our guests, staff, supplies, and equipment will
+                always be our top priority.
+            </p>
+
+        </div>
+
+        <!-- ===========================
+             Guests and Safety
+        =========================== -->
+
+        <div class="policy-group-heading">
+            <h2>Guests & Safety</h2>
+        </div>
+
+        <div class="policy-item">
+
+            <h3>Adult Supervision</h3>
+
+            <p>
+                A responsible adult must remain present throughout the event.
+                Stuffed With Love staff provide the plush-building experience but
+                are not responsible for childcare or supervising children.
+            </p>
+
+            <p>
+                Parents, guardians, hosts, or event organizers remain responsible
+                for guest behavior and supervision at all times.
+            </p>
+
+        </div>
+
+        <div class="policy-item">
+
+            <h3>Guest Safety</h3>
+
+            <p>
+                We work hard to provide a fun, organized, and safe experience.
+                Guests must follow all instructions provided by Stuffed With Love
+                staff while participating in the event.
+            </p>
+
+            <p>
+                Parents, guardians, and event hosts are responsible for determining
+                whether the activities, plush accessories, and small items are
+                appropriate for each participant.
+            </p>
+
+            <p>
+                Stuffed With Love is not responsible for injuries caused by unsafe
+                behavior, failure to follow instructions, inadequate supervision,
+                or conditions at the host's venue.
+            </p>
+
+        </div>
+
+        <div class="policy-item">
+
+            <h3>Food & Beverages</h3>
+
+            <p>
+                To help protect our stuffing machine, plushes, certificates,
+                activity stations, and other supplies, we kindly ask that food and
+                beverages remain separate from the Stuffed With Love setup whenever
+                possible.
+            </p>
+
+            <p>
+                Hosts are responsible for informing Stuffed With Love of any known
+                venue restrictions, allergy concerns, or special accommodations
+                that may affect the event setup.
+            </p>
+
+        </div>
+
+        <div class="policy-item">
+
+            <h3>Personal Belongings</h3>
+
+            <p>
+                Stuffed With Love is not responsible for lost, stolen, damaged, or
+                unattended personal belongings during an event.
+            </p>
+
+        </div>
+
+        <!-- ===========================
+             Supplies and Customization
+        =========================== -->
+
+        <div class="policy-group-heading">
+            <h2>Plushes, Supplies & Customization</h2>
+        </div>
+
+        <div class="policy-item">
+
+            <h3>Equipment & Supplies</h3>
+
+            <p>
+                We make every reasonable effort to provide the plush styles,
+                clothing, accessories, and event features requested for your event.
+            </p>
+
+            <p>
+                Due to supplier availability, shipping delays, inventory changes,
+                or discontinued products, Stuffed With Love reserves the right to
+                substitute plush animals, clothing, accessories, or materials with
+                comparable options of equal or greater value when necessary.
+            </p>
+
+        </div>
+
+        <div class="policy-item">
+
+            <h3>Plush Selection</h3>
+
+            <p>
+                Plush options are subject to availability and may vary by package,
+                season, event size, and supplier inventory.
+            </p>
+
+            <p>
+                Unless a specific plush selection has been confirmed in writing,
+                Stuffed With Love may provide an assortment of available plush
+                friends for guests to choose from.
+            </p>
+
+        </div>
+
+        <div class="policy-item">
+
+            <h3>Custom Items & Themes</h3>
+
+            <p>
+                We love helping bring your vision to life! Custom vinyl designs,
+                themed items, personalized apparel, specialty plushes, branded
+                accessories, and other special requests require a minimum of
+                14 days' notice.
+            </p>
+
+            <p>
+                Larger custom orders, corporate branding, or specialty products may
+                require additional production time.
+            </p>
+
+            <p>
+                While we will make every reasonable effort to accommodate custom
+                requests, availability, design complexity, materials, supplier
+                inventory, and production timelines may limit what we can provide.
+            </p>
+
+            <p>
+                Stuffed With Love reserves the right to decline or modify a custom
+                request when necessary, but we will always communicate clearly and
+                do our best to create something you love.
+            </p>
+
+        </div>
+
+        <div class="policy-item">
+
+            <h3>Personalized & Special-Order Items</h3>
+
+            <p>
+                Personalized, branded, custom-made, or special-order items cannot
+                usually be reused for another event and may be non-refundable once
+                production or purchasing has begun.
+            </p>
+
+        </div>
+
+        <!-- ===========================
+             Photography
+        =========================== -->
+
+        <div class="policy-group-heading">
+            <h2>Photography & Promotion</h2>
+        </div>
+
+        <div class="policy-item">
+
+            <h3>Photography</h3>
+
+            <p>
+                We love capturing special moments from our events. With permission,
+                photos or videos taken during an event may be used on the Stuffed
+                With Love website, social media pages, promotional materials, and
+                business listings.
+            </p>
+
+            <p>
+                If the host, parent, guardian, venue, school, company, or organization
+                prefers that certain guests not be photographed, please let us know
+                before the event. We will gladly honor those requests.
+            </p>
+
+            <p>
+                For schools, corporate events, public events, and organizations with
+                their own media policies, Stuffed With Love will follow the
+                photography guidelines provided by the event organizer.
+            </p>
+
+        </div>
+
+        <!-- ===========================
+             Closing Notice
+        =========================== -->
+
+        <div class="policy-item policy-closing">
+
+            <h3>Questions About Our Policies?</h3>
+
+            <p>
+                We want you to feel confident and excited about your event. If you
+                have any questions about these policies, your venue, guest count,
+                setup, payment terms, or special requests, please contact us before
+                booking.
+            </p>
+
+            <p>
+                We are always happy to help make your Stuffed With Love experience
+                as smooth and memorable as possible.
+            </p>
+
+            <a href="index.html#contact" class="btn btn-primary">
+                Contact Us
+            </a>
+
+        </div>
+
+    </div>
 
 </section>
 
+<!-- ===========================
+     Footer
+=========================== -->
 
-<!-- FOOTER (same as index.html) -->
-  <footer class="site-footer">
+<footer class="site-footer">
 
     <div class="footer-container">
 
-        <!-- Brand -->
-       <div class="footer-column footer-brand">
-    <img src="finallogo.webp" alt="Stuffed With Love Logo" class="footer-logo">
-   
-</div>
+        <div class="footer-column footer-brand">
 
-        <!-- Pages -->
+            <img
+                src="finallogo.webp"
+                alt="Stuffed With Love Logo"
+                class="footer-logo"
+            >
+
+        </div>
+
         <div class="footer-column">
+
             <h4>Pages</h4>
+
             <a href="index.html">Home</a>
             <a href="about.html">About</a>
             <a href="gallery.html">Gallery</a>
+            <a href="pricing.html">Pricing</a>
+            <a href="faq.html">FAQ</a>
             <a href="policies.html">Policies</a>
+
         </div>
 
-        <!-- Contact -->
         <div class="footer-column">
+
             <h4>Contact</h4>
-            <a href="mailto:hello@stuffedwithlove.com">Email Us</a>
-            <a href="index.html#contact">Book a Party</a>
-        
+
+            <a href="mailto:hello@stuffedwithlovegb.com">
+                Email Us
+            </a>
+
+            <a href="index.html#contact">
+                Book an Event
+            </a>
+
         </div>
 
-        <!-- Follow Us -->
         <div class="footer-column social-column">
+
             <h4>Follow Us</h4>
 
             <div class="social-icons">
 
-                <a href="https://www.facebook.com/profile.php?id=61591472361383"
-                   target="_blank"
-                   aria-label="Facebook"
-                   class="facebook">
+                <a
+                    href="https://www.facebook.com/profile.php?id=61591472361383"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    aria-label="Facebook"
+                    class="facebook">
+
                     <i class="fab fa-facebook-f"></i>
+
                 </a>
 
-                <a href="https://www.instagram.com/stuffedwithlove.gb"
-                   target="_blank"
-                   aria-label="Instagram"
-                   class="instagram">
+                <a
+                    href="https://www.instagram.com/stuffedwithlove.gb"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    aria-label="Instagram"
+                    class="instagram">
+
                     <i class="fab fa-instagram"></i>
+
                 </a>
 
-                <a href="https://www.tiktok.com/@stuffedwithlovegb"
-                   target="_blank"
-                   aria-label="TikTok"
-                   class="tiktok">
+                <a
+                    href="https://www.tiktok.com/@stuffedwithlovegb"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    aria-label="TikTok"
+                    class="tiktok">
+
                     <i class="fab fa-tiktok"></i>
+
                 </a>
 
             </div>
+
         </div>
 
     </div>
 
     <div class="footer-bottom">
-        <p>© 2026 Stuffed with Love LLC. All rights reserved.</p>
+
+        <p>
+            © 2026 Stuffed With Love LLC. All rights reserved.
+        </p>
+
     </div>
 
 </footer>
 
-    <script>
-        function toggleMobile() {
-            const menu = document.getElementById('mobileMenu');
-            menu.classList.toggle('active');
+<script>
+    function toggleMobile() {
+        const menu = document.getElementById("mobileMenu");
+
+        if (menu) {
+            menu.classList.toggle("active");
         }
+    }
 
-        // Close mobile menu when clicking outside
-        document.addEventListener('click', function(event) {
-            const menu = document.getElementById('mobileMenu');
-            const toggle = document.querySelector('.mobile-toggle');
-            if (!menu.contains(event.target) && !toggle.contains(event.target)) {
-                menu.classList.remove('active');
-            }
-        });
+    document.addEventListener("click", function (event) {
+        const menu = document.getElementById("mobileMenu");
+        const toggle = document.querySelector(".mobile-toggle");
 
-
-    </script>
-  <script>
-document.addEventListener("DOMContentLoaded", function () {
-    const nav = document.querySelector("nav");
-
-    window.addEventListener("scroll", function () {
-        if (window.scrollY > 50) {
-            nav.classList.add("shrink");
-        } else {
-            nav.classList.remove("shrink");
+        if (
+            menu &&
+            toggle &&
+            !menu.contains(event.target) &&
+            !toggle.contains(event.target)
+        ) {
+            menu.classList.remove("active");
         }
     });
-});
+
+    document.addEventListener("DOMContentLoaded", function () {
+        const nav = document.querySelector("nav");
+
+        if (!nav) {
+            return;
+        }
+
+        window.addEventListener("scroll", function () {
+            if (window.scrollY > 50) {
+                nav.classList.add("shrink");
+            } else {
+                nav.classList.remove("shrink");
+            }
+        });
+    });
 </script>
+
 </body>
 </html>
