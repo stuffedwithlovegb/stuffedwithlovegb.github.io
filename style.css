@@ -4355,3 +4355,9 @@ h4 {
     background-color: #755744;
     border-color: #755744;
 }
+.form-note {
+    margin-top: 18px;
+    text-align: center;
+    font-size: 0.95rem;
+    color: #666;
+}
