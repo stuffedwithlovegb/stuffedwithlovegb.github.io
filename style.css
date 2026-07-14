@@ -4373,3 +4373,26 @@ h4 {
 .policies-page main {
     background-color: #efe3d1;
 }
+/* FAQ page background only */
+body.faq-page,
+body.faq-page #faq {
+    background-color: #efe3d1 !important;
+}
+
+/* Keep the FAQ box white */
+body.faq-page .faq-container {
+    background-color: #ffffff !important;
+}
+/* Policies page background only */
+body.policies-page,
+body.policies-page main,
+body.policies-page section {
+    background-color: #efe3d1 !important;
+}
+
+/* Keep policy containers white */
+body.policies-page .policies-container,
+body.policies-page .policy-container,
+body.policies-page .policy-card {
+    background-color: #ffffff !important;
+}
