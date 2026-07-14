@@ -4361,3 +4361,8 @@ h4 {
     font-size: 0.95rem;
     color: #666;
 }
+/* FAQ & Policies Pages */
+.faq-page,
+.policies-page {
+    background-color: #fff8ef;
+}
