@@ -54,6 +54,64 @@
         gtag("js", new Date());
         gtag("config", "G-WQGXFYZVTH");
     </script>
+
+    <!-- ===========================
+         FAQ Accordion Styles
+         (scoped here so you don't have to touch style.css —
+         move into style.css later if you'd rather keep it centralized)
+    =========================== -->
+    <style>
+        .faq-item {
+            border-bottom: 1px solid #f0e2c0;
+        }
+
+        .faq-question {
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: none;
+            border: none;
+            cursor: pointer;
+            text-align: left;
+            padding: 18px 4px;
+            font-family: 'Nunito', sans-serif;
+            font-weight: 700;
+            font-size: 1.05rem;
+            color: #5b3d1e;
+        }
+
+        .faq-question .faq-icon {
+            font-size: 1.4rem;
+            color: #d9a441;
+            transition: transform 0.3s ease;
+            margin-left: 12px;
+            flex-shrink: 0;
+        }
+
+        .faq-item.active .faq-question .faq-icon {
+            transform: rotate(45deg);
+        }
+
+        .faq-answer {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.35s ease;
+            padding: 0 4px;
+        }
+
+        .faq-item.active .faq-answer {
+            padding-bottom: 18px;
+        }
+
+        .faq-answer p {
+            margin: 0 0 12px 0;
+        }
+
+        .faq-answer p:last-child {
+            margin-bottom: 0;
+        }
+    </style>
 </head>
 
 <body>
@@ -161,228 +219,276 @@
 
         <!-- FAQ 1 -->
         <div class="faq-item">
-            <h3>What is the Stuffed With Love experience?</h3>
+            <button class="faq-question" type="button">
+                <span>What is the Stuffed With Love experience?</span>
+                <span class="faq-icon">+</span>
+            </button>
+            <div class="faq-answer">
+                <p>
+                    More than entertainment, it is an unforgettable interactive
+                    experience where every guest creates memories they will treasure
+                    long after the event is over.
+                </p>
 
-            <p>
-                More than entertainment, it is an unforgettable interactive
-                experience where every guest creates memories they will treasure
-                long after the event is over.
-            </p>
+                <p>
+                    We transform your space into a charming little world where children
+                    become the creators of their very own plush friends. From choosing
+                    a plush and bringing it to life at our stuffing station to making a
+                    special wish during our signature heart ceremony, every step is
+                    designed to feel magical.
+                </p>
 
-            <p>
-                We transform your space into a charming little world where children
-                become the creators of their very own plush friends. From choosing
-                a plush and bringing it to life at our stuffing station to making a
-                special wish during our signature heart ceremony, every step is
-                designed to feel magical.
-            </p>
-
-            <p>
-                Guests can explore our interactive felt activity wall, visit the
-                Friend Hotel, snap photos in our themed photo area, and, with select
-                packages, browse our adorable boutique for extra accessories. Every
-                child leaves with a personalized plush, special keepsakes, and
-                wonderful memories.
-            </p>
+                <p>
+                    Guests can explore our interactive felt activity wall, visit the
+                    Friend Hotel, snap photos in our themed photo area, and, with select
+                    packages, browse our adorable boutique for extra accessories. Every
+                    child leaves with a personalized plush, special keepsakes, and
+                    wonderful memories.
+                </p>
+            </div>
         </div>
 
         <!-- FAQ 2 -->
         <div class="faq-item">
-            <h3>What ages are your stuffed animal events best for?</h3>
-
-            <p>
-                Our experiences are most popular with children ages 3–12, but guests
-                of all ages can enjoy creating their own plush friend. Younger
-                children may need a little help from a parent or guardian, while
-                older children and adults often enjoy the experience just as much.
-            </p>
+            <button class="faq-question" type="button">
+                <span>What ages are your stuffed animal events best for?</span>
+                <span class="faq-icon">+</span>
+            </button>
+            <div class="faq-answer">
+                <p>
+                    Our experiences are most popular with children ages 3–12, but guests
+                    of all ages can enjoy creating their own plush friend. Younger
+                    children may need a little help from a parent or guardian, while
+                    older children and adults often enjoy the experience just as much.
+                </p>
+            </div>
         </div>
 
         <!-- FAQ 3 -->
         <div class="faq-item">
-            <h3>What is included in a Stuffed With Love event?</h3>
+            <button class="faq-question" type="button">
+                <span>What is included in a Stuffed With Love event?</span>
+                <span class="faq-icon">+</span>
+            </button>
+            <div class="faq-answer">
+                <p>
+                    Every Stuffed With Love package includes everything needed to create
+                    a magical plush-building experience. Guests receive a premium plush,
+                    stuffing, a heart insert, our signature heart ceremony, a birth
+                    certificate, and a take-home bag.
+                </p>
 
-            <p>
-                Every Stuffed With Love package includes everything needed to create
-                a magical plush-building experience. Guests receive a premium plush,
-                stuffing, a heart insert, our signature heart ceremony, a birth
-                certificate, and a take-home bag.
-            </p>
-
-            <p>
-                We also provide professional setup, friendly on-site staff, and
-                interactive experience stations, including our stuffing station,
-                Friend Hotel, themed photo area, and felt activity wall. Select
-                packages may also include our plush boutique, accessories, outfits,
-                and other premium add-ons.
-            </p>
+                <p>
+                    We also provide professional setup, friendly on-site staff, and
+                    interactive experience stations, including our stuffing station,
+                    Friend Hotel, themed photo area, and felt activity wall. Select
+                    packages may also include our plush boutique, accessories, outfits,
+                    and other premium add-ons.
+                </p>
+            </div>
         </div>
 
         <!-- FAQ 4 -->
         <div class="faq-item">
-            <h3>Do you require a deposit?</h3>
+            <button class="faq-question" type="button">
+                <span>Do you require a deposit?</span>
+                <span class="faq-icon">+</span>
+            </button>
+            <div class="faq-answer">
+                <p>
+                    Yes. A deposit is required to reserve your event date and secure your
+                    booking. Deposit amounts, payment schedules, cancellation details,
+                    and rescheduling information can be found on our
+                    <a href="policies.html">Policies Page</a>.
+                </p>
 
-            <p>
-                Yes. A deposit is required to reserve your event date and secure your
-                booking. Deposit amounts, payment schedules, cancellation details,
-                and rescheduling information can be found on our
-                <a href="policies.html">Policies Page</a>.
-            </p>
-
-            <p>
-                Please contact us anytime if you have questions about payment or
-                booking.
-            </p>
+                <p>
+                    Please contact us anytime if you have questions about payment or
+                    booking.
+                </p>
+            </div>
         </div>
 
         <!-- FAQ 5 -->
         <div class="faq-item">
-            <h3>How much space is needed for a Stuffed With Love event?</h3>
+            <button class="faq-question" type="button">
+                <span>How much space is needed for a Stuffed With Love event?</span>
+                <span class="faq-icon">+</span>
+            </button>
+            <div class="faq-answer">
+                <p>
+                    We can set up indoors or outdoors and are happy to work with your
+                    space. Our full Stuffed With Love experience, including the stuffing
+                    station, interactive activity area, Friend Hotel, themed photo spot,
+                    and optional boutique, fits comfortably in an area about the size of
+                    one standard parking space.
+                </p>
 
-            <p>
-                We can set up indoors or outdoors and are happy to work with your
-                space. Our full Stuffed With Love experience, including the stuffing
-                station, interactive activity area, Friend Hotel, themed photo spot,
-                and optional boutique, fits comfortably in an area about the size of
-                one standard parking space.
-            </p>
+                <p>
+                    Do not have that much room? No problem. We can customize our setup to
+                    fit smaller spaces while still creating a magical experience for
+                    your guests.
+                </p>
 
-            <p>
-                Do not have that much room? No problem. We can customize our setup to
-                fit smaller spaces while still creating a magical experience for
-                your guests.
-            </p>
+                <p>
+                    Even better, we bring our own power source, so no electrical outlet
+                    is required.
+                </p>
 
-            <p>
-                Even better, we bring our own power source, so no electrical outlet
-                is required.
-            </p>
-
-            <p>
-                Not sure whether your space will work? Simply send us a photo of your
-                event space, and we will help design the perfect setup.
-            </p>
+                <p>
+                    Not sure whether your space will work? Simply send us a photo of your
+                    event space, and we will help design the perfect setup.
+                </p>
+            </div>
         </div>
 
         <!-- FAQ 6 -->
         <div class="faq-item">
-            <h3>How far in advance should I book?</h3>
+            <button class="faq-question" type="button">
+                <span>How far in advance should I book?</span>
+                <span class="faq-icon">+</span>
+            </button>
+            <div class="faq-answer">
+                <p>
+                    We recommend booking as early as possible, especially for weekends,
+                    school breaks, holiday events, and other popular dates.
+                </p>
 
-            <p>
-                We recommend booking as early as possible, especially for weekends,
-                school breaks, holiday events, and other popular dates.
-            </p>
-
-            <p>
-                However, please feel free to contact us even if your event is coming
-                up soon. If we have availability and can secure the necessary
-                supplies, we may still be able to accommodate your celebration.
-            </p>
+                <p>
+                    However, please feel free to contact us even if your event is coming
+                    up soon. If we have availability and can secure the necessary
+                    supplies, we may still be able to accommodate your celebration.
+                </p>
+            </div>
         </div>
 
         <!-- FAQ 7 -->
         <div class="faq-item">
-            <h3>Do you travel outside of Green Bay?</h3>
+            <button class="faq-question" type="button">
+                <span>Do you travel outside of Green Bay?</span>
+                <span class="faq-icon">+</span>
+            </button>
+            <div class="faq-answer">
+                <p>
+                    Yes! We proudly serve Green Bay and surrounding communities
+                    throughout Northeast Wisconsin. Travel within our standard service
+                    area may be included depending on the package, while events farther
+                    away may require a small travel fee.
+                </p>
 
-            <p>
-                Yes! We proudly serve Green Bay and surrounding communities
-                throughout Northeast Wisconsin. Travel within our standard service
-                area may be included depending on the package, while events farther
-                away may require a small travel fee.
-            </p>
-
-            <p>
-                Contact us with your event location, and we will provide clear travel
-                details before you book.
-            </p>
+                <p>
+                    Contact us with your event location, and we will provide clear travel
+                    details before you book.
+                </p>
+            </div>
         </div>
 
         <!-- FAQ 8 -->
         <div class="faq-item">
-            <h3>Can children choose their own plush?</h3>
+            <button class="faq-question" type="button">
+                <span>Can children choose their own plush?</span>
+                <span class="faq-icon">+</span>
+            </button>
+            <div class="faq-answer">
+                <p>
+                    Absolutely! Guests can choose from the plush friends available with
+                    their selected package. We offer a collection of classic favorites,
+                    rotating options, and seasonal plushes depending on availability and
+                    the type of event.
+                </p>
 
-            <p>
-                Absolutely! Guests can choose from the plush friends available with
-                their selected package. We offer a collection of classic favorites,
-                rotating options, and seasonal plushes depending on availability and
-                the type of event.
-            </p>
-
-            <p>
-                Plush selections may vary, and specialty or custom options may be
-                available for larger events with advance notice.
-            </p>
+                <p>
+                    Plush selections may vary, and specialty or custom options may be
+                    available for larger events with advance notice.
+                </p>
+            </div>
         </div>
 
         <!-- FAQ 9 -->
         <div class="faq-item">
-            <h3>What if I do not know my final guest count yet?</h3>
+            <button class="faq-question" type="button">
+                <span>What if I do not know my final guest count yet?</span>
+                <span class="faq-icon">+</span>
+            </button>
+            <div class="faq-answer">
+                <p>
+                    That is completely understandable. Guest counts often change as an
+                    event gets closer, and we will work with you throughout the planning
+                    process.
+                </p>
 
-            <p>
-                That is completely understandable. Guest counts often change as an
-                event gets closer, and we will work with you throughout the planning
-                process.
-            </p>
-
-            <p>
-                Your selected package secures the included number of participants.
-                Additional guests may be added when supplies and scheduling allow.
-                Please let us know about any changes as early as possible so we can
-                prepare enough plushes, hearts, certificates, and take-home bags.
-            </p>
+                <p>
+                    Your selected package secures the included number of participants.
+                    Additional guests may be added when supplies and scheduling allow.
+                    Please let us know about any changes as early as possible so we can
+                    prepare enough plushes, hearts, certificates, and take-home bags.
+                </p>
+            </div>
         </div>
 
         <!-- FAQ 10 -->
         <div class="faq-item">
-            <h3>How long does the Stuffed With Love experience last?</h3>
+            <button class="faq-question" type="button">
+                <span>How long does the Stuffed With Love experience last?</span>
+                <span class="faq-icon">+</span>
+            </button>
+            <div class="faq-answer">
+                <p>
+                    Event length depends on the number of participants, selected package,
+                    and event format. Most birthday experiences last approximately
+                    60–90 minutes.
+                </p>
 
-            <p>
-                Event length depends on the number of participants, selected package,
-                and event format. Most birthday experiences last approximately
-                60–90 minutes.
-            </p>
-
-            <p>
-                Larger school, corporate, festival, and community events may be
-                structured over a longer timeframe so guests can move comfortably
-                through each station. We will recommend the best timing and setup
-                based on your event details.
-            </p>
+                <p>
+                    Larger school, corporate, festival, and community events may be
+                    structured over a longer timeframe so guests can move comfortably
+                    through each station. We will recommend the best timing and setup
+                    based on your event details.
+                </p>
+            </div>
         </div>
 
         <!-- FAQ 11 -->
         <div class="faq-item">
-            <h3>What happens if it rains during an outdoor event?</h3>
+            <button class="faq-question" type="button">
+                <span>What happens if it rains during an outdoor event?</span>
+                <span class="faq-icon">+</span>
+            </button>
+            <div class="faq-answer">
+                <p>
+                    We will provide an outdoor canopy covering, but because our equipment, plushes, paperwork, and activity stations need
+                    to stay dry, outdoor events must have a safe backup plan in case of
+                    heavy rain, strong wind, or severe weather.
+                </p>
 
-            <p>
-                We will provide an outdoor canopy covering, but because our equipment, plushes, paperwork, and activity stations need
-                to stay dry, outdoor events must have a safe backup plan in case of
-                heavy rain, strong wind, or severe weather.
-            </p>
-
-            <p>
-                A covered indoor space, garage, pavilion, or alternate
-                event area may work depending on the conditions. We will communicate
-                with you before the event and help determine the safest setup.
-            </p>
+                <p>
+                    A covered indoor space, garage, pavilion, or alternate
+                    event area may work depending on the conditions. We will communicate
+                    with you before the event and help determine the safest setup.
+                </p>
+            </div>
         </div>
 
         <!-- FAQ 12 -->
         <div class="faq-item">
-            <h3>Can you attend schools, festivals, and community events?</h3>
+            <button class="faq-question" type="button">
+                <span>Can you attend schools, festivals, and community events?</span>
+                <span class="faq-icon">+</span>
+            </button>
+            <div class="faq-answer">
+                <p>
+                    Absolutely! We love participating in school functions, daycare
+                    events, fairs, festivals, fundraisers, corporate family events,
+                    employee celebrations, holiday gatherings, and community
+                    celebrations.
+                </p>
 
-            <p>
-                Absolutely! We love participating in school functions, daycare
-                events, fairs, festivals, fundraisers, corporate family events,
-                employee celebrations, holiday gatherings, and community
-                celebrations.
-            </p>
-
-            <p>
-                We can customize the event flow, setup, plush selection, and guest
-                experience to fit both small private events and larger public
-                gatherings.
-            </p>
+                <p>
+                    We can customize the event flow, setup, plush selection, and guest
+                    experience to fit both small private events and larger public
+                    gatherings.
+                </p>
+            </div>
         </div>
 
     </div>
@@ -520,6 +626,34 @@
             } else {
                 nav.classList.remove("shrink");
             }
+        });
+    });
+
+    // ===========================
+    // FAQ Accordion
+    // ===========================
+    document.addEventListener("DOMContentLoaded", function () {
+        const faqItems = document.querySelectorAll(".faq-item");
+
+        faqItems.forEach(function (item) {
+            const question = item.querySelector(".faq-question");
+            const answer = item.querySelector(".faq-answer");
+
+            question.addEventListener("click", function () {
+                const isOpen = item.classList.contains("active");
+
+                // Close all other open items (remove this loop if you want
+                // multiple answers open at once instead of one-at-a-time)
+                faqItems.forEach(function (otherItem) {
+                    otherItem.classList.remove("active");
+                    otherItem.querySelector(".faq-answer").style.maxHeight = null;
+                });
+
+                if (!isOpen) {
+                    item.classList.add("active");
+                    answer.style.maxHeight = answer.scrollHeight + "px";
+                }
+            });
         });
     });
 </script>
