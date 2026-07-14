@@ -63,6 +63,85 @@
         gtag("js", new Date());
         gtag("config", "G-WQGXFYZVTH");
     </script>
+
+    <!-- ===========================
+         Policy Accordion Styles
+         (scoped here so you don't have to touch style.css —
+         move into style.css later if you'd rather keep it centralized)
+    =========================== -->
+    <style>
+        .policy-group-heading h2 {
+            margin-top: 36px;
+            margin-bottom: 6px;
+        }
+
+        .policy-item {
+            border-bottom: 1px solid #f0e2c0;
+        }
+
+        .policy-question {
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: none;
+            border: none;
+            cursor: pointer;
+            text-align: left;
+            padding: 16px 4px;
+            font-family: 'Nunito', sans-serif;
+            font-weight: 700;
+            font-size: 1.02rem;
+            color: #5b3d1e;
+        }
+
+        .policy-question .policy-icon {
+            font-size: 1.4rem;
+            color: #d9a441;
+            transition: transform 0.3s ease;
+            margin-left: 12px;
+            flex-shrink: 0;
+        }
+
+        .policy-item.active .policy-question .policy-icon {
+            transform: rotate(45deg);
+        }
+
+        .policy-answer {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.35s ease;
+            padding: 0 4px;
+        }
+
+        .policy-item.active .policy-answer {
+            padding-bottom: 16px;
+        }
+
+        .policy-answer p {
+            margin: 0 0 10px 0;
+        }
+
+        .policy-answer p:last-child {
+            margin-bottom: 0;
+        }
+
+        /* Closing card stays static — not part of the accordion */
+        .policy-closing {
+            padding: 20px 4px;
+            border-bottom: none;
+            margin-top: 12px;
+        }
+
+        .policy-closing h3 {
+            margin-bottom: 10px;
+        }
+
+        .policy-closing .btn {
+            margin-top: 12px;
+            display: inline-block;
+        }
+    </style>
 </head>
 
 <body>
@@ -185,60 +264,66 @@
         </div>
 
         <div class="policy-item">
-
-            <h3>Reservation Deposit</h3>
-
-            <p>
-                A $100 deposit locks in your date and time. This deposit is
-                non-refundable, and your event isn't officially on our calendar
-                until it's received and we've confirmed your booking.
-            </p>
-
+            <button class="policy-question" type="button">
+                <span>Reservation Deposit</span>
+                <span class="policy-icon">+</span>
+            </button>
+            <div class="policy-answer">
+                <p>
+                    A $100 deposit locks in your date and time. This deposit is
+                    non-refundable, and your event isn't officially on our calendar
+                    until it's received and we've confirmed your booking.
+                </p>
+            </div>
         </div>
 
         <div class="policy-item">
+            <button class="policy-question" type="button">
+                <span>Final Payment</span>
+                <span class="policy-icon">+</span>
+            </button>
+            <div class="policy-answer">
+                <p>
+                    The remaining balance is due on or before your event, unless
+                    we've made other arrangements ahead of time.
+                </p>
 
-            <h3>Final Payment</h3>
+                <p>
+                    Schools, daycares, corporate partners, and nonprofit or community
+                    organizations can be invoiced according to the terms we agree on
+                    during booking.
+                </p>
 
-            <p>
-                The remaining balance is due on or before your event, unless
-                we've made other arrangements ahead of time.
-            </p>
-
-            <p>
-                Schools, daycares, corporate partners, and nonprofit or community
-                organizations can be invoiced according to the terms we agree on
-                during booking.
-            </p>
-
-            <p>
-                We accept major credit cards and other approved electronic payment
-                methods.
-            </p>
-
+                <p>
+                    We accept major credit cards and other approved electronic payment
+                    methods.
+                </p>
+            </div>
         </div>
 
         <div class="policy-item">
+            <button class="policy-question" type="button">
+                <span>Guest Count</span>
+                <span class="policy-icon">+</span>
+            </button>
+            <div class="policy-answer">
+                <p>
+                    We ask for your final guest count at least 7 days before the
+                    event. Your package includes a set number of participants.
+                </p>
 
-            <h3>Guest Count</h3>
+                <p>
+                    Need to add more guests? We'll do our best to accommodate based on
+                    supply and staffing availability, billed at your package's
+                    per-guest rate.
+                </p>
 
-            <p>
-                We ask for your final guest count at least 7 days before the
-                event. Your package includes a set number of participants.
-            </p>
-
-            <p>
-                Need to add more guests? We'll do our best to accommodate based on
-                supply and staffing availability, billed at your package's
-                per-guest rate.
-            </p>
-
-            <p>
-                The earlier you can let us know about changes, the better —
-                it helps us make sure we bring enough plushes, hearts,
-                certificates, and take-home bags for everyone.
-            </p>
-
+                <p>
+                    The earlier you can let us know about changes, the better —
+                    it helps us make sure we bring enough plushes, hearts,
+                    certificates, and take-home bags for everyone.
+                </p>
+            </div>
         </div>
 
         <!-- ===========================
@@ -250,59 +335,65 @@
         </div>
 
         <div class="policy-item">
+            <button class="policy-question" type="button">
+                <span>Cancellation Policy</span>
+                <span class="policy-icon">+</span>
+            </button>
+            <div class="policy-answer">
+                <p>
+                    Reservation deposits are non-refundable.
+                </p>
 
-            <h3>Cancellation Policy</h3>
+                <p>
+                    Life happens — if you need to cancel more than 14 days before
+                    your event, we'll gladly transfer your deposit to one new date
+                    within the next 6 months, based on availability.
+                </p>
 
-            <p>
-                Reservation deposits are non-refundable.
-            </p>
-
-            <p>
-                Life happens — if you need to cancel more than 14 days before
-                your event, we'll gladly transfer your deposit to one new date
-                within the next 6 months, based on availability.
-            </p>
-
-            <p>
-                Cancellations within 14 days of the event will forfeit the
-                deposit. Any custom, personalized, or special-order items already
-                purchased or made for your event may also be non-refundable.
-            </p>
-
+                <p>
+                    Cancellations within 14 days of the event will forfeit the
+                    deposit. Any custom, personalized, or special-order items already
+                    purchased or made for your event may also be non-refundable.
+                </p>
+            </div>
         </div>
 
         <div class="policy-item">
+            <button class="policy-question" type="button">
+                <span>Rescheduling Policy</span>
+                <span class="policy-icon">+</span>
+            </button>
+            <div class="policy-answer">
+                <p>
+                    We offer one complimentary reschedule when you let us know at
+                    least 14 days before your original event date.
+                </p>
 
-            <h3>Rescheduling Policy</h3>
-
-            <p>
-                We offer one complimentary reschedule when you let us know at
-                least 14 days before your original event date.
-            </p>
-
-            <p>
-                Your new date needs to fall within 6 months and is subject to
-                availability. Additional reschedules may come with a small fee.
-            </p>
-
+                <p>
+                    Your new date needs to fall within 6 months and is subject to
+                    availability. Additional reschedules may come with a small fee.
+                </p>
+            </div>
         </div>
 
         <div class="policy-item">
+            <button class="policy-question" type="button">
+                <span>Unforeseen Circumstances</span>
+                <span class="policy-icon">+</span>
+            </button>
+            <div class="policy-answer">
+                <p>
+                    On the rare occasion something beyond our control keeps us from
+                    making it to your event, we'll work with you to reschedule or
+                    find a solution that feels fair.
+                </p>
 
-            <h3>Unforeseen Circumstances</h3>
-
-            <p>
-                On the rare occasion something beyond our control keeps us from
-                making it to your event, we'll work with you to reschedule or
-                find a solution that feels fair.
-            </p>
-
-            <p>
-                This includes things like severe weather, unsafe travel
-                conditions, power outages, government restrictions, equipment
-                failure, illness, or other genuine emergencies.
-            </p>
-
+                <p>
+                    This includes things like severe weather, unsafe travel
+                    conditions, power outages, government restrictions, equipment
+                    failure, illness, or other genuine emergencies.
+                </p>
+            </div>
         </div>
 
         <!-- ===========================
@@ -314,106 +405,116 @@
         </div>
 
         <div class="policy-item">
+            <button class="policy-question" type="button">
+                <span>Travel Policy</span>
+                <span class="policy-icon">+</span>
+            </button>
+            <div class="policy-answer">
+                <p>
+                    Travel within 15 miles of Green Bay is always included, no extra
+                    charge.
+                </p>
 
-            <h3>Travel Policy</h3>
-
-            <p>
-                Travel within 15 miles of Green Bay is always included, no extra
-                charge.
-            </p>
-
-            <p>
-                Events further out may include a travel fee — but we'll always
-                let you know the exact amount and get your okay before your
-                booking is finalized.
-            </p>
-
+                <p>
+                    Events further out may include a travel fee — but we'll always
+                    let you know the exact amount and get your okay before your
+                    booking is finalized.
+                </p>
+            </div>
         </div>
 
         <div class="policy-item">
+            <button class="policy-question" type="button">
+                <span>Arrival & Setup</span>
+                <span class="policy-icon">+</span>
+            </button>
+            <div class="policy-answer">
+                <p>
+                    We typically arrive 30–45 minutes before your event start time
+                    to get everything set up.
+                </p>
 
-            <h3>Arrival & Setup</h3>
+                <p>
+                    Bigger events, custom installations, or extra experience stations
+                    may need a little more setup time.
+                </p>
 
-            <p>
-                We typically arrive 30–45 minutes before your event start time
-                to get everything set up.
-            </p>
-
-            <p>
-                Bigger events, custom installations, or extra experience stations
-                may need a little more setup time.
-            </p>
-
-            <p>
-                We just ask that the setup area be clean, dry, accessible, and
-                ready for us when we arrive.
-            </p>
-
+                <p>
+                    We just ask that the setup area be clean, dry, accessible, and
+                    ready for us when we arrive.
+                </p>
+            </div>
         </div>
 
         <div class="policy-item">
+            <button class="policy-question" type="button">
+                <span>Event Space Requirements</span>
+                <span class="policy-icon">+</span>
+            </button>
+            <div class="policy-answer">
+                <p>
+                    Our full setup fits comfortably in a space about the size of one
+                    parking spot.
+                </p>
 
-            <h3>Event Space Requirements</h3>
+                <p>
+                    We're happy to set up indoors or outdoors and can adjust our
+                    layout for smaller spaces when needed. The area should be level,
+                    clean, dry, accessible, and free of hazards.
+                </p>
 
-            <p>
-                Our full setup fits comfortably in a space about the size of one
-                parking spot.
-            </p>
-
-            <p>
-                We're happy to set up indoors or outdoors and can adjust our
-                layout for smaller spaces when needed. The area should be level,
-                clean, dry, accessible, and free of hazards.
-            </p>
-
-            <p>
-                We bring our own portable power source, so you typically won't
-                need to provide an outlet.
-            </p>
-
+                <p>
+                    We bring our own portable power source, so you typically won't
+                    need to provide an outlet.
+                </p>
+            </div>
         </div>
 
         <div class="policy-item">
+            <button class="policy-question" type="button">
+                <span>Event Start Time</span>
+                <span class="policy-icon">+</span>
+            </button>
+            <div class="policy-answer">
+                <p>
+                    We'll start right at the scheduled time whenever possible.
+                </p>
 
-            <h3>Event Start Time</h3>
-
-            <p>
-                We'll start right at the scheduled time whenever possible.
-            </p>
-
-            <p>
-                If guests or the host run late, we may still need to end at the
-                originally scheduled time so we can make it to our next
-                commitment.
-            </p>
-
+                <p>
+                    If guests or the host run late, we may still need to end at the
+                    originally scheduled time so we can make it to our next
+                    commitment.
+                </p>
+            </div>
         </div>
 
         <div class="policy-item">
+            <button class="policy-question" type="button">
+                <span>Weather Policy</span>
+                <span class="policy-icon">+</span>
+            </button>
+            <div class="policy-answer">
+                <p>
+                    Planning an outdoor event? We just ask that you have a backup
+                    plan in place.
+                </p>
 
-            <h3>Weather Policy</h3>
+                <p>
+                    If rain, high winds, extreme temperatures, storms, or other
+                    unsafe conditions are in the forecast, we'll work with you to
+                    move things indoors or find a new date.
+                </p>
 
-            <p>
-                Planning an outdoor event? We just ask that you have a backup
-                plan in place.
-            </p>
+                <p>
+                    A covered pavilion or tent can work depending on conditions, as
+                    long as it fully protects our equipment, plushes, paperwork, and
+                    everyone involved.
+                </p>
 
-            <p>
-                If rain, high winds, extreme temperatures, storms, or other
-                unsafe conditions are in the forecast, we'll work with you to
-                move things indoors or find a new date.
-            </p>
-
-            <p>
-                A covered pavilion or tent can work depending on conditions, as
-                long as it fully protects our equipment, plushes, paperwork, and
-                everyone involved.
-            </p>
-
-            <p>
-                The safety of our guests, staff, and supplies always comes first.
-            </p>
-
+                <p>
+                    The safety of our guests, staff, and supplies always comes first.
+                </p>
+            </div>
         </div>
 
         <!-- ===========================
@@ -425,72 +526,80 @@
         </div>
 
         <div class="policy-item">
+            <button class="policy-question" type="button">
+                <span>Adult Supervision</span>
+                <span class="policy-icon">+</span>
+            </button>
+            <div class="policy-answer">
+                <p>
+                    We'll bring the magic, but we need a responsible adult present
+                    the whole time. Our team runs the experience, we're not there
+                    to supervise kids.
+                </p>
 
-            <h3>Adult Supervision</h3>
-
-            <p>
-                We'll bring the magic, but we need a responsible adult present
-                the whole time. Our team runs the experience, we're not there
-                to supervise kids.
-            </p>
-
-            <p>
-                Parents, guardians, hosts, and event organizers stay responsible
-                for guest behavior and supervision throughout.
-            </p>
-
+                <p>
+                    Parents, guardians, hosts, and event organizers stay responsible
+                    for guest behavior and supervision throughout.
+                </p>
+            </div>
         </div>
 
         <div class="policy-item">
+            <button class="policy-question" type="button">
+                <span>Guest Safety</span>
+                <span class="policy-icon">+</span>
+            </button>
+            <div class="policy-answer">
+                <p>
+                    We work hard to keep things fun, organized, and safe. We ask
+                    guests to follow the instructions our team gives during the
+                    event.
+                </p>
 
-            <h3>Guest Safety</h3>
+                <p>
+                    Parents, guardians, and hosts are best positioned to know
+                    whether certain activities, accessories, or small pieces are
+                    appropriate for each participant.
+                </p>
 
-            <p>
-                We work hard to keep things fun, organized, and safe. We ask
-                guests to follow the instructions our team gives during the
-                event.
-            </p>
-
-            <p>
-                Parents, guardians, and hosts are best positioned to know
-                whether certain activities, accessories, or small pieces are
-                appropriate for each participant.
-            </p>
-
-            <p>
-                Stuffed With Love isn't responsible for injuries resulting from
-                unsafe behavior, not following instructions, inadequate
-                supervision, or conditions at the host's venue.
-            </p>
-
+                <p>
+                    Stuffed With Love isn't responsible for injuries resulting from
+                    unsafe behavior, not following instructions, inadequate
+                    supervision, or conditions at the host's venue.
+                </p>
+            </div>
         </div>
 
         <div class="policy-item">
+            <button class="policy-question" type="button">
+                <span>Food & Beverages</span>
+                <span class="policy-icon">+</span>
+            </button>
+            <div class="policy-answer">
+                <p>
+                    To help keep our stuffing machine, plushes, certificates, and
+                    supplies in good shape, we kindly ask that food and drinks stay
+                    away from our setup when possible.
+                </p>
 
-            <h3>Food & Beverages</h3>
-
-            <p>
-                To help keep our stuffing machine, plushes, certificates, and
-                supplies in good shape, we kindly ask that food and drinks stay
-                away from our setup when possible.
-            </p>
-
-            <p>
-                Please let us know ahead of time about any venue restrictions,
-                allergy concerns, or accommodations we should be aware of.
-            </p>
-
+                <p>
+                    Please let us know ahead of time about any venue restrictions,
+                    allergy concerns, or accommodations we should be aware of.
+                </p>
+            </div>
         </div>
 
         <div class="policy-item">
-
-            <h3>Personal Belongings</h3>
-
-            <p>
-                We're not able to take responsibility for lost, stolen, damaged,
-                or unattended personal belongings during an event.
-            </p>
-
+            <button class="policy-question" type="button">
+                <span>Personal Belongings</span>
+                <span class="policy-icon">+</span>
+            </button>
+            <div class="policy-answer">
+                <p>
+                    We're not able to take responsibility for lost, stolen, damaged,
+                    or unattended personal belongings during an event.
+                </p>
+            </div>
         </div>
 
         <!-- ===========================
@@ -502,79 +611,87 @@
         </div>
 
         <div class="policy-item">
+            <button class="policy-question" type="button">
+                <span>Equipment & Supplies</span>
+                <span class="policy-icon">+</span>
+            </button>
+            <div class="policy-answer">
+                <p>
+                    We do everything we can to bring the plush styles, clothing, and
+                    accessories you've requested.
+                </p>
 
-            <h3>Equipment & Supplies</h3>
-
-            <p>
-                We do everything we can to bring the plush styles, clothing, and
-                accessories you've requested.
-            </p>
-
-            <p>
-                Every so often, supplier delays, inventory changes, or
-                discontinued products mean we need to substitute with a
-                comparable option of equal or greater value.
-            </p>
-
+                <p>
+                    Every so often, supplier delays, inventory changes, or
+                    discontinued products mean we need to substitute with a
+                    comparable option of equal or greater value.
+                </p>
+            </div>
         </div>
 
         <div class="policy-item">
+            <button class="policy-question" type="button">
+                <span>Plush Selection</span>
+                <span class="policy-icon">+</span>
+            </button>
+            <div class="policy-answer">
+                <p>
+                    Plush options depend on availability and can vary by package,
+                    season, event size, and what our suppliers have in stock.
+                </p>
 
-            <h3>Plush Selection</h3>
-
-            <p>
-                Plush options depend on availability and can vary by package,
-                season, event size, and what our suppliers have in stock.
-            </p>
-
-            <p>
-                Unless we've confirmed a specific plush selection with you in
-                writing, we'll bring an assortment of available friends for
-                guests to choose from.
-            </p>
-
+                <p>
+                    Unless we've confirmed a specific plush selection with you in
+                    writing, we'll bring an assortment of available friends for
+                    guests to choose from.
+                </p>
+            </div>
         </div>
 
         <div class="policy-item">
+            <button class="policy-question" type="button">
+                <span>Custom Items & Themes</span>
+                <span class="policy-icon">+</span>
+            </button>
+            <div class="policy-answer">
+                <p>
+                    We love helping bring your vision to life! Custom vinyl designs,
+                    themed items, personalized apparel, specialty plushes, branded
+                    accessories, and other special requests need at least 14 days'
+                    notice.
+                </p>
 
-            <h3>Custom Items & Themes</h3>
+                <p>
+                    Larger custom orders, corporate branding, or specialty products
+                    may need extra production time.
+                </p>
 
-            <p>
-                We love helping bring your vision to life! Custom vinyl designs,
-                themed items, personalized apparel, specialty plushes, branded
-                accessories, and other special requests need at least 14 days'
-                notice.
-            </p>
+                <p>
+                    We'll always do our best to make your custom request happen, but
+                    availability, design complexity, materials, and production
+                    timelines can sometimes limit what's possible.
+                </p>
 
-            <p>
-                Larger custom orders, corporate branding, or specialty products
-                may need extra production time.
-            </p>
-
-            <p>
-                We'll always do our best to make your custom request happen, but
-                availability, design complexity, materials, and production
-                timelines can sometimes limit what's possible.
-            </p>
-
-            <p>
-                If we ever need to decline or adjust a custom request, we'll
-                communicate clearly and work with you to find something you'll
-                love just as much.
-            </p>
-
+                <p>
+                    If we ever need to decline or adjust a custom request, we'll
+                    communicate clearly and work with you to find something you'll
+                    love just as much.
+                </p>
+            </div>
         </div>
 
         <div class="policy-item">
-
-            <h3>Personalized & Special-Order Items</h3>
-
-            <p>
-                Personalized, branded, or special-order items usually can't be
-                reused for another event, so they may be non-refundable once
-                we've started production or purchasing.
-            </p>
-
+            <button class="policy-question" type="button">
+                <span>Personalized & Special-Order Items</span>
+                <span class="policy-icon">+</span>
+            </button>
+            <div class="policy-answer">
+                <p>
+                    Personalized, branded, or special-order items usually can't be
+                    reused for another event, so they may be non-refundable once
+                    we've started production or purchasing.
+                </p>
+            </div>
         </div>
 
         <!-- ===========================
@@ -586,30 +703,32 @@
         </div>
 
         <div class="policy-item">
+            <button class="policy-question" type="button">
+                <span>Photography</span>
+                <span class="policy-icon">+</span>
+            </button>
+            <div class="policy-answer">
+                <p>
+                    We love capturing the sweet moments from our events. With
+                    permission, photos or videos may be used on our website, social
+                    media, promotional materials, and business listings.
+                </p>
 
-            <h3>Photography</h3>
+                <p>
+                    If you'd rather certain guests not be photographed, just let us
+                    know before the event — we'll always honor that.
+                </p>
 
-            <p>
-                We love capturing the sweet moments from our events. With
-                permission, photos or videos may be used on our website, social
-                media, promotional materials, and business listings.
-            </p>
-
-            <p>
-                If you'd rather certain guests not be photographed, just let us
-                know before the event — we'll always honor that.
-            </p>
-
-            <p>
-                For schools, corporate events, and organizations with their own
-                media policies, we'll follow whatever photography guidelines
-                you provide.
-            </p>
-
+                <p>
+                    For schools, corporate events, and organizations with their own
+                    media policies, we'll follow whatever photography guidelines
+                    you provide.
+                </p>
+            </div>
         </div>
 
         <!-- ===========================
-             Closing Notice
+             Closing Notice (static — not an accordion item)
         =========================== -->
 
         <div class="policy-item policy-closing">
@@ -774,6 +893,43 @@
             } else {
                 nav.classList.remove("shrink");
             }
+        });
+    });
+
+    // ===========================
+    // Policy Accordion
+    // (only targets real policy items with a .policy-question button —
+    //  the closing card has no button, so it's untouched and always visible)
+    // ===========================
+    document.addEventListener("DOMContentLoaded", function () {
+        const policyItems = document.querySelectorAll(".policy-item");
+
+        policyItems.forEach(function (item) {
+            const question = item.querySelector(".policy-question");
+            const answer = item.querySelector(".policy-answer");
+
+            if (!question || !answer) {
+                return; // skips the closing card, which has neither
+            }
+
+            question.addEventListener("click", function () {
+                const isOpen = item.classList.contains("active");
+
+                // Close all other open items (remove this loop if you want
+                // multiple answers open at once instead of one-at-a-time)
+                policyItems.forEach(function (otherItem) {
+                    const otherAnswer = otherItem.querySelector(".policy-answer");
+                    otherItem.classList.remove("active");
+                    if (otherAnswer) {
+                        otherAnswer.style.maxHeight = null;
+                    }
+                });
+
+                if (!isOpen) {
+                    item.classList.add("active");
+                    answer.style.maxHeight = answer.scrollHeight + "px";
+                }
+            });
         });
     });
 </script>
