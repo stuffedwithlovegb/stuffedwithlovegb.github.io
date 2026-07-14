@@ -4424,3 +4424,26 @@ body.policies-page .policy-container {
 body.policies-page .policy-item {
     background: #ffffff !important;
 }
+/* Closing CTA */
+.policy-closing {
+    text-align: center;
+    padding: 45px 50px !important;
+}
+
+.policy-closing h3 {
+    font-family: 'Bubblegum Sans', cursive;
+    font-size: 2rem;
+    color: #5b3d1e;
+    margin-bottom: 18px;
+}
+
+.policy-closing p {
+    max-width: 700px;
+    margin: 0 auto 14px;
+    line-height: 1.8;
+    color: #5b3d1e;
+}
+
+.policy-closing .btn {
+    margin-top: 20px;
+}
