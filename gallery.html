@@ -23,6 +23,74 @@
     <noscript>
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     </noscript>
+
+    <!-- ===========================
+         Gallery Grid Styles
+         (scoped here so you don't have to touch style.css —
+         move into style.css later if you'd rather keep it centralized)
+    =========================== -->
+    <style>
+        .gallery-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 16px;
+            max-width: 1100px;
+            margin: 40px auto;
+            padding: 0 20px;
+        }
+
+        .gallery-grid-item {
+            position: relative;
+            overflow: hidden;
+            border-radius: 16px;
+            aspect-ratio: 1 / 1;
+            background: #fdf6ec; /* warm cream placeholder background */
+            border: 3px solid #f5e3b3; /* soft gold border */
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+        }
+
+        .gallery-grid-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+            transition: transform 0.35s ease;
+        }
+
+        .gallery-grid-item:hover img {
+            transform: scale(1.06);
+        }
+
+        .gallery-grid-item .gallery-caption {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            padding: 10px 12px;
+            background: linear-gradient(to top, rgba(0,0,0,0.45), rgba(0,0,0,0));
+            color: #fff;
+            font-family: 'Nunito', sans-serif;
+            font-size: 0.85rem;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .gallery-grid-item:hover .gallery-caption {
+            opacity: 1;
+        }
+
+        @media (max-width: 768px) {
+            .gallery-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 480px) {
+            .gallery-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
 </head>
 
 <!-- Google tag (gtag.js) -->
@@ -115,25 +183,59 @@
         <p>The best moments are just around the corner.</p>
     </div>
 
-    <div class="coming-soon-gallery">
+    <!-- ===========================
+         Gallery Photo Grid
+         Replace each src with your own .webp file name,
+         and update the alt text + caption for each photo.
+         Add or remove .gallery-grid-item blocks as needed —
+         the grid will reflow automatically.
+    =========================== -->
+    <div class="gallery-grid">
 
-        <div class="coming-soon-icon">📸🧸✨</div>
+        <div class="gallery-grid-item">
+            <img src="gallery-photo-01.webp" alt="Stuffed With Love event photo">
+            <div class="gallery-caption">Add your caption here</div>
+        </div>
 
-        <h3>Your Party Could Be Featured Here!</h3>
+        <div class="gallery-grid-item">
+            <img src="gallery-photo-02.webp" alt="Stuffed With Love event photo">
+            <div class="gallery-caption">Add your caption here</div>
+        </div>
 
-        <p>
-            Stuffed With Love is getting ready to create unforgettable memories
-            throughout Green Bay and the surrounding communities. As we celebrate
-            birthdays, baby showers, school events, and festivals, we'll be
-            filling this gallery with real smiles, happy families, and plenty of
-            cuddly new friends.
-        </p>
+        <div class="gallery-grid-item">
+            <img src="gallery-photo-03.webp" alt="Stuffed With Love event photo">
+            <div class="gallery-caption">Add your caption here</div>
+        </div>
 
-        <p>
-            <strong>Book your event today</strong> and, with your permission,
-            your celebration could become one of the first featured memories in
-            our gallery!
-        </p>
+        <div class="gallery-grid-item">
+            <img src="gallery-photo-04.webp" alt="Stuffed With Love event photo">
+            <div class="gallery-caption">Add your caption here</div>
+        </div>
+
+        <div class="gallery-grid-item">
+            <img src="gallery-photo-05.webp" alt="Stuffed With Love event photo">
+            <div class="gallery-caption">Add your caption here</div>
+        </div>
+
+        <div class="gallery-grid-item">
+            <img src="gallery-photo-06.webp" alt="Stuffed With Love event photo">
+            <div class="gallery-caption">Add your caption here</div>
+        </div>
+
+        <div class="gallery-grid-item">
+            <img src="gallery-photo-07.webp" alt="Stuffed With Love event photo">
+            <div class="gallery-caption">Add your caption here</div>
+        </div>
+
+        <div class="gallery-grid-item">
+            <img src="gallery-photo-08.webp" alt="Stuffed With Love event photo">
+            <div class="gallery-caption">Add your caption here</div>
+        </div>
+
+        <div class="gallery-grid-item">
+            <img src="gallery-photo-09.webp" alt="Stuffed With Love event photo">
+            <div class="gallery-caption">Add your caption here</div>
+        </div>
 
     </div>
 
