@@ -310,6 +310,7 @@ class="hero-main-image">
     </p>
 
     <form
+        id="newsletter-form"
         action="https://formspree.io/f/mlgydzwo"
         method="POST">
 <input
@@ -548,6 +549,7 @@ class="hero-main-image">
     </div>
 
         <form
+            id="booking-form"
             class="contact-form"
             action="https://formspree.io/f/mbdvjnow"
             method="POST">
@@ -793,6 +795,68 @@ document.addEventListener("DOMContentLoaded", function () {
         } else {
             nav.classList.remove("shrink");
         }
+    });
+});
+</script>
+    <script>
+document.addEventListener("DOMContentLoaded", function () {
+
+    const forms = [
+        document.getElementById("newsletter-form"),
+        document.getElementById("booking-form")
+    ];
+
+    forms.forEach(function (form) {
+
+        if (!form) return;
+
+        form.addEventListener("submit", async function (event) {
+            event.preventDefault();
+
+            const submitButton = form.querySelector('[type="submit"]');
+            const originalButtonText = submitButton
+                ? submitButton.textContent
+                : "";
+
+            if (submitButton) {
+                submitButton.disabled = true;
+                submitButton.textContent = "Sending...";
+            }
+
+            try {
+                const response = await fetch(form.action, {
+                    method: form.method,
+                    body: new FormData(form),
+                    headers: {
+                        "Accept": "application/json"
+                    }
+                });
+
+                if (response.ok) {
+                    window.location.href =
+                        "https://stuffedwithlovegb.com/thank-you.html";
+                } else {
+                    alert(
+                        "Something went wrong while submitting the form. Please try again."
+                    );
+
+                    if (submitButton) {
+                        submitButton.disabled = false;
+                        submitButton.textContent = originalButtonText;
+                    }
+                }
+
+            } catch (error) {
+                alert(
+                    "We couldn't submit the form. Please check your connection and try again."
+                );
+
+                if (submitButton) {
+                    submitButton.disabled = false;
+                    submitButton.textContent = originalButtonText;
+                }
+            }
+        });
     });
 });
 </script>
