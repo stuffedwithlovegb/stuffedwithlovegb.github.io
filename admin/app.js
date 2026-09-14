@@ -2978,7 +2978,9 @@ if (reopenModal) {
   openInventoryItem(itemId);
 
 }
-
+   
+}
+   
 async function setInventoryCount(
   itemId
 ) {
