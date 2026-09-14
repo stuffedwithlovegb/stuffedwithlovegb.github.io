@@ -5,30 +5,12 @@ const STORAGE_KEY = "swlOpsV2";
 ========================================================= */
 
 const PLUSH_OPTIONS = [
-  {
-    id: "golden",
-    name: "Golden Retriever"
-  },
-  {
-    id: "bear",
-    name: "Honey Bear"
-  },
-  {
-    id: "cat",
-    name: "Orange Cat"
-  },
-  {
-    id: "unicorn",
-    name: "Unicorn"
-  },
-  {
-    id: "dino",
-    name: "Dino"
-  },
-  {
-    id: "frog",
-    name: "Frog"
-  }
+  { id: "golden", name: "Golden Retriever" },
+  { id: "bear", name: "Honey Bear" },
+  { id: "cat", name: "Orange Cat" },
+  { id: "unicorn", name: "Unicorn" },
+  { id: "dino", name: "Dino" },
+  { id: "frog", name: "Frog" }
 ];
 
 const PACKAGE_DATA = {
@@ -41,7 +23,7 @@ const PACKAGE_DATA = {
   "$35 Package": {
     pricePerGuest: 35,
     description:
-      "Everything in $30 + custom T-shirt"
+      "Everything in $30 + birthday plush outfit"
   },
 
   "$40 Package": {
@@ -50,10 +32,10 @@ const PACKAGE_DATA = {
       "Full birthday experience with shirt, vinyl, accessories + birthday outfit"
   },
 
-  "Custom": {
+  Custom: {
     pricePerGuest: null,
     description:
-      "Use for retirement, corporate, partner or unusual events"
+      "For private, corporate, partner or unusual events"
   }
 };
 
@@ -76,84 +58,72 @@ const inventorySeed = [
     category: "Plush",
     onHand: 27
   },
-
   {
     id: "bear",
     name: "Honey Bears",
     category: "Plush",
     onHand: 42
   },
-
   {
     id: "cat",
     name: "Orange Cats",
     category: "Plush",
     onHand: 18
   },
-
   {
     id: "unicorn",
     name: "Unicorns",
     category: "Plush",
     onHand: 41
   },
-
   {
     id: "dino",
     name: "Dinos",
     category: "Plush",
     onHand: 36
   },
-
   {
     id: "frog",
     name: "Frogs",
     category: "Plush",
     onHand: 10
   },
-
   {
     id: "sound",
     name: "Sound / Voice Chips",
     category: "Supplies",
     onHand: 18
   },
-
   {
     id: "girl-bday",
     name: "Girl Birthday Outfits",
     category: "Outfits",
     onHand: 18
   },
-
   {
     id: "boy-bday",
     name: "Boy Birthday Outfits",
     category: "Outfits",
     onHand: 24
   },
-
   {
     id: "travel-bags",
     name: "Travel Bags",
     category: "Supplies",
     onHand: 135
   },
-
   {
     id: "hearts",
     name: "Wishing Hearts",
     category: "Supplies",
     onHand: 300
   },
-
   {
     id: "white-shirt",
     name: "White T-Shirts",
     category: "Shirts",
     onHand: 50
   },
-
   {
     id: "fluff",
     name: "Fluff",
@@ -202,9 +172,11 @@ let currentEventId = null;
 let wizard = null;
 let wizardStep = 0;
 
+let wizardMode = "add";
+let editingEventId = null;
+
 const wizardSteps = [
   "Basics",
-  "Where",
   "Party",
   "Extras",
   "Payment",
@@ -225,13 +197,10 @@ function createInitialState() {
   };
 }
 
-
 function loadState() {
-
   const saved = localStorage.getItem(STORAGE_KEY);
 
   if (!saved) {
-
     const fresh = createInitialState();
 
     localStorage.setItem(
@@ -243,7 +212,6 @@ function loadState() {
   }
 
   try {
-
     const parsed = JSON.parse(saved);
 
     parsed.events ||= [];
@@ -251,21 +219,17 @@ function loadState() {
     parsed.notes ||= [];
 
     if (!parsed.inventory?.length) {
-      parsed.inventory = structuredClone(inventorySeed);
+      parsed.inventory =
+        structuredClone(inventorySeed);
     }
 
     return parsed;
-
   } catch {
-
     return createInitialState();
-
   }
 }
 
-
 function saveState() {
-
   localStorage.setItem(
     STORAGE_KEY,
     JSON.stringify(state)
@@ -280,46 +244,29 @@ function saveState() {
 ========================================================= */
 
 function makeId(prefix = "id") {
-
   return `${prefix}-${Date.now()}-${Math.random()
     .toString(36)
     .slice(2, 8)}`;
-
 }
 
-
 function escapeHTML(value = "") {
-
   return String(value)
     .replaceAll("&", "&amp;")
     .replaceAll("<", "&lt;")
     .replaceAll(">", "&gt;")
     .replaceAll('"', "&quot;")
     .replaceAll("'", "&#039;");
-
 }
-
 
 function money(value) {
-
-  const number = Number(value || 0);
-
-  return new Intl.NumberFormat(
-    "en-US",
-    {
-      style: "currency",
-      currency: "USD"
-    }
-  ).format(number);
-
+  return new Intl.NumberFormat("en-US", {
+    style: "currency",
+    currency: "USD"
+  }).format(Number(value || 0));
 }
 
-
 function formatDate(dateString) {
-
-  if (!dateString) {
-    return "Date not set";
-  }
+  if (!dateString) return "Date not set";
 
   const date =
     new Date(`${dateString}T12:00:00`);
@@ -332,53 +279,30 @@ function formatDate(dateString) {
       day: "numeric"
     }
   );
-
 }
 
-
-/*
-  Converts:
-  14:00 -> 2:00 PM
-  09:30 -> 9:30 AM
-*/
-
 function formatTime(timeString) {
-
-  if (!timeString) {
-    return "";
-  }
+  if (!timeString) return "";
 
   const [hourString, minuteString] =
     timeString.split(":");
 
-  const hour =
-    Number(hourString);
-
-  const minute =
-    Number(minuteString || 0);
+  const hour = Number(hourString);
+  const minute = Number(minuteString || 0);
 
   const suffix =
-    hour >= 12
-      ? "PM"
-      : "AM";
+    hour >= 12 ? "PM" : "AM";
 
   const normalHour =
     hour % 12 || 12;
 
   return `${normalHour}:${String(minute).padStart(2, "0")} ${suffix}`;
-
 }
 
-
 function daysUntil(dateString) {
+  if (!dateString) return null;
 
-  if (!dateString) {
-    return null;
-  }
-
-  const today =
-    new Date();
-
+  const today = new Date();
   today.setHours(0, 0, 0, 0);
 
   const date =
@@ -387,64 +311,45 @@ function daysUntil(dateString) {
   return Math.ceil(
     (date - today) / 86400000
   );
-
 }
 
 
 /* =========================================================
-   INVENTORY CALCULATIONS
+   INVENTORY
 ========================================================= */
 
 function getInventoryItem(itemId) {
-
   return state.inventory.find(
     item => item.id === itemId
   );
-
 }
-
 
 function calculateReserved(itemId) {
-
   return state.events
     .filter(event => !event.closed)
-    .reduce(
-      (total, event) => {
-
-        const reservation =
-          event.reservations?.find(
-            reservation =>
-              reservation.itemId === itemId
-          );
-
-        return (
-          total +
-          Number(
-            reservation?.quantity || 0
-          )
+    .reduce((total, event) => {
+      const reservation =
+        event.reservations?.find(
+          r => r.itemId === itemId
         );
 
-      },
-      0
-    );
-
+      return (
+        total +
+        Number(reservation?.quantity || 0)
+      );
+    }, 0);
 }
 
-
 function inventoryAvailable(itemId) {
-
   const item =
     getInventoryItem(itemId);
 
-  if (!item) {
-    return 0;
-  }
+  if (!item) return 0;
 
   return (
     item.onHand -
     calculateReserved(itemId)
   );
-
 }
 
 
@@ -453,7 +358,6 @@ function inventoryAvailable(itemId) {
 ========================================================= */
 
 function eventIssues(event) {
-
   const issues = [];
 
   if (!event.date) {
@@ -468,24 +372,20 @@ function eventIssues(event) {
     issues.push("Host name is missing");
   }
 
-
   for (
     const reservation
     of event.reservations || []
   ) {
-
     const item =
       getInventoryItem(
         reservation.itemId
       );
 
-    if (!item) {
-      continue;
-    }
+    if (!item) continue;
 
     const otherReserved =
       calculateReserved(item.id) -
-      reservation.quantity;
+      Number(reservation.quantity || 0);
 
     const availableForThisEvent =
       item.onHand -
@@ -495,7 +395,6 @@ function eventIssues(event) {
       reservation.quantity >
       availableForThisEvent
     ) {
-
       const shortage =
         reservation.quantity -
         availableForThisEvent;
@@ -503,18 +402,13 @@ function eventIssues(event) {
       issues.push(
         `Short ${shortage} ${item.name}`
       );
-
     }
-
   }
 
   return issues;
-
 }
 
-
 function allCurrentIssues() {
-
   const generated = [];
 
   for (
@@ -523,19 +417,14 @@ function allCurrentIssues() {
       event => !event.closed
     )
   ) {
-
-    eventIssues(event)
-      .forEach(issue => {
-
-        generated.push({
-          id: `${event.id}-${issue}`,
-          eventId: event.id,
-          title: issue,
-          type: "generated"
-        });
-
+    eventIssues(event).forEach(issue => {
+      generated.push({
+        id: `${event.id}-${issue}`,
+        eventId: event.id,
+        title: issue,
+        type: "generated"
       });
-
+    });
   }
 
   const manual =
@@ -547,24 +436,20 @@ function allCurrentIssues() {
     ...generated,
     ...manual
   ];
-
 }
 
 
 /* =========================================================
-   HEADER / NAVIGATION
+   HEADER / NAV
 ========================================================= */
 
 function updateAttentionBadge() {
-
   const badge =
     document.getElementById(
       "attentionBadge"
     );
 
-  if (!badge) {
-    return;
-  }
+  if (!badge) return;
 
   const count =
     allCurrentIssues().length;
@@ -575,15 +460,12 @@ function updateAttentionBadge() {
     "hidden",
     count === 0
   );
-
 }
-
 
 function setHeader(
   title,
   showAdd = false
 ) {
-
   document.getElementById(
     "pageTitle"
   ).textContent = title;
@@ -597,37 +479,28 @@ function setHeader(
     "hidden",
     !showAdd
   );
-
 }
 
-
 function navigate(screen) {
-
   currentScreen = screen;
   currentEventId = null;
 
   document
     .querySelectorAll(".nav-item")
     .forEach(button => {
-
       button.classList.toggle(
         "active",
         button.dataset.screen === screen
       );
-
     });
 
   render();
-
 }
 
-
 function render() {
-
   updateAttentionBadge();
 
   switch (currentScreen) {
-
     case "events":
       renderEvents();
       break;
@@ -646,9 +519,7 @@ function render() {
 
     default:
       renderHome();
-
   }
-
 }
 
 
@@ -657,7 +528,6 @@ function render() {
 ========================================================= */
 
 function renderHome() {
-
   setHeader("Ops");
 
   const main =
@@ -682,17 +552,13 @@ function renderHome() {
 
   let html = "";
 
-
   if (issues.length === 0) {
-
     html += `
       <div class="status-banner">
         Everything’s looking good. Nothing needs you right now. ❤️
       </div>
     `;
-
   } else {
-
     html += `
       <div class="status-banner warning">
         You’ve got ${issues.length}
@@ -700,21 +566,16 @@ function renderHome() {
         that need attention.
       </div>
     `;
-
   }
-
 
   html += `
     <section class="section">
-
       <div class="section-heading">
         <h2>Next Up</h2>
       </div>
   `;
 
-
   if (!nextEvent) {
-
     html += `
       <div class="card empty-card">
 
@@ -728,21 +589,17 @@ function renderHome() {
         </p>
 
         <div style="margin-top:16px;">
-
           <button
             class="primary-button full-width"
             onclick="openAddEventWizard()"
           >
             + Add Event
           </button>
-
         </div>
 
       </div>
     `;
-
   } else {
-
     const issuesForEvent =
       eventIssues(nextEvent);
 
@@ -843,56 +700,40 @@ function renderHome() {
 
       </div>
     `;
-
   }
 
   html += `
     </section>
-  `;
 
-
-  html += `
     <section class="section">
 
       <div class="section-heading">
-
-        <h2>
-          Needs Attention
-        </h2>
+        <h2>Needs Attention</h2>
 
         <button
           onclick="navigate('attention')"
         >
           View all
         </button>
-
       </div>
   `;
 
-
   if (issues.length === 0) {
-
     html += `
       <div class="card empty-card">
-
         <strong>
           ✓ Nothing needs your attention
         </strong>
 
         <p>
-          Your future events are
-          currently on track.
+          Your future events are currently on track.
         </p>
-
       </div>
     `;
-
   } else {
-
     issues
       .slice(0, 3)
       .forEach(issue => {
-
         const event =
           state.events.find(
             e => e.id === issue.eventId
@@ -907,7 +748,6 @@ function renderHome() {
                 : ""
             }
           >
-
             <h3>
               ${escapeHTML(issue.title)}
             </h3>
@@ -919,44 +759,33 @@ function renderHome() {
                   : "Reminder"
               }
             </p>
-
           </div>
         `;
-
       });
-
   }
 
   html += `
     </section>
   `;
 
-
   if (upcoming.length > 1) {
-
     html += `
       <section class="section">
 
         <div class="section-heading">
-
-          <h2>
-            Coming Up
-          </h2>
+          <h2>Coming Up</h2>
 
           <button
             onclick="navigate('events')"
           >
             View all
           </button>
-
         </div>
     `;
-
 
     upcoming
       .slice(1, 5)
       .forEach(event => {
-
         const issueCount =
           eventIssues(event).length;
 
@@ -972,13 +801,11 @@ function renderHome() {
 
             <p>
               ${formatDate(event.date)}
-
               ${
                 event.time
                   ? ` · ${formatTime(event.time)}`
                   : ""
               }
-
               ${
                 event.guestCount
                   ? ` · ${event.guestCount} guests`
@@ -1007,19 +834,14 @@ function renderHome() {
 
           </div>
         `;
-
       });
-
 
     html += `
       </section>
     `;
-
   }
 
-
   main.innerHTML = html;
-
 }
 
 
@@ -1028,7 +850,6 @@ function renderHome() {
 ========================================================= */
 
 function renderEvents() {
-
   setHeader(
     "Events",
     true
@@ -1048,7 +869,6 @@ function renderEvents() {
           new Date(b.date)
       );
 
-
   let html = `
     <button
       class="primary-button full-width"
@@ -1060,28 +880,19 @@ function renderEvents() {
     <section class="section">
   `;
 
-
   if (events.length === 0) {
-
     html += `
       <div class="card empty-card">
-
-        <strong>
-          No events yet.
-        </strong>
+        <strong>No events yet.</strong>
 
         <p>
           Your confirmed bookings
           will live here.
         </p>
-
       </div>
     `;
-
   } else {
-
     events.forEach(event => {
-
       const issues =
         eventIssues(event);
 
@@ -1090,14 +901,12 @@ function renderEvents() {
           class="card list-card tap-card"
           onclick="openEvent('${event.id}')"
         >
-
           <h3>
             ${escapeHTML(event.name)}
           </h3>
 
           <p>
             ${formatDate(event.date)}
-
             ${
               event.time
                 ? ` · ${formatTime(event.time)}`
@@ -1143,21 +952,16 @@ function renderEvents() {
             }
 
           </div>
-
         </div>
       `;
-
     });
-
   }
-
 
   html += `
     </section>
   `;
 
   main.innerHTML = html;
-
 }
 
 
@@ -1166,31 +970,22 @@ function renderEvents() {
 ========================================================= */
 
 function openEvent(id) {
-
   currentEventId = id;
   currentScreen = "event-detail";
 
   render();
-
 }
 
-
 function renderEventDetail() {
-
   const event =
     state.events.find(
       e => e.id === currentEventId
     );
 
-
   if (!event) {
-
     navigate("events");
-
     return;
-
   }
-
 
   setHeader("Event");
 
@@ -1202,7 +997,6 @@ function renderEventDetail() {
   const issues =
     eventIssues(event);
 
-
   let html = `
     <button
       class="back-button"
@@ -1211,7 +1005,6 @@ function renderEventDetail() {
       ← Events
     </button>
 
-
     <div class="detail-header">
 
       <h2>
@@ -1219,17 +1012,13 @@ function renderEventDetail() {
       </h2>
 
       <div class="muted">
-
         ${formatDate(event.date)}
-
         ${
           event.time
             ? ` · ${formatTime(event.time)}`
             : ""
         }
-
       </div>
-
 
       <div class="meta-row">
 
@@ -1255,12 +1044,19 @@ function renderEventDetail() {
 
       </div>
 
+      <div style="margin-top:16px;">
+        <button
+          class="primary-button full-width"
+          onclick="openEditEvent('${event.id}')"
+        >
+          Edit Event
+        </button>
+      </div>
+
     </div>
   `;
 
-
   if (issues.length) {
-
     html += `
       <section class="section">
 
@@ -1271,12 +1067,9 @@ function renderEventDetail() {
         <div class="card detail-card">
     `;
 
-
     issues.forEach(issue => {
-
       html += `
         <div class="attention-row">
-
           <strong>
             ${escapeHTML(issue)}
           </strong>
@@ -1284,30 +1077,22 @@ function renderEventDetail() {
           <span class="warning-text">
             !
           </span>
-
         </div>
       `;
-
     });
-
 
     html += `
         </div>
-
       </section>
     `;
-
   } else {
-
     html += `
       <div class="status-banner">
         ✓ Everything looks good
         for this event.
       </div>
     `;
-
   }
-
 
   html += `
     <section class="section">
@@ -1337,7 +1122,7 @@ function renderEventDetail() {
         </div>
 
         <div class="detail-row">
-          <span>Location</span>
+          <span>Address</span>
           <strong>
             ${escapeHTML(event.address || "Not added")}
           </strong>
@@ -1354,6 +1139,13 @@ function renderEventDetail() {
           <span>Phone</span>
           <strong>
             ${escapeHTML(event.hostPhone || "—")}
+          </strong>
+        </div>
+
+        <div class="detail-row">
+          <span>Email</span>
+          <strong>
+            ${escapeHTML(event.hostEmail || "—")}
           </strong>
         </div>
 
@@ -1376,6 +1168,23 @@ function renderEventDetail() {
     </section>
   `;
 
+  if (event.eventNotes) {
+    html += `
+      <section class="section">
+
+        <div class="section-heading">
+          <h2>Notes</h2>
+        </div>
+
+        <div class="card detail-card">
+          <div style="white-space:pre-wrap;">
+            ${escapeHTML(event.eventNotes)}
+          </div>
+        </div>
+
+      </section>
+    `;
+  }
 
   html += `
     <section class="section">
@@ -1387,12 +1196,9 @@ function renderEventDetail() {
       <div class="card detail-card">
   `;
 
-
   if (event.selectedPlush?.length) {
-
     event.selectedPlush.forEach(
       plushId => {
-
         const plush =
           PLUSH_OPTIONS.find(
             p => p.id === plushId
@@ -1416,38 +1222,20 @@ function renderEventDetail() {
 
           </div>
         `;
-
       }
     );
-
   } else {
-
     html += `
       <div class="muted">
         No plush choices selected.
       </div>
     `;
-
   }
 
-
   html += `
       </div>
-
     </section>
   `;
-
-
-  html += `
-    <section class="section">
-
-      <div class="section-heading">
-        <h2>Tracked Requirements</h2>
-      </div>
-
-      <div class="card detail-card">
-  `;
-
 
   const nonPlushReservations =
     (event.reservations || [])
@@ -1455,27 +1243,29 @@ function renderEventDetail() {
         reservation =>
           !PLUSH_OPTIONS.some(
             plush =>
-              plush.id ===
-              reservation.itemId
+              plush.id === reservation.itemId
           )
       );
 
+  html += `
+    <section class="section">
 
-  if (
-    nonPlushReservations.length
-  ) {
+      <div class="section-heading">
+        <h2>Requirements</h2>
+      </div>
 
+      <div class="card detail-card">
+  `;
+
+  if (nonPlushReservations.length) {
     nonPlushReservations
       .forEach(reservation => {
-
         const item =
           getInventoryItem(
             reservation.itemId
           );
 
-        if (!item) {
-          return;
-        }
+        if (!item) return;
 
         html += `
           <div class="requirement-row">
@@ -1490,28 +1280,19 @@ function renderEventDetail() {
 
           </div>
         `;
-
       });
-
   } else {
-
     html += `
       <div class="muted">
         No additional tracked inventory.
       </div>
     `;
-
   }
-
 
   html += `
       </div>
-
     </section>
-  `;
 
-
-  html += `
     <section class="section">
 
       <div class="section-heading">
@@ -1529,33 +1310,25 @@ function renderEventDetail() {
 
         <div class="detail-row">
           <span>Deposit</span>
-
           <strong>
-
             ${
               event.depositPaid
                 ? `✓ ${money(event.depositAmount)} received`
                 : "Not received"
             }
-
           </strong>
         </div>
 
         <div class="detail-row">
           <span>Remaining</span>
-
           <strong>
             ${money(event.balanceDue)}
           </strong>
         </div>
 
       </div>
-
     </section>
-  `;
 
-
-  html += `
     <section class="section">
 
       <div class="section-heading">
@@ -1564,7 +1337,6 @@ function renderEventDetail() {
 
       <div class="card detail-card">
   `;
-
 
   event.packing ||=
     masterPackingList.map(
@@ -1575,9 +1347,7 @@ function renderEventDetail() {
       })
     );
 
-
   event.packing.forEach(item => {
-
     html += `
       <label class="toggle-row">
 
@@ -1599,15 +1369,11 @@ function renderEventDetail() {
 
       </label>
     `;
-
   });
-
 
   html += `
       </div>
-
     </section>
-
 
     <section class="section">
 
@@ -1621,47 +1387,36 @@ function renderEventDetail() {
     </section>
   `;
 
-
   main.innerHTML = html;
 
   saveState();
-
 }
-
 
 function togglePacking(
   eventId,
   packingId,
   checked
 ) {
-
   const event =
     state.events.find(
       e => e.id === eventId
     );
 
-  if (!event) {
-    return;
-  }
+  if (!event) return;
 
   const item =
     event.packing.find(
       item => item.id === packingId
     );
 
-  if (!item) {
-    return;
-  }
+  if (!item) return;
 
   item.done = checked;
 
   saveState();
-
 }
 
-
 function deleteEvent(id) {
-
   if (
     !confirm(
       "Delete this event?"
@@ -1672,14 +1427,12 @@ function deleteEvent(id) {
 
   state.events =
     state.events.filter(
-      event =>
-        event.id !== id
+      event => event.id !== id
     );
 
   saveState();
 
   navigate("events");
-
 }
 
 
@@ -1688,14 +1441,12 @@ function deleteEvent(id) {
 ========================================================= */
 
 function renderInventory() {
-
   setHeader("Inventory");
 
   const main =
     document.getElementById(
       "mainContent"
     );
-
 
   const categories = [
     ...new Set(
@@ -1705,22 +1456,15 @@ function renderInventory() {
     )
   ];
 
-
   let hasShortage = false;
 
-
-  state.inventory.forEach(
-    item => {
-
-      if (
-        inventoryAvailable(item.id) < 0
-      ) {
-        hasShortage = true;
-      }
-
+  state.inventory.forEach(item => {
+    if (
+      inventoryAvailable(item.id) < 0
+    ) {
+      hasShortage = true;
     }
-  );
-
+  });
 
   let html =
     hasShortage
@@ -1736,110 +1480,91 @@ function renderInventory() {
         </div>
       `;
 
+  categories.forEach(category => {
+    html += `
+      <section class="section">
 
-  categories.forEach(
-    category => {
+        <div class="section-heading">
+          <h2>
+            ${escapeHTML(category)}
+          </h2>
+        </div>
 
-      html += `
-        <section class="section">
+        <div class="card detail-card">
+    `;
 
-          <div class="section-heading">
-            <h2>
-              ${escapeHTML(category)}
-            </h2>
-          </div>
+    state.inventory
+      .filter(
+        item =>
+          item.category === category
+      )
+      .forEach(item => {
+        const reserved =
+          calculateReserved(item.id);
 
-          <div class="card detail-card">
-      `;
+        const available =
+          item.onHand -
+          reserved;
 
+        html += `
+          <div
+            class="inventory-row"
+            onclick="openInventoryItem('${item.id}')"
+          >
 
-      state.inventory
-        .filter(
-          item =>
-            item.category === category
-        )
-        .forEach(item => {
+            <div>
 
-          const reserved =
-            calculateReserved(item.id);
+              <strong>
+                ${escapeHTML(item.name)}
+              </strong>
 
-          const available =
-            item.onHand -
-            reserved;
+              ${
+                available < 0
+                  ? `
+                    <div class="warning-text">
+                      Short ${Math.abs(available)}
+                    </div>
+                  `
+                  : ""
+              }
 
+            </div>
 
-          html += `
-            <div
-              class="inventory-row"
-              onclick="openInventoryItem('${item.id}')"
-            >
+            <div class="counts">
 
-              <div>
-
-                <strong>
-                  ${escapeHTML(item.name)}
-                </strong>
-
-                ${
-                  available < 0
-                    ? `
-                      <div class="warning-text">
-                        Short ${Math.abs(available)}
-                      </div>
-                    `
-                    : ""
-                }
-
+              <div class="available-count">
+                ${available}
               </div>
 
-
-              <div class="counts">
-
-                <div class="available-count">
-                  ${available}
-                </div>
-
-                <div
-                  class="muted"
-                  style="font-size:.75rem;"
-                >
-                  ${item.onHand} on hand
-                  ·
-                  ${reserved} reserved
-                </div>
-
+              <div
+                class="muted"
+                style="font-size:.75rem;"
+              >
+                ${item.onHand} on hand
+                ·
+                ${reserved} reserved
               </div>
 
             </div>
-          `;
 
-        });
-
-
-      html += `
           </div>
+        `;
+      });
 
-        </section>
-      `;
-
-    }
-  );
-
+    html += `
+        </div>
+      </section>
+    `;
+  });
 
   main.innerHTML = html;
-
 }
 
-
 function openInventoryItem(itemId) {
-
   const item =
     getInventoryItem(itemId);
 
-  if (!item) {
-    return;
-  }
-
+  if (!item) return;
 
   const reserved =
     calculateReserved(item.id);
@@ -1848,26 +1573,21 @@ function openInventoryItem(itemId) {
     item.onHand -
     reserved;
 
-
   const reservingEvents =
     state.events
-      .filter(
-        event => !event.closed
-      )
+      .filter(event => !event.closed)
       .map(event => ({
         event,
         reservation:
           event.reservations?.find(
             reservation =>
-              reservation.itemId ===
-              item.id
+              reservation.itemId === item.id
           )
       }))
       .filter(
         entry =>
           entry.reservation?.quantity
       );
-
 
   let html = `
     <div
@@ -1906,39 +1626,24 @@ function openInventoryItem(itemId) {
 
         </div>
 
-
         <section class="section">
 
           <div class="section-heading">
-            <h2>
-              Reserved For
-            </h2>
+            <h2>Reserved For</h2>
           </div>
   `;
 
-
-  if (
-    !reservingEvents.length
-  ) {
-
+  if (!reservingEvents.length) {
     html += `
       <div class="card empty-card">
-
         <p>
           Nothing is currently reserved.
         </p>
-
       </div>
     `;
-
   } else {
-
     reservingEvents.forEach(
-      ({
-        event,
-        reservation
-      }) => {
-
+      ({ event, reservation }) => {
         html += `
           <div class="card list-card">
 
@@ -1955,16 +1660,12 @@ function openInventoryItem(itemId) {
 
           </div>
         `;
-
       }
     );
-
   }
-
 
   html += `
         </section>
-
 
         <div class="inline-fields">
 
@@ -1994,7 +1695,6 @@ function openInventoryItem(itemId) {
 
         </div>
 
-
         <div style="margin-top:12px;">
 
           <button
@@ -2007,85 +1707,63 @@ function openInventoryItem(itemId) {
         </div>
 
       </div>
-
     </div>
   `;
-
 
   document.getElementById(
     "modalRoot"
   ).innerHTML = html;
-
 }
-
 
 function adjustInventory(
   itemId,
   mode
 ) {
-
   const item =
     getInventoryItem(itemId);
 
-  if (!item) {
-    return;
-  }
+  if (!item) return;
 
   let value;
 
-
   if (mode === "add") {
-
     value = prompt(
       `How many ${item.name} are you adding?`
     );
 
-    if (value === null) {
-      return;
-    }
+    if (value === null) return;
 
     const number =
       Number(value);
 
-    if (
-      !Number.isFinite(number)
-    ) {
+    if (!Number.isFinite(number)) {
       return;
     }
 
     item.onHand += number;
-
   } else {
-
     value = prompt(
       `What is the actual physical count of ${item.name}?`,
       item.onHand
     );
 
-    if (value === null) {
-      return;
-    }
+    if (value === null) return;
 
     const number =
       Number(value);
 
-    if (
-      !Number.isFinite(number)
-    ) {
+    if (!Number.isFinite(number)) {
       return;
     }
 
     item.onHand = number;
-
   }
-
 
   saveState();
 
   closeModal();
 
   renderInventory();
-
 }
 
 
@@ -2094,7 +1772,6 @@ function adjustInventory(
 ========================================================= */
 
 function renderAttention() {
-
   setHeader("Attention");
 
   const main =
@@ -2105,7 +1782,6 @@ function renderAttention() {
   const issues =
     allCurrentIssues();
 
-
   let html = `
     <button
       class="primary-button full-width"
@@ -2113,7 +1789,6 @@ function renderAttention() {
     >
       + Remember Something
     </button>
-
 
     <section class="section">
 
@@ -2124,9 +1799,7 @@ function renderAttention() {
       </div>
   `;
 
-
   if (!issues.length) {
-
     const nextEvent =
       [...state.events]
         .filter(
@@ -2137,7 +1810,6 @@ function renderAttention() {
             new Date(a.date) -
             new Date(b.date)
         )[0];
-
 
     html += `
       <div class="card empty-card">
@@ -2159,21 +1831,16 @@ function renderAttention() {
               `
               : ""
           }
-
         </p>
 
       </div>
     `;
-
   } else {
-
     html += `
       <div class="card detail-card">
     `;
 
-
     issues.forEach(issue => {
-
       html += `
         <div class="attention-row">
 
@@ -2189,7 +1856,8 @@ function renderAttention() {
                   <div class="muted">
                     ${escapeHTML(
                       state.events.find(
-                        e => e.id ===
+                        e =>
+                          e.id ===
                           issue.eventId
                       )?.name || ""
                     )}
@@ -2199,7 +1867,6 @@ function renderAttention() {
             }
 
           </div>
-
 
           ${
             issue.type === "generated"
@@ -2231,39 +1898,27 @@ function renderAttention() {
 
         </div>
       `;
-
     });
-
 
     html += `
       </div>
     `;
-
   }
-
 
   html += `
     </section>
   `;
 
-
   main.innerHTML = html;
-
 }
 
-
 function addReminder() {
-
   const title =
     prompt(
       "What do you want to remember?"
     );
 
-
-  if (!title?.trim()) {
-    return;
-  }
-
+  if (!title?.trim()) return;
 
   state.attention.push({
     id: makeId("reminder"),
@@ -2274,46 +1929,34 @@ function addReminder() {
       new Date().toISOString()
   });
 
-
   saveState();
 
   renderAttention();
-
 }
 
-
 function completeReminder(id) {
-
   const reminder =
     state.attention.find(
       item => item.id === id
     );
 
-
-  if (!reminder) {
-    return;
-  }
-
+  if (!reminder) return;
 
   reminder.done = true;
 
   saveState();
 
   renderAttention();
-
 }
 
 
 /* =========================================================
-   ADD EVENT
+   ADD / EDIT EVENT
 ========================================================= */
 
 function createBlankEventDraft() {
-
   return {
-
-    id:
-      makeId("event"),
+    id: makeId("event"),
 
     name: "",
 
@@ -2321,63 +1964,41 @@ function createBlankEventDraft() {
       "Birthday Party",
 
     date: "",
-
     time: "",
 
-
     hostName: "",
-
     hostPhone: "",
-
     hostEmail: "",
-
 
     address: "",
 
-    arrivalNotes: "",
-
-
     guestCount: "",
-
 
     package: "",
 
-
     specialGuestName: "",
-
     specialGuestAge: "",
-
 
     selectedPlush: [],
 
-
     extraOutfits: 0,
-
     voiceChips: 0,
-
     extraShirts: 0,
-
     extraVinyl: 0,
-
 
     customRequirements: "",
 
+    eventNotes: "",
 
     customTotal: "",
 
-
     depositAmount: 100,
-
     depositPaid: false,
 
-
     total: 0,
-
     balanceDue: 0,
 
-
     reservations: [],
-
 
     packing:
       masterPackingList.map(
@@ -2388,18 +2009,60 @@ function createBlankEventDraft() {
         })
       ),
 
-
     closed: false,
 
     createdAt:
       new Date().toISOString()
-
   };
-
 }
 
+function normalizeEventDraft(event) {
+  const blank =
+    createBlankEventDraft();
+
+  const merged = {
+    ...blank,
+    ...structuredClone(event)
+  };
+
+  merged.selectedPlush ||=
+    [];
+
+  merged.reservations ||=
+    [];
+
+  merged.eventNotes ||=
+    merged.arrivalNotes || "";
+
+  merged.extraOutfits ||=
+    0;
+
+  merged.voiceChips ||=
+    0;
+
+  merged.extraShirts ||=
+    0;
+
+  merged.extraVinyl ||=
+    0;
+
+  merged.depositAmount =
+    merged.depositAmount ?? 100;
+
+  merged.depositPaid =
+    Boolean(merged.depositPaid);
+
+  merged.packing =
+    event.packing?.length
+      ? structuredClone(event.packing)
+      : blank.packing;
+
+  return merged;
+}
 
 function openAddEventWizard() {
+  wizardMode = "add";
+  editingEventId = null;
 
   wizard =
     createBlankEventDraft();
@@ -2407,20 +2070,37 @@ function openAddEventWizard() {
   wizardStep = 0;
 
   renderWizard();
-
 }
 
+function openEditEvent(eventId) {
+  const event =
+    state.events.find(
+      event => event.id === eventId
+    );
 
-function closeWizard() {
+  if (!event) return;
 
-  wizard = null;
+  wizardMode = "edit";
+  editingEventId = eventId;
+
+  wizard =
+    normalizeEventDraft(event);
 
   wizardStep = 0;
+
+  renderWizard();
+}
+
+function closeWizard() {
+  wizard = null;
+  wizardStep = 0;
+
+  wizardMode = "add";
+  editingEventId = null;
 
   document.getElementById(
     "modalRoot"
   ).innerHTML = "";
-
 }
 
 
@@ -2431,49 +2111,34 @@ function closeWizard() {
 function calculateEventTotal(
   event = wizard
 ) {
+  if (!event) return 0;
 
-  if (!event) {
-    return 0;
-  }
-
-
-  if (
-    event.package === "Custom"
-  ) {
-
+  if (event.package === "Custom") {
     return Number(
       event.customTotal || 0
     );
-
   }
-
 
   const packageInfo =
     PACKAGE_DATA[
       event.package
     ];
 
-
   if (
     !packageInfo ||
     packageInfo.pricePerGuest === null
   ) {
-
     return 0;
-
   }
-
 
   const guestCount =
     Number(
       event.guestCount || 0
     );
 
-
   const base =
     guestCount *
     packageInfo.pricePerGuest;
-
 
   const outfitAddOns =
     Number(
@@ -2481,13 +2146,11 @@ function calculateEventTotal(
     ) *
     ADD_ON_PRICING.outfit;
 
-
   const voiceAddOns =
     Number(
       event.voiceChips || 0
     ) *
     ADD_ON_PRICING.voiceChip;
-
 
   const shirtAddOns =
     Number(
@@ -2495,13 +2158,11 @@ function calculateEventTotal(
     ) *
     ADD_ON_PRICING.extraShirt;
 
-
   const vinylAddOns =
     Number(
       event.extraVinyl || 0
     ) *
     ADD_ON_PRICING.vinyl;
-
 
   return (
     base +
@@ -2510,20 +2171,13 @@ function calculateEventTotal(
     shirtAddOns +
     vinylAddOns
   );
-
 }
 
-
 function recalculatePayment() {
-
-  if (!wizard) {
-    return;
-  }
-
+  if (!wizard) return;
 
   wizard.total =
     calculateEventTotal(wizard);
-
 
   const paidDeposit =
     wizard.depositPaid
@@ -2532,14 +2186,12 @@ function recalculatePayment() {
         )
       : 0;
 
-
   wizard.balanceDue =
     Math.max(
       0,
       wizard.total -
       paidDeposit
     );
-
 }
 
 
@@ -2548,11 +2200,7 @@ function recalculatePayment() {
 ========================================================= */
 
 function buildReservationsForWizard() {
-
-  if (!wizard) {
-    return;
-  }
-
+  if (!wizard) return;
 
   const reservations = [];
 
@@ -2561,39 +2209,26 @@ function buildReservationsForWizard() {
       wizard.guestCount || 0
     );
 
-
   /*
-    PLUSH RULE
-
-    Every plush option being offered
-    gets guest count + 2.
-
-    Example:
-    15 kids + Golden selected
-    = reserve 17 Goldens.
-
-    If Golden + Bear + Cat:
-    17 of EACH.
+    EACH OFFERED PLUSH:
+    guest count + 2 backups.
   */
 
-  wizard.selectedPlush
-    .forEach(plushId => {
-
+  wizard.selectedPlush.forEach(
+    plushId => {
       reservations.push({
         itemId: plushId,
         quantity:
           guestCount + 2
       });
-
-    });
-
+    }
+  );
 
   /*
-    STANDARD PARTY SUPPLIES
+    HEARTS + TRAVEL BAGS
   */
 
   if (guestCount > 0) {
-
     reservations.push({
       itemId: "hearts",
       quantity: guestCount
@@ -2603,19 +2238,19 @@ function buildReservationsForWizard() {
       itemId: "travel-bags",
       quantity: guestCount
     });
-
   }
 
-
   /*
-    PACKAGE SHIRTS
+    SHIRTS
+
+    $35 DOES NOT INCLUDE SHIRTS.
+
+    $40 DOES.
   */
 
   if (
-    wizard.package === "$35 Package" ||
     wizard.package === "$40 Package"
   ) {
-
     reservations.push({
       itemId: "white-shirt",
       quantity:
@@ -2624,13 +2259,11 @@ function buildReservationsForWizard() {
           wizard.extraShirts || 0
         )
     });
-
   } else if (
     Number(
       wizard.extraShirts || 0
     ) > 0
   ) {
-
     reservations.push({
       itemId: "white-shirt",
       quantity:
@@ -2638,9 +2271,7 @@ function buildReservationsForWizard() {
           wizard.extraShirts
         )
     });
-
   }
-
 
   /*
     VOICE CHIPS
@@ -2651,7 +2282,6 @@ function buildReservationsForWizard() {
       wizard.voiceChips || 0
     ) > 0
   ) {
-
     reservations.push({
       itemId: "sound",
       quantity:
@@ -2659,13 +2289,10 @@ function buildReservationsForWizard() {
           wizard.voiceChips
         )
     });
-
   }
-
 
   wizard.reservations =
     reservations;
-
 }
 
 
@@ -2674,20 +2301,21 @@ function buildReservationsForWizard() {
 ========================================================= */
 
 function renderWizard() {
-
   recalculatePayment();
 
   let html = `
     <div class="wizard-shell">
 
-
       <div class="wizard-header">
-
 
         <div class="wizard-title-row">
 
           <h2>
-            Add Event
+            ${
+              wizardMode === "edit"
+                ? "Edit Event"
+                : "Add Event"
+            }
           </h2>
 
           <button
@@ -2699,14 +2327,11 @@ function renderWizard() {
 
         </div>
 
-
         <div class="wizard-steps">
   `;
 
-
   wizardSteps.forEach(
     (step, index) => {
-
       html += `
         <button
           class="
@@ -2728,7 +2353,6 @@ function renderWizard() {
             )
           "
         >
-
           ${
             index < wizardStep
               ? "✓ "
@@ -2736,19 +2360,14 @@ function renderWizard() {
           }
 
           ${step}
-
         </button>
       `;
-
     }
   );
 
-
   html += `
         </div>
-
       </div>
-
 
       <div
         id="wizardContent"
@@ -2757,9 +2376,7 @@ function renderWizard() {
         ${wizardStepHTML()}
       </div>
 
-
       <div class="wizard-footer">
-
 
         <button
           class="secondary-button"
@@ -2773,7 +2390,6 @@ function renderWizard() {
           Back
         </button>
 
-
         ${
           wizardStep ===
           wizardSteps.length - 1
@@ -2781,9 +2397,13 @@ function renderWizard() {
             ? `
               <button
                 class="primary-button"
-                onclick="confirmEvent()"
+                onclick="saveEventFromWizard()"
               >
-                Confirm Event
+                ${
+                  wizardMode === "edit"
+                    ? "Save Changes"
+                    : "Confirm Event"
+                }
               </button>
             `
 
@@ -2797,61 +2417,43 @@ function renderWizard() {
             `
         }
 
-
       </div>
-
 
     </div>
   `;
 
-
   document.getElementById(
     "modalRoot"
   ).innerHTML = html;
-
 }
 
-
-/* =========================================================
-   WIZARD STEP HTML
-========================================================= */
-
 function wizardStepHTML() {
-
   switch (wizardStep) {
-
     case 0:
       return basicsStepHTML();
 
     case 1:
-      return locationStepHTML();
-
-    case 2:
       return partyStepHTML();
 
-    case 3:
+    case 2:
       return extrasStepHTML();
 
-    case 4:
+    case 3:
       return paymentStepHTML();
 
     default:
       return reviewStepHTML();
-
   }
-
 }
 
 
 /* =========================================================
-   STEP 1 — BASICS
+   BASICS
 ========================================================= */
 
 function basicsStepHTML() {
-
   return `
     <div class="card form-card">
-
 
       <div class="field">
 
@@ -2866,7 +2468,6 @@ function basicsStepHTML() {
         />
 
       </div>
-
 
       <div class="field">
 
@@ -2901,9 +2502,7 @@ function basicsStepHTML() {
 
       </div>
 
-
       <div class="inline-fields">
-
 
         <div class="field">
 
@@ -2919,7 +2518,6 @@ function basicsStepHTML() {
 
         </div>
 
-
         <div class="field">
 
           <label>
@@ -2934,9 +2532,21 @@ function basicsStepHTML() {
 
         </div>
 
-
       </div>
 
+      <div class="field">
+
+        <label>
+          Address
+        </label>
+
+        <input
+          id="eventAddress"
+          value="${escapeHTML(wizard.address)}"
+          placeholder="123 Main St, Green Bay"
+        />
+
+      </div>
 
       <div class="field">
 
@@ -2950,7 +2560,6 @@ function basicsStepHTML() {
         />
 
       </div>
-
 
       <div class="field">
 
@@ -2966,7 +2575,6 @@ function basicsStepHTML() {
 
       </div>
 
-
       <div class="field">
 
         <label>
@@ -2981,66 +2589,18 @@ function basicsStepHTML() {
 
       </div>
 
-
     </div>
   `;
-
 }
 
 
 /* =========================================================
-   STEP 2 — WHERE
-========================================================= */
-
-function locationStepHTML() {
-
-  return `
-    <div class="card form-card">
-
-
-      <div class="field">
-
-        <label>
-          Event address
-        </label>
-
-        <textarea
-          id="eventAddress"
-          placeholder="Full event address"
-        >${escapeHTML(wizard.address)}</textarea>
-
-      </div>
-
-
-      <div class="field">
-
-        <label>
-          Arrival / setup notes
-        </label>
-
-        <textarea
-          id="arrivalNotes"
-          placeholder="Use side gate, backyard setup, park in driveway..."
-        >${escapeHTML(wizard.arrivalNotes)}</textarea>
-
-      </div>
-
-
-    </div>
-  `;
-
-}
-
-
-/* =========================================================
-   STEP 3 — PARTY
+   PARTY
 ========================================================= */
 
 function partyStepHTML() {
-
   return `
     <div class="card form-card">
-
 
       <div class="field">
 
@@ -3054,10 +2614,10 @@ function partyStepHTML() {
           min="1"
           value="${wizard.guestCount}"
           placeholder="15"
+          oninput="updatePlushReservationLabels()"
         />
 
       </div>
-
 
       <div class="field">
 
@@ -3065,29 +2625,16 @@ function partyStepHTML() {
           Package
         </label>
 
-
         <div class="choice-grid">
 
-          ${packageChoice(
-            "$30 Package"
-          )}
-
-          ${packageChoice(
-            "$35 Package"
-          )}
-
-          ${packageChoice(
-            "$40 Package"
-          )}
-
-          ${packageChoice(
-            "Custom"
-          )}
+          ${packageChoice("$30 Package")}
+          ${packageChoice("$35 Package")}
+          ${packageChoice("$40 Package")}
+          ${packageChoice("Custom")}
 
         </div>
 
       </div>
-
 
       ${
         wizard.eventType ===
@@ -3095,7 +2642,6 @@ function partyStepHTML() {
 
           ? `
             <div class="inline-fields">
-
 
               <div class="field">
 
@@ -3111,7 +2657,6 @@ function partyStepHTML() {
 
               </div>
 
-
               <div class="field">
 
                 <label>
@@ -3126,7 +2671,6 @@ function partyStepHTML() {
                 />
 
               </div>
-
 
             </div>
           `
@@ -3148,7 +2692,6 @@ function partyStepHTML() {
           `
       }
 
-
       <div class="field">
 
         <label>
@@ -3156,59 +2699,52 @@ function partyStepHTML() {
         </label>
 
         <small>
-          Tap every style guests can choose from.
-          We’ll reserve guest count + 2 of
-          each selected plush.
+          Select every plush guests can choose from.
+          We reserve guest count + 2 of each one.
         </small>
-
 
         <div
           class="choice-grid"
           style="margin-top:12px;"
         >
-
           ${PLUSH_OPTIONS
             .map(
               plush =>
                 plushChoice(plush)
             )
             .join("")}
-
         </div>
 
       </div>
 
-
     </div>
   `;
-
 }
-
 
 function packageChoice(
   packageName
 ) {
-
   const packageData =
     PACKAGE_DATA[
       packageName
     ];
 
-
   return `
     <button
       type="button"
+      data-package="${packageName}"
       class="
         choice-card
+        package-choice
         ${
-          wizard.package ===
-          packageName
+          wizard.package === packageName
             ? "selected"
             : ""
         }
       "
       onclick="
-        selectPackage(
+        selectPackageWithoutJump(
+          this,
           '${packageName}'
         )
       "
@@ -3224,35 +2760,31 @@ function packageChoice(
 
     </button>
   `;
-
 }
 
-
 function plushChoice(plush) {
-
   const selected =
     wizard.selectedPlush.includes(
       plush.id
     );
-
 
   const guestCount =
     Number(
       wizard.guestCount || 0
     );
 
-
   const bringCount =
     guestCount > 0
       ? guestCount + 2
       : 0;
 
-
   return `
     <button
       type="button"
+      data-plush="${plush.id}"
       class="
         choice-card
+        plush-choice
         ${
           selected
             ? "selected"
@@ -3260,44 +2792,43 @@ function plushChoice(plush) {
         }
       "
       onclick="
-        togglePlush(
+        togglePlushWithoutJump(
+          this,
           '${plush.id}'
         )
       "
     >
 
       <strong>
-        ${selected ? "✓ " : ""}
+        <span class="plush-check">
+          ${selected ? "✓ " : ""}
+        </span>
         ${plush.name}
       </strong>
 
-      <span>
+      <span class="plush-reservation-label">
         ${
           bringCount
             ? `${bringCount} will be reserved`
-            : "Select after entering guest count"
+            : "Enter guest count above"
         }
       </span>
 
     </button>
   `;
-
 }
 
 
 /* =========================================================
-   STEP 4 — EXTRAS
+   EXTRAS
 ========================================================= */
 
 function extrasStepHTML() {
-
   if (
     wizard.package === "Custom"
   ) {
-
     return `
       <div class="card form-card">
-
 
         <div class="field">
 
@@ -3307,11 +2838,10 @@ function extrasStepHTML() {
 
           <textarea
             id="customRequirements"
-            placeholder="Example: 2 plush, hiking outfits, retirement embroidery, backyard setup..."
+            placeholder="Example: 2 plush, hiking outfits, retirement embroidery..."
           >${escapeHTML(wizard.customRequirements)}</textarea>
 
         </div>
-
 
         <div class="field">
 
@@ -3328,16 +2858,23 @@ function extrasStepHTML() {
 
         </div>
 
-
       </div>
     `;
-
   }
-
 
   return `
     <div class="card form-card">
 
+      ${
+        wizard.package === "$35 Package" ||
+        wizard.package === "$40 Package"
+          ? `
+            <div class="status-banner">
+              ✓ Birthday plush outfit is included in this package.
+            </div>
+          `
+          : ""
+      }
 
       <div class="field">
 
@@ -3358,7 +2895,6 @@ function extrasStepHTML() {
 
       </div>
 
-
       <div class="field">
 
         <label>
@@ -3377,7 +2913,6 @@ function extrasStepHTML() {
         </small>
 
       </div>
-
 
       <div class="field">
 
@@ -3398,7 +2933,6 @@ function extrasStepHTML() {
 
       </div>
 
-
       <div class="field">
 
         <label>
@@ -3418,33 +2952,27 @@ function extrasStepHTML() {
 
       </div>
 
-
     </div>
   `;
-
 }
 
 
 /* =========================================================
-   STEP 5 — PAYMENT
+   PAYMENT
 ========================================================= */
 
 function paymentStepHTML() {
-
   recalculatePayment();
-
 
   const packageData =
     PACKAGE_DATA[
       wizard.package
     ];
 
-
   const guestCount =
     Number(
       wizard.guestCount || 0
     );
-
 
   const packageBase =
     packageData?.pricePerGuest
@@ -3452,10 +2980,8 @@ function paymentStepHTML() {
         packageData.pricePerGuest
       : 0;
 
-
   return `
     <div class="card form-card">
-
 
       ${
         wizard.package === "Custom"
@@ -3493,7 +3019,6 @@ function paymentStepHTML() {
 
             </div>
 
-
             <div class="detail-row">
 
               <span>
@@ -3508,98 +3033,69 @@ function paymentStepHTML() {
           `
       }
 
-
       ${
         Number(wizard.extraOutfits || 0)
           ? `
             <div class="detail-row">
-
-              <span>
-                Extra outfits
-              </span>
+              <span>Extra outfits</span>
 
               <strong>
-                ${
-                  wizard.extraOutfits
-                }
+                ${wizard.extraOutfits}
                 ×
                 ${money(ADD_ON_PRICING.outfit)}
               </strong>
-
             </div>
           `
           : ""
       }
-
 
       ${
         Number(wizard.voiceChips || 0)
           ? `
             <div class="detail-row">
-
-              <span>
-                Voice chips
-              </span>
+              <span>Voice chips</span>
 
               <strong>
-                ${
-                  wizard.voiceChips
-                }
+                ${wizard.voiceChips}
                 ×
                 ${money(ADD_ON_PRICING.voiceChip)}
               </strong>
-
             </div>
           `
           : ""
       }
-
 
       ${
         Number(wizard.extraShirts || 0)
           ? `
             <div class="detail-row">
-
-              <span>
-                Extra shirts
-              </span>
+              <span>Extra shirts</span>
 
               <strong>
-                ${
-                  wizard.extraShirts
-                }
+                ${wizard.extraShirts}
                 ×
                 ${money(ADD_ON_PRICING.extraShirt)}
               </strong>
-
             </div>
           `
           : ""
       }
-
 
       ${
         Number(wizard.extraVinyl || 0)
           ? `
             <div class="detail-row">
-
-              <span>
-                Extra vinyl
-              </span>
+              <span>Extra vinyl</span>
 
               <strong>
-                ${
-                  wizard.extraVinyl
-                }
+                ${wizard.extraVinyl}
                 ×
                 ${money(ADD_ON_PRICING.vinyl)}
               </strong>
-
             </div>
           `
           : ""
       }
-
 
       <div
         class="detail-row"
@@ -3608,23 +3104,14 @@ function paymentStepHTML() {
           font-size:1.1rem;
         "
       >
-
-        <span>
-          Event total
-        </span>
+        <span>Event total</span>
 
         <strong id="paymentTotal">
           ${money(wizard.total)}
         </strong>
-
       </div>
 
-
-      <div
-        style="
-          margin-top:24px;
-        "
-      >
+      <div style="margin-top:24px;">
 
         <label class="toggle-row">
 
@@ -3641,7 +3128,6 @@ function paymentStepHTML() {
             </span>
 
           </span>
-
 
           <input
             id="depositPaid"
@@ -3661,7 +3147,6 @@ function paymentStepHTML() {
         </label>
 
       </div>
-
 
       <div class="field">
 
@@ -3684,7 +3169,6 @@ function paymentStepHTML() {
 
       </div>
 
-
       <div class="detail-row">
 
         <span>
@@ -3692,23 +3176,18 @@ function paymentStepHTML() {
         </span>
 
         <strong id="depositReceivedDisplay">
-
           ${
             wizard.depositPaid
               ? money(wizard.depositAmount)
               : money(0)
           }
-
         </strong>
 
       </div>
 
-
       <div
         class="detail-row"
-        style="
-          font-size:1.1rem;
-        "
+        style="font-size:1.1rem;"
       >
 
         <span>
@@ -3721,48 +3200,41 @@ function paymentStepHTML() {
 
       </div>
 
-
     </div>
   `;
-
 }
 
 
 /* =========================================================
-   STEP 6 — REVIEW
+   REVIEW
 ========================================================= */
 
 function reviewStepHTML() {
-
   recalculatePayment();
 
   buildReservationsForWizard();
 
-
   return `
     <div class="card detail-card">
 
-
       <div class="card-label">
-        Ready to create
+        ${
+          wizardMode === "edit"
+            ? "Review changes"
+            : "Ready to create"
+        }
       </div>
 
-
-      <h2
-        style="margin-top:6px;"
-      >
+      <h2 style="margin-top:6px;">
         ${escapeHTML(
           wizard.name ||
           "Untitled Event"
         )}
       </h2>
 
-
       <div class="detail-row">
 
-        <span>
-          Date
-        </span>
+        <span>Date</span>
 
         <strong>
           ${formatDate(wizard.date)}
@@ -3770,12 +3242,9 @@ function reviewStepHTML() {
 
       </div>
 
-
       <div class="detail-row">
 
-        <span>
-          Time
-        </span>
+        <span>Time</span>
 
         <strong>
           ${
@@ -3787,12 +3256,21 @@ function reviewStepHTML() {
 
       </div>
 
+      <div class="detail-row">
+
+        <span>Address</span>
+
+        <strong>
+          ${escapeHTML(
+            wizard.address || "—"
+          )}
+        </strong>
+
+      </div>
 
       <div class="detail-row">
 
-        <span>
-          Host
-        </span>
+        <span>Host</span>
 
         <strong>
           ${escapeHTML(
@@ -3802,12 +3280,9 @@ function reviewStepHTML() {
 
       </div>
 
-
       <div class="detail-row">
 
-        <span>
-          Guests
-        </span>
+        <span>Guests</span>
 
         <strong>
           ${wizard.guestCount || "—"}
@@ -3815,12 +3290,9 @@ function reviewStepHTML() {
 
       </div>
 
-
       <div class="detail-row">
 
-        <span>
-          Package
-        </span>
+        <span>Package</span>
 
         <strong>
           ${escapeHTML(
@@ -3830,12 +3302,9 @@ function reviewStepHTML() {
 
       </div>
 
-
       <div class="detail-row">
 
-        <span>
-          Event total
-        </span>
+        <span>Event total</span>
 
         <strong>
           ${money(wizard.total)}
@@ -3843,31 +3312,23 @@ function reviewStepHTML() {
 
       </div>
 
-
       <div class="detail-row">
 
-        <span>
-          Deposit
-        </span>
+        <span>Deposit</span>
 
         <strong>
-
           ${
             wizard.depositPaid
               ? `✓ ${money(wizard.depositAmount)} received`
               : "Not received"
           }
-
         </strong>
 
       </div>
 
-
       <div class="detail-row">
 
-        <span>
-          Remaining
-        </span>
+        <span>Remaining</span>
 
         <strong>
           ${money(wizard.balanceDue)}
@@ -3875,21 +3336,13 @@ function reviewStepHTML() {
 
       </div>
 
-
     </div>
-
 
     <section class="section">
 
-
       <div class="section-heading">
-
-        <h2>
-          Plush
-        </h2>
-
+        <h2>Plush</h2>
       </div>
-
 
       <div class="card detail-card">
 
@@ -3898,14 +3351,11 @@ function reviewStepHTML() {
 
             ? wizard.selectedPlush
                 .map(plushId => {
-
                   const plush =
                     PLUSH_OPTIONS.find(
                       option =>
-                        option.id ===
-                        plushId
+                        option.id === plushId
                     );
-
 
                   return `
                     <div class="requirement-row">
@@ -3924,7 +3374,6 @@ function reviewStepHTML() {
 
                     </div>
                   `;
-
                 })
                 .join("")
 
@@ -3937,24 +3386,15 @@ function reviewStepHTML() {
 
       </div>
 
-
     </section>
-
 
     <section class="section">
 
-
       <div class="section-heading">
-
-        <h2>
-          Inventory Reservations
-        </h2>
-
+        <h2>Inventory Reservations</h2>
       </div>
 
-
       <div class="card detail-card">
-
 
         ${
           wizard.reservations.length
@@ -3962,7 +3402,6 @@ function reviewStepHTML() {
             ? wizard.reservations
                 .map(
                   reservation => {
-
                     const item =
                       getInventoryItem(
                         reservation.itemId
@@ -3984,7 +3423,6 @@ function reviewStepHTML() {
 
                       </div>
                     `;
-
                   }
                 )
                 .join("")
@@ -3996,43 +3434,67 @@ function reviewStepHTML() {
             `
         }
 
-
       </div>
-
 
     </section>
 
+    <section class="section">
+
+      <div class="section-heading">
+        <h2>Notes</h2>
+      </div>
+
+      <div class="card form-card">
+
+        <div class="field">
+
+          <label>
+            Event notes
+          </label>
+
+          <textarea
+            id="eventNotes"
+            placeholder="Setup details, special requests, things to remember..."
+          >${escapeHTML(wizard.eventNotes || "")}</textarea>
+
+        </div>
+
+      </div>
+
+    </section>
 
     <div class="status-banner">
 
-      Confirming this event will add it
-      to Home and Events and immediately
-      reserve the inventory shown above.
+      ${
+        wizardMode === "edit"
+          ? `
+            Saving will automatically update the
+            event total and inventory reservations.
+          `
+          : `
+            Confirming this event will add it
+            to Home and Events and immediately
+            reserve the inventory shown above.
+          `
+      }
 
     </div>
   `;
-
 }
 
 
 /* =========================================================
-   SYNC CURRENT FORM
+   FORM SYNC
 ========================================================= */
 
 function syncWizardFromCurrentStep() {
-
-  if (!wizard) {
-    return;
-  }
-
+  if (!wizard) return;
 
   const get =
     id =>
       document.getElementById(id);
 
-
   if (wizardStep === 0) {
-
     if (get("eventName")) {
       wizard.name =
         get("eventName").value;
@@ -4053,6 +3515,11 @@ function syncWizardFromCurrentStep() {
         get("eventTime").value;
     }
 
+    if (get("eventAddress")) {
+      wizard.address =
+        get("eventAddress").value;
+    }
+
     if (get("hostName")) {
       wizard.hostName =
         get("hostName").value;
@@ -4067,202 +3534,294 @@ function syncWizardFromCurrentStep() {
       wizard.hostEmail =
         get("hostEmail").value;
     }
-
   }
-
 
   if (wizardStep === 1) {
-
-    if (get("eventAddress")) {
-      wizard.address =
-        get("eventAddress").value;
-    }
-
-    if (get("arrivalNotes")) {
-      wizard.arrivalNotes =
-        get("arrivalNotes").value;
-    }
-
+    syncPartyFields();
   }
-
 
   if (wizardStep === 2) {
-
-    if (get("guestCount")) {
-
-      wizard.guestCount =
-        Number(
-          get("guestCount").value || 0
-        );
-
-    }
-
-    if (get("specialGuestName")) {
-
-      wizard.specialGuestName =
-        get("specialGuestName").value;
-
-    }
-
-    if (get("specialGuestAge")) {
-
-      wizard.specialGuestAge =
-        get("specialGuestAge").value;
-
-    }
-
-  }
-
-
-  if (wizardStep === 3) {
-
     if (get("extraOutfits")) {
-
       wizard.extraOutfits =
         Number(
           get("extraOutfits").value || 0
         );
-
     }
 
     if (get("voiceChips")) {
-
       wizard.voiceChips =
         Number(
           get("voiceChips").value || 0
         );
-
     }
 
     if (get("extraShirts")) {
-
       wizard.extraShirts =
         Number(
           get("extraShirts").value || 0
         );
-
     }
 
     if (get("extraVinyl")) {
-
       wizard.extraVinyl =
         Number(
           get("extraVinyl").value || 0
         );
-
     }
 
     if (get("customRequirements")) {
-
       wizard.customRequirements =
         get("customRequirements").value;
-
     }
-
   }
 
-
-  if (wizardStep === 4) {
-
+  if (wizardStep === 3) {
     if (get("customTotal")) {
-
       wizard.customTotal =
         Number(
           get("customTotal").value || 0
         );
-
     }
 
     if (get("depositAmount")) {
-
       wizard.depositAmount =
         Number(
           get("depositAmount").value || 0
         );
-
     }
 
     if (get("depositPaid")) {
-
       wizard.depositPaid =
         get("depositPaid").checked;
-
     }
-
   }
 
+  if (wizardStep === 4) {
+    if (get("eventNotes")) {
+      wizard.eventNotes =
+        get("eventNotes").value;
+    }
+  }
 
   recalculatePayment();
+}
 
+function syncPartyFields() {
+  const guestCount =
+    document.getElementById(
+      "guestCount"
+    );
+
+  const specialGuestName =
+    document.getElementById(
+      "specialGuestName"
+    );
+
+  const specialGuestAge =
+    document.getElementById(
+      "specialGuestAge"
+    );
+
+  if (guestCount) {
+    wizard.guestCount =
+      Number(
+        guestCount.value || 0
+      );
+  }
+
+  if (specialGuestName) {
+    wizard.specialGuestName =
+      specialGuestName.value;
+  }
+
+  if (specialGuestAge) {
+    wizard.specialGuestAge =
+      specialGuestAge.value;
+  }
 }
 
 
 /* =========================================================
-   WIZARD CONTROLS
+   NO-JUMP PACKAGE + PLUSH CONTROLS
+========================================================= */
+
+function selectPackageWithoutJump(
+  button,
+  packageName
+) {
+  syncPartyFields();
+
+  wizard.package =
+    packageName;
+
+  document
+    .querySelectorAll(
+      ".package-choice"
+    )
+    .forEach(packageButton => {
+      packageButton.classList.remove(
+        "selected"
+      );
+    });
+
+  button.classList.add(
+    "selected"
+  );
+
+  /*
+    $40 defaults to all 6 plush.
+    Do this without rerendering the page.
+  */
+
+  if (
+    packageName === "$40 Package"
+  ) {
+    wizard.selectedPlush =
+      PLUSH_OPTIONS.map(
+        plush => plush.id
+      );
+
+    document
+      .querySelectorAll(
+        ".plush-choice"
+      )
+      .forEach(plushButton => {
+        plushButton.classList.add(
+          "selected"
+        );
+
+        const check =
+          plushButton.querySelector(
+            ".plush-check"
+          );
+
+        if (check) {
+          check.textContent = "✓ ";
+        }
+      });
+
+    updatePlushReservationLabels();
+  }
+}
+
+function togglePlushWithoutJump(
+  button,
+  plushId
+) {
+  syncPartyFields();
+
+  const currentlySelected =
+    wizard.selectedPlush.includes(
+      plushId
+    );
+
+  if (currentlySelected) {
+    wizard.selectedPlush =
+      wizard.selectedPlush.filter(
+        id => id !== plushId
+      );
+
+    button.classList.remove(
+      "selected"
+    );
+  } else {
+    wizard.selectedPlush.push(
+      plushId
+    );
+
+    button.classList.add(
+      "selected"
+    );
+  }
+
+  const check =
+    button.querySelector(
+      ".plush-check"
+    );
+
+  if (check) {
+    check.textContent =
+      currentlySelected
+        ? ""
+        : "✓ ";
+  }
+
+  updatePlushReservationLabels();
+}
+
+function updatePlushReservationLabels() {
+  const guestField =
+    document.getElementById(
+      "guestCount"
+    );
+
+  const guestCount =
+    Number(
+      guestField?.value || 0
+    );
+
+  wizard.guestCount =
+    guestCount;
+
+  document
+    .querySelectorAll(
+      ".plush-reservation-label"
+    )
+    .forEach(label => {
+      label.textContent =
+        guestCount > 0
+          ? `${guestCount + 2} will be reserved`
+          : "Enter guest count above";
+    });
+}
+
+
+/* =========================================================
+   WIZARD NAVIGATION
 ========================================================= */
 
 function goToWizardStep(index) {
-
   syncWizardFromCurrentStep();
 
   wizardStep = index;
 
   renderWizard();
-
 }
 
-
 function wizardNext() {
-
   syncWizardFromCurrentStep();
-
 
   if (
     wizardStep === 0 &&
     !wizard.name.trim()
   ) {
-
     alert(
       "Give the event a name first."
     );
 
     return;
-
   }
 
-
-  if (
-    wizardStep === 2
-  ) {
-
+  if (wizardStep === 1) {
     if (
       !wizard.guestCount ||
       wizard.guestCount < 1
     ) {
-
       alert(
         "Enter the guest count."
       );
 
       return;
-
     }
 
-
-    if (
-      !wizard.package
-    ) {
-
+    if (!wizard.package) {
       alert(
         "Choose a package or Custom."
       );
 
       return;
-
     }
-
   }
-
 
   wizardStep =
     Math.min(
@@ -4270,14 +3829,10 @@ function wizardNext() {
       wizardStep + 1
     );
 
-
   renderWizard();
-
 }
 
-
 function wizardBack() {
-
   syncWizardFromCurrentStep();
 
   wizardStep =
@@ -4287,79 +3842,6 @@ function wizardBack() {
     );
 
   renderWizard();
-
-}
-
-
-/* =========================================================
-   PACKAGE + PLUSH SELECTION
-========================================================= */
-
-function selectPackage(
-  packageName
-) {
-
-  syncWizardFromCurrentStep();
-
-  wizard.package =
-    packageName;
-
-
-  /*
-    $40 currently includes
-    all six plush options.
-    Default them all on.
-
-    They can still be changed
-    manually if an unusual event
-    needs an exception.
-  */
-
-  if (
-    packageName === "$40 Package"
-  ) {
-
-    wizard.selectedPlush =
-      PLUSH_OPTIONS.map(
-        plush => plush.id
-      );
-
-  }
-
-
-  renderWizard();
-
-}
-
-
-function togglePlush(plushId) {
-
-  syncWizardFromCurrentStep();
-
-
-  if (
-    wizard.selectedPlush.includes(
-      plushId
-    )
-  ) {
-
-    wizard.selectedPlush =
-      wizard.selectedPlush.filter(
-        id =>
-          id !== plushId
-      );
-
-  } else {
-
-    wizard.selectedPlush.push(
-      plushId
-    );
-
-  }
-
-
-  renderWizard();
-
 }
 
 
@@ -4370,47 +3852,37 @@ function togglePlush(plushId) {
 function updateCustomTotalLive(
   value
 ) {
-
   wizard.customTotal =
     Number(value || 0);
 
   recalculatePayment();
 
   updatePaymentDisplay();
-
 }
-
 
 function updateDepositLive(
   checked
 ) {
-
   wizard.depositPaid =
     checked;
 
   recalculatePayment();
 
   updatePaymentDisplay();
-
 }
-
 
 function updateDepositAmountLive(
   value
 ) {
-
   wizard.depositAmount =
     Number(value || 0);
 
   recalculatePayment();
 
   updatePaymentDisplay();
-
 }
 
-
 function updatePaymentDisplay() {
-
   const total =
     document.getElementById(
       "paymentTotal"
@@ -4426,107 +3898,112 @@ function updatePaymentDisplay() {
       "balanceDueDisplay"
     );
 
-
   if (total) {
-
     total.textContent =
       money(wizard.total);
-
   }
 
-
   if (deposit) {
-
     deposit.textContent =
       wizard.depositPaid
         ? money(
             wizard.depositAmount
           )
         : money(0);
-
   }
 
-
   if (balance) {
-
     balance.textContent =
       money(
         wizard.balanceDue
       );
-
   }
-
 }
 
 
 /* =========================================================
-   CONFIRM EVENT
+   SAVE EVENT
 ========================================================= */
 
-function confirmEvent() {
-
+function saveEventFromWizard() {
   syncWizardFromCurrentStep();
 
   recalculatePayment();
 
   buildReservationsForWizard();
 
-
-  if (
-    !wizard.name.trim()
-  ) {
-
+  if (!wizard.name.trim()) {
     alert(
       "Event name is required."
     );
 
     return;
-
   }
 
-
-  if (
-    !wizard.selectedPlush.length
-  ) {
-
+  if (!wizard.selectedPlush.length) {
     const continueWithoutPlush =
       confirm(
-        "No plush options are selected. Create the event anyway?"
+        "No plush options are selected. Save the event anyway?"
       );
 
+    if (!continueWithoutPlush) {
+      return;
+    }
+  }
 
-    if (
-      !continueWithoutPlush
-    ) {
+  const savedEvent =
+    structuredClone(wizard);
+
+  if (
+    wizardMode === "edit" &&
+    editingEventId
+  ) {
+    const index =
+      state.events.findIndex(
+        event =>
+          event.id ===
+          editingEventId
+      );
+
+    if (index === -1) {
+      alert(
+        "That event could not be found."
+      );
+
       return;
     }
 
+    /*
+      Replace the event with the newly
+      calculated version.
+
+      Existing packing checkmarks stay
+      because the wizard was created
+      from the existing event.
+    */
+
+    state.events[index] =
+      savedEvent;
+  } else {
+    state.events.push(
+      savedEvent
+    );
   }
-
-
-  const event =
-    structuredClone(wizard);
-
-
-  state.events.push(
-    event
-  );
-
 
   saveState();
 
+  const savedId =
+    savedEvent.id;
+
   closeWizard();
 
-
   currentEventId =
-    event.id;
+    savedId;
 
   currentScreen =
     "event-detail";
 
-
   render();
-
 }
 
 
@@ -4535,28 +4012,21 @@ function confirmEvent() {
 ========================================================= */
 
 function closeModal() {
-
   document.getElementById(
     "modalRoot"
   ).innerHTML = "";
-
 }
-
 
 function closeModalFromBackdrop(
   event
 ) {
-
   if (
     event.target.classList.contains(
       "modal-backdrop"
     )
   ) {
-
     closeModal();
-
   }
-
 }
 
 
@@ -4567,20 +4037,15 @@ function closeModalFromBackdrop(
 document
   .querySelectorAll(".nav-item")
   .forEach(button => {
-
     button.addEventListener(
       "click",
       () => {
-
         navigate(
           button.dataset.screen
         );
-
       }
     );
-
   });
-
 
 document
   .getElementById(
@@ -4589,17 +4054,12 @@ document
   .addEventListener(
     "click",
     () => {
-
       if (
         currentScreen === "events"
       ) {
-
         openAddEventWizard();
-
       }
-
     }
   );
-
 
 render();
