@@ -166,7 +166,7 @@ let state = createInitialState();
 
 let currentScreen = "home";
 let currentEventId = null;
-
+let activeEventTab = "info";
 let wizard = null;
 let wizardStep = 0;
 
@@ -1111,8 +1111,13 @@ function renderEvents() {
 function openEvent(id) {
   currentEventId = id;
   currentScreen = "event-detail";
+  activeEventTab = "info";
 
   render();
+}
+function setEventTab(tab) {
+  activeEventTab = tab;
+  renderEventDetail();
 }
 
 function renderEventDetail() {
@@ -1180,6 +1185,10 @@ function renderEventDetail() {
   const packingTotal =
     event.packing.length;
 
+  const packingComplete =
+    packingTotal > 0 &&
+    packingDone === packingTotal;
+
   let html = `
     <button
       class="back-button"
@@ -1188,27 +1197,32 @@ function renderEventDetail() {
       ← Events
     </button>
 
-    <div class="detail-header">
+    <div class="event-top-card">
 
-      <div class="card-label">
-        ${
-          event.eventType
-            ? escapeHTML(event.eventType)
-            : "Event"
-        }
-      </div>
+      <div class="event-top-copy">
 
-      <h2>
-        ${escapeHTML(event.name)}
-      </h2>
+        <div class="card-label">
+          ${
+            event.eventType
+              ? escapeHTML(event.eventType)
+              : "Event"
+          }
+        </div>
 
-      <div class="muted">
-        ${formatDate(event.date)}
-        ${
-          event.time
-            ? ` · ${formatTime(event.time)}`
-            : ""
-        }
+        <h2>
+          ${escapeHTML(event.name)}
+        </h2>
+
+        <div class="muted">
+          ${formatDate(event.date)}
+
+          ${
+            event.time
+              ? ` · ${formatTime(event.time)}`
+              : ""
+          }
+        </div>
+
       </div>
 
       <div class="meta-row">
@@ -1266,497 +1280,509 @@ function renderEventDetail() {
 
       </div>
 
-      <div
-        class="card detail-card"
-        style="margin-top:16px;"
-      >
-
-        <div class="detail-row">
-          <span>Location</span>
-
-          <strong>
-            ${escapeHTML(
-              event.address || "Not added"
-            )}
-          </strong>
-        </div>
-
-        <div class="detail-row">
-          <span>Host</span>
-
-          <strong>
-            ${escapeHTML(
-              event.hostName || "Not added"
-            )}
-          </strong>
-        </div>
-
-        <div class="detail-row">
-          <span>Balance</span>
-
-          <strong>
-            ${money(event.balanceDue)}
-          </strong>
-        </div>
-
-      </div>
-
-      <div
-        class="inline-fields"
-        style="margin-top:14px;"
-      >
-
-        <button
-          class="primary-button"
-          onclick="openEditEvent('${event.id}')"
-        >
-          Edit Event
-        </button>
-
-        ${
-          mapUrl
-            ? `
-                <a
-                  class="secondary-button"
-                  href="${escapeHTML(mapUrl)}"
-                  target="_blank"
-                  rel="noopener"
-                >
-                  Maps
-                </a>
-              `
-            : ""
-        }
-
-        ${
-          phoneHref
-            ? `
-                <a
-                  class="secondary-button"
-                  href="tel:${escapeHTML(phoneHref)}"
-                >
-                  Call
-                </a>
-
-                <a
-                  class="secondary-button"
-                  href="sms:${escapeHTML(phoneHref)}"
-                >
-                  Text
-                </a>
-              `
-            : ""
-        }
-
-        ${
-          event.hostEmail
-            ? `
-                <a
-                  class="secondary-button"
-                  href="mailto:${escapeHTML(event.hostEmail)}"
-                >
-                  Email
-                </a>
-              `
-            : ""
-        }
-
-      </div>
-
     </div>
-  `;
 
-  if (issues.length) {
-    html += `
-      <section class="section">
 
-        <div class="section-heading">
-          <h2>Needs Attention</h2>
-        </div>
-
-        <div class="card detail-card">
-    `;
-
-    issues.forEach(issue => {
-      html += `
-        <div class="attention-row">
-
-          <strong>
-            ${escapeHTML(issue)}
-          </strong>
-
-          <span class="warning-text">
-            !
-          </span>
-
-        </div>
-      `;
-    });
-
-    html += `
-        </div>
-      </section>
-    `;
-  }
-
-  /*
-     REQUIREMENTS
-  */
-
-  html += `
-    <details
-      class="card detail-card"
-      open
-      style="margin-top:18px;"
+    <div
+      class="event-tabs"
+      role="tablist"
+      aria-label="Event sections"
     >
 
-      <summary
-        style="
-          cursor:pointer;
-          font-weight:800;
-          font-size:1.05rem;
-          list-style:none;
+      <button
+        class="
+          event-tab
+          ${
+            activeEventTab === "info"
+              ? "active"
+              : ""
+          }
         "
+        onclick="setEventTab('info')"
+        role="tab"
+        aria-selected="${
+          activeEventTab === "info"
+        }"
       >
-        Requirements
-      </summary>
 
-      <div style="margin-top:18px;">
-  `;
-
-  if (event.selectedPlush?.length) {
-    html += `
-      <div class="muted"
-        style="
-          font-size:.8rem;
-          font-weight:800;
-          margin-bottom:8px;
-        "
-      >
-        PLUSH
-      </div>
-    `;
-
-    event.selectedPlush.forEach(
-      plushId => {
-        const plush =
-          PLUSH_OPTIONS.find(
-            p => p.id === plushId
-          );
-
-        const reservation =
-          event.reservations?.find(
-            r => r.itemId === plushId
-          );
-
-        html += `
-          <div class="requirement-row">
-
-            <span>
-              ${escapeHTML(
-                plush?.name || plushId
-              )}
-            </span>
-
-            <strong>
-              ${reservation?.quantity || 0}
-            </strong>
-
-          </div>
-        `;
-      }
-    );
-  }
-
-  if (nonPlushReservations.length) {
-    html += `
-      <div
-        class="muted"
-        style="
-          font-size:.8rem;
-          font-weight:800;
-          margin-top:18px;
-          margin-bottom:8px;
-        "
-      >
-        SUPPLIES
-      </div>
-    `;
-
-    nonPlushReservations
-      .forEach(reservation => {
-        const item =
-          getInventoryItem(
-            reservation.itemId
-          );
-
-        if (!item) return;
-
-        html += `
-          <div class="requirement-row">
-
-            <span>
-              ${escapeHTML(item.name)}
-            </span>
-
-            <strong>
-              ${reservation.quantity}
-            </strong>
-
-          </div>
-        `;
-      });
-  }
-
-  if (event.customRequirements) {
-    html += `
-      <div
-        class="muted"
-        style="
-          font-size:.8rem;
-          font-weight:800;
-          margin-top:18px;
-          margin-bottom:8px;
-        "
-      >
-        CUSTOM
-      </div>
-
-      <div style="white-space:pre-wrap;">
-        ${escapeHTML(
-          event.customRequirements
-        )}
-      </div>
-    `;
-  }
-
-  if (
-    !event.selectedPlush?.length &&
-    !nonPlushReservations.length &&
-    !event.customRequirements
-  ) {
-    html += `
-      <div class="muted">
-        No requirements added.
-      </div>
-    `;
-  }
-
-  html += `
-      </div>
-    </details>
-  `;
-
-  /*
-     PREP & PACKING
-  */
-
-  html += `
-    <details
-      class="card detail-card"
-      style="margin-top:12px;"
-    >
-
-      <summary
-        style="
-          cursor:pointer;
-          font-weight:800;
-          font-size:1.05rem;
-          list-style:none;
-        "
-      >
-        Prep & Packing
-        <span
-          class="muted"
-          style="
-            float:right;
-            font-size:.85rem;
-          "
-        >
-          ${packingDone}/${packingTotal}
+        <span class="event-tab-icon">
+          ♥
         </span>
-      </summary>
-
-      <div style="margin-top:18px;">
-  `;
-
-  event.packing.forEach(item => {
-    html += `
-      <label class="toggle-row">
 
         <span>
-          ${escapeHTML(item.name)}
+          Info
         </span>
 
-        <input
-          type="checkbox"
-          ${item.done ? "checked" : ""}
-          onchange="
-            togglePacking(
-              '${event.id}',
-              '${item.id}',
-              this.checked
-            )
-          "
-        />
+      </button>
 
-      </label>
-    `;
-  });
 
-  html += `
-      </div>
-    </details>
-  `;
-
-  /*
-     REMINDERS
-  */
-
-  html += `
-    <details
-      class="card detail-card"
-      style="margin-top:12px;"
-    >
-
-      <summary
-        style="
-          cursor:pointer;
-          font-weight:800;
-          font-size:1.05rem;
-          list-style:none;
+      <button
+        class="
+          event-tab
+          ${
+            activeEventTab === "prep"
+              ? "active"
+              : ""
+          }
         "
+        onclick="setEventTab('prep')"
+        role="tab"
+        aria-selected="${
+          activeEventTab === "prep"
+        }"
       >
-        Reminders
+
+        <span class="event-tab-icon">
+          ✦
+        </span>
+
+        <span>
+          Prep
+        </span>
 
         ${
-          reminders.length
+          issues.length
             ? `
-                <span
-                  class="pill warning"
-                  style="float:right;"
-                >
-                  ${reminders.length}
+                <span class="event-tab-badge">
+                  ${issues.length}
                 </span>
               `
             : ""
         }
-      </summary>
 
-      <div style="margin-top:18px;">
+      </button>
 
-        <button
-          class="primary-button full-width"
-          onclick="addEventReminder('${event.id}')"
-        >
-          + Add Reminder
-        </button>
-  `;
 
-  if (!reminders.length) {
-    html += `
-      <div
-        class="muted"
-        style="
-          margin-top:16px;
-          text-align:center;
+      <button
+        class="
+          event-tab
+          ${
+            activeEventTab === "pack"
+              ? "active"
+              : ""
+          }
         "
+        onclick="setEventTab('pack')"
+        role="tab"
+        aria-selected="${
+          activeEventTab === "pack"
+        }"
       >
-        Nothing to remember yet.
-      </div>
-    `;
-  } else {
-    html += `
-      <div style="margin-top:14px;">
-    `;
 
-    reminders.forEach(reminder => {
-      html += `
-        <div class="attention-row">
+        <span class="event-tab-icon">
+          ✓
+        </span>
 
-          <div>
+        <span>
+          Pack
+        </span>
 
-            <strong>
-              ${escapeHTML(reminder.title)}
-            </strong>
+        <span class="event-tab-count">
+          ${packingDone}/${packingTotal}
+        </span>
 
-            ${
-              reminder.remindBy
-                ? `
-                    <div class="muted">
-                      Due
-                      ${escapeHTML(
-                        formatReminderDue(
-                          reminder.remindBy
-                        )
-                      )}
-                    </div>
-                  `
-                : ""
-            }
+      </button>
 
-          </div>
+    </div>
 
-          <button
-            class="text-button"
-            onclick="
-              completeReminder(
-                '${reminder.id}'
-              )
-            "
-            aria-label="Complete reminder"
-          >
-            ✓
-          </button>
 
-        </div>
-      `;
-    });
-
-    html += `
-      </div>
-    `;
-  }
-
-  html += `
-      </div>
-    </details>
+    <div class="event-tab-panel">
   `;
+
 
   /*
-     NOTES
+     INFO TAB
   */
 
-  html += `
-    <details
-      class="card detail-card"
-      style="margin-top:12px;"
-    >
+  if (activeEventTab === "info") {
 
-      <summary
-        style="
-          cursor:pointer;
-          font-weight:800;
-          font-size:1.05rem;
-          list-style:none;
+    html += `
+      <div class="event-section-heading">
+
+        <div>
+
+          <div class="card-label">
+            Event details
+          </div>
+
+          <h3>
+            The basics
+          </h3>
+
+        </div>
+
+        <button
+          class="secondary-button compact-button"
+          onclick="
+            openEditEvent(
+              '${event.id}'
+            )
+          "
+        >
+          Edit
+        </button>
+
+      </div>
+
+
+      <div
+        class="
+          card
+          detail-card
+          event-info-card
         "
       >
-        Notes
-      </summary>
 
-      <div style="margin-top:18px;">
+        <div class="detail-row">
+
+          <span>
+            Location
+          </span>
+
+          <strong>
+            ${escapeHTML(
+              event.address ||
+              "Not added"
+            )}
+          </strong>
+
+        </div>
+
+
+        <div class="detail-row">
+
+          <span>
+            Host
+          </span>
+
+          <strong>
+            ${escapeHTML(
+              event.hostName ||
+              "Not added"
+            )}
+          </strong>
+
+        </div>
+
+
+        <div class="detail-row">
+
+          <span>
+            Guests
+          </span>
+
+          <strong>
+            ${
+              event.guestCount ||
+              "Not added"
+            }
+          </strong>
+
+        </div>
+
+
+        <div class="detail-row">
+
+          <span>
+            Package
+          </span>
+
+          <strong>
+            ${escapeHTML(
+              event.package ||
+              "Not added"
+            )}
+          </strong>
+
+        </div>
+
+      </div>
+    `;
+
+
+    if (
+      mapUrl ||
+      phoneHref ||
+      event.hostEmail
+    ) {
+
+      html += `
+        <div class="event-action-grid">
+      `;
+
+      if (mapUrl) {
+        html += `
+          <a
+            class="event-action-button"
+            href="${escapeHTML(mapUrl)}"
+            target="_blank"
+            rel="noopener"
+          >
+            <span>⌖</span>
+            Maps
+          </a>
+        `;
+      }
+
+      if (phoneHref) {
+        html += `
+          <a
+            class="event-action-button"
+            href="tel:${escapeHTML(phoneHref)}"
+          >
+            <span>☎</span>
+            Call
+          </a>
+
+          <a
+            class="event-action-button"
+            href="sms:${escapeHTML(phoneHref)}"
+          >
+            <span>✉</span>
+            Text
+          </a>
+        `;
+      }
+
+      if (event.hostEmail) {
+        html += `
+          <a
+            class="event-action-button"
+            href="mailto:${escapeHTML(
+              event.hostEmail
+            )}"
+          >
+            <span>＠</span>
+            Email
+          </a>
+        `;
+      }
+
+      html += `
+        </div>
+      `;
+    }
+
+
+    html += `
+      <div class="event-section-heading">
+
+        <div>
+
+          <div class="card-label">
+            Money
+          </div>
+
+          <h3>
+            Payment
+          </h3>
+
+        </div>
+
+      </div>
+
+
+      <div class="card detail-card">
+
+        <div class="detail-row">
+
+          <span>
+            Total
+          </span>
+
+          <strong>
+            ${money(event.total)}
+          </strong>
+
+        </div>
+
+
+        <div class="detail-row">
+
+          <span>
+            Deposit
+          </span>
+
+          <strong>
+
+            ${
+              event.depositPaid
+                ? `
+                    ✓
+                    ${money(
+                      event.depositAmount
+                    )}
+                    received
+                  `
+                : "Not received"
+            }
+
+          </strong>
+
+        </div>
+
+
+        <div class="detail-row">
+
+          <span>
+            Remaining
+          </span>
+
+          <strong>
+            ${money(event.balanceDue)}
+          </strong>
+
+        </div>
+
+      </div>
+
+
+      <div class="event-section-heading">
+
+        <div>
+
+          <div class="card-label">
+            Don't forget
+          </div>
+
+          <h3>
+            Reminders
+          </h3>
+
+        </div>
+
+        <button
+          class="secondary-button compact-button"
+          onclick="
+            addEventReminder(
+              '${event.id}'
+            )
+          "
+        >
+          + Add
+        </button>
+
+      </div>
+
+
+      <div class="card detail-card">
+    `;
+
+
+    if (!reminders.length) {
+
+      html += `
+        <div class="event-empty-mini">
+          Nothing to remember for
+          this event yet.
+        </div>
+      `;
+
+    } else {
+
+      reminders.forEach(
+        reminder => {
+
+          html += `
+            <div class="attention-row">
+
+              <div>
+
+                <strong>
+                  ${escapeHTML(
+                    reminder.title
+                  )}
+                </strong>
+
+                ${
+                  reminder.remindBy
+                    ? `
+                        <div class="muted">
+                          Due
+                          ${escapeHTML(
+                            formatReminderDue(
+                              reminder.remindBy
+                            )
+                          )}
+                        </div>
+                      `
+                    : ""
+                }
+
+              </div>
+
+              <button
+                class="
+                  reminder-done-button
+                "
+                onclick="
+                  completeReminder(
+                    '${reminder.id}'
+                  )
+                "
+                aria-label="
+                  Complete reminder
+                "
+              >
+                ✓
+              </button>
+
+            </div>
+          `;
+        }
+      );
+    }
+
+
+    html += `
+      </div>
+
+
+      <div class="event-section-heading">
+
+        <div>
+
+          <div class="card-label">
+            Reference
+          </div>
+
+          <h3>
+            Notes
+          </h3>
+
+        </div>
+
+      </div>
+
+
+      <div
+        class="
+          card
+          detail-card
+          event-notes-card
+        "
+      >
 
         ${
           event.eventNotes
             ? `
-                <div style="white-space:pre-wrap;">
+                <div
+                  style="
+                    white-space:
+                    pre-wrap;
+                  "
+                >
                   ${escapeHTML(
                     event.eventNotes
                   )}
                 </div>
               `
             : `
-                <div class="muted">
+                <div
+                  class="
+                    event-empty-mini
+                  "
+                >
                   No notes added.
                 </div>
               `
@@ -1764,138 +1790,573 @@ function renderEventDetail() {
 
       </div>
 
-    </details>
-  `;
 
-  /*
-     PAYMENT
-  */
+      <div class="event-section-heading">
 
-  html += `
-    <details
-      class="card detail-card"
-      style="margin-top:12px;"
-    >
+        <div>
 
-      <summary
-        style="
-          cursor:pointer;
-          font-weight:800;
-          font-size:1.05rem;
-          list-style:none;
-        "
-      >
-        Payment
+          <div class="card-label">
+            After the event
+          </div>
 
-        <span
-          class="muted"
-          style="
-            float:right;
-            font-size:.85rem;
-          "
-        >
-          ${money(event.balanceDue)} due
-        </span>
+          <h3>
+            Closeout
+          </h3>
 
-      </summary>
-
-      <div style="margin-top:18px;">
-
-        <div class="detail-row">
-          <span>Total</span>
-
-          <strong>
-            ${money(event.total)}
-          </strong>
-        </div>
-
-        <div class="detail-row">
-          <span>Deposit</span>
-
-          <strong>
-            ${
-              event.depositPaid
-                ? `✓ ${money(
-                    event.depositAmount
-                  )} received`
-                : "Not received"
-            }
-          </strong>
-        </div>
-
-        <div class="detail-row">
-          <span>Remaining</span>
-
-          <strong>
-            ${money(event.balanceDue)}
-          </strong>
         </div>
 
       </div>
 
-    </details>
-  `;
 
-  /*
-     CLOSEOUT
-  */
-
-  html += `
-    <details
-      class="card detail-card"
-      style="margin-top:12px;"
-    >
-
-      <summary
-        style="
-          cursor:pointer;
-          font-weight:800;
-          font-size:1.05rem;
-          list-style:none;
-        "
-      >
-        Closeout
-      </summary>
-
-      <div style="margin-top:18px;">
+      <div class="card detail-card">
 
         ${
           event.closed
             ? `
-                <div class="status-banner">
+                <div
+                  class="
+                    event-complete-message
+                  "
+                >
                   ✓ Event closed out
                 </div>
               `
             : `
-                <div class="muted">
-                  After the event, this is where
-                  final counts, inventory reconciliation,
-                  payment confirmation and completion
-                  will live.
+                <div
+                  class="
+                    event-empty-mini
+                  "
+                >
+                  Final counts,
+                  inventory reconciliation
+                  and completion will live
+                  here.
                 </div>
               `
         }
 
       </div>
 
-    </details>
-  `;
-
-  /*
-     DELETE
-  */
-
-  html += `
-    <section class="section">
 
       <button
-        class="secondary-button full-width"
-        onclick="deleteEvent('${event.id}')"
+        class="event-delete-button"
+        onclick="
+          deleteEvent(
+            '${event.id}'
+          )
+        "
       >
         Delete Event
       </button>
+    `;
+  }
 
-    </section>
+
+  /*
+     PREP TAB
+  */
+
+  if (activeEventTab === "prep") {
+
+    if (issues.length) {
+
+      html += `
+        <div class="prep-alert-card">
+
+          <div class="prep-alert-icon">
+            !
+          </div>
+
+          <div>
+
+            <strong>
+              Needs attention
+            </strong>
+
+            <div class="muted">
+              ${issues.length}
+              thing${
+                issues.length === 1
+                  ? ""
+                  : "s"
+              }
+              to fix before this event.
+            </div>
+
+          </div>
+
+        </div>
+
+
+        <div
+          class="
+            card
+            detail-card
+            prep-issues-card
+          "
+        >
+      `;
+
+      issues.forEach(issue => {
+
+        html += `
+          <div class="attention-row">
+
+            <strong>
+              ${escapeHTML(issue)}
+            </strong>
+
+            <span class="warning-text">
+              !
+            </span>
+
+          </div>
+        `;
+      });
+
+      html += `
+        </div>
+      `;
+
+    } else {
+
+      html += `
+        <div class="prep-ready-card">
+
+          <div class="prep-ready-icon">
+            ♥
+          </div>
+
+          <div>
+
+            <strong>
+              Prep is looking good.
+            </strong>
+
+            <div class="muted">
+              Nothing is currently
+              blocking this event.
+            </div>
+
+          </div>
+
+        </div>
+      `;
+    }
+
+
+    html += `
+      <div class="event-section-heading">
+
+        <div>
+
+          <div class="card-label">
+            Get ready
+          </div>
+
+          <h3>
+            Plush
+          </h3>
+
+        </div>
+
+      </div>
+
+
+      <div class="card detail-card">
+    `;
+
+
+    if (event.selectedPlush?.length) {
+
+      event.selectedPlush.forEach(
+        plushId => {
+
+          const plush =
+            PLUSH_OPTIONS.find(
+              p =>
+                p.id === plushId
+            );
+
+          const reservation =
+            event.reservations?.find(
+              r =>
+                r.itemId === plushId
+            );
+
+          html += `
+            <div
+              class="
+                requirement-row
+                prep-requirement-row
+              "
+            >
+
+              <div>
+
+                <strong>
+                  ${escapeHTML(
+                    plush?.name ||
+                    plushId
+                  )}
+                </strong>
+
+                <div class="muted">
+                  Guest count +
+                  2 backups
+                </div>
+
+              </div>
+
+              <span
+                class="
+                  prep-quantity
+                "
+              >
+                ${
+                  reservation?.quantity ||
+                  0
+                }
+              </span>
+
+            </div>
+          `;
+        }
+      );
+
+    } else {
+
+      html += `
+        <div class="event-empty-mini">
+          No plush selected yet.
+        </div>
+      `;
+    }
+
+
+    html += `
+      </div>
+
+
+      <div class="event-section-heading">
+
+        <div>
+
+          <div class="card-label">
+            Pull from inventory
+          </div>
+
+          <h3>
+            Supplies & extras
+          </h3>
+
+        </div>
+
+      </div>
+
+
+      <div class="card detail-card">
+    `;
+
+
+    if (nonPlushReservations.length) {
+
+      nonPlushReservations.forEach(
+        reservation => {
+
+          const item =
+            getInventoryItem(
+              reservation.itemId
+            );
+
+          if (!item) return;
+
+          html += `
+            <div
+              class="
+                requirement-row
+                prep-requirement-row
+              "
+            >
+
+              <strong>
+                ${escapeHTML(
+                  item.name
+                )}
+              </strong>
+
+              <span
+                class="
+                  prep-quantity
+                "
+              >
+                ${
+                  reservation.quantity
+                }
+              </span>
+
+            </div>
+          `;
+        }
+      );
+
+    } else {
+
+      html += `
+        <div class="event-empty-mini">
+          No extra supplies reserved.
+        </div>
+      `;
+    }
+
+
+    html += `
+      </div>
+
+
+      <div class="event-section-heading">
+
+        <div>
+
+          <div class="card-label">
+            Special stuff
+          </div>
+
+          <h3>
+            Custom requirements
+          </h3>
+
+        </div>
+
+      </div>
+
+
+      <div
+        class="
+          card
+          detail-card
+          event-notes-card
+        "
+      >
+
+        ${
+          event.customRequirements
+            ? `
+                <div
+                  style="
+                    white-space:
+                    pre-wrap;
+                  "
+                >
+                  ${escapeHTML(
+                    event.customRequirements
+                  )}
+                </div>
+              `
+            : `
+                <div
+                  class="
+                    event-empty-mini
+                  "
+                >
+                  Nothing custom added
+                  for this event.
+                </div>
+              `
+        }
+
+      </div>
+
+
+      <button
+        class="
+          secondary-button
+          full-width
+        "
+        onclick="
+          openEditEvent(
+            '${event.id}'
+          )
+        "
+        style="
+          margin-top:16px;
+        "
+      >
+        Edit Event Requirements
+      </button>
+    `;
+  }
+
+
+  /*
+     PACK TAB
+  */
+
+  if (activeEventTab === "pack") {
+
+    const percentPacked =
+      packingTotal
+        ? Math.round(
+            (
+              packingDone /
+              packingTotal
+            ) * 100
+          )
+        : 0;
+
+
+    html += `
+      <div
+        class="
+          pack-progress-card
+          ${
+            packingComplete
+              ? "complete"
+              : ""
+          }
+        "
+      >
+
+        <div>
+
+          <div class="card-label">
+            Packing progress
+          </div>
+
+          <strong>
+            ${packingDone}
+            of
+            ${packingTotal}
+            packed
+          </strong>
+
+        </div>
+
+        <div
+          class="
+            pack-progress-number
+          "
+        >
+          ${percentPacked}%
+        </div>
+
+      </div>
+
+
+      <div class="pack-progress-track">
+
+        <div
+          class="
+            pack-progress-fill
+          "
+          style="
+            width:
+            ${percentPacked}%;
+          "
+        ></div>
+
+      </div>
+
+
+      <div
+        class="
+          event-section-heading
+          pack-heading
+        "
+      >
+
+        <div>
+
+          <div class="card-label">
+            Load up
+          </div>
+
+          <h3>
+            Packing checklist
+          </h3>
+
+        </div>
+
+      </div>
+
+
+      <div
+        class="
+          card
+          detail-card
+          pack-list-card
+        "
+      >
+    `;
+
+
+    event.packing.forEach(
+      item => {
+
+        html += `
+          <label
+            class="
+              toggle-row
+              pack-row
+              ${
+                item.done
+                  ? "done"
+                  : ""
+              }
+            "
+          >
+
+            <span>
+              ${escapeHTML(
+                item.name
+              )}
+            </span>
+
+            <input
+              type="checkbox"
+              ${
+                item.done
+                  ? "checked"
+                  : ""
+              }
+              onchange="
+                togglePacking(
+                  '${event.id}',
+                  '${item.id}',
+                  this.checked
+                )
+              "
+            />
+
+          </label>
+        `;
+      }
+    );
+
+
+    html += `
+      </div>
+
+      ${
+        packingComplete
+          ? `
+              <div
+                class="
+                  pack-done-message
+                "
+              >
+                ♥ Packed and ready
+                to go.
+              </div>
+            `
+          : ""
+      }
+    `;
+  }
+
+
+  html += `
+    </div>
   `;
 
   main.innerHTML = html;
