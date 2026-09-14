@@ -1,4 +1,73 @@
-const STORAGE_KEY = "swlOpsV1";
+const STORAGE_KEY = "swlOpsV2";
+
+/* =========================================================
+   BUSINESS DATA
+========================================================= */
+
+const PLUSH_OPTIONS = [
+  {
+    id: "golden",
+    name: "Golden Retriever"
+  },
+  {
+    id: "bear",
+    name: "Honey Bear"
+  },
+  {
+    id: "cat",
+    name: "Orange Cat"
+  },
+  {
+    id: "unicorn",
+    name: "Unicorn"
+  },
+  {
+    id: "dino",
+    name: "Dino"
+  },
+  {
+    id: "frog",
+    name: "Frog"
+  }
+];
+
+const PACKAGE_DATA = {
+  "$30 Package": {
+    pricePerGuest: 30,
+    description:
+      "Stuffing experience, heart ceremony, adoption certificate + travel bag"
+  },
+
+  "$35 Package": {
+    pricePerGuest: 35,
+    description:
+      "Everything in $30 + custom T-shirt"
+  },
+
+  "$40 Package": {
+    pricePerGuest: 40,
+    description:
+      "Full birthday experience with shirt, vinyl, accessories + birthday outfit"
+  },
+
+  "Custom": {
+    pricePerGuest: null,
+    description:
+      "Use for retirement, corporate, partner or unusual events"
+  }
+};
+
+const ADD_ON_PRICING = {
+  outfit: 8,
+  voiceChip: 10,
+  extraShirt: 5,
+  vinyl: 5
+};
+
+
+/* =========================================================
+   INVENTORY
+========================================================= */
 
 const inventorySeed = [
   {
@@ -7,72 +76,84 @@ const inventorySeed = [
     category: "Plush",
     onHand: 27
   },
+
   {
     id: "bear",
     name: "Honey Bears",
     category: "Plush",
     onHand: 42
   },
+
   {
     id: "cat",
     name: "Orange Cats",
     category: "Plush",
     onHand: 18
   },
+
   {
     id: "unicorn",
     name: "Unicorns",
     category: "Plush",
     onHand: 41
   },
+
   {
     id: "dino",
     name: "Dinos",
     category: "Plush",
     onHand: 36
   },
+
   {
     id: "frog",
     name: "Frogs",
     category: "Plush",
     onHand: 10
   },
+
   {
     id: "sound",
     name: "Sound / Voice Chips",
     category: "Supplies",
     onHand: 18
   },
+
   {
     id: "girl-bday",
     name: "Girl Birthday Outfits",
     category: "Outfits",
     onHand: 18
   },
+
   {
     id: "boy-bday",
     name: "Boy Birthday Outfits",
     category: "Outfits",
     onHand: 24
   },
+
   {
     id: "travel-bags",
     name: "Travel Bags",
     category: "Supplies",
     onHand: 135
   },
+
   {
     id: "hearts",
     name: "Wishing Hearts",
     category: "Supplies",
     onHand: 300
   },
+
   {
     id: "white-shirt",
     name: "White T-Shirts",
     category: "Shirts",
     onHand: 50
   },
+
   {
     id: "fluff",
     name: "Fluff",
@@ -82,6 +163,11 @@ const inventorySeed = [
     autoReserve: false
   }
 ];
+
+
+/* =========================================================
+   PACKING
+========================================================= */
 
 const masterPackingList = [
   "Stuffing machine",
@@ -103,7 +189,13 @@ const masterPackingList = [
   "Clothes / mini wardrobe rack"
 ];
 
+
+/* =========================================================
+   APP STATE
+========================================================= */
+
 let state = loadState();
+
 let currentScreen = "home";
 let currentEventId = null;
 
@@ -119,113 +211,249 @@ const wizardSteps = [
   "Review"
 ];
 
+
+/* =========================================================
+   STATE
+========================================================= */
+
 function createInitialState() {
   return {
     events: [],
-    inventory: inventorySeed,
+    inventory: structuredClone(inventorySeed),
     attention: [],
     notes: []
   };
 }
 
+
 function loadState() {
+
   const saved = localStorage.getItem(STORAGE_KEY);
 
   if (!saved) {
+
     const fresh = createInitialState();
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(fresh));
+
+    localStorage.setItem(
+      STORAGE_KEY,
+      JSON.stringify(fresh)
+    );
+
     return fresh;
   }
 
   try {
-    const parsed = JSON.parse(saved);
 
-    if (!parsed.inventory || parsed.inventory.length === 0) {
-      parsed.inventory = inventorySeed;
-    }
+    const parsed = JSON.parse(saved);
 
     parsed.events ||= [];
     parsed.attention ||= [];
     parsed.notes ||= [];
 
+    if (!parsed.inventory?.length) {
+      parsed.inventory = structuredClone(inventorySeed);
+    }
+
     return parsed;
+
   } catch {
+
     return createInitialState();
+
   }
 }
 
+
 function saveState() {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+
+  localStorage.setItem(
+    STORAGE_KEY,
+    JSON.stringify(state)
+  );
+
   updateAttentionBadge();
 }
 
+
+/* =========================================================
+   BASIC UTILITIES
+========================================================= */
+
 function makeId(prefix = "id") {
-  return `${prefix}-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
+
+  return `${prefix}-${Date.now()}-${Math.random()
+    .toString(36)
+    .slice(2, 8)}`;
+
 }
 
-function formatDate(dateString) {
-  if (!dateString) return "Date not set";
-
-  const date = new Date(`${dateString}T12:00:00`);
-
-  return date.toLocaleDateString("en-US", {
-    weekday: "short",
-    month: "short",
-    day: "numeric"
-  });
-}
-
-function daysUntil(dateString) {
-  if (!dateString) return null;
-
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
-
-  const date = new Date(`${dateString}T00:00:00`);
-  const diff = date - today;
-
-  return Math.ceil(diff / 86400000);
-}
-
-function money(value) {
-  const number = Number(value || 0);
-
-  return new Intl.NumberFormat("en-US", {
-    style: "currency",
-    currency: "USD"
-  }).format(number);
-}
 
 function escapeHTML(value = "") {
+
   return String(value)
     .replaceAll("&", "&amp;")
     .replaceAll("<", "&lt;")
     .replaceAll(">", "&gt;")
     .replaceAll('"', "&quot;")
     .replaceAll("'", "&#039;");
+
 }
 
-function calculateReserved(itemId) {
-  return state.events
-    .filter(event => !event.closed)
-    .reduce((total, event) => {
-      const reservation = event.reservations?.find(r => r.itemId === itemId);
-      return total + Number(reservation?.quantity || 0);
-    }, 0);
+
+function money(value) {
+
+  const number = Number(value || 0);
+
+  return new Intl.NumberFormat(
+    "en-US",
+    {
+      style: "currency",
+      currency: "USD"
+    }
+  ).format(number);
+
 }
+
+
+function formatDate(dateString) {
+
+  if (!dateString) {
+    return "Date not set";
+  }
+
+  const date =
+    new Date(`${dateString}T12:00:00`);
+
+  return date.toLocaleDateString(
+    "en-US",
+    {
+      weekday: "short",
+      month: "short",
+      day: "numeric"
+    }
+  );
+
+}
+
+
+/*
+  Converts:
+  14:00 -> 2:00 PM
+  09:30 -> 9:30 AM
+*/
+
+function formatTime(timeString) {
+
+  if (!timeString) {
+    return "";
+  }
+
+  const [hourString, minuteString] =
+    timeString.split(":");
+
+  const hour =
+    Number(hourString);
+
+  const minute =
+    Number(minuteString || 0);
+
+  const suffix =
+    hour >= 12
+      ? "PM"
+      : "AM";
+
+  const normalHour =
+    hour % 12 || 12;
+
+  return `${normalHour}:${String(minute).padStart(2, "0")} ${suffix}`;
+
+}
+
+
+function daysUntil(dateString) {
+
+  if (!dateString) {
+    return null;
+  }
+
+  const today =
+    new Date();
+
+  today.setHours(0, 0, 0, 0);
+
+  const date =
+    new Date(`${dateString}T00:00:00`);
+
+  return Math.ceil(
+    (date - today) / 86400000
+  );
+
+}
+
+
+/* =========================================================
+   INVENTORY CALCULATIONS
+========================================================= */
 
 function getInventoryItem(itemId) {
-  return state.inventory.find(item => item.id === itemId);
+
+  return state.inventory.find(
+    item => item.id === itemId
+  );
+
 }
+
+
+function calculateReserved(itemId) {
+
+  return state.events
+    .filter(event => !event.closed)
+    .reduce(
+      (total, event) => {
+
+        const reservation =
+          event.reservations?.find(
+            reservation =>
+              reservation.itemId === itemId
+          );
+
+        return (
+          total +
+          Number(
+            reservation?.quantity || 0
+          )
+        );
+
+      },
+      0
+    );
+
+}
+
 
 function inventoryAvailable(itemId) {
-  const item = getInventoryItem(itemId);
-  if (!item) return 0;
 
-  return item.onHand - calculateReserved(itemId);
+  const item =
+    getInventoryItem(itemId);
+
+  if (!item) {
+    return 0;
+  }
+
+  return (
+    item.onHand -
+    calculateReserved(itemId)
+  );
+
 }
 
+
+/* =========================================================
+   EVENT ISSUES
+========================================================= */
+
 function eventIssues(event) {
+
   const issues = [];
 
   if (!event.date) {
@@ -240,80 +468,166 @@ function eventIssues(event) {
     issues.push("Host name is missing");
   }
 
-  for (const reservation of event.reservations || []) {
-    const item = getInventoryItem(reservation.itemId);
-    if (!item) continue;
 
-    const reservedAcrossOtherEvents =
-      calculateReserved(item.id) - reservation.quantity;
+  for (
+    const reservation
+    of event.reservations || []
+  ) {
 
-    const availableBeforeThisEvent =
-      item.onHand - reservedAcrossOtherEvents;
-
-    if (reservation.quantity > availableBeforeThisEvent) {
-      issues.push(
-        `Short ${reservation.quantity - availableBeforeThisEvent} ${item.name}`
+    const item =
+      getInventoryItem(
+        reservation.itemId
       );
+
+    if (!item) {
+      continue;
     }
+
+    const otherReserved =
+      calculateReserved(item.id) -
+      reservation.quantity;
+
+    const availableForThisEvent =
+      item.onHand -
+      otherReserved;
+
+    if (
+      reservation.quantity >
+      availableForThisEvent
+    ) {
+
+      const shortage =
+        reservation.quantity -
+        availableForThisEvent;
+
+      issues.push(
+        `Short ${shortage} ${item.name}`
+      );
+
+    }
+
   }
 
   return issues;
+
 }
+
 
 function allCurrentIssues() {
+
   const generated = [];
 
-  for (const event of state.events.filter(e => !e.closed)) {
-    eventIssues(event).forEach(issue => {
-      generated.push({
-        id: `${event.id}-${issue}`,
-        eventId: event.id,
-        title: issue,
-        type: "generated"
+  for (
+    const event
+    of state.events.filter(
+      event => !event.closed
+    )
+  ) {
+
+    eventIssues(event)
+      .forEach(issue => {
+
+        generated.push({
+          id: `${event.id}-${issue}`,
+          eventId: event.id,
+          title: issue,
+          type: "generated"
+        });
+
       });
-    });
+
   }
 
-  const manual = state.attention.filter(item => !item.done);
+  const manual =
+    state.attention.filter(
+      item => !item.done
+    );
 
-  return [...generated, ...manual];
+  return [
+    ...generated,
+    ...manual
+  ];
+
 }
+
+
+/* =========================================================
+   HEADER / NAVIGATION
+========================================================= */
 
 function updateAttentionBadge() {
-  const badge = document.getElementById("attentionBadge");
-  if (!badge) return;
 
-  const count = allCurrentIssues().length;
+  const badge =
+    document.getElementById(
+      "attentionBadge"
+    );
+
+  if (!badge) {
+    return;
+  }
+
+  const count =
+    allCurrentIssues().length;
 
   badge.textContent = count;
-  badge.classList.toggle("hidden", count === 0);
+
+  badge.classList.toggle(
+    "hidden",
+    count === 0
+  );
+
 }
 
-function setHeader(title, showAdd = false) {
-  document.getElementById("pageTitle").textContent = title;
 
-  const action = document.getElementById("headerAction");
-  action.classList.toggle("hidden", !showAdd);
+function setHeader(
+  title,
+  showAdd = false
+) {
+
+  document.getElementById(
+    "pageTitle"
+  ).textContent = title;
+
+  const action =
+    document.getElementById(
+      "headerAction"
+    );
+
+  action.classList.toggle(
+    "hidden",
+    !showAdd
+  );
+
 }
+
 
 function navigate(screen) {
+
   currentScreen = screen;
   currentEventId = null;
 
-  document.querySelectorAll(".nav-item").forEach(button => {
-    button.classList.toggle(
-      "active",
-      button.dataset.screen === screen
-    );
-  });
+  document
+    .querySelectorAll(".nav-item")
+    .forEach(button => {
+
+      button.classList.toggle(
+        "active",
+        button.dataset.screen === screen
+      );
+
+    });
 
   render();
+
 }
 
+
 function render() {
+
   updateAttentionBadge();
 
   switch (currentScreen) {
+
     case "events":
       renderEvents();
       break;
@@ -332,318 +646,624 @@ function render() {
 
     default:
       renderHome();
+
   }
+
 }
 
-/* HOME */
+
+/* =========================================================
+   HOME
+========================================================= */
 
 function renderHome() {
+
   setHeader("Ops");
 
-  const main = document.getElementById("mainContent");
+  const main =
+    document.getElementById(
+      "mainContent"
+    );
 
-  const upcoming = [...state.events]
-    .filter(event => !event.closed)
-    .sort((a, b) => new Date(a.date) - new Date(b.date));
+  const upcoming =
+    [...state.events]
+      .filter(event => !event.closed)
+      .sort(
+        (a, b) =>
+          new Date(a.date) -
+          new Date(b.date)
+      );
 
-  const nextEvent = upcoming[0];
-  const issues = allCurrentIssues();
+  const nextEvent =
+    upcoming[0];
+
+  const issues =
+    allCurrentIssues();
 
   let html = "";
 
+
   if (issues.length === 0) {
+
     html += `
       <div class="status-banner">
         Everything’s looking good. Nothing needs you right now. ❤️
       </div>
     `;
+
   } else {
+
     html += `
       <div class="status-banner warning">
-        You’ve got ${issues.length} thing${issues.length === 1 ? "" : "s"} that need attention.
+        You’ve got ${issues.length}
+        thing${issues.length === 1 ? "" : "s"}
+        that need attention.
       </div>
     `;
+
   }
+
 
   html += `
     <section class="section">
+
       <div class="section-heading">
         <h2>Next Up</h2>
       </div>
   `;
 
+
   if (!nextEvent) {
+
     html += `
       <div class="card empty-card">
-        <strong>No events booked yet.</strong>
-        <p>When you add your first event, it’ll show up here.</p>
+
+        <strong>
+          No events booked yet.
+        </strong>
+
+        <p>
+          When you add your first event,
+          it’ll show up here.
+        </p>
 
         <div style="margin-top:16px;">
-          <button class="primary-button full-width" onclick="openAddEventWizard()">
+
+          <button
+            class="primary-button full-width"
+            onclick="openAddEventWizard()"
+          >
             + Add Event
           </button>
+
         </div>
+
       </div>
     `;
+
   } else {
-    const issuesForEvent = eventIssues(nextEvent);
-    const days = daysUntil(nextEvent.date);
+
+    const issuesForEvent =
+      eventIssues(nextEvent);
+
+    const days =
+      daysUntil(nextEvent.date);
 
     html += `
-      <div class="card hero-card tap-card"
-           onclick="openEvent('${nextEvent.id}')">
+      <div
+        class="card hero-card tap-card"
+        onclick="openEvent('${nextEvent.id}')"
+      >
 
-        <div class="card-label">Next event</div>
+        <div class="card-label">
+          Next event
+        </div>
 
-        <h2>${escapeHTML(nextEvent.name)}</h2>
+        <h2>
+          ${escapeHTML(nextEvent.name)}
+        </h2>
 
         <div>
           ${formatDate(nextEvent.date)}
-          ${nextEvent.time ? ` · ${escapeHTML(nextEvent.time)}` : ""}
+          ${
+            nextEvent.time
+              ? ` · ${formatTime(nextEvent.time)}`
+              : ""
+          }
         </div>
 
         <div class="meta-row">
+
           ${
             days !== null
-              ? `<span class="pill">${days === 0 ? "Today" : `${days} days`}</span>`
+              ? `
+                <span class="pill">
+                  ${
+                    days === 0
+                      ? "Today"
+                      : `${days} days`
+                  }
+                </span>
+              `
               : ""
           }
 
           ${
             nextEvent.guestCount
-              ? `<span class="pill">${nextEvent.guestCount} guests</span>`
+              ? `
+                <span class="pill">
+                  ${nextEvent.guestCount} guests
+                </span>
+              `
               : ""
           }
 
           ${
             nextEvent.package
-              ? `<span class="pill">${escapeHTML(nextEvent.package)}</span>`
+              ? `
+                <span class="pill">
+                  ${escapeHTML(nextEvent.package)}
+                </span>
+              `
               : ""
           }
 
           ${
             issuesForEvent.length
-              ? `<span class="pill warning">${issuesForEvent.length} need attention</span>`
-              : `<span class="pill success">✓ On track</span>`
+              ? `
+                <span class="pill warning">
+                  ${issuesForEvent.length}
+                  need attention
+                </span>
+              `
+              : `
+                <span class="pill success">
+                  ✓ On track
+                </span>
+              `
           }
+
         </div>
 
         ${
           Number(nextEvent.balanceDue || 0) > 0
             ? `
-              <div style="margin-top:15px;font-weight:800;">
-                ${money(nextEvent.balanceDue)} due on arrival
+              <div
+                style="
+                  margin-top:15px;
+                  font-weight:800;
+                "
+              >
+                ${money(nextEvent.balanceDue)}
+                due
               </div>
             `
             : ""
         }
+
       </div>
     `;
+
   }
 
-  html += `</section>`;
+  html += `
+    </section>
+  `;
+
 
   html += `
     <section class="section">
+
       <div class="section-heading">
-        <h2>Needs Attention</h2>
-        <button onclick="navigate('attention')">View all</button>
+
+        <h2>
+          Needs Attention
+        </h2>
+
+        <button
+          onclick="navigate('attention')"
+        >
+          View all
+        </button>
+
       </div>
   `;
 
+
   if (issues.length === 0) {
+
     html += `
       <div class="card empty-card">
-        <strong>✓ Nothing needs your attention</strong>
-        <p>Your future events are currently on track.</p>
+
+        <strong>
+          ✓ Nothing needs your attention
+        </strong>
+
+        <p>
+          Your future events are
+          currently on track.
+        </p>
+
       </div>
     `;
+
   } else {
-    issues.slice(0, 3).forEach(issue => {
-      html += `
-        <div class="card list-card tap-card"
-             ${issue.eventId ? `onclick="openEvent('${issue.eventId}')"` : ""}>
-          <h3>${escapeHTML(issue.title)}</h3>
-          <p>
+
+    issues
+      .slice(0, 3)
+      .forEach(issue => {
+
+        const event =
+          state.events.find(
+            e => e.id === issue.eventId
+          );
+
+        html += `
+          <div
+            class="card list-card tap-card"
             ${
               issue.eventId
-                ? escapeHTML(state.events.find(e => e.id === issue.eventId)?.name || "")
-                : "Reminder"
+                ? `onclick="openEvent('${issue.eventId}')"`
+                : ""
             }
-          </p>
-        </div>
-      `;
-    });
+          >
+
+            <h3>
+              ${escapeHTML(issue.title)}
+            </h3>
+
+            <p>
+              ${
+                event
+                  ? escapeHTML(event.name)
+                  : "Reminder"
+              }
+            </p>
+
+          </div>
+        `;
+
+      });
+
   }
 
-  html += `</section>`;
+  html += `
+    </section>
+  `;
+
 
   if (upcoming.length > 1) {
+
     html += `
       <section class="section">
+
         <div class="section-heading">
-          <h2>Coming Up</h2>
-          <button onclick="navigate('events')">View all</button>
+
+          <h2>
+            Coming Up
+          </h2>
+
+          <button
+            onclick="navigate('events')"
+          >
+            View all
+          </button>
+
         </div>
     `;
 
-    upcoming.slice(1, 5).forEach(event => {
-      const issueCount = eventIssues(event).length;
 
-      html += `
-        <div class="card list-card tap-card"
-             onclick="openEvent('${event.id}')">
+    upcoming
+      .slice(1, 5)
+      .forEach(event => {
 
-          <h3>${escapeHTML(event.name)}</h3>
+        const issueCount =
+          eventIssues(event).length;
 
-          <p>
-            ${formatDate(event.date)}
-            ${event.guestCount ? ` · ${event.guestCount} guests` : ""}
-          </p>
+        html += `
+          <div
+            class="card list-card tap-card"
+            onclick="openEvent('${event.id}')"
+          >
 
-          <div class="meta-row">
-            ${
-              issueCount
-                ? `<span class="pill warning">⚠ ${issueCount} issue${issueCount === 1 ? "" : "s"}</span>`
-                : `<span class="pill success">✓ On track</span>`
-            }
+            <h3>
+              ${escapeHTML(event.name)}
+            </h3>
+
+            <p>
+              ${formatDate(event.date)}
+
+              ${
+                event.time
+                  ? ` · ${formatTime(event.time)}`
+                  : ""
+              }
+
+              ${
+                event.guestCount
+                  ? ` · ${event.guestCount} guests`
+                  : ""
+              }
+            </p>
+
+            <div class="meta-row">
+
+              ${
+                issueCount
+                  ? `
+                    <span class="pill warning">
+                      ⚠ ${issueCount}
+                      issue${issueCount === 1 ? "" : "s"}
+                    </span>
+                  `
+                  : `
+                    <span class="pill success">
+                      ✓ On track
+                    </span>
+                  `
+              }
+
+            </div>
+
           </div>
+        `;
 
-        </div>
-      `;
-    });
+      });
 
-    html += `</section>`;
+
+    html += `
+      </section>
+    `;
+
   }
 
+
   main.innerHTML = html;
+
 }
 
-/* EVENTS */
+
+/* =========================================================
+   EVENTS
+========================================================= */
 
 function renderEvents() {
-  setHeader("Events", true);
 
-  const main = document.getElementById("mainContent");
+  setHeader(
+    "Events",
+    true
+  );
 
-  const events = [...state.events]
-    .filter(event => !event.closed)
-    .sort((a, b) => new Date(a.date) - new Date(b.date));
+  const main =
+    document.getElementById(
+      "mainContent"
+    );
+
+  const events =
+    [...state.events]
+      .filter(event => !event.closed)
+      .sort(
+        (a, b) =>
+          new Date(a.date) -
+          new Date(b.date)
+      );
+
 
   let html = `
-    <button class="primary-button full-width"
-            onclick="openAddEventWizard()">
+    <button
+      class="primary-button full-width"
+      onclick="openAddEventWizard()"
+    >
       + Add Event
     </button>
 
     <section class="section">
   `;
 
+
   if (events.length === 0) {
+
     html += `
       <div class="card empty-card">
-        <strong>No events yet.</strong>
-        <p>Your confirmed bookings will live here.</p>
+
+        <strong>
+          No events yet.
+        </strong>
+
+        <p>
+          Your confirmed bookings
+          will live here.
+        </p>
+
       </div>
     `;
+
   } else {
+
     events.forEach(event => {
-      const issues = eventIssues(event);
+
+      const issues =
+        eventIssues(event);
 
       html += `
-        <div class="card list-card tap-card"
-             onclick="openEvent('${event.id}')">
+        <div
+          class="card list-card tap-card"
+          onclick="openEvent('${event.id}')"
+        >
 
-          <h3>${escapeHTML(event.name)}</h3>
+          <h3>
+            ${escapeHTML(event.name)}
+          </h3>
 
           <p>
             ${formatDate(event.date)}
-            ${event.time ? ` · ${escapeHTML(event.time)}` : ""}
+
+            ${
+              event.time
+                ? ` · ${formatTime(event.time)}`
+                : ""
+            }
           </p>
 
           <div class="meta-row">
+
             ${
               event.guestCount
-                ? `<span class="pill">${event.guestCount} guests</span>`
+                ? `
+                  <span class="pill">
+                    ${event.guestCount} guests
+                  </span>
+                `
                 : ""
             }
 
             ${
               event.package
-                ? `<span class="pill">${escapeHTML(event.package)}</span>`
+                ? `
+                  <span class="pill">
+                    ${escapeHTML(event.package)}
+                  </span>
+                `
                 : ""
             }
 
             ${
               issues.length
-                ? `<span class="pill warning">${issues.length} need attention</span>`
-                : `<span class="pill success">✓ On track</span>`
+                ? `
+                  <span class="pill warning">
+                    ${issues.length}
+                    need attention
+                  </span>
+                `
+                : `
+                  <span class="pill success">
+                    ✓ On track
+                  </span>
+                `
             }
+
           </div>
 
         </div>
       `;
+
     });
+
   }
 
-  html += `</section>`;
+
+  html += `
+    </section>
+  `;
 
   main.innerHTML = html;
+
 }
 
-/* EVENT DETAIL */
+
+/* =========================================================
+   EVENT DETAIL
+========================================================= */
 
 function openEvent(id) {
+
   currentEventId = id;
   currentScreen = "event-detail";
+
   render();
+
 }
 
+
 function renderEventDetail() {
-  const event = state.events.find(e => e.id === currentEventId);
+
+  const event =
+    state.events.find(
+      e => e.id === currentEventId
+    );
+
 
   if (!event) {
+
     navigate("events");
+
     return;
+
   }
+
 
   setHeader("Event");
 
-  const main = document.getElementById("mainContent");
-  const issues = eventIssues(event);
+  const main =
+    document.getElementById(
+      "mainContent"
+    );
+
+  const issues =
+    eventIssues(event);
+
 
   let html = `
-    <button class="back-button" onclick="navigate('events')">
+    <button
+      class="back-button"
+      onclick="navigate('events')"
+    >
       ← Events
     </button>
 
+
     <div class="detail-header">
-      <h2>${escapeHTML(event.name)}</h2>
+
+      <h2>
+        ${escapeHTML(event.name)}
+      </h2>
 
       <div class="muted">
+
         ${formatDate(event.date)}
-        ${event.time ? ` · ${escapeHTML(event.time)}` : ""}
+
+        ${
+          event.time
+            ? ` · ${formatTime(event.time)}`
+            : ""
+        }
+
       </div>
 
+
       <div class="meta-row">
+
         ${
           event.guestCount
-            ? `<span class="pill">${event.guestCount} guests</span>`
+            ? `
+              <span class="pill">
+                ${event.guestCount} guests
+              </span>
+            `
             : ""
         }
 
         ${
           event.package
-            ? `<span class="pill">${escapeHTML(event.package)}</span>`
+            ? `
+              <span class="pill">
+                ${escapeHTML(event.package)}
+              </span>
+            `
             : ""
         }
+
       </div>
+
     </div>
   `;
 
+
   if (issues.length) {
+
     html += `
       <section class="section">
+
         <div class="section-heading">
           <h2>Needs Attention</h2>
         </div>
@@ -651,29 +1271,47 @@ function renderEventDetail() {
         <div class="card detail-card">
     `;
 
+
     issues.forEach(issue => {
+
       html += `
         <div class="attention-row">
-          <strong>${escapeHTML(issue)}</strong>
-          <span class="warning-text">!</span>
+
+          <strong>
+            ${escapeHTML(issue)}
+          </strong>
+
+          <span class="warning-text">
+            !
+          </span>
+
         </div>
       `;
+
     });
+
 
     html += `
         </div>
+
       </section>
     `;
+
   } else {
+
     html += `
       <div class="status-banner">
-        ✓ Everything looks good for this event.
+        ✓ Everything looks good
+        for this event.
       </div>
     `;
+
   }
+
 
   html += `
     <section class="section">
+
       <div class="section-heading">
         <h2>Event Details</h2>
       </div>
@@ -682,79 +1320,200 @@ function renderEventDetail() {
 
         <div class="detail-row">
           <span>Date</span>
-          <strong>${formatDate(event.date)}</strong>
+          <strong>
+            ${formatDate(event.date)}
+          </strong>
         </div>
 
         <div class="detail-row">
           <span>Time</span>
-          <strong>${escapeHTML(event.time || "—")}</strong>
+          <strong>
+            ${
+              event.time
+                ? formatTime(event.time)
+                : "—"
+            }
+          </strong>
         </div>
 
         <div class="detail-row">
           <span>Location</span>
-          <strong>${escapeHTML(event.address || "Not added")}</strong>
+          <strong>
+            ${escapeHTML(event.address || "Not added")}
+          </strong>
         </div>
 
         <div class="detail-row">
           <span>Host</span>
-          <strong>${escapeHTML(event.hostName || "Not added")}</strong>
+          <strong>
+            ${escapeHTML(event.hostName || "Not added")}
+          </strong>
         </div>
 
         <div class="detail-row">
           <span>Phone</span>
-          <strong>${escapeHTML(event.hostPhone || "—")}</strong>
+          <strong>
+            ${escapeHTML(event.hostPhone || "—")}
+          </strong>
         </div>
 
         <div class="detail-row">
           <span>Guests</span>
-          <strong>${event.guestCount || "—"}</strong>
+          <strong>
+            ${event.guestCount || "—"}
+          </strong>
         </div>
 
         <div class="detail-row">
           <span>Package</span>
-          <strong>${escapeHTML(event.package || "Custom")}</strong>
+          <strong>
+            ${escapeHTML(event.package || "Custom")}
+          </strong>
         </div>
 
       </div>
-    </section>
 
+    </section>
+  `;
+
+
+  html += `
     <section class="section">
+
       <div class="section-heading">
-        <h2>Requirements</h2>
+        <h2>Plush Options</h2>
       </div>
 
       <div class="card detail-card">
   `;
 
-  (event.reservations || []).forEach(reservation => {
-    const item = getInventoryItem(reservation.itemId);
 
-    if (!item) return;
+  if (event.selectedPlush?.length) {
 
-    html += `
-      <div class="requirement-row">
-        <div>
-          <strong>${escapeHTML(item.name)}</strong>
-        </div>
+    event.selectedPlush.forEach(
+      plushId => {
 
-        <strong>${reservation.quantity}</strong>
-      </div>
-    `;
-  });
+        const plush =
+          PLUSH_OPTIONS.find(
+            p => p.id === plushId
+          );
 
-  if (!event.reservations?.length) {
+        const reservation =
+          event.reservations?.find(
+            r => r.itemId === plushId
+          );
+
+        html += `
+          <div class="requirement-row">
+
+            <span>
+              ${escapeHTML(plush?.name || plushId)}
+            </span>
+
+            <strong>
+              ${reservation?.quantity || 0} bringing
+            </strong>
+
+          </div>
+        `;
+
+      }
+    );
+
+  } else {
+
     html += `
       <div class="muted">
-        No tracked inventory requirements for this event.
+        No plush choices selected.
       </div>
     `;
+
   }
+
 
   html += `
       </div>
-    </section>
 
+    </section>
+  `;
+
+
+  html += `
     <section class="section">
+
+      <div class="section-heading">
+        <h2>Tracked Requirements</h2>
+      </div>
+
+      <div class="card detail-card">
+  `;
+
+
+  const nonPlushReservations =
+    (event.reservations || [])
+      .filter(
+        reservation =>
+          !PLUSH_OPTIONS.some(
+            plush =>
+              plush.id ===
+              reservation.itemId
+          )
+      );
+
+
+  if (
+    nonPlushReservations.length
+  ) {
+
+    nonPlushReservations
+      .forEach(reservation => {
+
+        const item =
+          getInventoryItem(
+            reservation.itemId
+          );
+
+        if (!item) {
+          return;
+        }
+
+        html += `
+          <div class="requirement-row">
+
+            <span>
+              ${escapeHTML(item.name)}
+            </span>
+
+            <strong>
+              ${reservation.quantity}
+            </strong>
+
+          </div>
+        `;
+
+      });
+
+  } else {
+
+    html += `
+      <div class="muted">
+        No additional tracked inventory.
+      </div>
+    `;
+
+  }
+
+
+  html += `
+      </div>
+
+    </section>
+  `;
+
+
+  html += `
+    <section class="section">
+
       <div class="section-heading">
         <h2>Payment</h2>
       </div>
@@ -763,29 +1522,42 @@ function renderEventDetail() {
 
         <div class="detail-row">
           <span>Total</span>
-          <strong>${money(event.total)}</strong>
-        </div>
-
-        <div class="detail-row">
-          <span>Deposit</span>
           <strong>
-            ${
-              event.depositPaid
-                ? `✓ ${money(event.depositAmount)} paid`
-                : `${money(event.depositAmount)} not paid`
-            }
+            ${money(event.total)}
           </strong>
         </div>
 
         <div class="detail-row">
-          <span>Due on arrival</span>
-          <strong>${money(event.balanceDue)}</strong>
+          <span>Deposit</span>
+
+          <strong>
+
+            ${
+              event.depositPaid
+                ? `✓ ${money(event.depositAmount)} received`
+                : "Not received"
+            }
+
+          </strong>
+        </div>
+
+        <div class="detail-row">
+          <span>Remaining</span>
+
+          <strong>
+            ${money(event.balanceDue)}
+          </strong>
         </div>
 
       </div>
-    </section>
 
+    </section>
+  `;
+
+
+  html += `
     <section class="section">
+
       <div class="section-heading">
         <h2>Prep & Packing</h2>
       </div>
@@ -793,349 +1565,665 @@ function renderEventDetail() {
       <div class="card detail-card">
   `;
 
-  event.packing ||= masterPackingList.map(item => ({
-    id: makeId("pack"),
-    name: item,
-    done: false
-  }));
+
+  event.packing ||=
+    masterPackingList.map(
+      item => ({
+        id: makeId("pack"),
+        name: item,
+        done: false
+      })
+    );
+
 
   event.packing.forEach(item => {
+
     html += `
       <label class="toggle-row">
-        <span>${escapeHTML(item.name)}</span>
+
+        <span>
+          ${escapeHTML(item.name)}
+        </span>
+
         <input
           type="checkbox"
           ${item.done ? "checked" : ""}
-          onchange="togglePacking('${event.id}', '${item.id}', this.checked)"
+          onchange="
+            togglePacking(
+              '${event.id}',
+              '${item.id}',
+              this.checked
+            )
+          "
         />
+
       </label>
     `;
+
   });
+
 
   html += `
       </div>
+
     </section>
 
+
     <section class="section">
-      <button class="secondary-button full-width"
-              onclick="deleteEvent('${event.id}')">
+
+      <button
+        class="secondary-button full-width"
+        onclick="deleteEvent('${event.id}')"
+      >
         Delete Event
       </button>
+
     </section>
   `;
 
+
   main.innerHTML = html;
 
   saveState();
+
 }
 
-function togglePacking(eventId, packingId, checked) {
-  const event = state.events.find(e => e.id === eventId);
-  if (!event) return;
 
-  const item = event.packing.find(i => i.id === packingId);
-  if (!item) return;
+function togglePacking(
+  eventId,
+  packingId,
+  checked
+) {
+
+  const event =
+    state.events.find(
+      e => e.id === eventId
+    );
+
+  if (!event) {
+    return;
+  }
+
+  const item =
+    event.packing.find(
+      item => item.id === packingId
+    );
+
+  if (!item) {
+    return;
+  }
 
   item.done = checked;
+
   saveState();
+
 }
+
 
 function deleteEvent(id) {
-  if (!confirm("Delete this event?")) return;
 
-  state.events = state.events.filter(event => event.id !== id);
+  if (
+    !confirm(
+      "Delete this event?"
+    )
+  ) {
+    return;
+  }
+
+  state.events =
+    state.events.filter(
+      event =>
+        event.id !== id
+    );
 
   saveState();
+
   navigate("events");
+
 }
 
-/* INVENTORY */
+
+/* =========================================================
+   INVENTORY
+========================================================= */
 
 function renderInventory() {
+
   setHeader("Inventory");
 
-  const main = document.getElementById("mainContent");
+  const main =
+    document.getElementById(
+      "mainContent"
+    );
+
 
   const categories = [
-    ...new Set(state.inventory.map(item => item.category))
+    ...new Set(
+      state.inventory.map(
+        item => item.category
+      )
+    )
   ];
+
 
   let hasShortage = false;
 
-  state.inventory.forEach(item => {
-    if (inventoryAvailable(item.id) < 0) {
-      hasShortage = true;
+
+  state.inventory.forEach(
+    item => {
+
+      if (
+        inventoryAvailable(item.id) < 0
+      ) {
+        hasShortage = true;
+      }
+
     }
-  });
+  );
 
-  let html = hasShortage
-    ? `
-      <div class="status-banner warning">
-        Some future events require more stock than you currently have.
-      </div>
-    `
-    : `
-      <div class="status-banner">
-        Everything looks good ✓
-      </div>
-    `;
 
-  categories.forEach(category => {
-    html += `
-      <section class="section">
-        <div class="section-heading">
-          <h2>${escapeHTML(category)}</h2>
+  let html =
+    hasShortage
+      ? `
+        <div class="status-banner warning">
+          Some future events require
+          more stock than you currently have.
         </div>
+      `
+      : `
+        <div class="status-banner">
+          Everything looks good ✓
+        </div>
+      `;
 
-        <div class="card detail-card">
-    `;
 
-    state.inventory
-      .filter(item => item.category === category)
-      .forEach(item => {
-        const reserved = calculateReserved(item.id);
-        const available = item.onHand - reserved;
+  categories.forEach(
+    category => {
 
-        html += `
-          <div class="inventory-row"
-               onclick="openInventoryItem('${item.id}')">
+      html += `
+        <section class="section">
 
-            <div>
-              <strong>${escapeHTML(item.name)}</strong>
-
-              ${
-                available < 0
-                  ? `<div class="warning-text">Short ${Math.abs(available)}</div>`
-                  : ""
-              }
-            </div>
-
-            <div class="counts">
-              <div class="available-count">
-                ${available}
-              </div>
-
-              <div class="muted" style="font-size:.75rem;">
-                ${item.onHand} on hand · ${reserved} reserved
-              </div>
-            </div>
-
+          <div class="section-heading">
+            <h2>
+              ${escapeHTML(category)}
+            </h2>
           </div>
-        `;
-      });
 
-    html += `
-        </div>
-      </section>
-    `;
-  });
+          <div class="card detail-card">
+      `;
+
+
+      state.inventory
+        .filter(
+          item =>
+            item.category === category
+        )
+        .forEach(item => {
+
+          const reserved =
+            calculateReserved(item.id);
+
+          const available =
+            item.onHand -
+            reserved;
+
+
+          html += `
+            <div
+              class="inventory-row"
+              onclick="openInventoryItem('${item.id}')"
+            >
+
+              <div>
+
+                <strong>
+                  ${escapeHTML(item.name)}
+                </strong>
+
+                ${
+                  available < 0
+                    ? `
+                      <div class="warning-text">
+                        Short ${Math.abs(available)}
+                      </div>
+                    `
+                    : ""
+                }
+
+              </div>
+
+
+              <div class="counts">
+
+                <div class="available-count">
+                  ${available}
+                </div>
+
+                <div
+                  class="muted"
+                  style="font-size:.75rem;"
+                >
+                  ${item.onHand} on hand
+                  ·
+                  ${reserved} reserved
+                </div>
+
+              </div>
+
+            </div>
+          `;
+
+        });
+
+
+      html += `
+          </div>
+
+        </section>
+      `;
+
+    }
+  );
+
 
   main.innerHTML = html;
+
 }
 
+
 function openInventoryItem(itemId) {
-  const item = getInventoryItem(itemId);
-  if (!item) return;
 
-  const reserved = calculateReserved(item.id);
-  const available = item.onHand - reserved;
+  const item =
+    getInventoryItem(itemId);
 
-  const reservingEvents = state.events
-    .filter(event => !event.closed)
-    .map(event => ({
-      event,
-      reservation: event.reservations?.find(r => r.itemId === item.id)
-    }))
-    .filter(entry => entry.reservation?.quantity);
+  if (!item) {
+    return;
+  }
+
+
+  const reserved =
+    calculateReserved(item.id);
+
+  const available =
+    item.onHand -
+    reserved;
+
+
+  const reservingEvents =
+    state.events
+      .filter(
+        event => !event.closed
+      )
+      .map(event => ({
+        event,
+        reservation:
+          event.reservations?.find(
+            reservation =>
+              reservation.itemId ===
+              item.id
+          )
+      }))
+      .filter(
+        entry =>
+          entry.reservation?.quantity
+      );
+
 
   let html = `
-    <div class="modal-backdrop"
-         onclick="closeModalFromBackdrop(event)">
+    <div
+      class="modal-backdrop"
+      onclick="closeModalFromBackdrop(event)"
+    >
 
       <div class="modal-sheet">
 
-        <h2>${escapeHTML(item.name)}</h2>
+        <h2>
+          ${escapeHTML(item.name)}
+        </h2>
 
         <div class="card detail-card">
 
           <div class="detail-row">
             <span>On Hand</span>
-            <strong>${item.onHand}</strong>
+            <strong>
+              ${item.onHand}
+            </strong>
           </div>
 
           <div class="detail-row">
             <span>Reserved</span>
-            <strong>${reserved}</strong>
+            <strong>
+              ${reserved}
+            </strong>
           </div>
 
           <div class="detail-row">
             <span>Available</span>
-            <strong>${available}</strong>
+            <strong>
+              ${available}
+            </strong>
           </div>
 
         </div>
+
 
         <section class="section">
 
           <div class="section-heading">
-            <h2>Reserved For</h2>
+            <h2>
+              Reserved For
+            </h2>
           </div>
   `;
 
-  if (!reservingEvents.length) {
+
+  if (
+    !reservingEvents.length
+  ) {
+
     html += `
       <div class="card empty-card">
-        <p>Nothing is currently reserved.</p>
+
+        <p>
+          Nothing is currently reserved.
+        </p>
+
       </div>
     `;
+
   } else {
-    reservingEvents.forEach(({ event, reservation }) => {
-      html += `
-        <div class="card list-card">
-          <h3>${escapeHTML(event.name)}</h3>
-          <p>${reservation.quantity} reserved · ${formatDate(event.date)}</p>
-        </div>
-      `;
-    });
+
+    reservingEvents.forEach(
+      ({
+        event,
+        reservation
+      }) => {
+
+        html += `
+          <div class="card list-card">
+
+            <h3>
+              ${escapeHTML(event.name)}
+            </h3>
+
+            <p>
+              ${reservation.quantity}
+              reserved
+              ·
+              ${formatDate(event.date)}
+            </p>
+
+          </div>
+        `;
+
+      }
+    );
+
   }
+
 
   html += `
         </section>
 
+
         <div class="inline-fields">
 
-          <button class="primary-button"
-                  onclick="adjustInventory('${item.id}', 'add')">
+          <button
+            class="primary-button"
+            onclick="
+              adjustInventory(
+                '${item.id}',
+                'add'
+              )
+            "
+          >
             + Add Stock
           </button>
 
-          <button class="secondary-button"
-                  onclick="adjustInventory('${item.id}', 'set')">
+          <button
+            class="secondary-button"
+            onclick="
+              adjustInventory(
+                '${item.id}',
+                'set'
+              )
+            "
+          >
             Adjust Count
           </button>
 
         </div>
 
+
         <div style="margin-top:12px;">
-          <button class="secondary-button full-width"
-                  onclick="closeModal()">
+
+          <button
+            class="secondary-button full-width"
+            onclick="closeModal()"
+          >
             Close
           </button>
+
         </div>
 
       </div>
+
     </div>
   `;
 
-  document.getElementById("modalRoot").innerHTML = html;
+
+  document.getElementById(
+    "modalRoot"
+  ).innerHTML = html;
+
 }
 
-function adjustInventory(itemId, mode) {
-  const item = getInventoryItem(itemId);
-  if (!item) return;
+
+function adjustInventory(
+  itemId,
+  mode
+) {
+
+  const item =
+    getInventoryItem(itemId);
+
+  if (!item) {
+    return;
+  }
 
   let value;
 
+
   if (mode === "add") {
-    value = prompt(`How many ${item.name} are you adding?`);
 
-    if (value === null) return;
+    value = prompt(
+      `How many ${item.name} are you adding?`
+    );
 
-    const number = Number(value);
+    if (value === null) {
+      return;
+    }
 
-    if (!Number.isFinite(number)) return;
+    const number =
+      Number(value);
+
+    if (
+      !Number.isFinite(number)
+    ) {
+      return;
+    }
 
     item.onHand += number;
+
   } else {
+
     value = prompt(
       `What is the actual physical count of ${item.name}?`,
       item.onHand
     );
 
-    if (value === null) return;
+    if (value === null) {
+      return;
+    }
 
-    const number = Number(value);
+    const number =
+      Number(value);
 
-    if (!Number.isFinite(number)) return;
+    if (
+      !Number.isFinite(number)
+    ) {
+      return;
+    }
 
     item.onHand = number;
+
   }
 
+
   saveState();
+
   closeModal();
+
   renderInventory();
+
 }
 
-/* ATTENTION */
+
+/* =========================================================
+   ATTENTION
+========================================================= */
 
 function renderAttention() {
+
   setHeader("Attention");
 
-  const main = document.getElementById("mainContent");
-  const issues = allCurrentIssues();
+  const main =
+    document.getElementById(
+      "mainContent"
+    );
+
+  const issues =
+    allCurrentIssues();
+
 
   let html = `
-    <button class="primary-button full-width"
-            onclick="addReminder()">
+    <button
+      class="primary-button full-width"
+      onclick="addReminder()"
+    >
       + Remember Something
     </button>
 
+
     <section class="section">
+
       <div class="section-heading">
-        <h2>Needs Attention</h2>
+        <h2>
+          Needs Attention
+        </h2>
       </div>
   `;
 
+
   if (!issues.length) {
-    const nextEvent = [...state.events]
-      .filter(event => !event.closed)
-      .sort((a, b) => new Date(a.date) - new Date(b.date))[0];
+
+    const nextEvent =
+      [...state.events]
+        .filter(
+          event => !event.closed
+        )
+        .sort(
+          (a, b) =>
+            new Date(a.date) -
+            new Date(b.date)
+        )[0];
+
 
     html += `
       <div class="card empty-card">
-        <strong>✓ You’re all caught up.</strong>
+
+        <strong>
+          ✓ You’re all caught up.
+        </strong>
 
         <p>
           Nothing needs you right now.
+
           ${
             nextEvent
-              ? `Your next event is ${escapeHTML(nextEvent.name)} on ${formatDate(nextEvent.date)}.`
+              ? `
+                Your next event is
+                ${escapeHTML(nextEvent.name)}
+                on
+                ${formatDate(nextEvent.date)}.
+              `
               : ""
           }
+
         </p>
+
       </div>
     `;
+
   } else {
-    html += `<div class="card detail-card">`;
+
+    html += `
+      <div class="card detail-card">
+    `;
+
 
     issues.forEach(issue => {
+
       html += `
         <div class="attention-row">
+
           <div>
-            <strong>${escapeHTML(issue.title)}</strong>
+
+            <strong>
+              ${escapeHTML(issue.title)}
+            </strong>
 
             ${
               issue.eventId
                 ? `
                   <div class="muted">
-                    ${escapeHTML(state.events.find(e => e.id === issue.eventId)?.name || "")}
+                    ${escapeHTML(
+                      state.events.find(
+                        e => e.id ===
+                          issue.eventId
+                      )?.name || ""
+                    )}
                   </div>
                 `
                 : ""
             }
+
           </div>
+
 
           ${
             issue.type === "generated"
               ? `
-                <button class="text-button"
-                        onclick="openEvent('${issue.eventId}')">
+                <button
+                  class="text-button"
+                  onclick="
+                    openEvent(
+                      '${issue.eventId}'
+                    )
+                  "
+                >
                   Open
                 </button>
               `
               : `
-                <button class="text-button"
-                        onclick="completeReminder('${issue.id}')">
+                <button
+                  class="text-button"
+                  onclick="
+                    completeReminder(
+                      '${issue.id}'
+                    )
+                  "
+                >
                   ✓
                 </button>
               `
@@ -1143,187 +2231,595 @@ function renderAttention() {
 
         </div>
       `;
+
     });
 
-    html += `</div>`;
+
+    html += `
+      </div>
+    `;
+
   }
 
-  html += `</section>`;
+
+  html += `
+    </section>
+  `;
+
 
   main.innerHTML = html;
+
 }
 
-function addReminder() {
-  const title = prompt("What do you want to remember?");
 
-  if (!title?.trim()) return;
+function addReminder() {
+
+  const title =
+    prompt(
+      "What do you want to remember?"
+    );
+
+
+  if (!title?.trim()) {
+    return;
+  }
+
 
   state.attention.push({
     id: makeId("reminder"),
     title: title.trim(),
     type: "manual",
     done: false,
-    createdAt: new Date().toISOString()
+    createdAt:
+      new Date().toISOString()
   });
 
+
   saveState();
+
   renderAttention();
+
 }
 
-function completeReminder(id) {
-  const reminder = state.attention.find(item => item.id === id);
 
-  if (!reminder) return;
+function completeReminder(id) {
+
+  const reminder =
+    state.attention.find(
+      item => item.id === id
+    );
+
+
+  if (!reminder) {
+    return;
+  }
+
 
   reminder.done = true;
 
   saveState();
+
   renderAttention();
+
 }
 
-/* ADD EVENT WIZARD */
+
+/* =========================================================
+   ADD EVENT
+========================================================= */
 
 function createBlankEventDraft() {
+
   return {
-    id: makeId("event"),
+
+    id:
+      makeId("event"),
+
     name: "",
-    eventType: "Birthday Party",
+
+    eventType:
+      "Birthday Party",
 
     date: "",
+
     time: "",
 
+
     hostName: "",
+
     hostPhone: "",
+
     hostEmail: "",
 
+
     address: "",
+
     arrivalNotes: "",
 
-    guestCount: 10,
 
-    package: "$30 Package",
-    customEvent: false,
+    guestCount: "",
+
+
+    package: "",
+
 
     specialGuestName: "",
+
     specialGuestAge: "",
 
-    plushPlanTotal: 16,
 
-    shirts: false,
-    birthdayOutfit: false,
+    selectedPlush: [],
+
+
+    extraOutfits: 0,
+
     voiceChips: 0,
+
+    extraShirts: 0,
+
+    extraVinyl: 0,
+
 
     customRequirements: "",
 
-    total: 300,
+
+    customTotal: "",
+
+
     depositAmount: 100,
+
     depositPaid: false,
-    balanceDue: 200,
+
+
+    total: 0,
+
+    balanceDue: 0,
+
 
     reservations: [],
-    packing: masterPackingList.map(name => ({
-      id: makeId("pack"),
-      name,
-      done: false
-    })),
+
+
+    packing:
+      masterPackingList.map(
+        name => ({
+          id: makeId("pack"),
+          name,
+          done: false
+        })
+      ),
+
 
     closed: false,
-    createdAt: new Date().toISOString()
+
+    createdAt:
+      new Date().toISOString()
+
   };
+
 }
 
+
 function openAddEventWizard() {
-  wizard = createBlankEventDraft();
+
+  wizard =
+    createBlankEventDraft();
+
   wizardStep = 0;
 
   renderWizard();
+
 }
+
 
 function closeWizard() {
+
   wizard = null;
+
   wizardStep = 0;
-  document.getElementById("modalRoot").innerHTML = "";
+
+  document.getElementById(
+    "modalRoot"
+  ).innerHTML = "";
+
 }
 
+
+/* =========================================================
+   PRICING
+========================================================= */
+
+function calculateEventTotal(
+  event = wizard
+) {
+
+  if (!event) {
+    return 0;
+  }
+
+
+  if (
+    event.package === "Custom"
+  ) {
+
+    return Number(
+      event.customTotal || 0
+    );
+
+  }
+
+
+  const packageInfo =
+    PACKAGE_DATA[
+      event.package
+    ];
+
+
+  if (
+    !packageInfo ||
+    packageInfo.pricePerGuest === null
+  ) {
+
+    return 0;
+
+  }
+
+
+  const guestCount =
+    Number(
+      event.guestCount || 0
+    );
+
+
+  const base =
+    guestCount *
+    packageInfo.pricePerGuest;
+
+
+  const outfitAddOns =
+    Number(
+      event.extraOutfits || 0
+    ) *
+    ADD_ON_PRICING.outfit;
+
+
+  const voiceAddOns =
+    Number(
+      event.voiceChips || 0
+    ) *
+    ADD_ON_PRICING.voiceChip;
+
+
+  const shirtAddOns =
+    Number(
+      event.extraShirts || 0
+    ) *
+    ADD_ON_PRICING.extraShirt;
+
+
+  const vinylAddOns =
+    Number(
+      event.extraVinyl || 0
+    ) *
+    ADD_ON_PRICING.vinyl;
+
+
+  return (
+    base +
+    outfitAddOns +
+    voiceAddOns +
+    shirtAddOns +
+    vinylAddOns
+  );
+
+}
+
+
+function recalculatePayment() {
+
+  if (!wizard) {
+    return;
+  }
+
+
+  wizard.total =
+    calculateEventTotal(wizard);
+
+
+  const paidDeposit =
+    wizard.depositPaid
+      ? Number(
+          wizard.depositAmount || 0
+        )
+      : 0;
+
+
+  wizard.balanceDue =
+    Math.max(
+      0,
+      wizard.total -
+      paidDeposit
+    );
+
+}
+
+
+/* =========================================================
+   RESERVATIONS
+========================================================= */
+
+function buildReservationsForWizard() {
+
+  if (!wizard) {
+    return;
+  }
+
+
+  const reservations = [];
+
+  const guestCount =
+    Number(
+      wizard.guestCount || 0
+    );
+
+
+  /*
+    PLUSH RULE
+
+    Every plush option being offered
+    gets guest count + 2.
+
+    Example:
+    15 kids + Golden selected
+    = reserve 17 Goldens.
+
+    If Golden + Bear + Cat:
+    17 of EACH.
+  */
+
+  wizard.selectedPlush
+    .forEach(plushId => {
+
+      reservations.push({
+        itemId: plushId,
+        quantity:
+          guestCount + 2
+      });
+
+    });
+
+
+  /*
+    STANDARD PARTY SUPPLIES
+  */
+
+  if (guestCount > 0) {
+
+    reservations.push({
+      itemId: "hearts",
+      quantity: guestCount
+    });
+
+    reservations.push({
+      itemId: "travel-bags",
+      quantity: guestCount
+    });
+
+  }
+
+
+  /*
+    PACKAGE SHIRTS
+  */
+
+  if (
+    wizard.package === "$35 Package" ||
+    wizard.package === "$40 Package"
+  ) {
+
+    reservations.push({
+      itemId: "white-shirt",
+      quantity:
+        guestCount +
+        Number(
+          wizard.extraShirts || 0
+        )
+    });
+
+  } else if (
+    Number(
+      wizard.extraShirts || 0
+    ) > 0
+  ) {
+
+    reservations.push({
+      itemId: "white-shirt",
+      quantity:
+        Number(
+          wizard.extraShirts
+        )
+    });
+
+  }
+
+
+  /*
+    VOICE CHIPS
+  */
+
+  if (
+    Number(
+      wizard.voiceChips || 0
+    ) > 0
+  ) {
+
+    reservations.push({
+      itemId: "sound",
+      quantity:
+        Number(
+          wizard.voiceChips
+        )
+    });
+
+  }
+
+
+  wizard.reservations =
+    reservations;
+
+}
+
+
+/* =========================================================
+   WIZARD
+========================================================= */
+
 function renderWizard() {
-  syncWizardFromCurrentStep();
+
+  recalculatePayment();
 
   let html = `
     <div class="wizard-shell">
 
+
       <div class="wizard-header">
 
-        <div class="wizard-title-row">
-          <h2>Add Event</h2>
 
-          <button class="text-button"
-                  onclick="closeWizard()">
+        <div class="wizard-title-row">
+
+          <h2>
+            Add Event
+          </h2>
+
+          <button
+            class="text-button"
+            onclick="closeWizard()"
+          >
             Cancel
           </button>
+
         </div>
+
 
         <div class="wizard-steps">
   `;
 
-  wizardSteps.forEach((step, index) => {
-    html += `
-      <button
-        class="wizard-step
-          ${index === wizardStep ? "active" : ""}
-          ${index < wizardStep ? "done" : ""}"
-        onclick="goToWizardStep(${index})"
-      >
-        ${index < wizardStep ? "✓ " : ""}
-        ${step}
-      </button>
-    `;
-  });
+
+  wizardSteps.forEach(
+    (step, index) => {
+
+      html += `
+        <button
+          class="
+            wizard-step
+            ${
+              index === wizardStep
+                ? "active"
+                : ""
+            }
+            ${
+              index < wizardStep
+                ? "done"
+                : ""
+            }
+          "
+          onclick="
+            goToWizardStep(
+              ${index}
+            )
+          "
+        >
+
+          ${
+            index < wizardStep
+              ? "✓ "
+              : ""
+          }
+
+          ${step}
+
+        </button>
+      `;
+
+    }
+  );
+
 
   html += `
         </div>
+
       </div>
 
-      <div id="wizardContent"
-           class="wizard-content">
+
+      <div
+        id="wizardContent"
+        class="wizard-content"
+      >
         ${wizardStepHTML()}
       </div>
 
+
       <div class="wizard-footer">
+
 
         <button
           class="secondary-button"
           onclick="wizardBack()"
-          ${wizardStep === 0 ? "disabled" : ""}
+          ${
+            wizardStep === 0
+              ? "disabled"
+              : ""
+          }
         >
           Back
         </button>
 
+
         ${
-          wizardStep === wizardSteps.length - 1
+          wizardStep ===
+          wizardSteps.length - 1
+
             ? `
-              <button class="primary-button"
-                      onclick="confirmEvent()">
+              <button
+                class="primary-button"
+                onclick="confirmEvent()"
+              >
                 Confirm Event
               </button>
             `
+
             : `
-              <button class="primary-button"
-                      onclick="wizardNext()">
+              <button
+                class="primary-button"
+                onclick="wizardNext()"
+              >
                 Next
               </button>
             `
         }
 
+
       </div>
+
 
     </div>
   `;
 
-  document.getElementById("modalRoot").innerHTML = html;
+
+  document.getElementById(
+    "modalRoot"
+  ).innerHTML = html;
+
 }
 
+
+/* =========================================================
+   WIZARD STEP HTML
+========================================================= */
+
 function wizardStepHTML() {
+
   switch (wizardStep) {
+
     case 0:
       return basicsStepHTML();
 
@@ -1341,184 +2837,286 @@ function wizardStepHTML() {
 
     default:
       return reviewStepHTML();
+
   }
+
 }
 
+
+/* =========================================================
+   STEP 1 — BASICS
+========================================================= */
+
 function basicsStepHTML() {
+
   return `
     <div class="card form-card">
 
+
       <div class="field">
-        <label>Event name</label>
+
+        <label>
+          Event name
+        </label>
 
         <input
           id="eventName"
           value="${escapeHTML(wizard.name)}"
           placeholder="Mason’s Birthday"
         />
+
       </div>
 
+
       <div class="field">
-        <label>Event type</label>
+
+        <label>
+          Event type
+        </label>
 
         <select id="eventType">
+
           ${[
             "Birthday Party",
             "Private Experience",
             "Corporate / Partner",
             "Community Event",
             "Custom"
-          ].map(type => `
-            <option
-              value="${type}"
-              ${wizard.eventType === type ? "selected" : ""}
-            >
-              ${type}
-            </option>
-          `).join("")}
+          ].map(
+            type => `
+              <option
+                value="${type}"
+                ${
+                  wizard.eventType === type
+                    ? "selected"
+                    : ""
+                }
+              >
+                ${type}
+              </option>
+            `
+          ).join("")}
+
         </select>
+
       </div>
+
 
       <div class="inline-fields">
 
+
         <div class="field">
-          <label>Date</label>
+
+          <label>
+            Date
+          </label>
+
           <input
             id="eventDate"
             type="date"
             value="${wizard.date}"
           />
+
         </div>
 
+
         <div class="field">
-          <label>Start time</label>
+
+          <label>
+            Start time
+          </label>
+
           <input
             id="eventTime"
             type="time"
             value="${wizard.time}"
           />
+
         </div>
+
 
       </div>
 
+
       <div class="field">
-        <label>Host name</label>
+
+        <label>
+          Host name
+        </label>
 
         <input
           id="hostName"
           value="${escapeHTML(wizard.hostName)}"
         />
-      </div>
-
-      <div class="inline-fields">
-
-        <div class="field">
-          <label>Phone</label>
-
-          <input
-            id="hostPhone"
-            value="${escapeHTML(wizard.hostPhone)}"
-          />
-        </div>
-
-        <div class="field">
-          <label>Email</label>
-
-          <input
-            id="hostEmail"
-            type="email"
-            value="${escapeHTML(wizard.hostEmail)}"
-          />
-        </div>
 
       </div>
+
+
+      <div class="field">
+
+        <label>
+          Phone
+        </label>
+
+        <input
+          id="hostPhone"
+          type="tel"
+          value="${escapeHTML(wizard.hostPhone)}"
+        />
+
+      </div>
+
+
+      <div class="field">
+
+        <label>
+          Email
+        </label>
+
+        <input
+          id="hostEmail"
+          type="email"
+          value="${escapeHTML(wizard.hostEmail)}"
+        />
+
+      </div>
+
 
     </div>
   `;
+
 }
 
+
+/* =========================================================
+   STEP 2 — WHERE
+========================================================= */
+
 function locationStepHTML() {
+
   return `
     <div class="card form-card">
 
+
       <div class="field">
-        <label>Event address</label>
+
+        <label>
+          Event address
+        </label>
 
         <textarea
           id="eventAddress"
           placeholder="Full event address"
         >${escapeHTML(wizard.address)}</textarea>
+
       </div>
 
+
       <div class="field">
-        <label>Arrival / setup notes</label>
+
+        <label>
+          Arrival / setup notes
+        </label>
 
         <textarea
           id="arrivalNotes"
           placeholder="Use side gate, backyard setup, park in driveway..."
         >${escapeHTML(wizard.arrivalNotes)}</textarea>
 
-        <small>
-          Keep this flexible instead of making separate fields for every possible setup situation.
-        </small>
       </div>
+
 
     </div>
   `;
+
 }
 
+
+/* =========================================================
+   STEP 3 — PARTY
+========================================================= */
+
 function partyStepHTML() {
+
   return `
     <div class="card form-card">
 
+
       <div class="field">
-        <label>Guest count</label>
+
+        <label>
+          Guest count
+        </label>
 
         <input
           id="guestCount"
           type="number"
           min="1"
           value="${wizard.guestCount}"
+          placeholder="15"
         />
 
-        <small>
-          Plush planning automatically adds 6 extra for choice.
-        </small>
       </div>
 
+
       <div class="field">
-        <label>Package / booking style</label>
+
+        <label>
+          Package
+        </label>
+
 
         <div class="choice-grid">
 
-          ${packageChoice("$30 Package", "Stuff, fluff, heart ceremony, certificate + travel bag")}
+          ${packageChoice(
+            "$30 Package"
+          )}
 
-          ${packageChoice("$35 Package", "Adds custom T-shirt")}
+          ${packageChoice(
+            "$35 Package"
+          )}
 
-          ${packageChoice("$40 Package", "Full birthday experience + custom extras")}
+          ${packageChoice(
+            "$40 Package"
+          )}
 
-          ${packageChoice("Custom", "Use for partner, retirement, corporate and unusual bookings")}
+          ${packageChoice(
+            "Custom"
+          )}
 
         </div>
+
       </div>
 
+
       ${
-        wizard.eventType === "Birthday Party"
+        wizard.eventType ===
+        "Birthday Party"
+
           ? `
             <div class="inline-fields">
 
+
               <div class="field">
-                <label>Birthday child</label>
+
+                <label>
+                  Birthday child
+                </label>
 
                 <input
                   id="specialGuestName"
                   value="${escapeHTML(wizard.specialGuestName)}"
                   placeholder="Name"
                 />
+
               </div>
 
+
               <div class="field">
-                <label>Age</label>
+
+                <label>
+                  Age
+                </label>
 
                 <input
                   id="specialGuestAge"
@@ -1526,135 +3124,550 @@ function partyStepHTML() {
                   min="1"
                   value="${escapeHTML(wizard.specialGuestAge)}"
                 />
+
               </div>
+
 
             </div>
           `
+
           : `
             <div class="field">
-              <label>Guest of honor</label>
+
+              <label>
+                Guest of honor
+              </label>
 
               <input
                 id="specialGuestName"
                 value="${escapeHTML(wizard.specialGuestName)}"
                 placeholder="Optional"
               />
+
             </div>
           `
       }
 
+
+      <div class="field">
+
+        <label>
+          Plush options being offered
+        </label>
+
+        <small>
+          Tap every style guests can choose from.
+          We’ll reserve guest count + 2 of
+          each selected plush.
+        </small>
+
+
+        <div
+          class="choice-grid"
+          style="margin-top:12px;"
+        >
+
+          ${PLUSH_OPTIONS
+            .map(
+              plush =>
+                plushChoice(plush)
+            )
+            .join("")}
+
+        </div>
+
+      </div>
+
+
     </div>
   `;
+
 }
 
-function packageChoice(value, description) {
+
+function packageChoice(
+  packageName
+) {
+
+  const packageData =
+    PACKAGE_DATA[
+      packageName
+    ];
+
+
   return `
     <button
-      class="choice-card ${wizard.package === value ? "selected" : ""}"
-      onclick="selectPackage('${value}')"
       type="button"
+      class="
+        choice-card
+        ${
+          wizard.package ===
+          packageName
+            ? "selected"
+            : ""
+        }
+      "
+      onclick="
+        selectPackage(
+          '${packageName}'
+        )
+      "
     >
-      <strong>${value}</strong>
-      <span>${description}</span>
+
+      <strong>
+        ${packageName}
+      </strong>
+
+      <span>
+        ${packageData.description}
+      </span>
+
     </button>
   `;
+
 }
 
+
+function plushChoice(plush) {
+
+  const selected =
+    wizard.selectedPlush.includes(
+      plush.id
+    );
+
+
+  const guestCount =
+    Number(
+      wizard.guestCount || 0
+    );
+
+
+  const bringCount =
+    guestCount > 0
+      ? guestCount + 2
+      : 0;
+
+
+  return `
+    <button
+      type="button"
+      class="
+        choice-card
+        ${
+          selected
+            ? "selected"
+            : ""
+        }
+      "
+      onclick="
+        togglePlush(
+          '${plush.id}'
+        )
+      "
+    >
+
+      <strong>
+        ${selected ? "✓ " : ""}
+        ${plush.name}
+      </strong>
+
+      <span>
+        ${
+          bringCount
+            ? `${bringCount} will be reserved`
+            : "Select after entering guest count"
+        }
+      </span>
+
+    </button>
+  `;
+
+}
+
+
+/* =========================================================
+   STEP 4 — EXTRAS
+========================================================= */
+
 function extrasStepHTML() {
-  const custom = wizard.package === "Custom";
+
+  if (
+    wizard.package === "Custom"
+  ) {
+
+    return `
+      <div class="card form-card">
+
+
+        <div class="field">
+
+          <label>
+            Custom requirements
+          </label>
+
+          <textarea
+            id="customRequirements"
+            placeholder="Example: 2 plush, hiking outfits, retirement embroidery, backyard setup..."
+          >${escapeHTML(wizard.customRequirements)}</textarea>
+
+        </div>
+
+
+        <div class="field">
+
+          <label>
+            Voice chips
+          </label>
+
+          <input
+            id="voiceChips"
+            type="number"
+            min="0"
+            value="${wizard.voiceChips}"
+          />
+
+        </div>
+
+
+      </div>
+    `;
+
+  }
+
 
   return `
     <div class="card form-card">
 
-      ${
-        custom
-          ? `
-            <div class="field">
-              <label>Custom requirements</label>
-
-              <textarea
-                id="customRequirements"
-                placeholder="Example: 2 plush, hiking outfits, retirement embroidery, backyard setup..."
-              >${escapeHTML(wizard.customRequirements)}</textarea>
-            </div>
-          `
-          : `
-            <label class="toggle-row">
-              <span>
-                <strong>Custom T-shirts</strong><br>
-                <span class="muted">Reserve one white shirt per guest</span>
-              </span>
-
-              <input
-                id="shirts"
-                type="checkbox"
-                ${wizard.shirts ? "checked" : ""}
-              />
-            </label>
-
-            <label class="toggle-row">
-              <span>
-                <strong>Birthday outfit</strong><br>
-                <span class="muted">Reserve one birthday outfit</span>
-              </span>
-
-              <input
-                id="birthdayOutfit"
-                type="checkbox"
-                ${wizard.birthdayOutfit ? "checked" : ""}
-              />
-            </label>
-
-            <div class="field">
-              <label>Voice chips</label>
-
-              <input
-                id="voiceChips"
-                type="number"
-                min="0"
-                value="${wizard.voiceChips}"
-              />
-            </div>
-          `
-      }
 
       <div class="field">
-        <label>Plush planned to bring</label>
+
+        <label>
+          Extra outfits
+        </label>
 
         <input
-          id="plushPlanTotal"
+          id="extraOutfits"
           type="number"
           min="0"
-          value="${wizard.plushPlanTotal}"
+          value="${wizard.extraOutfits}"
         />
 
         <small>
-          Default is guest count + 6. You can adjust it for unusual events.
+          ${money(ADD_ON_PRICING.outfit)} each
         </small>
+
       </div>
+
+
+      <div class="field">
+
+        <label>
+          Voice chips
+        </label>
+
+        <input
+          id="voiceChips"
+          type="number"
+          min="0"
+          value="${wizard.voiceChips}"
+        />
+
+        <small>
+          ${money(ADD_ON_PRICING.voiceChip)} each
+        </small>
+
+      </div>
+
+
+      <div class="field">
+
+        <label>
+          Extra T-shirts
+        </label>
+
+        <input
+          id="extraShirts"
+          type="number"
+          min="0"
+          value="${wizard.extraShirts}"
+        />
+
+        <small>
+          ${money(ADD_ON_PRICING.extraShirt)} each
+        </small>
+
+      </div>
+
+
+      <div class="field">
+
+        <label>
+          Extra vinyl designs
+        </label>
+
+        <input
+          id="extraVinyl"
+          type="number"
+          min="0"
+          value="${wizard.extraVinyl}"
+        />
+
+        <small>
+          ${money(ADD_ON_PRICING.vinyl)} each
+        </small>
+
+      </div>
+
 
     </div>
   `;
+
 }
 
+
+/* =========================================================
+   STEP 5 — PAYMENT
+========================================================= */
+
 function paymentStepHTML() {
+
+  recalculatePayment();
+
+
+  const packageData =
+    PACKAGE_DATA[
+      wizard.package
+    ];
+
+
+  const guestCount =
+    Number(
+      wizard.guestCount || 0
+    );
+
+
+  const packageBase =
+    packageData?.pricePerGuest
+      ? guestCount *
+        packageData.pricePerGuest
+      : 0;
+
+
   return `
     <div class="card form-card">
 
-      <div class="field">
-        <label>Total event price</label>
 
-        <input
-          id="eventTotal"
-          type="number"
-          min="0"
-          step="0.01"
-          value="${wizard.total}"
-        />
+      ${
+        wizard.package === "Custom"
+          ? `
+            <div class="field">
+
+              <label>
+                Custom event total
+              </label>
+
+              <input
+                id="customTotal"
+                type="number"
+                min="0"
+                step="0.01"
+                value="${wizard.customTotal}"
+                placeholder="Enter agreed total"
+                oninput="updateCustomTotalLive(this.value)"
+              />
+
+            </div>
+          `
+          : `
+            <div class="detail-row">
+
+              <span>
+                ${escapeHTML(wizard.package)}
+              </span>
+
+              <strong>
+                ${guestCount}
+                ×
+                ${money(packageData?.pricePerGuest || 0)}
+              </strong>
+
+            </div>
+
+
+            <div class="detail-row">
+
+              <span>
+                Package subtotal
+              </span>
+
+              <strong>
+                ${money(packageBase)}
+              </strong>
+
+            </div>
+          `
+      }
+
+
+      ${
+        Number(wizard.extraOutfits || 0)
+          ? `
+            <div class="detail-row">
+
+              <span>
+                Extra outfits
+              </span>
+
+              <strong>
+                ${
+                  wizard.extraOutfits
+                }
+                ×
+                ${money(ADD_ON_PRICING.outfit)}
+              </strong>
+
+            </div>
+          `
+          : ""
+      }
+
+
+      ${
+        Number(wizard.voiceChips || 0)
+          ? `
+            <div class="detail-row">
+
+              <span>
+                Voice chips
+              </span>
+
+              <strong>
+                ${
+                  wizard.voiceChips
+                }
+                ×
+                ${money(ADD_ON_PRICING.voiceChip)}
+              </strong>
+
+            </div>
+          `
+          : ""
+      }
+
+
+      ${
+        Number(wizard.extraShirts || 0)
+          ? `
+            <div class="detail-row">
+
+              <span>
+                Extra shirts
+              </span>
+
+              <strong>
+                ${
+                  wizard.extraShirts
+                }
+                ×
+                ${money(ADD_ON_PRICING.extraShirt)}
+              </strong>
+
+            </div>
+          `
+          : ""
+      }
+
+
+      ${
+        Number(wizard.extraVinyl || 0)
+          ? `
+            <div class="detail-row">
+
+              <span>
+                Extra vinyl
+              </span>
+
+              <strong>
+                ${
+                  wizard.extraVinyl
+                }
+                ×
+                ${money(ADD_ON_PRICING.vinyl)}
+              </strong>
+
+            </div>
+          `
+          : ""
+      }
+
+
+      <div
+        class="detail-row"
+        style="
+          margin-top:8px;
+          font-size:1.1rem;
+        "
+      >
+
+        <span>
+          Event total
+        </span>
+
+        <strong id="paymentTotal">
+          ${money(wizard.total)}
+        </strong>
+
       </div>
 
+
+      <div
+        style="
+          margin-top:24px;
+        "
+      >
+
+        <label class="toggle-row">
+
+          <span>
+
+            <strong>
+              Deposit received
+            </strong>
+
+            <br>
+
+            <span class="muted">
+              Normal reservation deposit is $100
+            </span>
+
+          </span>
+
+
+          <input
+            id="depositPaid"
+            type="checkbox"
+            ${
+              wizard.depositPaid
+                ? "checked"
+                : ""
+            }
+            onchange="
+              updateDepositLive(
+                this.checked
+              )
+            "
+          />
+
+        </label>
+
+      </div>
+
+
       <div class="field">
-        <label>Deposit amount</label>
+
+        <label>
+          Deposit amount
+        </label>
 
         <input
           id="depositAmount"
@@ -1662,367 +3675,931 @@ function paymentStepHTML() {
           min="0"
           step="0.01"
           value="${wizard.depositAmount}"
+          oninput="
+            updateDepositAmountLive(
+              this.value
+            )
+          "
         />
+
       </div>
 
-      <label class="toggle-row">
+
+      <div class="detail-row">
+
         <span>
-          <strong>Deposit received</strong><br>
-          <span class="muted">Normal paid bookings are $100</span>
+          Amount received
         </span>
 
-        <input
-          id="depositPaid"
-          type="checkbox"
-          ${wizard.depositPaid ? "checked" : ""}
-        />
-      </label>
+        <strong id="depositReceivedDisplay">
 
-      <div class="field">
-        <label>Remaining balance due on arrival</label>
+          ${
+            wizard.depositPaid
+              ? money(wizard.depositAmount)
+              : money(0)
+          }
 
-        <input
-          id="balanceDue"
-          type="number"
-          min="0"
-          step="0.01"
-          value="${wizard.balanceDue}"
-        />
+        </strong>
+
       </div>
+
+
+      <div
+        class="detail-row"
+        style="
+          font-size:1.1rem;
+        "
+      >
+
+        <span>
+          Remaining balance
+        </span>
+
+        <strong id="balanceDueDisplay">
+          ${money(wizard.balanceDue)}
+        </strong>
+
+      </div>
+
 
     </div>
   `;
+
 }
 
+
+/* =========================================================
+   STEP 6 — REVIEW
+========================================================= */
+
 function reviewStepHTML() {
+
+  recalculatePayment();
+
   buildReservationsForWizard();
+
 
   return `
     <div class="card detail-card">
 
-      <div class="card-label">Ready to create</div>
 
-      <h2 style="margin-top:6px;">
-        ${escapeHTML(wizard.name || "Untitled Event")}
+      <div class="card-label">
+        Ready to create
+      </div>
+
+
+      <h2
+        style="margin-top:6px;"
+      >
+        ${escapeHTML(
+          wizard.name ||
+          "Untitled Event"
+        )}
       </h2>
 
-      <div class="detail-row">
-        <span>Date</span>
-        <strong>${formatDate(wizard.date)}</strong>
-      </div>
 
       <div class="detail-row">
-        <span>Host</span>
-        <strong>${escapeHTML(wizard.hostName || "—")}</strong>
+
+        <span>
+          Date
+        </span>
+
+        <strong>
+          ${formatDate(wizard.date)}
+        </strong>
+
       </div>
 
-      <div class="detail-row">
-        <span>Guests</span>
-        <strong>${wizard.guestCount}</strong>
-      </div>
 
       <div class="detail-row">
-        <span>Package</span>
-        <strong>${escapeHTML(wizard.package)}</strong>
+
+        <span>
+          Time
+        </span>
+
+        <strong>
+          ${
+            wizard.time
+              ? formatTime(wizard.time)
+              : "—"
+          }
+        </strong>
+
       </div>
 
-      <div class="detail-row">
-        <span>Total</span>
-        <strong>${money(wizard.total)}</strong>
-      </div>
 
       <div class="detail-row">
-        <span>Due on arrival</span>
-        <strong>${money(wizard.balanceDue)}</strong>
+
+        <span>
+          Host
+        </span>
+
+        <strong>
+          ${escapeHTML(
+            wizard.hostName || "—"
+          )}
+        </strong>
+
       </div>
+
+
+      <div class="detail-row">
+
+        <span>
+          Guests
+        </span>
+
+        <strong>
+          ${wizard.guestCount || "—"}
+        </strong>
+
+      </div>
+
+
+      <div class="detail-row">
+
+        <span>
+          Package
+        </span>
+
+        <strong>
+          ${escapeHTML(
+            wizard.package || "—"
+          )}
+        </strong>
+
+      </div>
+
+
+      <div class="detail-row">
+
+        <span>
+          Event total
+        </span>
+
+        <strong>
+          ${money(wizard.total)}
+        </strong>
+
+      </div>
+
+
+      <div class="detail-row">
+
+        <span>
+          Deposit
+        </span>
+
+        <strong>
+
+          ${
+            wizard.depositPaid
+              ? `✓ ${money(wizard.depositAmount)} received`
+              : "Not received"
+          }
+
+        </strong>
+
+      </div>
+
+
+      <div class="detail-row">
+
+        <span>
+          Remaining
+        </span>
+
+        <strong>
+          ${money(wizard.balanceDue)}
+        </strong>
+
+      </div>
+
 
     </div>
 
+
     <section class="section">
 
+
       <div class="section-heading">
-        <h2>Inventory Reservations</h2>
+
+        <h2>
+          Plush
+        </h2>
+
       </div>
+
 
       <div class="card detail-card">
 
         ${
-          wizard.reservations.length
-            ? wizard.reservations.map(reservation => {
-                const item = getInventoryItem(reservation.itemId);
+          wizard.selectedPlush.length
 
-                return `
-                  <div class="requirement-row">
-                    <span>${escapeHTML(item?.name || reservation.itemId)}</span>
-                    <strong>${reservation.quantity}</strong>
-                  </div>
-                `;
-              }).join("")
-            : `<div class="muted">No inventory reservations generated.</div>`
+            ? wizard.selectedPlush
+                .map(plushId => {
+
+                  const plush =
+                    PLUSH_OPTIONS.find(
+                      option =>
+                        option.id ===
+                        plushId
+                    );
+
+
+                  return `
+                    <div class="requirement-row">
+
+                      <span>
+                        ${escapeHTML(plush?.name || plushId)}
+                      </span>
+
+                      <strong>
+                        ${
+                          Number(
+                            wizard.guestCount || 0
+                          ) + 2
+                        }
+                      </strong>
+
+                    </div>
+                  `;
+
+                })
+                .join("")
+
+            : `
+              <div class="warning-text">
+                No plush options selected.
+              </div>
+            `
         }
 
       </div>
 
+
     </section>
 
+
+    <section class="section">
+
+
+      <div class="section-heading">
+
+        <h2>
+          Inventory Reservations
+        </h2>
+
+      </div>
+
+
+      <div class="card detail-card">
+
+
+        ${
+          wizard.reservations.length
+
+            ? wizard.reservations
+                .map(
+                  reservation => {
+
+                    const item =
+                      getInventoryItem(
+                        reservation.itemId
+                      );
+
+                    return `
+                      <div class="requirement-row">
+
+                        <span>
+                          ${escapeHTML(
+                            item?.name ||
+                            reservation.itemId
+                          )}
+                        </span>
+
+                        <strong>
+                          ${reservation.quantity}
+                        </strong>
+
+                      </div>
+                    `;
+
+                  }
+                )
+                .join("")
+
+            : `
+              <div class="muted">
+                No inventory reservations generated.
+              </div>
+            `
+        }
+
+
+      </div>
+
+
+    </section>
+
+
     <div class="status-banner">
-      Confirming this event will immediately reserve its inventory and add it to Home and Events.
+
+      Confirming this event will add it
+      to Home and Events and immediately
+      reserve the inventory shown above.
+
     </div>
   `;
+
 }
 
-function syncWizardFromCurrentStep() {
-  if (!wizard) return;
 
-  const get = id => document.getElementById(id);
+/* =========================================================
+   SYNC CURRENT FORM
+========================================================= */
+
+function syncWizardFromCurrentStep() {
+
+  if (!wizard) {
+    return;
+  }
+
+
+  const get =
+    id =>
+      document.getElementById(id);
+
 
   if (wizardStep === 0) {
-    if (get("eventName")) wizard.name = get("eventName").value;
-    if (get("eventType")) wizard.eventType = get("eventType").value;
-    if (get("eventDate")) wizard.date = get("eventDate").value;
-    if (get("eventTime")) wizard.time = get("eventTime").value;
-    if (get("hostName")) wizard.hostName = get("hostName").value;
-    if (get("hostPhone")) wizard.hostPhone = get("hostPhone").value;
-    if (get("hostEmail")) wizard.hostEmail = get("hostEmail").value;
+
+    if (get("eventName")) {
+      wizard.name =
+        get("eventName").value;
+    }
+
+    if (get("eventType")) {
+      wizard.eventType =
+        get("eventType").value;
+    }
+
+    if (get("eventDate")) {
+      wizard.date =
+        get("eventDate").value;
+    }
+
+    if (get("eventTime")) {
+      wizard.time =
+        get("eventTime").value;
+    }
+
+    if (get("hostName")) {
+      wizard.hostName =
+        get("hostName").value;
+    }
+
+    if (get("hostPhone")) {
+      wizard.hostPhone =
+        get("hostPhone").value;
+    }
+
+    if (get("hostEmail")) {
+      wizard.hostEmail =
+        get("hostEmail").value;
+    }
+
   }
+
 
   if (wizardStep === 1) {
-    if (get("eventAddress")) wizard.address = get("eventAddress").value;
-    if (get("arrivalNotes")) wizard.arrivalNotes = get("arrivalNotes").value;
+
+    if (get("eventAddress")) {
+      wizard.address =
+        get("eventAddress").value;
+    }
+
+    if (get("arrivalNotes")) {
+      wizard.arrivalNotes =
+        get("arrivalNotes").value;
+    }
+
   }
 
+
   if (wizardStep === 2) {
+
     if (get("guestCount")) {
-      wizard.guestCount = Number(get("guestCount").value || 0);
+
+      wizard.guestCount =
+        Number(
+          get("guestCount").value || 0
+        );
+
     }
 
     if (get("specialGuestName")) {
-      wizard.specialGuestName = get("specialGuestName").value;
+
+      wizard.specialGuestName =
+        get("specialGuestName").value;
+
     }
 
     if (get("specialGuestAge")) {
-      wizard.specialGuestAge = get("specialGuestAge").value;
+
+      wizard.specialGuestAge =
+        get("specialGuestAge").value;
+
     }
+
   }
 
-  if (wizardStep === 3) {
-    if (get("shirts")) wizard.shirts = get("shirts").checked;
 
-    if (get("birthdayOutfit")) {
-      wizard.birthdayOutfit = get("birthdayOutfit").checked;
+  if (wizardStep === 3) {
+
+    if (get("extraOutfits")) {
+
+      wizard.extraOutfits =
+        Number(
+          get("extraOutfits").value || 0
+        );
+
     }
 
     if (get("voiceChips")) {
-      wizard.voiceChips = Number(get("voiceChips").value || 0);
+
+      wizard.voiceChips =
+        Number(
+          get("voiceChips").value || 0
+        );
+
+    }
+
+    if (get("extraShirts")) {
+
+      wizard.extraShirts =
+        Number(
+          get("extraShirts").value || 0
+        );
+
+    }
+
+    if (get("extraVinyl")) {
+
+      wizard.extraVinyl =
+        Number(
+          get("extraVinyl").value || 0
+        );
+
     }
 
     if (get("customRequirements")) {
-      wizard.customRequirements = get("customRequirements").value;
+
+      wizard.customRequirements =
+        get("customRequirements").value;
+
     }
 
-    if (get("plushPlanTotal")) {
-      wizard.plushPlanTotal =
-        Number(get("plushPlanTotal").value || 0);
-    }
   }
 
+
   if (wizardStep === 4) {
-    if (get("eventTotal")) {
-      wizard.total = Number(get("eventTotal").value || 0);
+
+    if (get("customTotal")) {
+
+      wizard.customTotal =
+        Number(
+          get("customTotal").value || 0
+        );
+
     }
 
     if (get("depositAmount")) {
+
       wizard.depositAmount =
-        Number(get("depositAmount").value || 0);
+        Number(
+          get("depositAmount").value || 0
+        );
+
     }
 
     if (get("depositPaid")) {
-      wizard.depositPaid = get("depositPaid").checked;
+
+      wizard.depositPaid =
+        get("depositPaid").checked;
+
     }
 
-    if (get("balanceDue")) {
-      wizard.balanceDue =
-        Number(get("balanceDue").value || 0);
-    }
   }
+
+
+  recalculatePayment();
+
 }
 
+
+/* =========================================================
+   WIZARD CONTROLS
+========================================================= */
+
 function goToWizardStep(index) {
+
   syncWizardFromCurrentStep();
 
   wizardStep = index;
 
-  if (wizardStep >= 3 && !wizard.plushPlanTotal) {
-    wizard.plushPlanTotal = Number(wizard.guestCount || 0) + 6;
-  }
-
   renderWizard();
+
 }
+
 
 function wizardNext() {
+
   syncWizardFromCurrentStep();
 
-  if (wizardStep === 0 && !wizard.name.trim()) {
-    alert("Give the event a name first.");
+
+  if (
+    wizardStep === 0 &&
+    !wizard.name.trim()
+  ) {
+
+    alert(
+      "Give the event a name first."
+    );
+
     return;
+
   }
 
-  if (wizardStep === 2) {
-    wizard.plushPlanTotal = Number(wizard.guestCount || 0) + 6;
 
-    if (wizard.package === "$35 Package") {
-      wizard.shirts = true;
+  if (
+    wizardStep === 2
+  ) {
+
+    if (
+      !wizard.guestCount ||
+      wizard.guestCount < 1
+    ) {
+
+      alert(
+        "Enter the guest count."
+      );
+
+      return;
+
     }
 
-    if (wizard.package === "$40 Package") {
-      wizard.shirts = true;
-      wizard.birthdayOutfit = true;
+
+    if (
+      !wizard.package
+    ) {
+
+      alert(
+        "Choose a package or Custom."
+      );
+
+      return;
+
     }
+
   }
 
-  wizardStep = Math.min(
-    wizardSteps.length - 1,
-    wizardStep + 1
-  );
+
+  wizardStep =
+    Math.min(
+      wizardSteps.length - 1,
+      wizardStep + 1
+    );
+
 
   renderWizard();
+
 }
+
 
 function wizardBack() {
+
   syncWizardFromCurrentStep();
 
-  wizardStep = Math.max(0, wizardStep - 1);
+  wizardStep =
+    Math.max(
+      0,
+      wizardStep - 1
+    );
 
   renderWizard();
+
 }
 
-function selectPackage(packageName) {
-  wizard.package = packageName;
 
-  if (packageName === "$30 Package") {
-    wizard.shirts = false;
-    wizard.birthdayOutfit = false;
+/* =========================================================
+   PACKAGE + PLUSH SELECTION
+========================================================= */
+
+function selectPackage(
+  packageName
+) {
+
+  syncWizardFromCurrentStep();
+
+  wizard.package =
+    packageName;
+
+
+  /*
+    $40 currently includes
+    all six plush options.
+    Default them all on.
+
+    They can still be changed
+    manually if an unusual event
+    needs an exception.
+  */
+
+  if (
+    packageName === "$40 Package"
+  ) {
+
+    wizard.selectedPlush =
+      PLUSH_OPTIONS.map(
+        plush => plush.id
+      );
+
   }
 
-  if (packageName === "$35 Package") {
-    wizard.shirts = true;
-    wizard.birthdayOutfit = false;
-  }
-
-  if (packageName === "$40 Package") {
-    wizard.shirts = true;
-    wizard.birthdayOutfit = true;
-  }
 
   renderWizard();
+
 }
 
-function buildReservationsForWizard() {
-  const reservations = [];
-  const guestCount = Number(wizard.guestCount || 0);
 
-  /*
-    Hearts + travel bags:
-    one per participating guest.
-  */
+function togglePlush(plushId) {
 
-  if (guestCount > 0) {
-    reservations.push({
-      itemId: "hearts",
-      quantity: guestCount
-    });
+  syncWizardFromCurrentStep();
 
-    reservations.push({
-      itemId: "travel-bags",
-      quantity: guestCount
-    });
+
+  if (
+    wizard.selectedPlush.includes(
+      plushId
+    )
+  ) {
+
+    wizard.selectedPlush =
+      wizard.selectedPlush.filter(
+        id =>
+          id !== plushId
+      );
+
+  } else {
+
+    wizard.selectedPlush.push(
+      plushId
+    );
+
   }
 
-  /*
-    White shirts when included.
-  */
 
-  if (wizard.shirts && guestCount > 0) {
-    reservations.push({
-      itemId: "white-shirt",
-      quantity: guestCount
-    });
-  }
+  renderWizard();
 
-  /*
-    Voice chips only when selected.
-  */
-
-  if (wizard.voiceChips > 0) {
-    reservations.push({
-      itemId: "sound",
-      quantity: Number(wizard.voiceChips)
-    });
-  }
-
-  /*
-    Plush:
-    We know how many total plush we want to bring,
-    but we don't yet know how those should be split
-    between Golden/Bear/Cat/Unicorn/Dino/Frog.
-
-    So V1 does NOT fake a per-style allocation.
-
-    The next refinement will be a very quick plush
-    mix selector inside Add Event.
-  */
-
-  wizard.reservations = reservations;
 }
+
+
+/* =========================================================
+   PAYMENT LIVE UPDATES
+========================================================= */
+
+function updateCustomTotalLive(
+  value
+) {
+
+  wizard.customTotal =
+    Number(value || 0);
+
+  recalculatePayment();
+
+  updatePaymentDisplay();
+
+}
+
+
+function updateDepositLive(
+  checked
+) {
+
+  wizard.depositPaid =
+    checked;
+
+  recalculatePayment();
+
+  updatePaymentDisplay();
+
+}
+
+
+function updateDepositAmountLive(
+  value
+) {
+
+  wizard.depositAmount =
+    Number(value || 0);
+
+  recalculatePayment();
+
+  updatePaymentDisplay();
+
+}
+
+
+function updatePaymentDisplay() {
+
+  const total =
+    document.getElementById(
+      "paymentTotal"
+    );
+
+  const deposit =
+    document.getElementById(
+      "depositReceivedDisplay"
+    );
+
+  const balance =
+    document.getElementById(
+      "balanceDueDisplay"
+    );
+
+
+  if (total) {
+
+    total.textContent =
+      money(wizard.total);
+
+  }
+
+
+  if (deposit) {
+
+    deposit.textContent =
+      wizard.depositPaid
+        ? money(
+            wizard.depositAmount
+          )
+        : money(0);
+
+  }
+
+
+  if (balance) {
+
+    balance.textContent =
+      money(
+        wizard.balanceDue
+      );
+
+  }
+
+}
+
+
+/* =========================================================
+   CONFIRM EVENT
+========================================================= */
 
 function confirmEvent() {
+
   syncWizardFromCurrentStep();
+
+  recalculatePayment();
+
   buildReservationsForWizard();
 
-  if (!wizard.name.trim()) {
-    alert("Event name is required.");
+
+  if (
+    !wizard.name.trim()
+  ) {
+
+    alert(
+      "Event name is required."
+    );
+
     return;
+
   }
 
-  const event = structuredClone(wizard);
 
-  state.events.push(event);
+  if (
+    !wizard.selectedPlush.length
+  ) {
+
+    const continueWithoutPlush =
+      confirm(
+        "No plush options are selected. Create the event anyway?"
+      );
+
+
+    if (
+      !continueWithoutPlush
+    ) {
+      return;
+    }
+
+  }
+
+
+  const event =
+    structuredClone(wizard);
+
+
+  state.events.push(
+    event
+  );
+
 
   saveState();
+
   closeWizard();
 
-  currentEventId = event.id;
-  currentScreen = "event-detail";
+
+  currentEventId =
+    event.id;
+
+  currentScreen =
+    "event-detail";
+
 
   render();
+
 }
 
-/* MODAL */
+
+/* =========================================================
+   MODALS
+========================================================= */
 
 function closeModal() {
-  document.getElementById("modalRoot").innerHTML = "";
+
+  document.getElementById(
+    "modalRoot"
+  ).innerHTML = "";
+
 }
 
-function closeModalFromBackdrop(event) {
-  if (event.target.classList.contains("modal-backdrop")) {
+
+function closeModalFromBackdrop(
+  event
+) {
+
+  if (
+    event.target.classList.contains(
+      "modal-backdrop"
+    )
+  ) {
+
     closeModal();
+
   }
+
 }
 
-/* GLOBAL EVENTS */
 
-document.querySelectorAll(".nav-item").forEach(button => {
-  button.addEventListener("click", () => {
-    navigate(button.dataset.screen);
-  });
-});
+/* =========================================================
+   GLOBAL EVENTS
+========================================================= */
 
 document
-  .getElementById("headerAction")
-  .addEventListener("click", () => {
-    if (currentScreen === "events") {
-      openAddEventWizard();
-    }
+  .querySelectorAll(".nav-item")
+  .forEach(button => {
+
+    button.addEventListener(
+      "click",
+      () => {
+
+        navigate(
+          button.dataset.screen
+        );
+
+      }
+    );
+
   });
+
+
+document
+  .getElementById(
+    "headerAction"
+  )
+  .addEventListener(
+    "click",
+    () => {
+
+      if (
+        currentScreen === "events"
+      ) {
+
+        openAddEventWizard();
+
+      }
+
+    }
+  );
+
 
 render();
