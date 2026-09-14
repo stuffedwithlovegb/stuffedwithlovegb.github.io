@@ -398,7 +398,62 @@ function daysUntil(dateString) {
     (date - today) / 86400000
   );
 }
+function formatReminderDue(remindBy) {
+  if (!remindBy) return "";
 
+  const date = new Date(remindBy);
+
+  if (Number.isNaN(date.getTime())) {
+    return "";
+  }
+
+  return date.toLocaleString(
+    "en-US",
+    {
+      month: "short",
+      day: "numeric",
+      hour: "numeric",
+      minute: "2-digit"
+    }
+  );
+}
+
+function reminderSortValue(reminder) {
+  if (!reminder.remindBy) {
+    return Number.MAX_SAFE_INTEGER;
+  }
+
+  const value =
+    new Date(reminder.remindBy).getTime();
+
+  return Number.isNaN(value)
+    ? Number.MAX_SAFE_INTEGER
+    : value;
+}
+
+function getEventReminders(
+  eventId,
+  includeDone = false
+) {
+  return state.attention
+    .filter(reminder => {
+      if (
+        reminder.type !== "manual" ||
+        reminder.eventId !== eventId
+      ) {
+        return false;
+      }
+
+      return includeDone
+        ? true
+        : !reminder.done;
+    })
+    .sort(
+      (a, b) =>
+        reminderSortValue(a) -
+        reminderSortValue(b)
+    );
+}
 
 /* =========================================================
    INVENTORY
@@ -1081,6 +1136,22 @@ function renderEventDetail() {
   const issues =
     eventIssues(event);
 
+  const reminders =
+    getEventReminders(event.id);
+
+  const days =
+    daysUntil(event.date);
+
+  const mapUrl =
+    event.address
+      ? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(event.address)}`
+      : "";
+
+  const phoneHref =
+    event.hostPhone
+      ? String(event.hostPhone).replace(/[^\d+]/g, "")
+      : "";
+
   let html = `
     <button
       class="back-button"
@@ -1090,6 +1161,14 @@ function renderEventDetail() {
     </button>
 
     <div class="detail-header">
+
+      <div class="card-label">
+        ${
+          event.eventType
+            ? escapeHTML(event.eventType)
+            : "Event"
+        }
+      </div>
 
       <h2>
         ${escapeHTML(event.name)}
@@ -1107,34 +1186,115 @@ function renderEventDetail() {
       <div class="meta-row">
 
         ${
+          days !== null
+            ? `
+                <span class="pill">
+                  ${
+                    days === 0
+                      ? "Today"
+                      : days < 0
+                        ? "Past event"
+                        : `${days} days`
+                  }
+                </span>
+              `
+            : ""
+        }
+
+        ${
           event.guestCount
             ? `
-              <span class="pill">
-                ${event.guestCount} guests
-              </span>
-            `
+                <span class="pill">
+                  ${event.guestCount} guests
+                </span>
+              `
             : ""
         }
 
         ${
           event.package
             ? `
-              <span class="pill">
-                ${escapeHTML(event.package)}
-              </span>
-            `
+                <span class="pill">
+                  ${escapeHTML(event.package)}
+                </span>
+              `
             : ""
+        }
+
+        ${
+          issues.length
+            ? `
+                <span class="pill warning">
+                  ${issues.length} need attention
+                </span>
+              `
+            : `
+                <span class="pill success">
+                  ✓ On track
+                </span>
+              `
         }
 
       </div>
 
-      <div style="margin-top:16px;">
+      <div
+        class="inline-fields"
+        style="margin-top:16px;"
+      >
         <button
-          class="primary-button full-width"
+          class="primary-button"
           onclick="openEditEvent('${event.id}')"
         >
           Edit Event
         </button>
+
+        ${
+          mapUrl
+            ? `
+                <a
+                  class="secondary-button"
+                  href="${escapeHTML(mapUrl)}"
+                  target="_blank"
+                  rel="noopener"
+                >
+                  Maps
+                </a>
+              `
+            : ""
+        }
+
+        ${
+          phoneHref
+            ? `
+                <a
+                  class="secondary-button"
+                  href="tel:${escapeHTML(phoneHref)}"
+                >
+                  Call
+                </a>
+
+                <a
+                  class="secondary-button"
+                  href="sms:${escapeHTML(phoneHref)}"
+                >
+                  Text
+                </a>
+              `
+            : ""
+        }
+
+        ${
+          event.hostEmail
+            ? `
+                <a
+                  class="secondary-button"
+                  href="mailto:${escapeHTML(event.hostEmail)}"
+                >
+                  Email
+                </a>
+              `
+            : ""
+        }
       </div>
 
     </div>
@@ -1172,13 +1332,87 @@ function renderEventDetail() {
   } else {
     html += `
       <div class="status-banner">
-        ✓ Everything looks good
-        for this event.
+        ✓ Everything looks good for this event.
       </div>
     `;
   }
 
   html += `
+    <section class="section">
+
+      <div class="section-heading">
+        <h2>Reminders</h2>
+
+        <button
+          onclick="addEventReminder('${event.id}')"
+        >
+          + Add
+        </button>
+      </div>
+  `;
+
+  if (!reminders.length) {
+    html += `
+      <div class="card empty-card">
+        <strong>No reminders for this event.</strong>
+        <p>
+          Add anything you do not want to forget before event day.
+        </p>
+      </div>
+    `;
+  } else {
+    html += `
+      <div class="card detail-card">
+    `;
+
+    reminders.forEach(reminder => {
+      html += `
+        <div class="attention-row">
+
+          <div>
+            <strong>
+              ${escapeHTML(reminder.title)}
+            </strong>
+
+            ${
+              reminder.remindBy
+                ? `
+                    <div class="muted">
+                      Due ${escapeHTML(
+                        formatReminderDue(
+                          reminder.remindBy
+                        )
+                      )}
+                    </div>
+                  `
+                : ""
+            }
+          </div>
+
+          <button
+            class="text-button"
+            onclick="
+              completeReminder(
+                '${reminder.id}'
+              )
+            "
+            aria-label="Complete reminder"
+          >
+            ✓
+          </button>
+
+        </div>
+      `;
+    });
+
+    html += `
+      </div>
+    `;
+  }
+
+  html += `
+    </section>
+
     <section class="section">
 
       <div class="section-heading">
@@ -1251,24 +1485,6 @@ function renderEventDetail() {
 
     </section>
   `;
-
-  if (event.eventNotes) {
-    html += `
-      <section class="section">
-
-        <div class="section-heading">
-          <h2>Notes</h2>
-        </div>
-
-        <div class="card detail-card">
-          <div style="white-space:pre-wrap;">
-            ${escapeHTML(event.eventNotes)}
-          </div>
-        </div>
-
-      </section>
-    `;
-  }
 
   html += `
     <section class="section">
@@ -1380,42 +1596,6 @@ function renderEventDetail() {
     <section class="section">
 
       <div class="section-heading">
-        <h2>Payment</h2>
-      </div>
-
-      <div class="card detail-card">
-
-        <div class="detail-row">
-          <span>Total</span>
-          <strong>
-            ${money(event.total)}
-          </strong>
-        </div>
-
-        <div class="detail-row">
-          <span>Deposit</span>
-          <strong>
-            ${
-              event.depositPaid
-                ? `✓ ${money(event.depositAmount)} received`
-                : "Not received"
-            }
-          </strong>
-        </div>
-
-        <div class="detail-row">
-          <span>Remaining</span>
-          <strong>
-            ${money(event.balanceDue)}
-          </strong>
-        </div>
-
-      </div>
-    </section>
-
-    <section class="section">
-
-      <div class="section-heading">
         <h2>Prep & Packing</h2>
       </div>
 
@@ -1458,6 +1638,62 @@ function renderEventDetail() {
   html += `
       </div>
     </section>
+  `;
+
+  if (event.eventNotes) {
+    html += `
+      <section class="section">
+
+        <div class="section-heading">
+          <h2>Notes</h2>
+        </div>
+
+        <div class="card detail-card">
+          <div style="white-space:pre-wrap;">
+            ${escapeHTML(event.eventNotes)}
+          </div>
+        </div>
+
+      </section>
+    `;
+  }
+
+  html += `
+    <section class="section">
+
+      <div class="section-heading">
+        <h2>Payment</h2>
+      </div>
+
+      <div class="card detail-card">
+
+        <div class="detail-row">
+          <span>Total</span>
+          <strong>
+            ${money(event.total)}
+          </strong>
+        </div>
+
+        <div class="detail-row">
+          <span>Deposit</span>
+          <strong>
+            ${
+              event.depositPaid
+                ? `✓ ${money(event.depositAmount)} received`
+                : "Not received"
+            }
+          </strong>
+        </div>
+
+        <div class="detail-row">
+          <span>Remaining</span>
+          <strong>
+            ${money(event.balanceDue)}
+          </strong>
+        </div>
+
+      </div>
+    </section>
 
     <section class="section">
 
@@ -1473,7 +1709,6 @@ function renderEventDetail() {
 
   main.innerHTML = html;
 }
-
 async function togglePacking(
   eventId,
   packingId,
@@ -1727,12 +1962,81 @@ function openInventoryItem(itemId) {
 
           <div class="detail-row">
             <span>Available</span>
-            <strong>
+            <strong class="${available < 0 ? "warning-text" : ""}">
               ${available}
             </strong>
           </div>
 
         </div>
+
+        <section class="section">
+
+          <div class="section-heading">
+            <h2>Physical Count</h2>
+          </div>
+
+          <div
+            class="card detail-card"
+            style="text-align:center;"
+          >
+            <div
+              class="inline-fields"
+              style="
+                align-items:center;
+                justify-content:center;
+              "
+            >
+              <button
+                class="secondary-button"
+                onclick="
+                  changeInventoryBy(
+                    '${item.id}',
+                    -1
+                  )
+                "
+                aria-label="Decrease count by one"
+              >
+                −
+              </button>
+
+              <strong
+                style="
+                  min-width:70px;
+                  font-size:1.5rem;
+                "
+              >
+                ${item.onHand}
+              </strong>
+
+              <button
+                class="primary-button"
+                onclick="
+                  changeInventoryBy(
+                    '${item.id}',
+                    1
+                  )
+                "
+                aria-label="Increase count by one"
+              >
+                +
+              </button>
+            </div>
+
+            <div style="margin-top:12px;">
+              <button
+                class="text-button"
+                onclick="
+                  setInventoryCount(
+                    '${item.id}'
+                  )
+                "
+              >
+                Set exact count
+              </button>
+            </div>
+          </div>
+
+        </section>
 
         <section class="section">
 
@@ -1753,7 +2057,13 @@ function openInventoryItem(itemId) {
     reservingEvents.forEach(
       ({ event, reservation }) => {
         html += `
-          <div class="card list-card">
+          <div
+            class="card list-card tap-card"
+            onclick="
+              closeModal();
+              openEvent('${event.id}');
+            "
+          >
 
             <h3>
               ${escapeHTML(event.name)}
@@ -1775,34 +2085,6 @@ function openInventoryItem(itemId) {
   html += `
         </section>
 
-        <div class="inline-fields">
-
-          <button
-            class="primary-button"
-            onclick="
-              adjustInventory(
-                '${item.id}',
-                'add'
-              )
-            "
-          >
-            + Add Stock
-          </button>
-
-          <button
-            class="secondary-button"
-            onclick="
-              adjustInventory(
-                '${item.id}',
-                'set'
-              )
-            "
-          >
-            Adjust Count
-          </button>
-
-        </div>
-
         <div style="margin-top:12px;">
 
           <button
@@ -1823,57 +2105,37 @@ function openInventoryItem(itemId) {
   ).innerHTML = html;
 }
 
-async function adjustInventory(
+async function changeInventoryBy(
   itemId,
-  mode
+  delta
 ) {
   const item =
     getInventoryItem(itemId);
 
   if (!item) return;
 
-  let value;
-
   const previousOnHand =
     item.onHand;
 
-  if (mode === "add") {
-    value = prompt(
-      `How many ${item.name} are you adding?`
+  const nextCount =
+    Math.max(
+      0,
+      Number(item.onHand || 0) +
+      Number(delta || 0)
     );
 
-    if (value === null) return;
-
-    const number =
-      Number(value);
-
-    if (!Number.isFinite(number)) {
-      return;
-    }
-
-    item.onHand += number;
-  } else {
-    value = prompt(
-      `What is the actual physical count of ${item.name}?`,
-      item.onHand
-    );
-
-    if (value === null) return;
-
-    const number =
-      Number(value);
-
-    if (!Number.isFinite(number)) {
-      return;
-    }
-
-    item.onHand = number;
+  if (nextCount === previousOnHand) {
+    return;
   }
+
+  item.onHand =
+    nextCount;
 
   try {
     await saveInventoryItemToServer(item);
   } catch (err) {
-    item.onHand = previousOnHand;
+    item.onHand =
+      previousOnHand;
 
     alert(
       `Could not save that inventory change. ${err.message}`
@@ -1884,11 +2146,62 @@ async function adjustInventory(
 
   updateAttentionBadge();
 
-  closeModal();
-
   renderInventory();
+
+  openInventoryItem(itemId);
 }
 
+async function setInventoryCount(
+  itemId
+) {
+  const item =
+    getInventoryItem(itemId);
+
+  if (!item) return;
+
+  const value =
+    prompt(
+      `What is the actual physical count of ${item.name}?`,
+      item.onHand
+    );
+
+  if (value === null) return;
+
+  const number =
+    Number(value);
+
+  if (
+    !Number.isFinite(number) ||
+    number < 0
+  ) {
+    return;
+  }
+
+  const previousOnHand =
+    item.onHand;
+
+  item.onHand =
+    number;
+
+  try {
+    await saveInventoryItemToServer(item);
+  } catch (err) {
+    item.onHand =
+      previousOnHand;
+
+    alert(
+      `Could not save that inventory change. ${err.message}`
+    );
+
+    return;
+  }
+
+  updateAttentionBadge();
+
+  renderInventory();
+
+  openInventoryItem(itemId);
+}
 
 /* =========================================================
    ATTENTION
@@ -1903,14 +2216,35 @@ function renderAttention() {
     );
 
   const issues =
-    allCurrentIssues();
+    allCurrentIssues()
+      .sort((a, b) => {
+        if (
+          a.type === "manual" &&
+          b.type === "manual"
+        ) {
+          return (
+            reminderSortValue(a) -
+            reminderSortValue(b)
+          );
+        }
+
+        if (a.type === "manual") {
+          return -1;
+        }
+
+        if (b.type === "manual") {
+          return 1;
+        }
+
+        return 0;
+      });
 
   let html = `
     <button
       class="primary-button full-width"
       onclick="addReminder()"
     >
-      + Remember Something
+      + Add Reminder
     </button>
 
     <section class="section">
@@ -1947,11 +2281,11 @@ function renderAttention() {
           ${
             nextEvent
               ? `
-                Your next event is
-                ${escapeHTML(nextEvent.name)}
-                on
-                ${formatDate(nextEvent.date)}.
-              `
+                  Your next event is
+                  ${escapeHTML(nextEvent.name)}
+                  on
+                  ${formatDate(nextEvent.date)}.
+                `
               : ""
           }
         </p>
@@ -1964,6 +2298,15 @@ function renderAttention() {
     `;
 
     issues.forEach(issue => {
+      const attachedEvent =
+        issue.eventId
+          ? state.events.find(
+              event =>
+                event.id ===
+                issue.eventId
+            )
+          : null;
+
       html += `
         <div class="attention-row">
 
@@ -1974,18 +2317,33 @@ function renderAttention() {
             </strong>
 
             ${
-              issue.eventId
+              attachedEvent
                 ? `
-                  <div class="muted">
-                    ${escapeHTML(
-                      state.events.find(
-                        e =>
-                          e.id ===
-                          issue.eventId
-                      )?.name || ""
-                    )}
-                  </div>
-                `
+                    <div class="muted">
+                      ${escapeHTML(attachedEvent.name)}
+                    </div>
+                  `
+                : issue.type === "manual"
+                  ? `
+                      <div class="muted">
+                        General SWL reminder
+                      </div>
+                    `
+                  : ""
+            }
+
+            ${
+              issue.type === "manual" &&
+              issue.remindBy
+                ? `
+                    <div class="muted">
+                      Due ${escapeHTML(
+                        formatReminderDue(
+                          issue.remindBy
+                        )
+                      )}
+                    </div>
+                  `
                 : ""
             }
 
@@ -1994,29 +2352,30 @@ function renderAttention() {
           ${
             issue.type === "generated"
               ? `
-                <button
-                  class="text-button"
-                  onclick="
-                    openEvent(
-                      '${issue.eventId}'
-                    )
-                  "
-                >
-                  Open
-                </button>
-              `
+                  <button
+                    class="text-button"
+                    onclick="
+                      openEvent(
+                        '${issue.eventId}'
+                      )
+                    "
+                  >
+                    Open
+                  </button>
+                `
               : `
-                <button
-                  class="text-button"
-                  onclick="
-                    completeReminder(
-                      '${issue.id}'
-                    )
-                  "
-                >
-                  ✓
-                </button>
-              `
+                  <button
+                    class="text-button"
+                    onclick="
+                      completeReminder(
+                        '${issue.id}'
+                      )
+                    "
+                    aria-label="Complete reminder"
+                  >
+                    ✓
+                  </button>
+                `
           }
 
         </div>
@@ -2035,19 +2394,212 @@ function renderAttention() {
   main.innerHTML = html;
 }
 
-async function addReminder() {
-  const title =
-    prompt(
-      "What do you want to remember?"
-    );
+function addReminder() {
+  openReminderModal();
+}
 
-  if (!title?.trim()) return;
+function addEventReminder(eventId) {
+  openReminderModal(eventId);
+}
+
+function openReminderModal(
+  eventId = null
+) {
+  const attachedEvent =
+    eventId
+      ? state.events.find(
+          event =>
+            event.id === eventId
+        )
+      : null;
+
+  const eventOptions =
+    [...state.events]
+      .filter(event => !event.closed)
+      .sort(
+        (a, b) =>
+          new Date(a.date) -
+          new Date(b.date)
+      )
+      .map(
+        event => `
+          <option
+            value="${escapeHTML(event.id)}"
+            ${
+              event.id === eventId
+                ? "selected"
+                : ""
+            }
+          >
+            ${escapeHTML(event.name)}
+          </option>
+        `
+      )
+      .join("");
+
+  const html = `
+    <div
+      class="modal-backdrop"
+      onclick="closeModalFromBackdrop(event)"
+    >
+
+      <div class="modal-sheet">
+
+        <h2>Add Reminder</h2>
+
+        <div class="card form-card">
+
+          <div class="field">
+
+            <label>
+              What do you need to remember?
+            </label>
+
+            <input
+              id="reminderTitle"
+              placeholder="Order hiking outfits"
+              autofocus
+            />
+
+          </div>
+
+          ${
+            attachedEvent
+              ? `
+                  <div class="field">
+
+                    <label>
+                      Event
+                    </label>
+
+                    <div class="card detail-card">
+                      <strong>
+                        ${escapeHTML(attachedEvent.name)}
+                      </strong>
+                    </div>
+
+                    <input
+                      id="reminderEventId"
+                      type="hidden"
+                      value="${escapeHTML(attachedEvent.id)}"
+                    />
+
+                  </div>
+                `
+              : `
+                  <div class="field">
+
+                    <label>
+                      Event
+                    </label>
+
+                    <select id="reminderEventId">
+                      <option value="">
+                        No event — general reminder
+                      </option>
+                      ${eventOptions}
+                    </select>
+
+                  </div>
+                `
+          }
+
+          <div class="field">
+
+            <label>
+              Due date & time
+            </label>
+
+            <input
+              id="reminderDue"
+              type="datetime-local"
+            />
+
+            <div class="muted">
+              Optional
+            </div>
+
+          </div>
+
+        </div>
+
+        <div class="inline-fields">
+
+          <button
+            class="secondary-button"
+            onclick="closeModal()"
+          >
+            Cancel
+          </button>
+
+          <button
+            class="primary-button"
+            onclick="saveReminderFromModal()"
+          >
+            Save Reminder
+          </button>
+
+        </div>
+
+      </div>
+    </div>
+  `;
+
+  document.getElementById(
+    "modalRoot"
+  ).innerHTML = html;
+
+  setTimeout(
+    () =>
+      document
+        .getElementById(
+          "reminderTitle"
+        )
+        ?.focus(),
+    0
+  );
+}
+
+async function saveReminderFromModal() {
+  const title =
+    document
+      .getElementById(
+        "reminderTitle"
+      )
+      ?.value
+      .trim();
+
+  if (!title) {
+    alert(
+      "Add a reminder first."
+    );
+    return;
+  }
+
+  const eventId =
+    document
+      .getElementById(
+        "reminderEventId"
+      )
+      ?.value || null;
+
+  const dueValue =
+    document
+      .getElementById(
+        "reminderDue"
+      )
+      ?.value || "";
 
   const reminder = {
     id: makeId("reminder"),
-    title: title.trim(),
-    eventId: null,
-    remindBy: null,
+    title,
+    eventId,
+    remindBy:
+      dueValue
+        ? new Date(
+            dueValue
+          ).toISOString()
+        : null,
     type: "manual",
     done: false,
     createdAt:
@@ -2070,9 +2622,11 @@ async function addReminder() {
     reminder
   );
 
+  closeModal();
+
   updateAttentionBadge();
 
-  renderAttention();
+  render();
 }
 
 async function completeReminder(id) {
@@ -2104,7 +2658,7 @@ async function completeReminder(id) {
 
   updateAttentionBadge();
 
-  renderAttention();
+  render();
 }
 
 
