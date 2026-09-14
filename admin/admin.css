@@ -2217,3 +2217,484 @@ a {
   }
 
 }
+/* =========================================================
+   SWL PLUSH + INVENTORY VISUALS
+   ========================================================= */
+
+.inventory-plush-thumb,
+.inventory-modal-plush,
+.plush-choice-image {
+  overflow: hidden;
+  background: var(--yellow-pale);
+  border: 1px solid rgba(76, 51, 37, 0.08);
+}
+
+.inventory-plush-thumb img,
+.inventory-modal-plush img,
+.plush-choice-image img {
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: cover;
+}
+
+
+/* INVENTORY TOOLBAR */
+
+.inventory-toolbar {
+  margin-bottom: 28px;
+}
+
+.inventory-search-wrap {
+  position: relative;
+  margin-bottom: 13px;
+}
+
+.inventory-search-icon {
+  position: absolute;
+  left: 15px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--muted);
+  font-size: 1.1rem;
+  pointer-events: none;
+}
+
+.inventory-search {
+  width: 100%;
+  height: 50px;
+  padding: 0 16px 0 42px;
+  border: 1px solid var(--line);
+  border-radius: 15px;
+  background: rgba(255, 255, 255, 0.72);
+  outline: none;
+  color: var(--text);
+}
+
+.inventory-search:focus {
+  border-color: rgba(194, 146, 27, 0.5);
+  box-shadow: 0 0 0 3px rgba(242, 204, 88, 0.12);
+}
+
+
+/* INVENTORY TABS */
+
+.inventory-category-tabs {
+  display: flex;
+  gap: 7px;
+  overflow-x: auto;
+  padding: 1px 0 5px;
+  scrollbar-width: none;
+}
+
+.inventory-category-tabs::-webkit-scrollbar {
+  display: none;
+}
+
+.inventory-category-tab {
+  flex: 0 0 auto;
+  min-height: 36px;
+  padding: 0 15px;
+  border: 1px solid transparent;
+  border-radius: 999px;
+  background: rgba(76, 51, 37, 0.05);
+  color: var(--muted);
+  font-size: 0.76rem;
+  font-weight: 800;
+}
+
+.inventory-category-tab.active {
+  background: var(--yellow);
+  color: var(--brown);
+  box-shadow: 0 3px 8px rgba(121, 87, 18, 0.11);
+}
+
+
+/* INVENTORY GROUPS */
+
+.inventory-group {
+  margin-bottom: 30px;
+}
+
+.inventory-group-header {
+  margin-bottom: 9px;
+  padding: 0 4px;
+}
+
+.inventory-group-header > div {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.inventory-group-header h2 {
+  margin: 0;
+  color: var(--brown);
+  font-size: 1rem;
+  letter-spacing: -0.015em;
+}
+
+.inventory-group-header span {
+  min-width: 24px;
+  height: 24px;
+  display: grid;
+  place-items: center;
+  padding: 0 6px;
+  border-radius: 999px;
+  background: rgba(242, 204, 88, 0.20);
+  color: var(--brown-2);
+  font-size: 0.68rem;
+  font-weight: 850;
+}
+
+.inventory-list-card {
+  overflow: hidden;
+  border-radius: 19px;
+  background: rgba(255, 255, 255, 0.79);
+  border: 1px solid var(--line);
+  box-shadow: var(--shadow-soft);
+}
+
+
+/* INVENTORY ROW */
+
+.inventory-item-row {
+  min-height: 76px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--line);
+  cursor: pointer;
+}
+
+.inventory-item-row:last-child {
+  border-bottom: 0;
+}
+
+.inventory-item-row:active {
+  background: rgba(242, 204, 88, 0.07);
+}
+
+.inventory-item-left {
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.inventory-plush-thumb,
+.inventory-generic-icon {
+  flex: 0 0 auto;
+  width: 54px;
+  height: 54px;
+  border-radius: 14px;
+}
+
+.inventory-plush-thumb img {
+  object-position: center 43%;
+}
+
+.inventory-generic-icon {
+  display: grid;
+  place-items: center;
+  background: var(--yellow-pale);
+  color: var(--brown);
+  font-size: 1.15rem;
+  font-weight: 900;
+  border: 1px solid rgba(76, 51, 37, 0.07);
+}
+
+.inventory-item-copy {
+  min-width: 0;
+}
+
+.inventory-item-copy strong {
+  display: block;
+  overflow: hidden;
+  color: var(--brown);
+  font-size: 0.91rem;
+  line-height: 1.25;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.inventory-item-meta {
+  display: flex;
+  gap: 8px;
+  margin-top: 4px;
+  color: var(--muted);
+  font-size: 0.69rem;
+}
+
+.inventory-item-meta span + span::before {
+  content: "·";
+  margin-right: 8px;
+}
+
+.inventory-item-right {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.inventory-available {
+  text-align: right;
+}
+
+.inventory-available strong {
+  color: var(--brown);
+  font-size: 0.96rem;
+}
+
+.inventory-available span {
+  display: block;
+  margin-top: 1px;
+  color: var(--muted);
+  font-size: 0.63rem;
+}
+
+.inventory-available.short strong,
+.inventory-available.short span {
+  color: var(--danger);
+}
+
+.inventory-quick-six {
+  min-width: 39px;
+  height: 35px;
+  padding: 0 8px;
+  border: 0;
+  border-radius: 11px;
+  background: var(--yellow);
+  color: var(--brown);
+  font-size: 0.76rem;
+  font-weight: 900;
+}
+
+.inventory-chevron {
+  color: rgba(76, 51, 37, 0.45);
+  font-size: 1.35rem;
+  line-height: 1;
+}
+
+
+/* INVENTORY MODAL */
+
+.inventory-modal-title {
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.inventory-modal-plush {
+  flex: 0 0 auto;
+  width: 68px;
+  height: 68px;
+  border-radius: 17px;
+}
+
+.inventory-modal-plush img {
+  object-position: center 42%;
+}
+
+.inventory-modal-title h2 {
+  margin: 4px 0 0;
+  line-height: 1.1;
+}
+
+.inventory-count-summary {
+  margin-top: 4px;
+}
+
+.inventory-count-stat.available {
+  background: var(--yellow-pale);
+}
+
+.inventory-count-stat.available strong {
+  color: var(--brown);
+}
+
+.inventory-adjust-section {
+  margin-top: 30px;
+}
+
+.inventory-adjust-section h3 {
+  margin: 0 0 12px;
+  color: var(--brown);
+  font-size: 1rem;
+}
+
+.inventory-add-six {
+  min-height: 49px;
+}
+
+.inventory-set-exact {
+  display: block;
+  margin: 12px auto 0;
+  padding: 5px 8px;
+  border: 0;
+  background: none;
+  color: var(--brown-2);
+  font-size: 0.78rem;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.inventory-reserved-section {
+  margin-top: 36px;
+}
+
+.inventory-reservation-card {
+  width: 100%;
+  min-height: 65px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 15px;
+  padding: 13px 15px;
+  border: 1px solid var(--line);
+  border-radius: 15px;
+  background: rgba(255, 255, 255, 0.72);
+  text-align: left;
+}
+
+.inventory-reservation-card + .inventory-reservation-card {
+  margin-top: 8px;
+}
+
+.inventory-reservation-card strong {
+  display: block;
+  color: var(--brown);
+}
+
+.inventory-reservation-card div span {
+  display: block;
+  margin-top: 3px;
+  color: var(--muted);
+  font-size: 0.73rem;
+}
+
+.inventory-reservation-card > span {
+  color: var(--muted);
+  font-size: 1.3rem;
+}
+
+.inventory-none-reserved {
+  padding: 18px;
+  border: 1px dashed var(--line-strong);
+  border-radius: 15px;
+  color: var(--muted);
+  text-align: center;
+}
+
+
+/* ADD EVENT PLUSH CARDS */
+
+.plush-choice-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 11px;
+  margin-top: 14px;
+}
+
+.plush-choice-card {
+  overflow: hidden;
+  padding: 0;
+  border: 2px solid transparent;
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.80);
+  text-align: left;
+  box-shadow: 0 4px 14px rgba(76, 51, 37, 0.05);
+}
+
+.plush-choice-card.selected {
+  border-color: var(--yellow);
+  background: var(--yellow-pale);
+}
+
+.plush-choice-image {
+  position: relative;
+  width: 100%;
+  height: 125px;
+  border: 0;
+  border-radius: 0;
+  background: var(--cream-deep);
+}
+
+.plush-choice-image img {
+  object-position: center 42%;
+}
+
+.plush-choice-check {
+  position: absolute;
+  top: 9px;
+  right: 9px;
+  width: 26px;
+  height: 26px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.91);
+  color: rgba(76, 51, 37, 0.18);
+  font-size: 0.74rem;
+  font-weight: 900;
+  box-shadow: 0 2px 7px rgba(76, 51, 37, 0.09);
+}
+
+.plush-choice-card.selected .plush-choice-check {
+  background: var(--yellow);
+  color: var(--brown);
+}
+
+.plush-choice-copy {
+  padding: 11px 12px 13px;
+}
+
+.plush-choice-copy strong {
+  display: block;
+  color: var(--brown);
+  font-size: 0.86rem;
+}
+
+.plush-choice-copy span {
+  display: block;
+  margin-top: 3px;
+  color: var(--muted);
+  font-size: 0.67rem;
+}
+
+
+/* MOBILE */
+
+@media (max-width: 430px) {
+
+  .inventory-item-row {
+    padding: 10px;
+  }
+
+  .inventory-plush-thumb,
+  .inventory-generic-icon {
+    width: 50px;
+    height: 50px;
+  }
+
+  .inventory-item-right {
+    gap: 6px;
+  }
+
+  .inventory-available span {
+    display: none;
+  }
+
+  .inventory-quick-six {
+    min-width: 37px;
+    padding: 0 7px;
+  }
+
+  .plush-choice-image {
+    height: 112px;
+  }
+}
