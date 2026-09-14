@@ -1142,6 +1142,16 @@ function renderEventDetail() {
   const days =
     daysUntil(event.date);
 
+  const nonPlushReservations =
+    (event.reservations || [])
+      .filter(
+        reservation =>
+          !PLUSH_OPTIONS.some(
+            plush =>
+              plush.id === reservation.itemId
+          )
+      );
+
   const mapUrl =
     event.address
       ? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(event.address)}`
@@ -1149,8 +1159,26 @@ function renderEventDetail() {
 
   const phoneHref =
     event.hostPhone
-      ? String(event.hostPhone).replace(/[^\d+]/g, "")
+      ? String(event.hostPhone)
+          .replace(/[^\d+]/g, "")
       : "";
+
+  event.packing ||=
+    masterPackingList.map(
+      item => ({
+        id: makeId("pack"),
+        name: item,
+        done: false
+      })
+    );
+
+  const packingDone =
+    event.packing.filter(
+      item => item.done
+    ).length;
+
+  const packingTotal =
+    event.packing.length;
 
   let html = `
     <button
@@ -1225,7 +1253,8 @@ function renderEventDetail() {
           issues.length
             ? `
                 <span class="pill warning">
-                  ${issues.length} need attention
+                  ${issues.length}
+                  need attention
                 </span>
               `
             : `
@@ -1238,9 +1267,45 @@ function renderEventDetail() {
       </div>
 
       <div
-        class="inline-fields"
+        class="card detail-card"
         style="margin-top:16px;"
       >
+
+        <div class="detail-row">
+          <span>Location</span>
+
+          <strong>
+            ${escapeHTML(
+              event.address || "Not added"
+            )}
+          </strong>
+        </div>
+
+        <div class="detail-row">
+          <span>Host</span>
+
+          <strong>
+            ${escapeHTML(
+              event.hostName || "Not added"
+            )}
+          </strong>
+        </div>
+
+        <div class="detail-row">
+          <span>Balance</span>
+
+          <strong>
+            ${money(event.balanceDue)}
+          </strong>
+        </div>
+
+      </div>
+
+      <div
+        class="inline-fields"
+        style="margin-top:14px;"
+      >
+
         <button
           class="primary-button"
           onclick="openEditEvent('${event.id}')"
@@ -1295,6 +1360,7 @@ function renderEventDetail() {
               `
             : ""
         }
+
       </div>
 
     </div>
@@ -1314,6 +1380,7 @@ function renderEventDetail() {
     issues.forEach(issue => {
       html += `
         <div class="attention-row">
+
           <strong>
             ${escapeHTML(issue)}
           </strong>
@@ -1321,6 +1388,7 @@ function renderEventDetail() {
           <span class="warning-text">
             !
           </span>
+
         </div>
       `;
     });
@@ -1329,174 +1397,46 @@ function renderEventDetail() {
         </div>
       </section>
     `;
-  } else {
-    html += `
-      <div class="status-banner">
-        ✓ Everything looks good for this event.
-      </div>
-    `;
   }
 
-  html += `
-    <section class="section">
-
-      <div class="section-heading">
-        <h2>Reminders</h2>
-
-        <button
-          onclick="addEventReminder('${event.id}')"
-        >
-          + Add
-        </button>
-      </div>
-  `;
-
-  if (!reminders.length) {
-    html += `
-      <div class="card empty-card">
-        <strong>No reminders for this event.</strong>
-        <p>
-          Add anything you do not want to forget before event day.
-        </p>
-      </div>
-    `;
-  } else {
-    html += `
-      <div class="card detail-card">
-    `;
-
-    reminders.forEach(reminder => {
-      html += `
-        <div class="attention-row">
-
-          <div>
-            <strong>
-              ${escapeHTML(reminder.title)}
-            </strong>
-
-            ${
-              reminder.remindBy
-                ? `
-                    <div class="muted">
-                      Due ${escapeHTML(
-                        formatReminderDue(
-                          reminder.remindBy
-                        )
-                      )}
-                    </div>
-                  `
-                : ""
-            }
-          </div>
-
-          <button
-            class="text-button"
-            onclick="
-              completeReminder(
-                '${reminder.id}'
-              )
-            "
-            aria-label="Complete reminder"
-          >
-            ✓
-          </button>
-
-        </div>
-      `;
-    });
-
-    html += `
-      </div>
-    `;
-  }
+  /*
+     REQUIREMENTS
+  */
 
   html += `
-    </section>
+    <details
+      class="card detail-card"
+      open
+      style="margin-top:18px;"
+    >
 
-    <section class="section">
+      <summary
+        style="
+          cursor:pointer;
+          font-weight:800;
+          font-size:1.05rem;
+          list-style:none;
+        "
+      >
+        Requirements
+      </summary>
 
-      <div class="section-heading">
-        <h2>Event Details</h2>
-      </div>
-
-      <div class="card detail-card">
-
-        <div class="detail-row">
-          <span>Date</span>
-          <strong>
-            ${formatDate(event.date)}
-          </strong>
-        </div>
-
-        <div class="detail-row">
-          <span>Time</span>
-          <strong>
-            ${
-              event.time
-                ? formatTime(event.time)
-                : "—"
-            }
-          </strong>
-        </div>
-
-        <div class="detail-row">
-          <span>Address</span>
-          <strong>
-            ${escapeHTML(event.address || "Not added")}
-          </strong>
-        </div>
-
-        <div class="detail-row">
-          <span>Host</span>
-          <strong>
-            ${escapeHTML(event.hostName || "Not added")}
-          </strong>
-        </div>
-
-        <div class="detail-row">
-          <span>Phone</span>
-          <strong>
-            ${escapeHTML(event.hostPhone || "—")}
-          </strong>
-        </div>
-
-        <div class="detail-row">
-          <span>Email</span>
-          <strong>
-            ${escapeHTML(event.hostEmail || "—")}
-          </strong>
-        </div>
-
-        <div class="detail-row">
-          <span>Guests</span>
-          <strong>
-            ${event.guestCount || "—"}
-          </strong>
-        </div>
-
-        <div class="detail-row">
-          <span>Package</span>
-          <strong>
-            ${escapeHTML(event.package || "Custom")}
-          </strong>
-        </div>
-
-      </div>
-
-    </section>
-  `;
-
-  html += `
-    <section class="section">
-
-      <div class="section-heading">
-        <h2>Plush Options</h2>
-      </div>
-
-      <div class="card detail-card">
+      <div style="margin-top:18px;">
   `;
 
   if (event.selectedPlush?.length) {
+    html += `
+      <div class="muted"
+        style="
+          font-size:.8rem;
+          font-weight:800;
+          margin-bottom:8px;
+        "
+      >
+        PLUSH
+      </div>
+    `;
+
     event.selectedPlush.forEach(
       plushId => {
         const plush =
@@ -1513,51 +1453,36 @@ function renderEventDetail() {
           <div class="requirement-row">
 
             <span>
-              ${escapeHTML(plush?.name || plushId)}
+              ${escapeHTML(
+                plush?.name || plushId
+              )}
             </span>
 
             <strong>
-              ${reservation?.quantity || 0} bringing
+              ${reservation?.quantity || 0}
             </strong>
 
           </div>
         `;
       }
     );
-  } else {
-    html += `
-      <div class="muted">
-        No plush choices selected.
-      </div>
-    `;
   }
 
-  html += `
-      </div>
-    </section>
-  `;
-
-  const nonPlushReservations =
-    (event.reservations || [])
-      .filter(
-        reservation =>
-          !PLUSH_OPTIONS.some(
-            plush =>
-              plush.id === reservation.itemId
-          )
-      );
-
-  html += `
-    <section class="section">
-
-      <div class="section-heading">
-        <h2>Requirements</h2>
-      </div>
-
-      <div class="card detail-card">
-  `;
-
   if (nonPlushReservations.length) {
+    html += `
+      <div
+        class="muted"
+        style="
+          font-size:.8rem;
+          font-weight:800;
+          margin-top:18px;
+          margin-bottom:8px;
+        "
+      >
+        SUPPLIES
+      </div>
+    `;
+
     nonPlushReservations
       .forEach(reservation => {
         const item =
@@ -1581,35 +1506,79 @@ function renderEventDetail() {
           </div>
         `;
       });
-  } else {
+  }
+
+  if (event.customRequirements) {
+    html += `
+      <div
+        class="muted"
+        style="
+          font-size:.8rem;
+          font-weight:800;
+          margin-top:18px;
+          margin-bottom:8px;
+        "
+      >
+        CUSTOM
+      </div>
+
+      <div style="white-space:pre-wrap;">
+        ${escapeHTML(
+          event.customRequirements
+        )}
+      </div>
+    `;
+  }
+
+  if (
+    !event.selectedPlush?.length &&
+    !nonPlushReservations.length &&
+    !event.customRequirements
+  ) {
     html += `
       <div class="muted">
-        No additional tracked inventory.
+        No requirements added.
       </div>
     `;
   }
 
   html += `
       </div>
-    </section>
-
-    <section class="section">
-
-      <div class="section-heading">
-        <h2>Prep & Packing</h2>
-      </div>
-
-      <div class="card detail-card">
+    </details>
   `;
 
-  event.packing ||=
-    masterPackingList.map(
-      item => ({
-        id: makeId("pack"),
-        name: item,
-        done: false
-      })
-    );
+  /*
+     PREP & PACKING
+  */
+
+  html += `
+    <details
+      class="card detail-card"
+      style="margin-top:12px;"
+    >
+
+      <summary
+        style="
+          cursor:pointer;
+          font-weight:800;
+          font-size:1.05rem;
+          list-style:none;
+        "
+      >
+        Prep & Packing
+        <span
+          class="muted"
+          style="
+            float:right;
+            font-size:.85rem;
+          "
+        >
+          ${packingDone}/${packingTotal}
+        </span>
+      </summary>
+
+      <div style="margin-top:18px;">
+  `;
 
   event.packing.forEach(item => {
     html += `
@@ -1637,38 +1606,204 @@ function renderEventDetail() {
 
   html += `
       </div>
-    </section>
+    </details>
   `;
 
-  if (event.eventNotes) {
+  /*
+     REMINDERS
+  */
+
+  html += `
+    <details
+      class="card detail-card"
+      style="margin-top:12px;"
+    >
+
+      <summary
+        style="
+          cursor:pointer;
+          font-weight:800;
+          font-size:1.05rem;
+          list-style:none;
+        "
+      >
+        Reminders
+
+        ${
+          reminders.length
+            ? `
+                <span
+                  class="pill warning"
+                  style="float:right;"
+                >
+                  ${reminders.length}
+                </span>
+              `
+            : ""
+        }
+      </summary>
+
+      <div style="margin-top:18px;">
+
+        <button
+          class="primary-button full-width"
+          onclick="addEventReminder('${event.id}')"
+        >
+          + Add Reminder
+        </button>
+  `;
+
+  if (!reminders.length) {
     html += `
-      <section class="section">
+      <div
+        class="muted"
+        style="
+          margin-top:16px;
+          text-align:center;
+        "
+      >
+        Nothing to remember yet.
+      </div>
+    `;
+  } else {
+    html += `
+      <div style="margin-top:14px;">
+    `;
 
-        <div class="section-heading">
-          <h2>Notes</h2>
-        </div>
+    reminders.forEach(reminder => {
+      html += `
+        <div class="attention-row">
 
-        <div class="card detail-card">
-          <div style="white-space:pre-wrap;">
-            ${escapeHTML(event.eventNotes)}
+          <div>
+
+            <strong>
+              ${escapeHTML(reminder.title)}
+            </strong>
+
+            ${
+              reminder.remindBy
+                ? `
+                    <div class="muted">
+                      Due
+                      ${escapeHTML(
+                        formatReminderDue(
+                          reminder.remindBy
+                        )
+                      )}
+                    </div>
+                  `
+                : ""
+            }
+
           </div>
-        </div>
 
-      </section>
+          <button
+            class="text-button"
+            onclick="
+              completeReminder(
+                '${reminder.id}'
+              )
+            "
+            aria-label="Complete reminder"
+          >
+            ✓
+          </button>
+
+        </div>
+      `;
+    });
+
+    html += `
+      </div>
     `;
   }
 
   html += `
-    <section class="section">
+      </div>
+    </details>
+  `;
 
-      <div class="section-heading">
-        <h2>Payment</h2>
+  /*
+     NOTES
+  */
+
+  html += `
+    <details
+      class="card detail-card"
+      style="margin-top:12px;"
+    >
+
+      <summary
+        style="
+          cursor:pointer;
+          font-weight:800;
+          font-size:1.05rem;
+          list-style:none;
+        "
+      >
+        Notes
+      </summary>
+
+      <div style="margin-top:18px;">
+
+        ${
+          event.eventNotes
+            ? `
+                <div style="white-space:pre-wrap;">
+                  ${escapeHTML(
+                    event.eventNotes
+                  )}
+                </div>
+              `
+            : `
+                <div class="muted">
+                  No notes added.
+                </div>
+              `
+        }
+
       </div>
 
-      <div class="card detail-card">
+    </details>
+  `;
+
+  /*
+     PAYMENT
+  */
+
+  html += `
+    <details
+      class="card detail-card"
+      style="margin-top:12px;"
+    >
+
+      <summary
+        style="
+          cursor:pointer;
+          font-weight:800;
+          font-size:1.05rem;
+          list-style:none;
+        "
+      >
+        Payment
+
+        <span
+          class="muted"
+          style="
+            float:right;
+            font-size:.85rem;
+          "
+        >
+          ${money(event.balanceDue)} due
+        </span>
+
+      </summary>
+
+      <div style="margin-top:18px;">
 
         <div class="detail-row">
           <span>Total</span>
+
           <strong>
             ${money(event.total)}
           </strong>
@@ -1676,10 +1811,13 @@ function renderEventDetail() {
 
         <div class="detail-row">
           <span>Deposit</span>
+
           <strong>
             ${
               event.depositPaid
-                ? `✓ ${money(event.depositAmount)} received`
+                ? `✓ ${money(
+                    event.depositAmount
+                  )} received`
                 : "Not received"
             }
           </strong>
@@ -1687,14 +1825,67 @@ function renderEventDetail() {
 
         <div class="detail-row">
           <span>Remaining</span>
+
           <strong>
             ${money(event.balanceDue)}
           </strong>
         </div>
 
       </div>
-    </section>
 
+    </details>
+  `;
+
+  /*
+     CLOSEOUT
+  */
+
+  html += `
+    <details
+      class="card detail-card"
+      style="margin-top:12px;"
+    >
+
+      <summary
+        style="
+          cursor:pointer;
+          font-weight:800;
+          font-size:1.05rem;
+          list-style:none;
+        "
+      >
+        Closeout
+      </summary>
+
+      <div style="margin-top:18px;">
+
+        ${
+          event.closed
+            ? `
+                <div class="status-banner">
+                  ✓ Event closed out
+                </div>
+              `
+            : `
+                <div class="muted">
+                  After the event, this is where
+                  final counts, inventory reconciliation,
+                  payment confirmation and completion
+                  will live.
+                </div>
+              `
+        }
+
+      </div>
+
+    </details>
+  `;
+
+  /*
+     DELETE
+  */
+
+  html += `
     <section class="section">
 
       <button
