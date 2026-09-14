@@ -1,5 +1,3 @@
-const STORAGE_KEY = "swlOpsV2";
-
 /* =========================================================
    BUSINESS DATA
 ========================================================= */
@@ -164,7 +162,7 @@ const masterPackingList = [
    APP STATE
 ========================================================= */
 
-let state = loadState();
+let state = createInitialState();
 
 let currentScreen = "home";
 let currentEventId = null;
@@ -185,7 +183,7 @@ const wizardSteps = [
 
 
 /* =========================================================
-   STATE
+   STATE / D1 API
 ========================================================= */
 
 function createInitialState() {
@@ -197,45 +195,133 @@ function createInitialState() {
   };
 }
 
-function loadState() {
-  const saved = localStorage.getItem(STORAGE_KEY);
-
-  if (!saved) {
-    const fresh = createInitialState();
-
-    localStorage.setItem(
-      STORAGE_KEY,
-      JSON.stringify(fresh)
-    );
-
-    return fresh;
-  }
-
-  try {
-    const parsed = JSON.parse(saved);
-
-    parsed.events ||= [];
-    parsed.attention ||= [];
-    parsed.notes ||= [];
-
-    if (!parsed.inventory?.length) {
-      parsed.inventory =
-        structuredClone(inventorySeed);
+async function apiRequest(path, options = {}) {
+  const response = await fetch(
+    `/admin/api/${path}`,
+    {
+      credentials: "same-origin",
+      headers: {
+        "Content-Type": "application/json",
+        ...(options.headers || {})
+      },
+      ...options
     }
-
-    return parsed;
-  } catch {
-    return createInitialState();
-  }
-}
-
-function saveState() {
-  localStorage.setItem(
-    STORAGE_KEY,
-    JSON.stringify(state)
   );
 
-  updateAttentionBadge();
+  let data = null;
+
+  try {
+    data = await response.json();
+  } catch {
+    // Cloudflare or the Worker may occasionally
+    // return a non-JSON error page.
+  }
+
+  if (!response.ok) {
+    throw new Error(
+      data?.error ||
+      `Request failed (${response.status})`
+    );
+  }
+
+  return data;
+}
+
+function normalizeLoadedEvent(event) {
+  const normalized = {
+    ...event
+  };
+
+  normalized.selectedPlush ||= [];
+  normalized.reservations ||= [];
+
+  normalized.packing =
+    normalized.packing?.length
+      ? normalized.packing
+      : masterPackingList.map(
+          name => ({
+            id: makeId("pack"),
+            name,
+            done: false
+          })
+        );
+
+  return normalized;
+}
+
+async function loadStateFromServer() {
+  const data =
+    await apiRequest("bootstrap");
+
+  state = {
+    events: (data.events || []).map(
+      normalizeLoadedEvent
+    ),
+
+    inventory:
+      data.inventory || [],
+
+    attention:
+      data.attention || [],
+
+    notes: []
+  };
+}
+
+async function saveEventToServer(
+  event,
+  isNew = false
+) {
+  return apiRequest(
+    isNew
+      ? "events"
+      : `events/${encodeURIComponent(event.id)}`,
+    {
+      method: isNew ? "POST" : "PUT",
+      body: JSON.stringify(event)
+    }
+  );
+}
+
+async function deleteEventFromServer(id) {
+  return apiRequest(
+    `events/${encodeURIComponent(id)}`,
+    {
+      method: "DELETE"
+    }
+  );
+}
+
+async function saveInventoryItemToServer(item) {
+  return apiRequest(
+    `inventory/${encodeURIComponent(item.id)}`,
+    {
+      method: "PUT",
+      body: JSON.stringify({
+        onHand: item.onHand
+      })
+    }
+  );
+}
+
+async function createReminderOnServer(reminder) {
+  return apiRequest(
+    "reminders",
+    {
+      method: "POST",
+      body: JSON.stringify(reminder)
+    }
+  );
+}
+
+async function saveReminderToServer(reminder) {
+  return apiRequest(
+    `reminders/${encodeURIComponent(reminder.id)}`,
+    {
+      method: "PUT",
+      body: JSON.stringify(reminder)
+    }
+  );
 }
 
 
@@ -843,8 +929,6 @@ function renderHome() {
 
   main.innerHTML = html;
 }
-
-
 /* =========================================================
    EVENTS
 ========================================================= */
@@ -1388,11 +1472,9 @@ function renderEventDetail() {
   `;
 
   main.innerHTML = html;
-
-  saveState();
 }
 
-function togglePacking(
+async function togglePacking(
   eventId,
   packingId,
   checked
@@ -1411,12 +1493,25 @@ function togglePacking(
 
   if (!item) return;
 
-  item.done = checked;
+  const previous = item.done;
 
-  saveState();
+  item.done = checked;
+  updateAttentionBadge();
+
+  try {
+    await saveEventToServer(event);
+  } catch (err) {
+    item.done = previous;
+
+    alert(
+      `Could not save that packing change. ${err.message}`
+    );
+
+    renderEventDetail();
+  }
 }
 
-function deleteEvent(id) {
+async function deleteEvent(id) {
   if (
     !confirm(
       "Delete this event?"
@@ -1425,12 +1520,25 @@ function deleteEvent(id) {
     return;
   }
 
+  try {
+    await deleteEventFromServer(id);
+  } catch (err) {
+    alert(
+      `Could not delete that event. ${err.message}`
+    );
+
+    return;
+  }
+
   state.events =
     state.events.filter(
       event => event.id !== id
     );
 
-  saveState();
+  state.attention =
+    state.attention.filter(
+      reminder => reminder.eventId !== id
+    );
 
   navigate("events");
 }
@@ -1715,7 +1823,7 @@ function openInventoryItem(itemId) {
   ).innerHTML = html;
 }
 
-function adjustInventory(
+async function adjustInventory(
   itemId,
   mode
 ) {
@@ -1725,6 +1833,9 @@ function adjustInventory(
   if (!item) return;
 
   let value;
+
+  const previousOnHand =
+    item.onHand;
 
   if (mode === "add") {
     value = prompt(
@@ -1759,7 +1870,19 @@ function adjustInventory(
     item.onHand = number;
   }
 
-  saveState();
+  try {
+    await saveInventoryItemToServer(item);
+  } catch (err) {
+    item.onHand = previousOnHand;
+
+    alert(
+      `Could not save that inventory change. ${err.message}`
+    );
+
+    return;
+  }
+
+  updateAttentionBadge();
 
   closeModal();
 
@@ -1912,7 +2035,7 @@ function renderAttention() {
   main.innerHTML = html;
 }
 
-function addReminder() {
+async function addReminder() {
   const title =
     prompt(
       "What do you want to remember?"
@@ -1920,21 +2043,39 @@ function addReminder() {
 
   if (!title?.trim()) return;
 
-  state.attention.push({
+  const reminder = {
     id: makeId("reminder"),
     title: title.trim(),
+    eventId: null,
+    remindBy: null,
     type: "manual",
     done: false,
     createdAt:
       new Date().toISOString()
-  });
+  };
 
-  saveState();
+  try {
+    await createReminderOnServer(
+      reminder
+    );
+  } catch (err) {
+    alert(
+      `Could not save that reminder. ${err.message}`
+    );
+
+    return;
+  }
+
+  state.attention.push(
+    reminder
+  );
+
+  updateAttentionBadge();
 
   renderAttention();
 }
 
-function completeReminder(id) {
+async function completeReminder(id) {
   const reminder =
     state.attention.find(
       item => item.id === id
@@ -1942,9 +2083,26 @@ function completeReminder(id) {
 
   if (!reminder) return;
 
+  const previous =
+    reminder.done;
+
   reminder.done = true;
 
-  saveState();
+  try {
+    await saveReminderToServer(
+      reminder
+    );
+  } catch (err) {
+    reminder.done = previous;
+
+    alert(
+      `Could not save that reminder. ${err.message}`
+    );
+
+    return;
+  }
+
+  updateAttentionBadge();
 
   renderAttention();
 }
@@ -2151,8 +2309,7 @@ function calculateEventTotal(
       event.voiceChips || 0
     ) *
     ADD_ON_PRICING.voiceChip;
-
-  const shirtAddOns =
+     const shirtAddOns =
     Number(
       event.extraShirts || 0
     ) *
@@ -3481,8 +3638,6 @@ function reviewStepHTML() {
     </div>
   `;
 }
-
-
 /* =========================================================
    FORM SYNC
 ========================================================= */
@@ -3925,7 +4080,7 @@ function updatePaymentDisplay() {
    SAVE EVENT
 ========================================================= */
 
-function saveEventFromWizard() {
+async function saveEventFromWizard() {
   syncWizardFromCurrentStep();
 
   recalculatePayment();
@@ -3954,25 +4109,42 @@ function saveEventFromWizard() {
   const savedEvent =
     structuredClone(wizard);
 
-  if (
+  const isEdit =
     wizardMode === "edit" &&
-    editingEventId
-  ) {
-    const index =
+    editingEventId;
+
+  let existingIndex = -1;
+
+  if (isEdit) {
+    existingIndex =
       state.events.findIndex(
         event =>
           event.id ===
           editingEventId
       );
 
-    if (index === -1) {
+    if (existingIndex === -1) {
       alert(
         "That event could not be found."
       );
 
       return;
     }
+  }
 
+  try {
+    await saveEventToServer(
+      savedEvent,
+      !isEdit
+    );
+  } catch (err) {
+    alert(
+      `Could not save that event. ${err.message}`
+    );
+    return;
+  }
+
+  if (isEdit) {
     /*
       Replace the event with the newly
       calculated version.
@@ -3982,7 +4154,7 @@ function saveEventFromWizard() {
       from the existing event.
     */
 
-    state.events[index] =
+    state.events[existingIndex] =
       savedEvent;
   } else {
     state.events.push(
@@ -3990,7 +4162,7 @@ function saveEventFromWizard() {
     );
   }
 
-  saveState();
+  updateAttentionBadge();
 
   const savedId =
     savedEvent.id;
@@ -4062,4 +4234,41 @@ document
     }
   );
 
-render();
+async function initializeApp() {
+  const main =
+    document.getElementById(
+      "mainContent"
+    );
+
+  if (main) {
+    main.innerHTML = `
+      <div class="card empty-card">
+        <strong>Loading SWL Ops…</strong>
+      </div>
+    `;
+  }
+
+  try {
+    await loadStateFromServer();
+    render();
+  } catch (err) {
+    console.error(err);
+
+    if (main) {
+      main.innerHTML = `
+        <div class="status-banner warning">
+          SWL Ops couldn’t load its data.
+        </div>
+
+        <div class="card empty-card">
+          <strong>${escapeHTML(err.message)}</strong>
+          <p>
+            Refresh the page and try again.
+          </p>
+        </div>
+      `;
+    }
+  }
+}
+
+initializeApp();
