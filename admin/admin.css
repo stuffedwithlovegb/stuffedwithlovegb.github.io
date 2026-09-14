@@ -653,3 +653,1092 @@ button {
     padding-bottom: 105px;
   }
 }
+/* =========================================================
+   SWL DELIGHT PASS
+   Warm, tactile, playful-grown-up.
+   ========================================================= */
+
+:root {
+  --swl-cream: #fff8e9;
+  --swl-cream-deep: #f5e6c8;
+  --swl-yellow: #f2c94c;
+  --swl-yellow-light: #fff0b5;
+  --swl-brown: #4b3526;
+  --swl-brown-soft: #765b49;
+  --swl-paper: rgba(255, 253, 247, 0.94);
+  --swl-line: rgba(75, 53, 38, 0.11);
+
+  --swl-shadow:
+    0 2px 4px rgba(75, 53, 38, 0.03),
+    0 10px 28px rgba(75, 53, 38, 0.07);
+
+  --swl-shadow-raised:
+    0 4px 8px rgba(75, 53, 38, 0.05),
+    0 16px 38px rgba(75, 53, 38, 0.11);
+}
+
+
+/* =========================================================
+   APP BACKGROUND / GLOBAL FEEL
+   ========================================================= */
+
+body {
+  background:
+    radial-gradient(
+      circle at 18% -5%,
+      rgba(242, 201, 76, 0.18),
+      transparent 27rem
+    ),
+    linear-gradient(
+      180deg,
+      #fffaf0 0%,
+      #f8edd7 46%,
+      #f3e3c5 100%
+    );
+
+  background-attachment: fixed;
+}
+
+.main-content {
+  padding-top: 20px;
+  padding-bottom: 28px;
+}
+
+button,
+a,
+.tap-card,
+.choice-card,
+details {
+  -webkit-tap-highlight-color: transparent;
+}
+
+button,
+.primary-button,
+.secondary-button,
+.tap-card,
+.choice-card {
+  transition:
+    transform 0.14s ease,
+    box-shadow 0.14s ease,
+    background-color 0.14s ease,
+    border-color 0.14s ease;
+}
+
+button:active,
+.primary-button:active,
+.secondary-button:active,
+.choice-card:active {
+  transform: scale(0.975);
+}
+
+
+/* =========================================================
+   TOP BAR
+   ========================================================= */
+
+.topbar {
+  padding-bottom: 13px;
+
+  background:
+    linear-gradient(
+      180deg,
+      rgba(255, 250, 240, 0.98),
+      rgba(255, 250, 240, 0.91)
+    );
+
+  box-shadow:
+    0 1px 0 rgba(75, 53, 38, 0.04);
+}
+
+.eyebrow {
+  color: var(--swl-brown-soft);
+  font-size: 0.66rem;
+  letter-spacing: 0.18em;
+}
+
+.topbar h1 {
+  color: var(--swl-brown);
+  letter-spacing: -0.025em;
+}
+
+.icon-button {
+  background:
+    linear-gradient(
+      145deg,
+      #f7d665,
+      var(--swl-yellow)
+    );
+
+  border:
+    1px solid
+    rgba(75, 53, 38, 0.08);
+
+  box-shadow:
+    0 5px 14px
+    rgba(75, 53, 38, 0.12);
+}
+
+.icon-button:active {
+  transform: scale(0.92);
+}
+
+
+/* =========================================================
+   SECTION HEADINGS
+   ========================================================= */
+
+.section {
+  margin: 27px 0;
+}
+
+.section-heading {
+  margin-bottom: 11px;
+  padding: 0 2px;
+}
+
+.section-heading h2 {
+  color: var(--swl-brown);
+  font-size: 1.06rem;
+  letter-spacing: -0.015em;
+}
+
+.section-heading button {
+  min-height: 36px;
+  padding: 0 5px;
+  color: var(--swl-brown-soft);
+}
+
+
+/* =========================================================
+   CARDS
+   ========================================================= */
+
+.card {
+  background:
+    linear-gradient(
+      160deg,
+      rgba(255, 255, 255, 0.96),
+      rgba(255, 251, 242, 0.91)
+    );
+
+  border:
+    1px solid
+    rgba(75, 53, 38, 0.085);
+
+  box-shadow: var(--swl-shadow);
+}
+
+.tap-card {
+  cursor: pointer;
+}
+
+.tap-card:active {
+  transform: scale(0.982);
+  box-shadow:
+    0 3px 10px
+    rgba(75, 53, 38, 0.06);
+}
+
+.hero-card {
+  position: relative;
+  overflow: hidden;
+  padding: 22px;
+
+  background:
+    radial-gradient(
+      circle at 100% 0%,
+      rgba(242, 201, 76, 0.42),
+      transparent 48%
+    ),
+    radial-gradient(
+      circle at 5% 110%,
+      rgba(242, 201, 76, 0.11),
+      transparent 38%
+    ),
+    rgba(255, 253, 247, 0.95);
+
+  border:
+    1px solid
+    rgba(203, 159, 42, 0.18);
+
+  box-shadow: var(--swl-shadow-raised);
+}
+
+.hero-card::after {
+  content: "♥";
+  position: absolute;
+  right: 18px;
+  bottom: -18px;
+
+  color:
+    rgba(242, 201, 76, 0.12);
+
+  font-size: 5.4rem;
+  font-weight: 900;
+
+  transform: rotate(-12deg);
+  pointer-events: none;
+}
+
+.hero-card h2 {
+  position: relative;
+  z-index: 1;
+
+  margin-top: 7px;
+  color: var(--swl-brown);
+  letter-spacing: -0.025em;
+}
+
+.card-label {
+  color: var(--swl-brown-soft);
+  font-size: 0.7rem;
+  letter-spacing: 0.11em;
+}
+
+
+/* =========================================================
+   STATUS / ATTENTION
+   No green — SWL gold = good.
+   ========================================================= */
+
+.status-banner {
+  position: relative;
+  overflow: hidden;
+
+  padding: 16px 18px;
+
+  background:
+    linear-gradient(
+      135deg,
+      rgba(255, 239, 181, 0.92),
+      rgba(255, 248, 225, 0.94)
+    );
+
+  color: var(--swl-brown);
+
+  border:
+    1px solid
+    rgba(203, 159, 42, 0.18);
+
+  box-shadow:
+    0 5px 18px
+    rgba(75, 53, 38, 0.05);
+}
+
+.status-banner.warning {
+  background:
+    linear-gradient(
+      135deg,
+      #f8dfda,
+      #fff3ef
+    );
+
+  color: var(--danger);
+
+  border-color:
+    rgba(182, 85, 72, 0.13);
+}
+
+.pill {
+  padding: 7px 11px;
+
+  background:
+    rgba(75, 53, 38, 0.065);
+
+  border:
+    1px solid
+    rgba(75, 53, 38, 0.045);
+
+  font-size: 0.78rem;
+}
+
+.pill.success {
+  background:
+    rgba(242, 201, 76, 0.22);
+
+  color: var(--swl-brown);
+
+  border-color:
+    rgba(203, 159, 42, 0.14);
+}
+
+.success-text {
+  color: var(--swl-brown);
+}
+
+
+/* =========================================================
+   BUTTONS
+   ========================================================= */
+
+.primary-button,
+.secondary-button,
+.danger-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  min-height: 50px;
+
+  text-decoration: none;
+  line-height: 1.1;
+}
+
+.primary-button {
+  background:
+    linear-gradient(
+      145deg,
+      #f7d766,
+      var(--swl-yellow)
+    );
+
+  color: var(--swl-brown);
+
+  border:
+    1px solid
+    rgba(75, 53, 38, 0.07);
+
+  box-shadow:
+    0 5px 13px
+    rgba(143, 104, 21, 0.13);
+}
+
+.primary-button:active {
+  box-shadow:
+    0 2px 7px
+    rgba(143, 104, 21, 0.10);
+}
+
+.secondary-button {
+  background:
+    rgba(255, 253, 248, 0.95);
+
+  border:
+    1px solid
+    rgba(75, 53, 38, 0.12);
+
+  color: var(--swl-brown);
+}
+
+.text-button {
+  min-width: 38px;
+  min-height: 38px;
+  padding: 6px 9px;
+
+  border-radius: 12px;
+
+  color: var(--swl-brown-soft);
+}
+
+.text-button:active {
+  background:
+    rgba(242, 201, 76, 0.16);
+}
+
+
+/* =========================================================
+   BOTTOM NAV
+   ========================================================= */
+
+.bottom-nav {
+  padding-top: 8px;
+
+  background:
+    rgba(255, 250, 240, 0.97);
+
+  border-top:
+    1px solid
+    rgba(75, 53, 38, 0.09);
+
+  box-shadow:
+    0 -8px 28px
+    rgba(75, 53, 38, 0.05);
+}
+
+.nav-item {
+  min-height: 58px;
+  color: #8f7b6c;
+}
+
+.nav-item.active {
+  background:
+    linear-gradient(
+      145deg,
+      rgba(242, 201, 76, 0.27),
+      rgba(242, 201, 76, 0.13)
+    );
+
+  color: var(--swl-brown);
+}
+
+.nav-item.active .nav-icon {
+  transform: translateY(-1px);
+}
+
+.nav-icon {
+  transition:
+    transform 0.15s ease;
+}
+
+.nav-badge {
+  border:
+    2px solid
+    rgba(255, 250, 240, 0.98);
+
+  line-height: 16px;
+}
+
+
+/* =========================================================
+   EMPTY STATES
+   ========================================================= */
+
+.empty-card {
+  position: relative;
+  overflow: hidden;
+
+  padding: 25px 22px;
+}
+
+.empty-card strong {
+  color: var(--swl-brown);
+}
+
+.empty-card p {
+  max-width: 430px;
+  margin-left: auto;
+  margin-right: auto;
+  line-height: 1.5;
+}
+
+
+/* =========================================================
+   EVENT DETAIL HERO
+   ========================================================= */
+
+.detail-header {
+  position: relative;
+
+  padding: 20px;
+
+  margin-bottom: 20px;
+
+  border-radius: 25px;
+
+  background:
+    radial-gradient(
+      circle at 100% 0%,
+      rgba(242, 201, 76, 0.35),
+      transparent 44%
+    ),
+    rgba(255, 253, 247, 0.91);
+
+  border:
+    1px solid
+    rgba(75, 53, 38, 0.08);
+
+  box-shadow: var(--swl-shadow);
+}
+
+.detail-header h2 {
+  margin-top: 5px;
+  font-size: 1.72rem;
+  line-height: 1.12;
+  letter-spacing: -0.035em;
+}
+
+.back-button {
+  display: inline-flex;
+  align-items: center;
+
+  min-height: 40px;
+  padding: 0 7px 0 2px;
+
+  margin-bottom: 9px;
+
+  border-radius: 12px;
+}
+
+.back-button:active {
+  background:
+    rgba(242, 201, 76, 0.14);
+}
+
+
+/* =========================================================
+   EVENT EXPANDABLE SECTIONS
+   ========================================================= */
+
+details.detail-card {
+  padding: 0;
+  overflow: hidden;
+
+  background:
+    rgba(255, 253, 247, 0.94);
+
+  border:
+    1px solid
+    rgba(75, 53, 38, 0.085);
+
+  box-shadow:
+    0 6px 18px
+    rgba(75, 53, 38, 0.055);
+}
+
+details.detail-card > summary {
+  position: relative;
+
+  min-height: 64px;
+
+  display: flex;
+  align-items: center;
+
+  padding: 17px 52px 17px 18px;
+
+  color: var(--swl-brown);
+
+  user-select: none;
+
+  list-style: none;
+}
+
+details.detail-card > summary::-webkit-details-marker {
+  display: none;
+}
+
+details.detail-card > summary::after {
+  content: "⌄";
+
+  position: absolute;
+  right: 18px;
+  top: 50%;
+
+  width: 30px;
+  height: 30px;
+
+  display: grid;
+  place-items: center;
+
+  border-radius: 50%;
+
+  background:
+    rgba(242, 201, 76, 0.18);
+
+  color: var(--swl-brown);
+
+  font-size: 1.25rem;
+  font-weight: 900;
+
+  transform:
+    translateY(-50%)
+    rotate(0deg);
+
+  transition:
+    transform 0.18s ease,
+    background-color 0.18s ease;
+}
+
+details.detail-card[open] > summary::after {
+  transform:
+    translateY(-50%)
+    rotate(180deg);
+
+  background:
+    rgba(242, 201, 76, 0.30);
+}
+
+details.detail-card[open] > summary {
+  border-bottom:
+    1px solid
+    rgba(75, 53, 38, 0.075);
+
+  background:
+    linear-gradient(
+      90deg,
+      rgba(242, 201, 76, 0.09),
+      transparent
+    );
+}
+
+details.detail-card > summary + div {
+  padding:
+    0 18px 18px;
+}
+
+details.detail-card .pill {
+  margin-left: auto;
+  margin-right: 7px;
+}
+
+
+/* =========================================================
+   EVENT ROWS
+   ========================================================= */
+
+.detail-row {
+  min-height: 48px;
+  align-items: center;
+}
+
+.detail-row span:first-child {
+  font-size: 0.86rem;
+}
+
+.detail-row strong {
+  color: var(--swl-brown);
+}
+
+.requirement-row {
+  min-height: 49px;
+}
+
+.requirement-row strong {
+  min-width: 32px;
+  text-align: right;
+  color: var(--swl-brown);
+}
+
+
+/* =========================================================
+   PACKING CHECKLIST
+   ========================================================= */
+
+.toggle-row {
+  min-height: 55px;
+
+  padding:
+    3px 0;
+
+  border-bottom:
+    1px solid
+    rgba(75, 53, 38, 0.075);
+}
+
+.toggle-row:last-child {
+  border-bottom: 0;
+}
+
+.toggle-row input[type="checkbox"] {
+  appearance: none;
+  -webkit-appearance: none;
+
+  flex: 0 0 auto;
+
+  width: 25px;
+  height: 25px;
+
+  display: grid;
+  place-content: center;
+
+  border-radius: 8px;
+
+  border:
+    2px solid
+    rgba(75, 53, 38, 0.22);
+
+  background:
+    rgba(255, 255, 255, 0.9);
+
+  transition:
+    background-color 0.15s ease,
+    border-color 0.15s ease,
+    transform 0.12s ease;
+}
+
+.toggle-row input[type="checkbox"]::before {
+  content: "✓";
+
+  color: var(--swl-brown);
+
+  font-size: 0.9rem;
+  font-weight: 900;
+
+  transform: scale(0);
+
+  transition:
+    transform 0.12s ease;
+}
+
+.toggle-row input[type="checkbox"]:checked {
+  background: var(--swl-yellow);
+  border-color: var(--swl-yellow);
+}
+
+.toggle-row input[type="checkbox"]:checked::before {
+  transform: scale(1);
+}
+
+.toggle-row input[type="checkbox"]:active {
+  transform: scale(0.9);
+}
+
+
+/* =========================================================
+   INVENTORY
+   ========================================================= */
+
+.inventory-row {
+  min-height: 69px;
+
+  padding:
+    13px 3px;
+
+  cursor: pointer;
+}
+
+.inventory-row strong {
+  color: var(--swl-brown);
+}
+
+.inventory-row:active {
+  background:
+    rgba(242, 201, 76, 0.07);
+}
+
+.counts {
+  min-width: 105px;
+}
+
+.available-count {
+  font-size: 1.32rem;
+  line-height: 1;
+  color: var(--swl-brown);
+}
+
+.inventory-row .warning-text {
+  margin-top: 4px;
+  font-size: 0.78rem;
+}
+
+
+/* Inventory count modal */
+
+.modal-sheet .inline-fields
+.primary-button,
+.modal-sheet .inline-fields
+.secondary-button {
+  min-width: 0;
+}
+
+.modal-sheet
+.inline-fields
+button[aria-label*="count"] {
+  width: 58px;
+  min-width: 58px;
+  height: 58px;
+  min-height: 58px;
+
+  padding: 0;
+
+  border-radius: 18px;
+
+  font-size: 1.75rem;
+  line-height: 1;
+}
+
+
+/* =========================================================
+   ATTENTION / REMINDERS
+   ========================================================= */
+
+.attention-row {
+  min-height: 59px;
+  padding: 13px 2px;
+}
+
+.attention-row strong {
+  color: var(--swl-brown);
+}
+
+.attention-row .muted {
+  margin-top: 3px;
+  font-size: 0.79rem;
+  line-height: 1.35;
+}
+
+.attention-row .text-button {
+  width: 40px;
+  height: 40px;
+
+  display: grid;
+  place-items: center;
+
+  border-radius: 50%;
+
+  background:
+    rgba(242, 201, 76, 0.15);
+
+  color: var(--swl-brown);
+
+  font-size: 1rem;
+}
+
+
+/* =========================================================
+   FORMS / WIZARD
+   ========================================================= */
+
+.form-card {
+  background:
+    rgba(255, 253, 247, 0.94);
+}
+
+.field label {
+  color: var(--swl-brown);
+}
+
+.field input,
+.field select,
+.field textarea {
+  border:
+    1px solid
+    rgba(75, 53, 38, 0.13);
+
+  background:
+    rgba(255, 255, 255, 0.88);
+
+  box-shadow:
+    inset 0 1px 2px
+    rgba(75, 53, 38, 0.025);
+}
+
+.field input:focus,
+.field select:focus,
+.field textarea:focus {
+  border-color:
+    rgba(203, 159, 42, 0.7);
+
+  box-shadow:
+    0 0 0 4px
+    rgba(242, 201, 76, 0.16);
+}
+
+.choice-card {
+  background:
+    rgba(255, 253, 248, 0.95);
+}
+
+.choice-card.selected {
+  border-color:
+    rgba(203, 159, 42, 0.62);
+
+  background:
+    linear-gradient(
+      145deg,
+      rgba(255, 240, 181, 0.72),
+      rgba(255, 250, 232, 0.9)
+    );
+
+  box-shadow:
+    inset 0 0 0 1px
+    rgba(242, 201, 76, 0.12);
+}
+
+.wizard-shell {
+  background:
+    linear-gradient(
+      180deg,
+      #fffaf0,
+      #f7ead1
+    );
+}
+
+.wizard-header {
+  box-shadow:
+    0 3px 16px
+    rgba(75, 53, 38, 0.04);
+}
+
+.wizard-step {
+  border:
+    1px solid
+    rgba(75, 53, 38, 0.045);
+}
+
+.wizard-step.active {
+  box-shadow:
+    0 3px 9px
+    rgba(143, 104, 21, 0.12);
+}
+
+/* Remove the old green completed-step treatment */
+
+.wizard-step.done {
+  background:
+    rgba(242, 201, 76, 0.14);
+
+  color: var(--swl-brown-soft);
+}
+
+
+/* =========================================================
+   MODALS
+   ========================================================= */
+
+.modal-backdrop {
+  background:
+    rgba(47, 34, 25, 0.48);
+
+  backdrop-filter:
+    blur(3px);
+}
+
+.modal-sheet {
+  background:
+    linear-gradient(
+      180deg,
+      #fffaf0 0%,
+      #f8ecd4 100%
+    );
+
+  box-shadow:
+    0 -14px 45px
+    rgba(45, 31, 23, 0.18);
+}
+
+.modal-sheet::before {
+  content: "";
+
+  display: block;
+
+  width: 42px;
+  height: 5px;
+
+  margin:
+    -6px auto 16px;
+
+  border-radius: 999px;
+
+  background:
+    rgba(75, 53, 38, 0.18);
+}
+
+.modal-sheet h2 {
+  color: var(--swl-brown);
+  letter-spacing: -0.025em;
+}
+
+
+/* =========================================================
+   LITTLE QUALITY-OF-LIFE DETAILS
+   ========================================================= */
+
+.muted {
+  line-height: 1.42;
+}
+
+.warning-text {
+  color: #ae5146;
+}
+
+a.secondary-button {
+  text-decoration: none;
+}
+
+::selection {
+  background:
+    rgba(242, 201, 76, 0.35);
+
+  color: var(--swl-brown);
+}
+
+
+/* =========================================================
+   DESKTOP / LARGER SCREENS
+   ========================================================= */
+
+@media (min-width: 700px) {
+
+  .main-content {
+    padding-top: 25px;
+  }
+
+  .card:hover.tap-card {
+    transform:
+      translateY(-2px);
+
+    box-shadow:
+      var(--swl-shadow-raised);
+  }
+
+  .bottom-nav {
+    background:
+      rgba(255, 250, 240, 0.97);
+
+    box-shadow:
+      0 8px 32px
+      rgba(75, 53, 38, 0.12);
+  }
+
+  .modal-sheet {
+    margin-bottom: 18px;
+
+    border-radius:
+      28px;
+
+    max-height:
+      calc(100vh - 36px);
+  }
+
+}
+
+
+/* =========================================================
+   SMALL IPHONE TUNING
+   ========================================================= */
+
+@media (max-width: 430px) {
+
+  .main-content {
+    padding-left: 14px;
+    padding-right: 14px;
+  }
+
+  .detail-header {
+    padding: 18px;
+  }
+
+  .detail-header h2 {
+    font-size: 1.58rem;
+  }
+
+  .detail-header .inline-fields {
+    grid-template-columns:
+      repeat(2, 1fr);
+  }
+
+  details.detail-card > summary {
+    min-height: 61px;
+    padding-left: 16px;
+  }
+
+  details.detail-card > summary + div {
+    padding-left: 16px;
+    padding-right: 16px;
+  }
+
+  .hero-card {
+    padding: 19px;
+  }
+
+}
+
+
+/* =========================================================
+   ACCESSIBILITY / REDUCED MOTION
+   ========================================================= */
+
+@media (
+  prefers-reduced-motion: reduce
+) {
+
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+  }
+
+}
