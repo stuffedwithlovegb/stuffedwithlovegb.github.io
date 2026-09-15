@@ -5808,8 +5808,10 @@ async function setInventoryCount(
 
 let swlFiles = [];
 let fileCategories = [];
+let fileFolders = [];
 
 let activeFileCategory = "All";
+let activeFileFolderId = null;
 let fileSearch = "";
 let filesLoaded = false;
 
@@ -5825,10 +5827,12 @@ async function loadFilesData(force = false) {
 
   const [
     filesResponse,
-    categoriesResponse
+    categoriesResponse,
+    foldersResponse
   ] = await Promise.all([
     apiRequest("files"),
-    apiRequest("file-categories")
+    apiRequest("file-categories"),
+    apiRequest("file-folders")
   ]);
 
   swlFiles =
@@ -5836,6 +5840,9 @@ async function loadFilesData(force = false) {
 
   fileCategories =
     categoriesResponse.categories || [];
+
+  fileFolders =
+    foldersResponse.folders || [];
 
   filesLoaded = true;
 }
@@ -5906,10 +5913,16 @@ function renderFilesContent() {
   */
   const visibleFiles =
     swlFiles.filter(file => {
+      const folder =
+        fileFolders.find(
+          folder => folder.id === file.folderId
+        );
+
       const searchable = `
         ${file.name || ""}
         ${file.originalName || ""}
         ${file.category || ""}
+        ${folder?.name || ""}
       `.toLowerCase();
 
       if (search) {
@@ -5924,10 +5937,18 @@ function renderFilesContent() {
         return true;
       }
 
-      return (
-        file.category ===
+      if (
+        file.category !==
         activeFileCategory
-      );
+      ) {
+        return false;
+      }
+
+      if (activeFileFolderId) {
+        return file.folderId === activeFileFolderId;
+      }
+
+      return !file.folderId;
     });
 
   const recentFiles =
@@ -5977,6 +5998,20 @@ function renderFilesContent() {
           <span>＋</span>
           Category
         </button>
+
+        ${
+          activeFileCategory !== "All"
+            ? `
+              <button
+                class="files-category-button files-folder-add-button"
+                onclick="openAddFileFolder()"
+              >
+                <span>＋</span>
+                Folder
+              </button>
+            `
+            : ""
+        }
 
       </div>
 
@@ -6053,8 +6088,90 @@ function renderFilesContent() {
   }
 
 
+  const activeFolder =
+    activeFileFolderId
+      ? fileFolders.find(folder => folder.id === activeFileFolderId)
+      : null;
+
+  const categoryFolders =
+    activeFileCategory !== "All"
+      ? fileFolders.filter(folder => folder.category === activeFileCategory)
+      : [];
+
+  if (
+    !search &&
+    activeFileCategory !== "All" &&
+    !activeFileFolderId
+  ) {
+    html += `
+      <section class="files-section file-folders-section">
+        <div class="files-section-heading">
+          <div>
+            <h2>Folders</h2>
+            <span>${categoryFolders.length} ${categoryFolders.length === 1 ? "folder" : "folders"}</span>
+          </div>
+        </div>
+
+        ${
+          categoryFolders.length
+            ? `
+              <div class="file-folder-grid">
+                ${categoryFolders.map(folder => {
+                  const count = swlFiles.filter(file => file.folderId === folder.id).length;
+                  return `
+                    <button
+                      class="file-folder-card"
+                      onclick="openFileFolder(decodeURIComponent('${encodeURIComponent(folder.id)}'))"
+                    >
+                      <span class="file-folder-icon">▰</span>
+                      <span class="file-folder-copy">
+                        <strong>${escapeHTML(folder.name)}</strong>
+                        <small>${count} ${count === 1 ? "file" : "files"}</small>
+                      </span>
+                      <span class="file-folder-chevron">›</span>
+                    </button>
+                  `;
+                }).join("")}
+              </div>
+            `
+            : `
+              <button class="file-folder-empty" onclick="openAddFileFolder()">
+                <span>＋</span>
+                <strong>Make your first folder</strong>
+                <small>Keep this category tidy without adding another layer of chaos.</small>
+              </button>
+            `
+        }
+      </section>
+    `;
+  }
+
   html += `
     <section class="files-section">
+
+      ${
+        activeFolder && !search
+          ? `
+            <button class="file-folder-back" onclick="closeFileFolder()">
+              ‹ ${escapeHTML(activeFileCategory)}
+            </button>
+            <div class="file-folder-hero">
+              <div>
+                <span class="file-folder-hero-icon">▰</span>
+                <div>
+                  <div class="card-label">FOLDER</div>
+                  <h2>${escapeHTML(activeFolder.name)}</h2>
+                </div>
+              </div>
+              <button
+                class="file-category-menu-button"
+                onclick="openFileFolderMenu(decodeURIComponent('${encodeURIComponent(activeFolder.id)}'))"
+                aria-label="Folder options"
+              >•••</button>
+            </div>
+          `
+          : ""
+      }
 
       <div class="files-section-heading">
 
@@ -6066,9 +6183,11 @@ function renderFilesContent() {
                 : activeFileCategory ===
                   "All"
                   ? "All Files"
-                  : escapeHTML(
-                      activeFileCategory
-                    )
+                  : activeFolder
+                    ? "Files in this folder"
+                    : escapeHTML(
+                        activeFileCategory
+                      )
             }
           </h2>
 
@@ -6084,7 +6203,8 @@ function renderFilesContent() {
 
         ${
           !search &&
-          activeFileCategory !== "All"
+          activeFileCategory !== "All" &&
+          !activeFileFolderId
             ? `
               <button
                 class="file-category-menu-button"
@@ -6251,8 +6371,11 @@ function fileRowHTML(file) {
 
           <span class="file-category-pill">
             ${escapeHTML(
-              file.category ||
-              "Other"
+              (
+                file.folderId
+                  ? fileFolders.find(folder => folder.id === file.folderId)?.name
+                  : file.category
+              ) || "Other"
             )}
           </span>
 
@@ -6524,11 +6647,238 @@ function setFileCategory(category) {
   activeFileCategory =
     category;
 
+  activeFileFolderId = null;
   fileSearch = "";
 
   renderFilesContent();
 }
 
+
+/* =========================================================
+   FILE FOLDERS
+========================================================= */
+
+function openFileFolder(folderId) {
+  const folder = fileFolders.find(folder => folder.id === folderId);
+  if (!folder) return;
+
+  activeFileCategory = folder.category;
+  activeFileFolderId = folder.id;
+  fileSearch = "";
+  renderFilesContent();
+}
+
+function closeFileFolder() {
+  activeFileFolderId = null;
+  fileSearch = "";
+  renderFilesContent();
+}
+
+function refreshUploadFolderOptions(form) {
+  if (!form?.elements?.category || !form?.elements?.folderId) return;
+
+  const category = form.elements.category.value;
+  const select = form.elements.folderId;
+  const folders = fileFolders.filter(folder => folder.category === category);
+
+  select.innerHTML = `
+    <option value="">No folder — category root</option>
+    ${folders.map(folder => `
+      <option
+        value="${escapeHTML(folder.id)}"
+        ${activeFileFolderId === folder.id ? "selected" : ""}
+      >
+        ${escapeHTML(folder.name)}
+      </option>
+    `).join("")}
+  `;
+}
+
+function refreshEditFolderOptions(form) {
+  if (!form?.elements?.category || !form?.elements?.folderId) return;
+
+  const category = form.elements.category.value;
+  const select = form.elements.folderId;
+  const current = select.value;
+  const folders = fileFolders.filter(folder => folder.category === category);
+
+  select.innerHTML = `
+    <option value="">No folder</option>
+    ${folders.map(folder => `
+      <option value="${escapeHTML(folder.id)}">${escapeHTML(folder.name)}</option>
+    `).join("")}
+  `;
+
+  if (folders.some(folder => folder.id === current)) {
+    select.value = current;
+  }
+}
+
+function openAddFileFolder() {
+  if (activeFileCategory === "All") {
+    alert("Open a category first, then add a folder inside it.");
+    return;
+  }
+
+  document.getElementById("modalRoot").innerHTML = `
+    <div class="modal-backdrop" onclick="closeModalFromBackdrop(event)">
+      <div class="modal-sheet files-modal-sheet file-folder-sheet">
+        <div class="modal-title-row">
+          <div>
+            <div class="card-label">${escapeHTML(activeFileCategory)}</div>
+            <h2>New Folder</h2>
+            <div class="file-batch-subtitle">A tidy little home for related files.</div>
+          </div>
+          <button class="modal-close-button" onclick="closeModal()" aria-label="Close">×</button>
+        </div>
+
+        <form onsubmit="event.preventDefault(); createFileFolder(this);">
+          <label class="field-label">
+            Folder Name
+            <input name="name" type="text" placeholder="Insurance, Contracts, Taxes…" required autofocus />
+          </label>
+          <button type="submit" class="primary-button full-width">Create Folder</button>
+        </form>
+      </div>
+    </div>
+  `;
+}
+
+async function createFileFolder(form) {
+  const name = form.elements.name.value.trim();
+  if (!name || activeFileCategory === "All") return;
+
+  const button = form.querySelector('button[type="submit"]');
+  button.disabled = true;
+  button.textContent = "Making folder…";
+
+  try {
+    const response = await apiRequest("file-folders", {
+      method: "POST",
+      body: JSON.stringify({
+        name,
+        category: activeFileCategory
+      })
+    });
+
+    fileFolders.push(response.folder);
+    fileFolders.sort((a, b) => a.name.localeCompare(b.name));
+
+    closeModal();
+    renderFilesContent();
+    showSWLToast("✨ Folder ready");
+  } catch (err) {
+    button.disabled = false;
+    button.textContent = "Create Folder";
+    alert(`Could not create that folder. ${err.message}`);
+  }
+}
+
+function openFileFolderMenu(folderId) {
+  const folder = fileFolders.find(folder => folder.id === folderId);
+  if (!folder) return;
+
+  document.getElementById("modalRoot").innerHTML = `
+    <div class="modal-backdrop" onclick="closeModalFromBackdrop(event)">
+      <div class="modal-sheet files-modal-sheet">
+        <div class="modal-title-row">
+          <div>
+            <div class="card-label">FOLDER</div>
+            <h2>${escapeHTML(folder.name)}</h2>
+          </div>
+          <button class="modal-close-button" onclick="closeModal()">×</button>
+        </div>
+
+        <button class="file-category-action" onclick="openRenameFileFolder(decodeURIComponent('${encodeURIComponent(folder.id)}'))">
+          <span>✎</span>
+          <div><strong>Rename Folder</strong><small>Give this folder a new label</small></div>
+          <span>›</span>
+        </button>
+
+        <button class="file-category-action danger" onclick="deleteFileFolder(decodeURIComponent('${encodeURIComponent(folder.id)}'))">
+          <span>×</span>
+          <div><strong>Delete Folder</strong><small>Files move back to ${escapeHTML(folder.category)}</small></div>
+          <span>›</span>
+        </button>
+      </div>
+    </div>
+  `;
+}
+
+function openRenameFileFolder(folderId) {
+  const folder = fileFolders.find(folder => folder.id === folderId);
+  if (!folder) return;
+
+  document.getElementById("modalRoot").innerHTML = `
+    <div class="modal-backdrop" onclick="closeModalFromBackdrop(event)">
+      <div class="modal-sheet files-modal-sheet">
+        <div class="modal-title-row">
+          <div><div class="card-label">FOLDER</div><h2>Rename</h2></div>
+          <button class="modal-close-button" onclick="closeModal()">×</button>
+        </div>
+        <form onsubmit="event.preventDefault(); renameFileFolder(decodeURIComponent('${encodeURIComponent(folder.id)}'), this);">
+          <label class="field-label">
+            Folder Name
+            <input name="name" type="text" value="${escapeHTML(folder.name)}" required autofocus />
+          </label>
+          <button type="submit" class="primary-button full-width">Save Name</button>
+        </form>
+      </div>
+    </div>
+  `;
+}
+
+async function renameFileFolder(folderId, form) {
+  const folder = fileFolders.find(folder => folder.id === folderId);
+  if (!folder) return;
+
+  const name = form.elements.name.value.trim();
+  if (!name) return;
+
+  try {
+    const response = await apiRequest(`file-folders/${encodeURIComponent(folderId)}`, {
+      method: "PUT",
+      body: JSON.stringify({ name })
+    });
+
+    Object.assign(folder, response.folder || { name });
+    closeModal();
+    renderFilesContent();
+    showSWLToast("Folder renamed");
+  } catch (err) {
+    alert(`Could not rename that folder. ${err.message}`);
+  }
+}
+
+async function deleteFileFolder(folderId) {
+  const folder = fileFolders.find(folder => folder.id === folderId);
+  if (!folder) return;
+
+  const count = swlFiles.filter(file => file.folderId === folderId).length;
+  const confirmed = confirm(
+    `Delete "${folder.name}"?\n\n${count ? `${count} ${count === 1 ? "file" : "files"} will move back to ${folder.category}.` : "The folder is empty."}\nNo files will be deleted.`
+  );
+
+  if (!confirmed) return;
+
+  try {
+    await apiRequest(`file-folders/${encodeURIComponent(folderId)}`, {
+      method: "DELETE"
+    });
+
+    swlFiles.forEach(file => {
+      if (file.folderId === folderId) file.folderId = null;
+    });
+
+    fileFolders = fileFolders.filter(folder => folder.id !== folderId);
+    activeFileFolderId = null;
+    closeModal();
+    renderFilesContent();
+    showSWLToast("Folder removed · files kept safe");
+  } catch (err) {
+    alert(`Could not delete that folder. ${err.message}`);
+  }
+}
 
 /* =========================================================
    FILE FORMATTING
@@ -6707,8 +7057,16 @@ function openFileUpload() {
             <select
               name="category"
               required
+              onchange="refreshUploadFolderOptions(this.form)"
             >
               ${categoryOptions}
+            </select>
+          </label>
+
+          <label class="field-label">
+            Folder
+
+            <select name="folderId" id="fileUploadFolderSelect">
             </select>
           </label>
 
@@ -6758,6 +7116,11 @@ function openFileUpload() {
       "modalRoot"
     )
     .innerHTML = html;
+
+  refreshUploadFolderOptions(
+    document.querySelector(".file-upload-form")
+  );
+
 }
 
 
@@ -6917,6 +7280,11 @@ async function uploadSWLFiles(form) {
       .category
       .value;
 
+  const folderId =
+    form.elements
+      .folderId
+      ?.value || "";
+
   const button =
     form.querySelector(
       'button[type="submit"]'
@@ -6927,6 +7295,9 @@ async function uploadSWLFiles(form) {
 
   const categorySelect =
     form.elements.category;
+
+  const folderSelect =
+    form.elements.folderId;
 
   const progress =
     document.getElementById(
@@ -6951,6 +7322,7 @@ async function uploadSWLFiles(form) {
   button.disabled = true;
   pickerInput.disabled = true;
   categorySelect.disabled = true;
+  if (folderSelect) folderSelect.disabled = true;
 
   if (progress) {
     progress.hidden = false;
@@ -7009,6 +7381,11 @@ async function uploadSWLFiles(form) {
       formData.append(
         "category",
         category
+      );
+
+      formData.append(
+        "folderId",
+        folderId
       );
 
       try {
@@ -7194,6 +7571,19 @@ function openFileDetail(fileId) {
       `)
       .join("");
 
+  const folderOptions =
+    fileFolders
+      .filter(folder => folder.category === file.category)
+      .map(folder => `
+        <option
+          value="${escapeHTML(folder.id)}"
+          ${file.folderId === folder.id ? "selected" : ""}
+        >
+          ${escapeHTML(folder.name)}
+        </option>
+      `)
+      .join("");
+
   const canPreview =
     type.isImage ||
     type.label === "SVG" ||
@@ -7360,8 +7750,18 @@ function openFileDetail(fileId) {
             <select
               name="category"
               required
+              onchange="refreshEditFolderOptions(this.form)"
             >
               ${categoryOptions}
+            </select>
+          </label>
+
+          <label class="field-label">
+            Folder
+
+            <select name="folderId">
+              <option value="">No folder</option>
+              ${folderOptions}
             </select>
           </label>
 
@@ -7656,6 +8056,11 @@ async function saveFileChanges(
       .category
       .value;
 
+  const folderId =
+    form.elements
+      .folderId
+      ?.value || "";
+
   if (!name) return;
 
   const button =
@@ -7677,7 +8082,8 @@ async function saveFileChanges(
           method: "PUT",
           body: JSON.stringify({
             name,
-            category
+            category,
+            folderId
           })
         }
       );
@@ -7686,7 +8092,8 @@ async function saveFileChanges(
       file,
       response.file || {
         name,
-        category
+        category,
+        folderId: folderId || null
       }
     );
 
@@ -8170,6 +8577,12 @@ async function renameFileCategory(
       }
     });
 
+    fileFolders.forEach(folder => {
+      if (folder.category === oldName) {
+        folder.category = name;
+      }
+    });
+
     if (
       activeFileCategory ===
       oldName
@@ -8378,8 +8791,16 @@ async function deleteFileCategory(
       ) {
         file.category =
           destination.name;
+        file.folderId = null;
       }
     });
+
+    fileFolders =
+      fileFolders.filter(
+        folder => folder.category !== category.name
+      );
+
+    activeFileFolderId = null;
 
     fileCategories =
       fileCategories.filter(
