@@ -357,6 +357,42 @@ function inventoryImageUrl(item) {
   return plush?.image || null;
 }
 
+function inventorySupportsPhoto(item) {
+  return [
+    "Plush",
+    "Outfits",
+    "Shirts"
+  ].includes(item?.category);
+}
+
+function getEventPlushOptions() {
+  return state.inventory
+    .filter(
+      item =>
+        item.category === "Plush"
+    )
+    .map(item => ({
+      id: item.id,
+      name:
+        inventoryDisplayName(item),
+      image:
+        inventoryImageUrl(item)
+    }));
+}
+
+function getEventPlushName(plushId) {
+  const item =
+    getInventoryItem(plushId);
+
+  if (item) {
+    return inventoryDisplayName(item);
+  }
+
+  return (
+    getPlushMeta(plushId)?.name ||
+    plushId
+  );
+}
 
 function chooseInventoryPhoto(itemId) {
   const input =
@@ -1467,14 +1503,20 @@ function renderEventDetail() {
     daysUntil(event.date);
 
   const nonPlushReservations =
-    (event.reservations || [])
-      .filter(
-        reservation =>
-          !PLUSH_OPTIONS.some(
-            plush =>
-              plush.id === reservation.itemId
-          )
-      );
+  (event.reservations || [])
+    .filter(
+      reservation => {
+        const item =
+          getInventoryItem(
+            reservation.itemId
+          );
+
+        return (
+          item &&
+          item.category !== "Plush"
+        );
+      }
+    );
 
   const mapUrl =
     event.address
@@ -2291,11 +2333,8 @@ function renderEventDetail() {
       event.selectedPlush.forEach(
         plushId => {
 
-          const plush =
-            PLUSH_OPTIONS.find(
-              p =>
-                p.id === plushId
-            );
+          const plushName =
+  getEventPlushName(plushId);
 
           const reservation =
             event.reservations?.find(
@@ -2314,10 +2353,7 @@ function renderEventDetail() {
               <div>
 
                 <strong>
-                  ${escapeHTML(
-                    plush?.name ||
-                    plushId
-                  )}
+                  ${escapeHTML(plushName)}
                 </strong>
 
                 <div class="muted">
@@ -3105,15 +3141,56 @@ function renderInventory() {
         }
       </div>
     `
-    : `
-      <div
-        class="inventory-generic-icon inventory-generic-${category
-          .toLowerCase()
-          .replaceAll(" ", "-")}"
-      >
-        ${inventoryCategoryIcon(category)}
-      </div>
-    `
+    : inventorySupportsPhoto(item)
+  ? `
+    <div
+      class="
+        inventory-generic-icon
+        inventory-photo-thumb
+        ${
+          inventoryImageUrl(item)
+            ? "has-photo"
+            : "inventory-photo-thumb-empty"
+        }
+      "
+    >
+      ${
+        inventoryImageUrl(item)
+          ? `
+            <img
+              src="${inventoryImageUrl(item)}"
+              alt="${escapeHTML(
+                inventoryDisplayName(item)
+              )}"
+            />
+          `
+          : `
+            <button
+              type="button"
+              class="inventory-add-photo-placeholder inventory-add-photo-small"
+              onclick="
+                event.stopPropagation();
+                chooseInventoryPhoto('${item.id}');
+              "
+              aria-label="Add photo"
+            >
+              <span class="inventory-add-photo-plus">
+                ＋
+              </span>
+            </button>
+          `
+      }
+    </div>
+  `
+  : `
+    <div
+      class="inventory-generic-icon inventory-generic-${category
+        .toLowerCase()
+        .replaceAll(" ", "-")}"
+    >
+      ${inventoryCategoryIcon(category)}
+    </div>
+  `
 
 }
                 <div class="inventory-item-copy">
@@ -3163,8 +3240,7 @@ function renderInventory() {
                 </div>
 
                ${
-  item.category === "Plush"
-    ? `
+inventorySupportsPhoto(item)    ? `
       <button
         class="inventory-quick-six"
         onclick="
@@ -3411,8 +3487,8 @@ function openInventoryItem(itemId) {
               </h2>
 
               ${
-                item.category === "Plush" &&
-                imageUrl
+                inventorySupportsPhoto(item) &&
+imageUrl
                   ? `
                     <button
                       type="button"
@@ -5218,12 +5294,12 @@ function partyStepHTML() {
           class="plush-choice-grid"
           style="margin-top:12px;"
         >
-          ${PLUSH_OPTIONS
-            .map(
-              plush =>
-                plushChoice(plush)
-            )
-            .join("")}
+          ${getEventPlushOptions()
+  .map(
+    plush =>
+      plushChoice(plush)
+  )
+  .join("")}
         </div>
 
       </div>
@@ -5274,9 +5350,15 @@ function packageChoice(
 }
 
 function plushChoice(plush) {
-  const selected = wizard.selectedPlush.includes(plush.id);
+  const selected =
+    wizard.selectedPlush.includes(
+      plush.id
+    );
 
-  const guestCount = Number(wizard.guestCount || 0);
+  const guestCount =
+    Number(
+      wizard.guestCount || 0
+    );
 
   const bringCount =
     guestCount > 0
@@ -5287,7 +5369,9 @@ function plushChoice(plush) {
     <button
       type="button"
       data-plush="${plush.id}"
-      class="plush-choice-card ${selected ? "selected" : ""}"
+      class="plush-choice-card ${
+        selected ? "selected" : ""
+      }"
       onclick="
         togglePlushWithoutJump(
           this,
@@ -5298,10 +5382,23 @@ function plushChoice(plush) {
 
       <div class="plush-choice-image">
 
-        <img
-          src="${plush.image}"
-          alt="${escapeHTML(plush.name)}"
-        />
+        ${
+          plush.image
+            ? `
+              <img
+                src="${plush.image}"
+                alt="${escapeHTML(
+                  plush.name
+                )}"
+              />
+            `
+            : `
+              <div class="plush-choice-no-photo">
+                <span>♥</span>
+                <small>No photo</small>
+              </div>
+            `
+        }
 
         <span class="plush-choice-check">
           ✓
@@ -5328,7 +5425,6 @@ function plushChoice(plush) {
     </button>
   `;
 }
-
 
 /* =========================================================
    EXTRAS
@@ -5862,18 +5958,14 @@ function reviewStepHTML() {
 
             ? wizard.selectedPlush
                 .map(plushId => {
-                  const plush =
-                    PLUSH_OPTIONS.find(
-                      option =>
-                        option.id === plushId
-                    );
+                  const plushName =
+  getEventPlushName(plushId);
 
                   return `
                     <div class="requirement-row">
 
                       <span>
-                        ${escapeHTML(plush?.name || plushId)}
-                      </span>
+${escapeHTML(plushName)}                      </span>
 
                       <strong>
                         ${
@@ -6186,9 +6278,9 @@ function selectPackageWithoutJump(
     packageName === "$40 Package"
   ) {
     wizard.selectedPlush =
-      PLUSH_OPTIONS.map(
-        plush => plush.id
-      );
+  getEventPlushOptions().map(
+    plush => plush.id
+  );
 
     document
       .querySelectorAll(
