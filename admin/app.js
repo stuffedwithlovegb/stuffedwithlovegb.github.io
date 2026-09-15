@@ -3195,36 +3195,97 @@ function renderInventory() {
 }
                 <div class="inventory-item-copy">
 
-                  <strong>
-                    ${escapeHTML(
-                      inventoryDisplayName(item)
-                    )}
-                  </strong>
+  <strong>
+    ${escapeHTML(
+      inventoryDisplayName(item)
+    )}
+  </strong>
 
-                  <div class="inventory-item-meta">
+  ${
+    category === "Plush"
+      ? ""
+      : `
+        <div class="inventory-item-meta">
 
-                    <span>
-                      <strong data-inventory-on-hand>
-                        ${item.onHand}
-                      </strong>
-                      on hand
-                    </span>
+          <span>
+            <strong data-inventory-on-hand>
+              ${item.onHand}
+            </strong>
+            on hand
+          </span>
 
-                    <span>
-                      <strong data-inventory-reserved>
-                        ${reserved}
-                      </strong>
-                      reserved
-                    </span>
+          <span>
+            <strong data-inventory-reserved>
+              ${reserved}
+            </strong>
+            reserved
+          </span>
 
-                  </div>
+        </div>
+      `
+  }
 
-                </div>
-
+</div>
               </div>
+${
+  category === "Plush"
+    ? `
+      <div class="inventory-plush-count-grid">
 
+        <div class="inventory-plush-count">
+
+          <strong data-inventory-on-hand>
+            ${item.onHand}
+          </strong>
+
+          <span>
+            On Hand
+          </span>
+
+        </div>
+
+        <div class="inventory-plush-count">
+
+          <strong data-inventory-reserved>
+            ${reserved}
+          </strong>
+
+          <span>
+            Reserved
+          </span>
+
+        </div>
+
+        <div
+          class="
+            inventory-plush-count
+            ${
+              available < 0
+                ? "short"
+                : ""
+            }
+          "
+        >
+
+          <strong data-inventory-available>
+            ${available}
+          </strong>
+
+          <span>
+            Available
+          </span>
+
+        </div>
+
+      </div>
+    `
+    : ""
+}
               <div class="inventory-item-right">
 
+             ${
+  category !== "Plush"
+    ? `
                 <div
                   class="inventory-available ${
                     available < 0
@@ -3232,6 +3293,9 @@ function renderInventory() {
                       : ""
                   }"
                 >
+                `
+    : ""
+}
                   <strong data-inventory-available>
                     ${available}
                   </strong>
@@ -3410,8 +3474,8 @@ function openInventoryItem(itemId) {
           <div class="inventory-modal-title">
 
             ${
-              item.category === "Plush"
-                ? `
+  inventorySupportsPhoto(item)
+    ? `
                   <button
                     type="button"
                     class="
