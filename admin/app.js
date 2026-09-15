@@ -3411,7 +3411,7 @@ async function createInventoryItem(
       without needing a full reload.
     */
 
-    state.inventory.push(response);
+   state.inventory.push(response.item);
 
     closeModal();
 
