@@ -345,10 +345,20 @@ async function saveInventoryItemToServer(item) {
 function inventoryImageUrl(item) {
   const plush = getPlushMeta(item.id);
 
+  function inventoryImageUrl(item) {
+  const plush =
+    getPlushMeta(item.id);
+
   if (item.imageKey) {
-    return `/admin/api/inventory/${encodeURIComponent(item.id)}/image`;
+    return `/admin/api/inventory/${encodeURIComponent(
+      item.id
+    )}/image?v=${encodeURIComponent(
+      item.imageKey
+    )}`;
   }
 
+  return plush?.image || null;
+}
   return plush?.image || null;
 }
 
@@ -3157,26 +3167,28 @@ function renderInventory() {
                   <span>available</span>
                 </div>
 
-                ${
-                  plush
-                    ? `
-                      <button
-                        class="inventory-quick-six"
-                        onclick="
-                          event.stopPropagation();
-                          changeInventoryBy(
-                            '${item.id}',
-                            6,
-                            false
-                          );
-                        "
-                        aria-label="Add six ${escapeHTML(plush.name)}"
-                      >
-                        +6
-                      </button>
-                    `
-                    : ""
-                }
+               ${
+  item.category === "Plush"
+    ? `
+      <button
+        class="inventory-quick-six"
+        onclick="
+          event.stopPropagation();
+          changeInventoryBy(
+            '${item.id}',
+            6,
+            false
+          );
+        "
+        aria-label="Add six ${escapeHTML(
+          inventoryDisplayName(item)
+        )}"
+      >
+        +6
+      </button>
+    `
+    : ""
+}
 
                 <span class="inventory-chevron">
                   ›
