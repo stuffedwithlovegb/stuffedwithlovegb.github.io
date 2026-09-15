@@ -74,6 +74,7 @@ function mapFileRow(row) {
     id: row.id,
     name: row.name,
     category: row.category,
+    folderId: row.folder_id || null,
     originalName:
       row.original_name || row.name,
     contentType:
@@ -206,6 +207,7 @@ if (resource === "file-categories") {
 async function handleBootstrap(env) {
   await ensureClientsTables(env);
   await ensurePushTables(env);
+  await ensureFileFolders(env);
   const eventsResult = await env.DB
     .prepare(`
       SELECT data
@@ -1620,6 +1622,153 @@ async function handleClientNotes(
    FILES
 ========================================================= */
 /* =========================================================
+   FILE FOLDERS
+========================================================= */
+
+async function ensureFileFolders(env) {
+  await env.DB.prepare(`
+    CREATE TABLE IF NOT EXISTS file_folders (
+      id TEXT PRIMARY KEY,
+      name TEXT NOT NULL,
+      category TEXT NOT NULL,
+      created_at TEXT NOT NULL
+    )
+  `).run();
+
+  await env.DB.prepare(`
+    CREATE INDEX IF NOT EXISTS idx_file_folders_category
+    ON file_folders (category, name)
+  `).run();
+
+  // Existing SWL databases predate folders. This is intentionally
+  // additive: every existing file simply starts at the category root.
+  try {
+    await env.DB.prepare(`
+      ALTER TABLE files ADD COLUMN folder_id TEXT
+    `).run();
+  } catch (err) {
+    if (!String(err?.message || err).toLowerCase().includes("duplicate column")) {
+      console.warn("files folder_id migration:", err);
+    }
+  }
+}
+
+async function handleFileFolders(request, env, id) {
+  await ensureFileFolders(env);
+
+  if (request.method === "GET" && !id) {
+    const result = await env.DB.prepare(`
+      SELECT id, name, category, created_at
+      FROM file_folders
+      ORDER BY category COLLATE NOCASE, name COLLATE NOCASE
+    `).all();
+
+    return json({
+      ok: true,
+      folders: result.results.map(row => ({
+        id: row.id,
+        name: row.name,
+        category: row.category,
+        createdAt: row.created_at
+      }))
+    });
+  }
+
+  if (request.method === "POST" && !id) {
+    const body = await request.json();
+    const name = String(body.name || "").trim();
+    const category = String(body.category || "").trim();
+
+    if (!name) return error("Folder name is required.");
+    if (!category) return error("Category is required.");
+
+    const categoryRecord = await env.DB.prepare(`
+      SELECT name FROM file_categories WHERE name = ?
+    `).bind(category).first();
+
+    if (!categoryRecord) return error("Valid file category is required.");
+
+    const duplicate = await env.DB.prepare(`
+      SELECT id FROM file_folders
+      WHERE category = ? AND LOWER(name) = LOWER(?)
+    `).bind(category, name).first();
+
+    if (duplicate) return error("That folder already exists in this category.");
+
+    const folder = {
+      id: "folder_" + crypto.randomUUID(),
+      name,
+      category,
+      createdAt: new Date().toISOString()
+    };
+
+    await env.DB.prepare(`
+      INSERT INTO file_folders (id, name, category, created_at)
+      VALUES (?, ?, ?, ?)
+    `).bind(folder.id, folder.name, folder.category, folder.createdAt).run();
+
+    return json({ ok: true, folder });
+  }
+
+  if (request.method === "PUT" && id) {
+    const existing = await env.DB.prepare(`
+      SELECT id, name, category, created_at
+      FROM file_folders WHERE id = ?
+    `).bind(id).first();
+
+    if (!existing) return error("Folder not found.", 404);
+
+    const body = await request.json();
+    const name = String(body.name ?? existing.name).trim();
+    if (!name) return error("Folder name is required.");
+
+    const duplicate = await env.DB.prepare(`
+      SELECT id FROM file_folders
+      WHERE category = ? AND LOWER(name) = LOWER(?) AND id != ?
+    `).bind(existing.category, name, id).first();
+
+    if (duplicate) return error("That folder already exists in this category.");
+
+    await env.DB.prepare(`
+      UPDATE file_folders SET name = ? WHERE id = ?
+    `).bind(name, id).run();
+
+    return json({
+      ok: true,
+      folder: {
+        id,
+        name,
+        category: existing.category,
+        createdAt: existing.created_at
+      }
+    });
+  }
+
+  if (request.method === "DELETE" && id) {
+    const existing = await env.DB.prepare(`
+      SELECT id FROM file_folders WHERE id = ?
+    `).bind(id).first();
+
+    if (!existing) return error("Folder not found.", 404);
+
+    // Deleting a folder never deletes its files. They move back to
+    // the category root so there is no destructive surprise.
+    await env.DB.batch([
+      env.DB.prepare(`
+        UPDATE files SET folder_id = NULL WHERE folder_id = ?
+      `).bind(id),
+      env.DB.prepare(`
+        DELETE FROM file_folders WHERE id = ?
+      `).bind(id)
+    ]);
+
+    return json({ ok: true });
+  }
+
+  return error("Unsupported file folder request.", 405);
+}
+
+/* =========================================================
    FILE CATEGORIES
 ========================================================= */
 
@@ -1628,6 +1777,7 @@ async function handleFileCategories(
   env,
   id
 ) {
+  await ensureFileFolders(env);
 
   // GET ALL CATEGORIES
   if (
@@ -1823,6 +1973,17 @@ async function handleFileCategories(
         .bind(
           name,
           id
+        ),
+
+      env.DB
+        .prepare(`
+          UPDATE file_folders
+          SET category = ?
+          WHERE category = ?
+        `)
+        .bind(
+          name,
+          category.name
         )
     ]);
 
@@ -1910,13 +2071,20 @@ async function handleFileCategories(
       env.DB
         .prepare(`
           UPDATE files
-          SET category = ?
+          SET category = ?, folder_id = NULL
           WHERE category = ?
         `)
         .bind(
           destination.name,
           category.name
         ),
+
+      env.DB
+        .prepare(`
+          DELETE FROM file_folders
+          WHERE category = ?
+        `)
+        .bind(category.name),
 
       env.DB
         .prepare(`
@@ -1943,6 +2111,7 @@ async function handleFiles(
   id,
   action
 ) {
+  await ensureFileFolders(env);
 
   // GET ALL FILES
   if (
@@ -1955,6 +2124,7 @@ async function handleFiles(
           id,
           name,
           category,
+          folder_id,
           original_name,
           content_type,
           size_bytes,
@@ -2033,6 +2203,28 @@ if (!categoryRecord) {
 const category =
   categoryRecord.name;
 
+const requestedFolderId =
+  String(formData.get("folderId") || "").trim() || null;
+
+let folderId = null;
+
+if (requestedFolderId) {
+  const folderRecord = await env.DB
+    .prepare(`
+      SELECT id
+      FROM file_folders
+      WHERE id = ? AND category = ?
+    `)
+    .bind(requestedFolderId, category)
+    .first();
+
+  if (!folderRecord) {
+    return error("Valid folder is required.");
+  }
+
+  folderId = folderRecord.id;
+}
+
     /*
       Keep this intentionally larger than
       inventory-photo uploads because Files
@@ -2091,6 +2283,7 @@ const category =
             id,
             name,
             category,
+            folder_id,
             r2_key,
             original_name,
             content_type,
@@ -2103,6 +2296,7 @@ const category =
           fileId,
           name,
           category,
+          folderId,
           r2Key,
           originalName,
           contentType,
@@ -2124,6 +2318,7 @@ const category =
         id: fileId,
         name,
         category,
+        folderId,
         originalName,
         contentType,
         sizeBytes: file.size,
@@ -2287,18 +2482,38 @@ if (!categoryRecord) {
   );
 }
 
+const requestedFolderId =
+  String(body.folderId || "").trim() || null;
+
+let folderId = null;
+
+if (requestedFolderId) {
+  const folderRecord = await env.DB.prepare(`
+    SELECT id FROM file_folders
+    WHERE id = ? AND category = ?
+  `).bind(requestedFolderId, requestedCategory).first();
+
+  if (!folderRecord) {
+    return error("Valid folder is required.");
+  }
+
+  folderId = folderRecord.id;
+}
+
     const result =
       await env.DB
         .prepare(`
           UPDATE files
           SET
             name = ?,
-            category = ?
+            category = ?,
+            folder_id = ?
           WHERE id = ?
         `)
         .bind(
           name,
           requestedCategory,
+          folderId,
           id
         )
         .run();
@@ -2317,6 +2532,7 @@ if (!categoryRecord) {
         name,
         category:
           requestedCategory,
+        folderId,
         originalName:
           existing.original_name ||
           existing.name,
