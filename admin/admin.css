@@ -7021,4 +7021,228 @@ button.inventory-add-photo-placeholder {
     transition: none !important;
   }
 }
-\n\n/* =========================================================\n   SWL HEADER + BIG PACK FINALE — FINAL OVERRIDES\n========================================================= */\n\n.topbar {\n  min-height: calc(66px + env(safe-area-inset-top));\n  padding: calc(10px + env(safe-area-inset-top)) 14px 10px !important;\n  gap: 10px;\n}\n\n.swl-topbar-brand-copy {\n  min-width: 0;\n  flex: 1 1 auto;\n  display: flex;\n  align-items: baseline;\n  gap: 9px;\n}\n\n.swl-topbar-brand-copy .eyebrow {\n  flex: 0 1 auto;\n  font-size: 0.68rem;\n  letter-spacing: 0.13em;\n  white-space: nowrap;\n}\n\n.swl-topbar-brand-copy h1 {\n  flex: 0 0 auto;\n  margin: 0 !important;\n  padding-left: 9px;\n  border-left: 1px solid rgba(76, 51, 37, 0.18);\n  font-size: 0.92rem !important;\n  line-height: 1 !important;\n  letter-spacing: -0.015em !important;\n}\n\n.swl-topbar-logo {\n  flex: 0 0 auto;\n  width: 48px;\n  height: 48px;\n  object-fit: contain;\n  display: block;\n  filter: drop-shadow(0 2px 4px rgba(76, 51, 37, 0.08));\n}\n\n.topbar .icon-button:not(.hidden) {\n  flex: 0 0 38px;\n  width: 38px;\n  height: 38px;\n}\n\n.swl-pack-finale {\n  position: fixed;\n  inset: 0;\n  z-index: 10000;\n  display: grid;\n  place-items: center;\n  overflow: hidden;\n  padding: 24px;\n  pointer-events: none;\n  opacity: 0;\n  background: rgba(255, 248, 230, 0);\n  backdrop-filter: blur(0);\n  transition: opacity 140ms ease, background 260ms ease, backdrop-filter 260ms ease;\n}\n\n.swl-pack-finale.show {\n  opacity: 1;\n  background: rgba(255, 248, 230, 0.74);\n  backdrop-filter: blur(3px);\n}\n\n.swl-pack-finale.leaving {\n  opacity: 0;\n  transition-duration: 420ms;\n}\n\n.swl-finale-glow {\n  position: absolute;\n  left: 50%;\n  top: 50%;\n  width: min(92vw, 520px);\n  aspect-ratio: 1;\n  border-radius: 50%;\n  background: radial-gradient(circle, rgba(242,204,88,.72) 0%, rgba(249,230,163,.34) 38%, rgba(255,250,241,0) 70%);\n  transform: translate(-50%, -50%) scale(.35);\n  opacity: 0;\n}\n\n.swl-pack-finale.show .swl-finale-glow {\n  animation: swlFinaleGlow 1.55s cubic-bezier(.16,1,.3,1) forwards;\n}\n\n.swl-finale-card {\n  position: relative;\n  z-index: 3;\n  width: min(90vw, 480px);\n  padding: 34px 24px 30px;\n  border: 2px solid rgba(76, 51, 37, 0.14);\n  border-radius: 32px;\n  background: linear-gradient(145deg, #fffaf1 0%, #fff1b9 58%, #f2cc58 145%);\n  box-shadow: 0 28px 80px rgba(76,51,37,.22), 0 8px 22px rgba(76,51,37,.12);\n  text-align: center;\n  transform: scale(.35) rotate(-5deg);\n  opacity: 0;\n}\n\n.swl-pack-finale.show .swl-finale-card {\n  animation: swlFinaleCard 720ms cubic-bezier(.14,1.35,.3,1) 80ms forwards;\n}\n\n.swl-finale-kicker {\n  margin-bottom: 9px;\n  color: var(--brown-2);\n  font-size: .7rem;\n  font-weight: 900;\n  letter-spacing: .18em;\n}\n\n.swl-finale-title {\n  color: var(--brown);\n  font-size: clamp(2.35rem, 11vw, 4.25rem);\n  font-weight: 1000;\n  line-height: .92;\n  letter-spacing: -.055em;\n}\n\n.swl-finale-heart {\n  width: 62px;\n  height: 62px;\n  margin: 17px auto 12px;\n  display: grid;\n  place-items: center;\n  border-radius: 50%;\n  background: var(--yellow);\n  color: var(--brown);\n  font-size: 1.8rem;\n  box-shadow: 0 8px 22px rgba(196,150,35,.25);\n  animation: swlFinaleHeart 900ms cubic-bezier(.16,1.45,.3,1) 540ms both;\n}\n\n.swl-finale-copy {\n  color: var(--brown-2);\n  font-size: 1rem;\n  font-weight: 800;\n}\n\n.swl-finale-particles {\n  position: absolute;\n  left: 50%;\n  top: 50%;\n  z-index: 4;\n  width: 1px;\n  height: 1px;\n}\n\n.swl-finale-particle {\n  position: absolute;\n  left: 0;\n  top: 0;\n  color: #e7b92f;\n  font-size: var(--size);\n  line-height: 1;\n  opacity: 0;\n  text-shadow: 0 2px 5px rgba(76,51,37,.1);\n  transform: translate(-50%, -50%) scale(.15);\n}\n\n.swl-finale-particle:nth-child(3n) { color: #4c3325; }\n.swl-finale-particle:nth-child(4n) { color: #f2cc58; }\n.swl-finale-particle:nth-child(5n) { color: #fffaf1; text-shadow: 0 1px 6px rgba(76,51,37,.22); }\n\n.swl-finale-particle.fluff {\n  width: calc(var(--size) * 1.45);\n  height: calc(var(--size) * 1.05);\n  border-radius: 55% 45% 58% 42%;\n  background: #fffdf8;\n  box-shadow: -7px 3px 0 -2px #fffdf8, 7px 4px 0 -3px #fffdf8, 0 3px 8px rgba(76,51,37,.12);\n  color: transparent;\n}\n\n.swl-pack-finale.show .swl-finale-particle {\n  animation: swlFinaleParticle 1.45s cubic-bezier(.12,.72,.28,1) var(--delay) forwards;\n}\n\n@keyframes swlFinaleCard {\n  0% { opacity: 0; transform: scale(.35) rotate(-5deg); }\n  58% { opacity: 1; transform: scale(1.08) rotate(1.5deg); }\n  78% { transform: scale(.975) rotate(-.4deg); }\n  100% { opacity: 1; transform: scale(1) rotate(0); }\n}\n\n@keyframes swlFinaleGlow {\n  0% { opacity: 0; transform: translate(-50%,-50%) scale(.25); }\n  45% { opacity: 1; transform: translate(-50%,-50%) scale(1.08); }\n  100% { opacity: .45; transform: translate(-50%,-50%) scale(1.35); }\n}\n\n@keyframes swlFinaleHeart {\n  0% { transform: scale(0) rotate(-25deg); }\n  60% { transform: scale(1.28) rotate(8deg); }\n  100% { transform: scale(1) rotate(0); }\n}\n\n@keyframes swlFinaleParticle {\n  0% { opacity: 0; transform: translate(-50%,-50%) scale(.1) rotate(0); }\n  12% { opacity: 1; }\n  72% { opacity: 1; }\n  100% { opacity: 0; transform: translate(calc(-50% + var(--x)), calc(-50% + var(--y))) scale(1.12) rotate(var(--spin)); }\n}\n\n@media (max-width: 390px) {\n  .swl-topbar-brand-copy { gap: 6px; }\n  .swl-topbar-brand-copy .eyebrow { font-size: .6rem; letter-spacing: .1em; }\n  .swl-topbar-brand-copy h1 { font-size: .82rem !important; padding-left: 6px; }\n  .swl-topbar-logo { width: 43px; height: 43px; }\n}\n\n@media (prefers-reduced-motion: reduce) {\n  .swl-pack-finale, .swl-finale-card, .swl-finale-glow, .swl-finale-heart, .swl-finale-particle {\n    animation: none !important;\n    transition: none !important;\n  }\n  .swl-pack-finale.show { opacity: 1; }\n  .swl-pack-finale.show .swl-finale-card { opacity: 1; transform: none; }\n}\n
+\n\n/* =========================================================
+   SWL HEADER + BIG PACK FINALE — FINAL OVERRIDES
+========================================================= */
+
+.topbar {
+  min-height: calc(48px + env(safe-area-inset-top));
+  padding: calc(5px + env(safe-area-inset-top)) 12px 5px !important;
+  gap: 10px;
+}
+
+.swl-topbar-brand-copy {
+  min-width: 0;
+  flex: 1 1 auto;
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+}
+
+.swl-topbar-brand-copy .eyebrow {
+  flex: 0 1 auto;
+  font-size: 0.57rem;
+  letter-spacing: 0.10em;
+  white-space: nowrap;
+}
+
+.swl-topbar-brand-copy h1 {
+  flex: 0 0 auto;
+  margin: 0 !important;
+  padding-left: 6px;
+  border-left: 1px solid rgba(76, 51, 37, 0.18);
+  font-size: 0.72rem !important;
+  line-height: 1 !important;
+  letter-spacing: -0.015em !important;
+}
+
+.swl-topbar-logo {
+  flex: 0 0 auto;
+  width: 32px;
+  height: 32px;
+  object-fit: contain;
+  display: block;
+  filter: drop-shadow(0 2px 4px rgba(76, 51, 37, 0.08));
+}
+
+.topbar .icon-button:not(.hidden) {
+  flex: 0 0 32px;
+  width: 32px;
+  height: 32px;
+}
+
+.swl-pack-finale {
+  position: fixed;
+  inset: 0;
+  z-index: 10000;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  padding: 24px;
+  pointer-events: none;
+  opacity: 0;
+  background: rgba(255, 248, 230, 0);
+  backdrop-filter: blur(0);
+  transition: opacity 140ms ease, background 260ms ease, backdrop-filter 260ms ease;
+}
+
+.swl-pack-finale.show {
+  opacity: 1;
+  background: rgba(255, 248, 230, 0.74);
+  backdrop-filter: blur(3px);
+}
+
+.swl-pack-finale.leaving {
+  opacity: 0;
+  transition-duration: 420ms;
+}
+
+.swl-finale-glow {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: min(92vw, 520px);
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(242,204,88,.72) 0%, rgba(249,230,163,.34) 38%, rgba(255,250,241,0) 70%);
+  transform: translate(-50%, -50%) scale(.35);
+  opacity: 0;
+}
+
+.swl-pack-finale.show .swl-finale-glow {
+  animation: swlFinaleGlow 1.55s cubic-bezier(.16,1,.3,1) forwards;
+}
+
+.swl-finale-card {
+  position: relative;
+  z-index: 3;
+  width: min(90vw, 480px);
+  padding: 34px 24px 30px;
+  border: 2px solid rgba(76, 51, 37, 0.14);
+  border-radius: 32px;
+  background: linear-gradient(145deg, #fffaf1 0%, #fff1b9 58%, #f2cc58 145%);
+  box-shadow: 0 28px 80px rgba(76,51,37,.22), 0 8px 22px rgba(76,51,37,.12);
+  text-align: center;
+  transform: scale(.35) rotate(-5deg);
+  opacity: 0;
+}
+
+.swl-pack-finale.show .swl-finale-card {
+  animation: swlFinaleCard 720ms cubic-bezier(.14,1.35,.3,1) 80ms forwards;
+}
+
+.swl-finale-kicker {
+  margin-bottom: 9px;
+  color: var(--brown-2);
+  font-size: .7rem;
+  font-weight: 900;
+  letter-spacing: .18em;
+}
+
+.swl-finale-title {
+  color: var(--brown);
+  font-size: clamp(2.35rem, 11vw, 4.25rem);
+  font-weight: 1000;
+  line-height: .92;
+  letter-spacing: -.055em;
+}
+
+.swl-finale-heart {
+  width: 62px;
+  height: 62px;
+  margin: 17px auto 12px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: var(--yellow);
+  color: var(--brown);
+  font-size: 1.8rem;
+  box-shadow: 0 8px 22px rgba(196,150,35,.25);
+  animation: swlFinaleHeart 900ms cubic-bezier(.16,1.45,.3,1) 540ms both;
+}
+
+.swl-finale-copy {
+  color: var(--brown-2);
+  font-size: 1rem;
+  font-weight: 800;
+}
+
+.swl-finale-particles {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  z-index: 4;
+  width: 1px;
+  height: 1px;
+}
+
+.swl-finale-particle {
+  position: absolute;
+  left: 0;
+  top: 0;
+  color: #e7b92f;
+  font-size: var(--size);
+  line-height: 1;
+  opacity: 0;
+  text-shadow: 0 2px 5px rgba(76,51,37,.1);
+  transform: translate(-50%, -50%) scale(.15);
+}
+
+.swl-finale-particle:nth-child(3n) { color: #4c3325; }
+.swl-finale-particle:nth-child(4n) { color: #f2cc58; }
+.swl-finale-particle:nth-child(5n) { color: #fffaf1; text-shadow: 0 1px 6px rgba(76,51,37,.22); }
+
+.swl-finale-particle.fluff {
+  width: calc(var(--size) * 1.45);
+  height: calc(var(--size) * 1.05);
+  border-radius: 55% 45% 58% 42%;
+  background: #fffdf8;
+  box-shadow: -7px 3px 0 -2px #fffdf8, 7px 4px 0 -3px #fffdf8, 0 3px 8px rgba(76,51,37,.12);
+  color: transparent;
+}
+
+.swl-pack-finale.show .swl-finale-particle {
+  animation: swlFinaleParticle 1.45s cubic-bezier(.12,.72,.28,1) var(--delay) forwards;
+}
+
+@keyframes swlFinaleCard {
+  0% { opacity: 0; transform: scale(.35) rotate(-5deg); }
+  58% { opacity: 1; transform: scale(1.08) rotate(1.5deg); }
+  78% { transform: scale(.975) rotate(-.4deg); }
+  100% { opacity: 1; transform: scale(1) rotate(0); }
+}
+
+@keyframes swlFinaleGlow {
+  0% { opacity: 0; transform: translate(-50%,-50%) scale(.25); }
+  45% { opacity: 1; transform: translate(-50%,-50%) scale(1.08); }
+  100% { opacity: .45; transform: translate(-50%,-50%) scale(1.35); }
+}
+
+@keyframes swlFinaleHeart {
+  0% { transform: scale(0) rotate(-25deg); }
+  60% { transform: scale(1.28) rotate(8deg); }
+  100% { transform: scale(1) rotate(0); }
+}
+
+@keyframes swlFinaleParticle {
+  0% { opacity: 0; transform: translate(-50%,-50%) scale(.1) rotate(0); }
+  12% { opacity: 1; }
+  72% { opacity: 1; }
+  100% { opacity: 0; transform: translate(calc(-50% + var(--x)), calc(-50% + var(--y))) scale(1.12) rotate(var(--spin)); }
+}
+
+@media (max-width: 390px) {
+  .swl-topbar-brand-copy { gap: 5px; }
+  .swl-topbar-brand-copy .eyebrow { font-size: .53rem; letter-spacing: .085em; }
+  .swl-topbar-brand-copy h1 { font-size: .68rem !important; padding-left: 5px; }
+  .swl-topbar-logo { width: 30px; height: 30px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .swl-pack-finale, .swl-finale-card, .swl-finale-glow, .swl-finale-heart, .swl-finale-particle {
+    animation: none !important;
+    transition: none !important;
+  }
+  .swl-pack-finale.show { opacity: 1; }
+  .swl-pack-finale.show .swl-finale-card { opacity: 1; transform: none; }
+}
