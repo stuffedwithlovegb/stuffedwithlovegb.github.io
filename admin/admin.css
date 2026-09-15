@@ -4986,3 +4986,118 @@ a {
 .inventory-delete-button:active {
   transform: scale(0.98);
 }
+.inventory-add-item-button {
+  appearance: none;
+  border: none;
+
+  background: var(--yellow);
+  color: var(--brown);
+
+  padding: 11px 16px;
+  border-radius: 14px;
+
+  font: inherit;
+  font-size: 14px;
+  font-weight: 800;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+
+  min-height: 42px;
+
+  box-shadow:
+    0 3px 0 rgba(76, 51, 37, 0.12),
+    0 5px 14px rgba(76, 51, 37, 0.10);
+
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.inventory-add-item-button:hover {
+  filter: brightness(1.02);
+  transform: translateY(-1px);
+}
+
+.inventory-add-item-button:active {
+  transform: translateY(1px) scale(0.98);
+  box-shadow:
+    0 1px 0 rgba(76, 51, 37, 0.12),
+    0 2px 7px rgba(76, 51, 37, 0.08);
+}
+/* =========================================
+   ADD INVENTORY ITEM SHEET
+========================================= */
+
+.inventory-add-sheet {
+  padding: 24px 22px 28px;
+}
+
+.inventory-add-sheet .modal-title-row {
+  margin-bottom: 26px;
+}
+
+.inventory-add-sheet .modal-title-row h2 {
+  margin-top: 4px;
+  font-size: 25px;
+  line-height: 1.15;
+}
+
+.inventory-add-form {
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+}
+
+.inventory-add-form .field-label {
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+
+  color: var(--brown);
+  font-size: 14px;
+  font-weight: 800;
+  line-height: 1.2;
+}
+
+.inventory-add-form input {
+  width: 100%;
+  box-sizing: border-box;
+
+  min-height: 54px;
+  padding: 14px 16px;
+
+  border: 1.5px solid var(--cream-deep);
+  border-radius: 15px;
+
+  background: var(--cream-soft);
+  color: var(--text);
+
+  font: inherit;
+  font-size: 16px;
+  font-weight: 600;
+
+  outline: none;
+}
+
+.inventory-add-form input:focus {
+  border-color: var(--yellow);
+  background: #fff;
+  box-shadow: 0 0 0 3px var(--yellow-pale);
+}
+
+.inventory-add-form input::placeholder {
+  color: var(--muted);
+  font-weight: 500;
+}
+
+.inventory-add-form .primary-button {
+  min-height: 54px;
+  margin-top: 6px;
+
+  border-radius: 15px;
+
+  font-size: 16px;
+  font-weight: 800;
+}
