@@ -4354,10 +4354,12 @@ function renderFilesContent() {
                 : ""
             }"
             onclick="setFileCategory(
-              ${JSON.stringify(
-                category.name
-              )}
-            )"
+  decodeURIComponent(
+    '${encodeURIComponent(
+      category.name
+    )}'
+  )
+)"
           >
             ${escapeHTML(category.name)}
           </button>
@@ -4435,10 +4437,12 @@ function renderFilesContent() {
               <button
                 class="file-category-menu-button"
                 onclick="openFileCategoryMenu(
-                  ${JSON.stringify(
-                    activeFileCategory
-                  )}
-                )"
+  decodeURIComponent(
+    '${encodeURIComponent(
+      activeFileCategory
+    )}'
+  )
+)"
                 aria-label="Category options"
               >
                 •••
@@ -4558,8 +4562,10 @@ function fileRowHTML(file) {
     <button
       class="file-row"
       onclick="openFileDetail(
-        ${JSON.stringify(file.id)}
-      )"
+  decodeURIComponent(
+    '${encodeURIComponent(file.id)}'
+  )
+)"
     >
 
       ${filePreviewHTML(
@@ -4625,8 +4631,10 @@ function recentFileCardHTML(file) {
     <button
       class="recent-file-card"
       onclick="openFileDetail(
-        ${JSON.stringify(file.id)}
-      )"
+  decodeURIComponent(
+    '${encodeURIComponent(file.id)}'
+  )
+)"
     >
 
       ${filePreviewHTML(
@@ -5442,8 +5450,10 @@ function openFileDetail(fileId) {
         <button
           class="file-delete-button"
           onclick="confirmDeleteSWLFile(
-            ${JSON.stringify(file.id)}
-          )"
+  decodeURIComponent(
+    '${encodeURIComponent(file.id)}'
+  )
+)"
         >
           Delete File
         </button>
@@ -5788,10 +5798,12 @@ function openFileCategoryMenu(
             file-category-action
           "
           onclick="openRenameFileCategory(
-            ${JSON.stringify(
-              category.id
-            )}
-          )"
+  decodeURIComponent(
+    '${encodeURIComponent(
+      category.id
+    )}'
+  )
+)"
         >
           <span>✎</span>
 
@@ -5815,10 +5827,12 @@ function openFileCategoryMenu(
             danger
           "
           onclick="openDeleteFileCategory(
-            ${JSON.stringify(
-              category.id
-            )}
-          )"
+  decodeURIComponent(
+    '${encodeURIComponent(
+      category.id
+    )}'
+  )
+)"
         >
           <span>×</span>
 
@@ -5897,9 +5911,11 @@ function openRenameFileCategory(
           onsubmit="
             event.preventDefault();
             renameFileCategory(
-              ${JSON.stringify(
-                category.id
-              )},
+              decodeURIComponent(
+  '${encodeURIComponent(
+    category.id
+  )}'
+),
               this
             );
           "
@@ -6085,9 +6101,11 @@ function openDeleteFileCategory(
           onsubmit="
             event.preventDefault();
             deleteFileCategory(
-              ${JSON.stringify(
-                category.id
-              )},
+              decodeURIComponent(
+  '${encodeURIComponent(
+    category.id
+  )}'
+),
               this
             );
           "
