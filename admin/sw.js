@@ -1,65 +1,63 @@
-const CACHE_NAME = "swl-ops-v1";
+/* STUFFED WITH LOVE OPS — SERVICE WORKER */
 
-const APP_SHELL = [
-  "/admin/",
-  "/admin/index.html",
-  "/admin/admin.css",
-  "/admin/app.js",
-  "/admin/manifest.webmanifest"
-];
-
-self.addEventListener("install", event => {
-  event.waitUntil(
-    caches.open(CACHE_NAME).then(cache => {
-      return cache.addAll(APP_SHELL);
-    })
-  );
-
+self.addEventListener("install", () => {
   self.skipWaiting();
 });
 
 self.addEventListener("activate", event => {
-  event.waitUntil(
-    caches.keys().then(keys => {
-      return Promise.all(
-        keys.map(key => {
-          if (key !== CACHE_NAME) {
-            return caches.delete(key);
-          }
-        })
-      );
-    })
-  );
-
-  self.clients.claim();
+  event.waitUntil(self.clients.claim());
 });
 
-self.addEventListener("fetch", event => {
-  const request = event.request;
+self.addEventListener("push", event => {
+  event.waitUntil((async () => {
+    try {
+      const subscription = await self.registration.pushManager.getSubscription();
+      if (!subscription) return;
 
-  if (request.method !== "GET") {
-    return;
-  }
+      const response = await fetch("/admin/api/push/pending", {
+        method: "POST",
+        credentials: "include",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ endpoint: subscription.endpoint })
+      });
 
-  const url = new URL(request.url);
+      if (!response.ok) return;
+      const data = await response.json();
+      const note = data?.notification;
+      if (!note) return;
 
-  if (url.pathname.startsWith("/admin/api/")) {
-    return;
-  }
+      await self.registration.showNotification(note.title || "Stuffed With Love", {
+        body: note.body || "A little SWL nudge 💛",
+        icon: "/admin/icon-192.png",
+        badge: "/admin/icon-192.png",
+        tag: `swl-${Date.now()}`,
+        data: { url: note.url || "/admin/" }
+      });
+    } catch (err) {
+      console.error("SWL push notification failed", err);
+    }
+  })());
+});
 
-  event.respondWith(
-    fetch(request)
-      .then(response => {
-        const responseClone = response.clone();
+self.addEventListener("notificationclick", event => {
+  event.notification.close();
+  const url = event.notification.data?.url || "/admin/";
 
-        caches.open(CACHE_NAME).then(cache => {
-          cache.put(request, responseClone);
-        });
+  event.waitUntil((async () => {
+    const windows = await self.clients.matchAll({
+      type: "window",
+      includeUncontrolled: true
+    });
 
-        return response;
-      })
-      .catch(() => {
-        return caches.match(request);
-      })
-  );
+    for (const client of windows) {
+      if ("focus" in client) {
+        await client.focus();
+        return;
+      }
+    }
+
+    if (self.clients.openWindow) {
+      await self.clients.openWindow(url);
+    }
+  })());
 });
