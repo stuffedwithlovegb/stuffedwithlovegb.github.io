@@ -168,6 +168,15 @@ if (resource === "file-categories") {
     id
   );
 }
+
+    if (resource === "file-folders") {
+      return handleFileFolders(
+        request,
+        env,
+        id
+      );
+    }
+
     if (resource === "files") {
       return handleFiles(
         request,
