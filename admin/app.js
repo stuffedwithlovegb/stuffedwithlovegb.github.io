@@ -817,10 +817,14 @@ function render() {
       break;
 
     case "inventory":
-      renderInventory();
-      break;
+  renderInventory();
+  break;
 
-    case "attention":
+case "files":
+  renderFiles();
+  break;
+
+case "attention":
       renderAttention();
       break;
 
@@ -4146,7 +4150,2081 @@ async function setInventoryCount(
 
   openInventoryItem(itemId);
 }
+/* =========================================================
+   FILES
+========================================================= */
 
+let swlFiles = [];
+let fileCategories = [];
+
+let activeFileCategory = "All";
+let fileSearch = "";
+let filesLoaded = false;
+
+
+/* =========================================================
+   FILE DATA
+========================================================= */
+
+async function loadFilesData(force = false) {
+  if (filesLoaded && !force) {
+    return;
+  }
+
+  const [
+    filesResponse,
+    categoriesResponse
+  ] = await Promise.all([
+    apiRequest("files"),
+    apiRequest("file-categories")
+  ]);
+
+  swlFiles =
+    filesResponse.files || [];
+
+  fileCategories =
+    categoriesResponse.categories || [];
+
+  filesLoaded = true;
+}
+
+
+async function renderFiles() {
+  setHeader("Files", true);
+
+  const main =
+    document.getElementById(
+      "mainContent"
+    );
+
+  if (!filesLoaded) {
+    main.innerHTML = `
+      <div class="files-loading-card">
+        Loading files…
+      </div>
+    `;
+
+    try {
+      await loadFilesData();
+    } catch (err) {
+      main.innerHTML = `
+        <div class="status-banner warning">
+          Could not load Files.
+        </div>
+
+        <div class="card empty-card">
+          ${escapeHTML(err.message)}
+        </div>
+      `;
+
+      return;
+    }
+
+    if (currentScreen !== "files") {
+      return;
+    }
+  }
+
+  renderFilesContent();
+}
+
+
+function renderFilesContent() {
+  const main =
+    document.getElementById(
+      "mainContent"
+    );
+
+  if (!main) return;
+
+  const search =
+    String(fileSearch || "")
+      .trim()
+      .toLowerCase();
+
+  /*
+    Search intentionally ignores the
+    selected category.
+
+    No search:
+      selected category controls results.
+
+    Search:
+      search ALL files.
+  */
+  const visibleFiles =
+    swlFiles.filter(file => {
+      const searchable = `
+        ${file.name || ""}
+        ${file.originalName || ""}
+        ${file.category || ""}
+      `.toLowerCase();
+
+      if (search) {
+        return searchable.includes(
+          search
+        );
+      }
+
+      if (
+        activeFileCategory === "All"
+      ) {
+        return true;
+      }
+
+      return (
+        file.category ===
+        activeFileCategory
+      );
+    });
+
+  const recentFiles =
+    [...swlFiles]
+      .sort(
+        (a, b) =>
+          new Date(b.createdAt || 0) -
+          new Date(a.createdAt || 0)
+      )
+      .slice(0, 4);
+
+  let html = `
+    <div class="files-toolbar">
+
+      <div class="files-search-wrap">
+        <span class="files-search-icon">
+          ⌕
+        </span>
+
+        <input
+          id="filesSearch"
+          class="files-search"
+          type="search"
+          value="${escapeHTML(fileSearch)}"
+          placeholder="Search files..."
+          oninput="
+            fileSearch = this.value;
+            renderFilesContent();
+          "
+        />
+      </div>
+
+      <div class="files-actions">
+
+        <button
+          class="files-upload-button"
+          onclick="openFileUpload()"
+        >
+          <span>＋</span>
+          Upload File
+        </button>
+
+        <button
+          class="files-category-button"
+          onclick="openAddFileCategory()"
+        >
+          <span>＋</span>
+          Category
+        </button>
+
+      </div>
+
+    </div>
+
+
+    <div class="file-category-tabs">
+
+      <button
+        class="file-category-tab ${
+          activeFileCategory === "All"
+            ? "active"
+            : ""
+        }"
+        onclick="setFileCategory('All')"
+      >
+        All
+      </button>
+
+      ${fileCategories
+        .map(category => `
+          <button
+            class="file-category-tab ${
+              activeFileCategory ===
+              category.name
+                ? "active"
+                : ""
+            }"
+            onclick="setFileCategory(
+              ${JSON.stringify(
+                category.name
+              )}
+            )"
+          >
+            ${escapeHTML(category.name)}
+          </button>
+        `)
+        .join("")}
+
+    </div>
+  `;
+
+
+  /*
+    Recently Added only appears on All
+    when we're NOT actively searching.
+  */
+  if (
+    activeFileCategory === "All" &&
+    !search &&
+    recentFiles.length
+  ) {
+    html += `
+      <section class="files-section">
+
+        <div class="files-section-heading">
+          <h2>Recently Added</h2>
+        </div>
+
+        <div class="recent-files-row">
+
+          ${recentFiles
+            .map(file =>
+              recentFileCardHTML(file)
+            )
+            .join("")}
+
+        </div>
+
+      </section>
+    `;
+  }
+
+
+  html += `
+    <section class="files-section">
+
+      <div class="files-section-heading">
+
+        <div>
+          <h2>
+            ${
+              search
+                ? "Search Results"
+                : activeFileCategory ===
+                  "All"
+                  ? "All Files"
+                  : escapeHTML(
+                      activeFileCategory
+                    )
+            }
+          </h2>
+
+          <span>
+            ${visibleFiles.length}
+            ${
+              visibleFiles.length === 1
+                ? "file"
+                : "files"
+            }
+          </span>
+        </div>
+
+        ${
+          !search &&
+          activeFileCategory !== "All"
+            ? `
+              <button
+                class="file-category-menu-button"
+                onclick="openFileCategoryMenu(
+                  ${JSON.stringify(
+                    activeFileCategory
+                  )}
+                )"
+                aria-label="Category options"
+              >
+                •••
+              </button>
+            `
+            : ""
+        }
+
+      </div>
+  `;
+
+
+  if (!visibleFiles.length) {
+    html += `
+      <div class="files-empty-state">
+
+        <div class="files-empty-icon">
+          ${
+            search
+              ? "⌕"
+              : "▤"
+          }
+        </div>
+
+        <strong>
+          ${
+            search
+              ? "No files found"
+              : "Nothing here yet"
+          }
+        </strong>
+
+        <p>
+          ${
+            search
+              ? "Try another search."
+              : "Upload a file and it’ll show up here."
+          }
+        </p>
+
+        ${
+          !search
+            ? `
+              <button
+                class="primary-button"
+                onclick="openFileUpload()"
+              >
+                + Upload File
+              </button>
+            `
+            : ""
+        }
+
+      </div>
+    `;
+  } else {
+    html += `
+      <div class="files-list">
+
+        ${visibleFiles
+          .map(file =>
+            fileRowHTML(file)
+          )
+          .join("")}
+
+      </div>
+    `;
+  }
+
+
+  html += `
+    </section>
+  `;
+
+  main.innerHTML = html;
+
+  /*
+    Keep typing pleasant:
+    rerenderFilesContent() replaces
+    main.innerHTML, so restore focus
+    and cursor position.
+  */
+  if (search) {
+    requestAnimationFrame(() => {
+      const input =
+        document.getElementById(
+          "filesSearch"
+        );
+
+      if (!input) return;
+
+      input.focus();
+
+      const length =
+        input.value.length;
+
+      try {
+        input.setSelectionRange(
+          length,
+          length
+        );
+      } catch {}
+    });
+  }
+}
+
+
+/* =========================================================
+   FILE CARDS
+========================================================= */
+
+function fileRowHTML(file) {
+  const type =
+    getFileTypeInfo(file);
+
+  return `
+    <button
+      class="file-row"
+      onclick="openFileDetail(
+        ${JSON.stringify(file.id)}
+      )"
+    >
+
+      ${filePreviewHTML(
+        file,
+        "row"
+      )}
+
+      <div class="file-row-copy">
+
+        <strong>
+          ${escapeHTML(file.name)}
+        </strong>
+
+        <div class="file-row-meta">
+
+          <span class="file-type-label">
+            ${escapeHTML(type.label)}
+          </span>
+
+          <span>·</span>
+
+          <span>
+            ${formatFileSize(
+              file.sizeBytes
+            )}
+          </span>
+
+        </div>
+
+        <div class="file-row-bottom">
+
+          <span class="file-category-pill">
+            ${escapeHTML(
+              file.category ||
+              "Other"
+            )}
+          </span>
+
+          <span class="file-date">
+            ${formatFileDate(
+              file.createdAt
+            )}
+          </span>
+
+        </div>
+
+      </div>
+
+      <span class="file-row-chevron">
+        ›
+      </span>
+
+    </button>
+  `;
+}
+
+
+function recentFileCardHTML(file) {
+  const type =
+    getFileTypeInfo(file);
+
+  return `
+    <button
+      class="recent-file-card"
+      onclick="openFileDetail(
+        ${JSON.stringify(file.id)}
+      )"
+    >
+
+      ${filePreviewHTML(
+        file,
+        "recent"
+      )}
+
+      <strong>
+        ${escapeHTML(file.name)}
+      </strong>
+
+      <span>
+        ${escapeHTML(type.label)}
+        ·
+        ${formatFileSize(
+          file.sizeBytes
+        )}
+      </span>
+
+    </button>
+  `;
+}
+
+
+function filePreviewHTML(
+  file,
+  context = "row"
+) {
+  const type =
+    getFileTypeInfo(file);
+
+  if (type.isImage) {
+    return `
+      <div
+        class="
+          file-preview
+          file-preview-${context}
+          has-image
+        "
+      >
+        <img
+          src="/admin/api/files/${encodeURIComponent(
+            file.id
+          )}/download"
+          alt=""
+          loading="lazy"
+        />
+      </div>
+    `;
+  }
+
+  return `
+    <div
+      class="
+        file-preview
+        file-preview-${context}
+        file-preview-${type.className}
+      "
+    >
+      <span>
+        ${type.icon}
+      </span>
+
+      ${
+        type.short
+          ? `
+            <small>
+              ${escapeHTML(type.short)}
+            </small>
+          `
+          : ""
+      }
+
+    </div>
+  `;
+}
+
+
+function getFileTypeInfo(file) {
+  const name =
+    String(
+      file.originalName ||
+      file.name ||
+      ""
+    ).toLowerCase();
+
+  const contentType =
+    String(
+      file.contentType || ""
+    ).toLowerCase();
+
+  const extension =
+    name.includes(".")
+      ? name.split(".").pop()
+      : "";
+
+
+  if (
+    contentType.startsWith("image/") ||
+    [
+      "png",
+      "jpg",
+      "jpeg",
+      "gif",
+      "webp",
+      "heic"
+    ].includes(extension)
+  ) {
+    return {
+      label:
+        extension
+          ? extension.toUpperCase()
+          : "Image",
+      short: "",
+      icon: "▧",
+      className: "image",
+      isImage: true
+    };
+  }
+
+
+  if (extension === "svg") {
+    return {
+      label: "SVG",
+      short: "SVG",
+      icon: "✂",
+      className: "svg",
+      isImage: false
+    };
+  }
+
+
+  if (extension === "pdf") {
+    return {
+      label: "PDF",
+      short: "PDF",
+      icon: "▤",
+      className: "pdf",
+      isImage: false
+    };
+  }
+
+
+  if (
+    [
+      "zip",
+      "rar",
+      "7z"
+    ].includes(extension)
+  ) {
+    return {
+      label:
+        extension.toUpperCase(),
+      short:
+        extension.toUpperCase(),
+      icon: "▥",
+      className: "archive",
+      isImage: false
+    };
+  }
+
+
+  if (
+    [
+      "ppt",
+      "pptx"
+    ].includes(extension)
+  ) {
+    return {
+      label: "PowerPoint",
+      short: "PPT",
+      icon: "▤",
+      className: "presentation",
+      isImage: false
+    };
+  }
+
+
+  if (
+    [
+      "doc",
+      "docx"
+    ].includes(extension)
+  ) {
+    return {
+      label: "Word",
+      short: "DOC",
+      icon: "▤",
+      className: "document",
+      isImage: false
+    };
+  }
+
+
+  if (
+    [
+      "xls",
+      "xlsx",
+      "csv"
+    ].includes(extension)
+  ) {
+    return {
+      label: "Spreadsheet",
+      short: "XLS",
+      icon: "▦",
+      className: "sheet",
+      isImage: false
+    };
+  }
+
+
+  return {
+    label:
+      extension
+        ? extension.toUpperCase()
+        : "File",
+    short:
+      extension
+        ? extension
+            .slice(0, 4)
+            .toUpperCase()
+        : "FILE",
+    icon: "▤",
+    className: "generic",
+    isImage: false
+  };
+}
+
+
+/* =========================================================
+   FILE FILTERING
+========================================================= */
+
+function setFileCategory(category) {
+  activeFileCategory =
+    category;
+
+  fileSearch = "";
+
+  renderFilesContent();
+}
+
+
+/* =========================================================
+   FILE FORMATTING
+========================================================= */
+
+function formatFileSize(bytes) {
+  const size =
+    Number(bytes || 0);
+
+  if (size < 1024) {
+    return `${size} B`;
+  }
+
+  if (
+    size <
+    1024 * 1024
+  ) {
+    return `${
+      Math.round(
+        size / 1024
+      )
+    } KB`;
+  }
+
+  return `${
+    (
+      size /
+      (1024 * 1024)
+    ).toFixed(1)
+  } MB`;
+}
+
+
+function formatFileDate(value) {
+  if (!value) return "";
+
+  const date =
+    new Date(value);
+
+  if (
+    Number.isNaN(
+      date.getTime()
+    )
+  ) {
+    return "";
+  }
+
+  return date.toLocaleDateString(
+    "en-US",
+    {
+      month: "short",
+      day: "numeric",
+      year: "numeric"
+    }
+  );
+}
+
+
+/* =========================================================
+   UPLOAD FILE
+========================================================= */
+
+function openFileUpload() {
+  if (!fileCategories.length) {
+    alert(
+      "Create a category first."
+    );
+
+    openAddFileCategory();
+    return;
+  }
+
+  const categoryOptions =
+    fileCategories
+      .map(category => `
+        <option
+          value="${escapeHTML(
+            category.name
+          )}"
+          ${
+            activeFileCategory ===
+            category.name
+              ? "selected"
+              : ""
+          }
+        >
+          ${escapeHTML(category.name)}
+        </option>
+      `)
+      .join("");
+
+  const html = `
+    <div
+      class="modal-backdrop"
+      onclick="closeModalFromBackdrop(event)"
+    >
+
+      <div
+        class="
+          modal-sheet
+          files-modal-sheet
+        "
+      >
+
+        <div class="modal-title-row">
+
+          <div>
+            <div class="card-label">
+              FILES
+            </div>
+
+            <h2>Upload File</h2>
+          </div>
+
+          <button
+            class="modal-close-button"
+            onclick="closeModal()"
+            aria-label="Close"
+          >
+            ×
+          </button>
+
+        </div>
+
+
+        <form
+          class="file-upload-form"
+          onsubmit="
+            event.preventDefault();
+            uploadSWLFile(this);
+          "
+        >
+
+          <label
+            class="file-picker"
+            id="filePickerLabel"
+          >
+
+            <input
+              name="file"
+              type="file"
+              required
+              onchange="
+                fileChosenForUpload(this);
+              "
+            />
+
+            <span class="file-picker-icon">
+              ＋
+            </span>
+
+            <strong id="filePickerTitle">
+              Choose a file
+            </strong>
+
+            <span id="filePickerMeta">
+              Up to 25 MB
+            </span>
+
+          </label>
+
+
+          <label class="field-label">
+            Display Name
+
+            <input
+              name="displayName"
+              type="text"
+              placeholder="File name"
+              required
+            />
+          </label>
+
+
+          <label class="field-label">
+            Category
+
+            <select
+              name="category"
+              required
+            >
+              ${categoryOptions}
+            </select>
+          </label>
+
+
+          <button
+            type="submit"
+            class="
+              primary-button
+              full-width
+              file-save-button
+            "
+          >
+            Save File
+          </button>
+
+        </form>
+
+      </div>
+
+    </div>
+  `;
+
+  document
+    .getElementById(
+      "modalRoot"
+    )
+    .innerHTML = html;
+}
+
+
+function fileChosenForUpload(input) {
+  const file =
+    input.files?.[0];
+
+  if (!file) return;
+
+  const form =
+    input.closest("form");
+
+  const nameInput =
+    form?.elements
+      ?.displayName;
+
+  if (
+    nameInput &&
+    !nameInput.value.trim()
+  ) {
+    nameInput.value =
+      removeFileExtension(
+        file.name
+      );
+  }
+
+  const title =
+    document.getElementById(
+      "filePickerTitle"
+    );
+
+  const meta =
+    document.getElementById(
+      "filePickerMeta"
+    );
+
+  const label =
+    document.getElementById(
+      "filePickerLabel"
+    );
+
+  if (title) {
+    title.textContent =
+      file.name;
+  }
+
+  if (meta) {
+    meta.textContent =
+      formatFileSize(
+        file.size
+      );
+  }
+
+  if (label) {
+    label.classList.add(
+      "has-file"
+    );
+  }
+}
+
+
+function removeFileExtension(name) {
+  const value =
+    String(name || "");
+
+  const lastDot =
+    value.lastIndexOf(".");
+
+  if (lastDot <= 0) {
+    return value;
+  }
+
+  return value.slice(
+    0,
+    lastDot
+  );
+}
+
+
+async function uploadSWLFile(form) {
+  const file =
+    form.elements
+      .file
+      .files?.[0];
+
+  if (!file) return;
+
+  const name =
+    form.elements
+      .displayName
+      .value
+      .trim();
+
+  const category =
+    form.elements
+      .category
+      .value;
+
+  if (!name) return;
+
+  const button =
+    form.querySelector(
+      'button[type="submit"]'
+    );
+
+  button.disabled = true;
+  button.textContent =
+    "Uploading…";
+
+  const formData =
+    new FormData();
+
+  formData.append(
+    "file",
+    file
+  );
+
+  formData.append(
+    "name",
+    name
+  );
+
+  formData.append(
+    "category",
+    category
+  );
+
+  try {
+    const response =
+      await fetch(
+        "/admin/api/files",
+        {
+          method: "POST",
+          credentials:
+            "same-origin",
+          body: formData
+        }
+      );
+
+    let data = null;
+
+    try {
+      data =
+        await response.json();
+    } catch {}
+
+    if (!response.ok) {
+      throw new Error(
+        data?.error ||
+        `Upload failed (${response.status})`
+      );
+    }
+
+    swlFiles.unshift(
+      data.file
+    );
+
+    closeModal();
+
+    /*
+      Keep the user where they were.
+      If they were viewing a category
+      and uploaded there, it'll appear
+      immediately.
+    */
+    renderFilesContent();
+
+  } catch (err) {
+    button.disabled = false;
+    button.textContent =
+      "Save File";
+
+    alert(
+      `Could not upload that file. ${err.message}`
+    );
+  }
+}
+
+
+/* =========================================================
+   FILE DETAIL
+========================================================= */
+
+function openFileDetail(fileId) {
+  const file =
+    swlFiles.find(
+      file =>
+        file.id === fileId
+    );
+
+  if (!file) return;
+
+  const type =
+    getFileTypeInfo(file);
+
+  const categoryOptions =
+    fileCategories
+      .map(category => `
+        <option
+          value="${escapeHTML(
+            category.name
+          )}"
+          ${
+            file.category ===
+            category.name
+              ? "selected"
+              : ""
+          }
+        >
+          ${escapeHTML(category.name)}
+        </option>
+      `)
+      .join("");
+
+  const html = `
+    <div
+      class="modal-backdrop"
+      onclick="closeModalFromBackdrop(event)"
+    >
+
+      <div
+        class="
+          modal-sheet
+          files-modal-sheet
+          file-detail-sheet
+        "
+      >
+
+        <div class="modal-title-row">
+
+          <div>
+            <div class="card-label">
+              ${escapeHTML(
+                file.category ||
+                "FILE"
+              )}
+            </div>
+
+            <h2>
+              ${escapeHTML(
+                file.name
+              )}
+            </h2>
+          </div>
+
+          <button
+            class="modal-close-button"
+            onclick="closeModal()"
+            aria-label="Close"
+          >
+            ×
+          </button>
+
+        </div>
+
+
+        <div class="file-detail-preview">
+          ${filePreviewHTML(
+            file,
+            "detail"
+          )}
+        </div>
+
+
+        <div class="file-detail-meta">
+
+          <span>
+            ${escapeHTML(type.label)}
+          </span>
+
+          <span>·</span>
+
+          <span>
+            ${formatFileSize(
+              file.sizeBytes
+            )}
+          </span>
+
+          ${
+            file.createdAt
+              ? `
+                <span>·</span>
+
+                <span>
+                  ${formatFileDate(
+                    file.createdAt
+                  )}
+                </span>
+              `
+              : ""
+          }
+
+        </div>
+
+
+        <a
+          class="
+            primary-button
+            full-width
+            file-open-button
+          "
+          href="/admin/api/files/${encodeURIComponent(
+            file.id
+          )}/download"
+          target="_blank"
+          rel="noopener"
+        >
+          Open File
+        </a>
+
+
+        <form
+          class="file-edit-form"
+          onsubmit="
+            event.preventDefault();
+            saveFileChanges(
+              ${JSON.stringify(file.id)},
+              this
+            );
+          "
+        >
+
+          <label class="field-label">
+            Name
+
+            <input
+              name="name"
+              type="text"
+              value="${escapeHTML(
+                file.name
+              )}"
+              required
+            />
+          </label>
+
+
+          <label class="field-label">
+            Category
+
+            <select
+              name="category"
+              required
+            >
+              ${categoryOptions}
+            </select>
+          </label>
+
+
+          <button
+            type="submit"
+            class="
+              secondary-button
+              full-width
+            "
+          >
+            Save Changes
+          </button>
+
+        </form>
+
+
+        <button
+          class="file-delete-button"
+          onclick="confirmDeleteSWLFile(
+            ${JSON.stringify(file.id)}
+          )"
+        >
+          Delete File
+        </button>
+
+      </div>
+
+    </div>
+  `;
+
+  document
+    .getElementById(
+      "modalRoot"
+    )
+    .innerHTML = html;
+}
+
+
+async function saveFileChanges(
+  fileId,
+  form
+) {
+  const file =
+    swlFiles.find(
+      file =>
+        file.id === fileId
+    );
+
+  if (!file) return;
+
+  const name =
+    form.elements
+      .name
+      .value
+      .trim();
+
+  const category =
+    form.elements
+      .category
+      .value;
+
+  if (!name) return;
+
+  const button =
+    form.querySelector(
+      'button[type="submit"]'
+    );
+
+  button.disabled = true;
+  button.textContent =
+    "Saving…";
+
+  try {
+    const response =
+      await apiRequest(
+        `files/${encodeURIComponent(
+          fileId
+        )}`,
+        {
+          method: "PUT",
+          body: JSON.stringify({
+            name,
+            category
+          })
+        }
+      );
+
+    Object.assign(
+      file,
+      response.file || {
+        name,
+        category
+      }
+    );
+
+    closeModal();
+
+    renderFilesContent();
+
+  } catch (err) {
+    button.disabled = false;
+    button.textContent =
+      "Save Changes";
+
+    alert(
+      `Could not save that file. ${err.message}`
+    );
+  }
+}
+
+
+function confirmDeleteSWLFile(fileId) {
+  const file =
+    swlFiles.find(
+      file =>
+        file.id === fileId
+    );
+
+  if (!file) return;
+
+  const confirmed =
+    confirm(
+      `Delete "${file.name}"?\n\nThis cannot be undone.`
+    );
+
+  if (!confirmed) return;
+
+  deleteSWLFile(fileId);
+}
+
+
+async function deleteSWLFile(fileId) {
+  try {
+    await apiRequest(
+      `files/${encodeURIComponent(
+        fileId
+      )}`,
+      {
+        method: "DELETE"
+      }
+    );
+
+    swlFiles =
+      swlFiles.filter(
+        file =>
+          file.id !== fileId
+      );
+
+    closeModal();
+
+    renderFilesContent();
+
+  } catch (err) {
+    alert(
+      `Could not delete that file. ${err.message}`
+    );
+  }
+}
+
+
+/* =========================================================
+   FILE CATEGORIES
+========================================================= */
+
+function openAddFileCategory() {
+  const html = `
+    <div
+      class="modal-backdrop"
+      onclick="closeModalFromBackdrop(event)"
+    >
+
+      <div
+        class="
+          modal-sheet
+          files-modal-sheet
+          file-category-sheet
+        "
+      >
+
+        <div class="modal-title-row">
+
+          <div>
+            <div class="card-label">
+              FILES
+            </div>
+
+            <h2>New Category</h2>
+          </div>
+
+          <button
+            class="modal-close-button"
+            onclick="closeModal()"
+            aria-label="Close"
+          >
+            ×
+          </button>
+
+        </div>
+
+
+        <form
+          onsubmit="
+            event.preventDefault();
+            createFileCategory(this);
+          "
+        >
+
+          <label class="field-label">
+            Category Name
+
+            <input
+              name="name"
+              type="text"
+              placeholder="Example: Logos"
+              required
+              autofocus
+            />
+          </label>
+
+          <button
+            type="submit"
+            class="
+              primary-button
+              full-width
+            "
+          >
+            Add Category
+          </button>
+
+        </form>
+
+      </div>
+
+    </div>
+  `;
+
+  document
+    .getElementById(
+      "modalRoot"
+    )
+    .innerHTML = html;
+}
+
+
+async function createFileCategory(form) {
+  const name =
+    form.elements
+      .name
+      .value
+      .trim();
+
+  if (!name) return;
+
+  const button =
+    form.querySelector(
+      'button[type="submit"]'
+    );
+
+  button.disabled = true;
+  button.textContent =
+    "Adding…";
+
+  try {
+    const response =
+      await apiRequest(
+        "file-categories",
+        {
+          method: "POST",
+          body: JSON.stringify({
+            name
+          })
+        }
+      );
+
+    fileCategories.push(
+      response.category
+    );
+
+    fileCategories.sort(
+      (a, b) =>
+        Number(
+          a.sortOrder || 0
+        ) -
+        Number(
+          b.sortOrder || 0
+        )
+    );
+
+    activeFileCategory =
+      response.category.name;
+
+    fileSearch = "";
+
+    closeModal();
+
+    renderFilesContent();
+
+  } catch (err) {
+    button.disabled = false;
+    button.textContent =
+      "Add Category";
+
+    alert(
+      `Could not create that category. ${err.message}`
+    );
+  }
+}
+
+
+function openFileCategoryMenu(
+  categoryName
+) {
+  const category =
+    fileCategories.find(
+      category =>
+        category.name ===
+        categoryName
+    );
+
+  if (!category) return;
+
+  const html = `
+    <div
+      class="modal-backdrop"
+      onclick="closeModalFromBackdrop(event)"
+    >
+
+      <div
+        class="
+          modal-sheet
+          files-modal-sheet
+          file-category-menu-sheet
+        "
+      >
+
+        <div class="modal-title-row">
+
+          <div>
+            <div class="card-label">
+              CATEGORY
+            </div>
+
+            <h2>
+              ${escapeHTML(
+                category.name
+              )}
+            </h2>
+          </div>
+
+          <button
+            class="modal-close-button"
+            onclick="closeModal()"
+            aria-label="Close"
+          >
+            ×
+          </button>
+
+        </div>
+
+
+        <button
+          class="
+            file-category-action
+          "
+          onclick="openRenameFileCategory(
+            ${JSON.stringify(
+              category.id
+            )}
+          )"
+        >
+          <span>✎</span>
+
+          <div>
+            <strong>
+              Rename Category
+            </strong>
+
+            <small>
+              Change this category’s name
+            </small>
+          </div>
+
+          <span>›</span>
+        </button>
+
+
+        <button
+          class="
+            file-category-action
+            danger
+          "
+          onclick="openDeleteFileCategory(
+            ${JSON.stringify(
+              category.id
+            )}
+          )"
+        >
+          <span>×</span>
+
+          <div>
+            <strong>
+              Delete Category
+            </strong>
+
+            <small>
+              Files will be moved first
+            </small>
+          </div>
+
+          <span>›</span>
+        </button>
+
+      </div>
+
+    </div>
+  `;
+
+  document
+    .getElementById(
+      "modalRoot"
+    )
+    .innerHTML = html;
+}
+
+
+function openRenameFileCategory(
+  categoryId
+) {
+  const category =
+    fileCategories.find(
+      category =>
+        category.id ===
+        categoryId
+    );
+
+  if (!category) return;
+
+  const html = `
+    <div
+      class="modal-backdrop"
+      onclick="closeModalFromBackdrop(event)"
+    >
+
+      <div
+        class="
+          modal-sheet
+          files-modal-sheet
+        "
+      >
+
+        <div class="modal-title-row">
+
+          <div>
+            <div class="card-label">
+              CATEGORY
+            </div>
+
+            <h2>Rename</h2>
+          </div>
+
+          <button
+            class="modal-close-button"
+            onclick="closeModal()"
+          >
+            ×
+          </button>
+
+        </div>
+
+
+        <form
+          onsubmit="
+            event.preventDefault();
+            renameFileCategory(
+              ${JSON.stringify(
+                category.id
+              )},
+              this
+            );
+          "
+        >
+
+          <label class="field-label">
+            Category Name
+
+            <input
+              name="name"
+              type="text"
+              value="${escapeHTML(
+                category.name
+              )}"
+              required
+              autofocus
+            />
+          </label>
+
+          <button
+            type="submit"
+            class="
+              primary-button
+              full-width
+            "
+          >
+            Save Name
+          </button>
+
+        </form>
+
+      </div>
+
+    </div>
+  `;
+
+  document
+    .getElementById(
+      "modalRoot"
+    )
+    .innerHTML = html;
+}
+
+
+async function renameFileCategory(
+  categoryId,
+  form
+) {
+  const category =
+    fileCategories.find(
+      category =>
+        category.id ===
+        categoryId
+    );
+
+  if (!category) return;
+
+  const oldName =
+    category.name;
+
+  const name =
+    form.elements
+      .name
+      .value
+      .trim();
+
+  if (!name) return;
+
+  try {
+    await apiRequest(
+      `file-categories/${encodeURIComponent(
+        categoryId
+      )}`,
+      {
+        method: "PUT",
+        body: JSON.stringify({
+          name
+        })
+      }
+    );
+
+    category.name =
+      name;
+
+    swlFiles.forEach(file => {
+      if (
+        file.category === oldName
+      ) {
+        file.category = name;
+      }
+    });
+
+    if (
+      activeFileCategory ===
+      oldName
+    ) {
+      activeFileCategory =
+        name;
+    }
+
+    closeModal();
+
+    renderFilesContent();
+
+  } catch (err) {
+    alert(
+      `Could not rename that category. ${err.message}`
+    );
+  }
+}
+
+
+function openDeleteFileCategory(
+  categoryId
+) {
+  const category =
+    fileCategories.find(
+      category =>
+        category.id ===
+        categoryId
+    );
+
+  if (!category) return;
+
+  const destinations =
+    fileCategories.filter(
+      item =>
+        item.id !== categoryId
+    );
+
+  if (!destinations.length) {
+    alert(
+      "You need another category before deleting this one."
+    );
+
+    return;
+  }
+
+  const html = `
+    <div
+      class="modal-backdrop"
+      onclick="closeModalFromBackdrop(event)"
+    >
+
+      <div
+        class="
+          modal-sheet
+          files-modal-sheet
+        "
+      >
+
+        <div class="modal-title-row">
+
+          <div>
+            <div class="card-label">
+              DELETE CATEGORY
+            </div>
+
+            <h2>
+              ${escapeHTML(
+                category.name
+              )}
+            </h2>
+          </div>
+
+          <button
+            class="modal-close-button"
+            onclick="closeModal()"
+          >
+            ×
+          </button>
+
+        </div>
+
+
+        <p class="file-delete-category-copy">
+          Choose where anything in this
+          category should go.
+        </p>
+
+
+        <form
+          onsubmit="
+            event.preventDefault();
+            deleteFileCategory(
+              ${JSON.stringify(
+                category.id
+              )},
+              this
+            );
+          "
+        >
+
+          <label class="field-label">
+            Move Files To
+
+            <select
+              name="destination"
+              required
+            >
+              ${destinations
+                .map(destination => `
+                  <option
+                    value="${escapeHTML(
+                      destination.id
+                    )}"
+                  >
+                    ${escapeHTML(
+                      destination.name
+                    )}
+                  </option>
+                `)
+                .join("")}
+            </select>
+          </label>
+
+
+          <button
+            type="submit"
+            class="
+              file-delete-category-button
+              full-width
+            "
+          >
+            Move Files & Delete Category
+          </button>
+
+        </form>
+
+      </div>
+
+    </div>
+  `;
+
+  document
+    .getElementById(
+      "modalRoot"
+    )
+    .innerHTML = html;
+}
+
+
+async function deleteFileCategory(
+  categoryId,
+  form
+) {
+  const category =
+    fileCategories.find(
+      category =>
+        category.id ===
+        categoryId
+    );
+
+  const destinationId =
+    form.elements
+      .destination
+      .value;
+
+  const destination =
+    fileCategories.find(
+      category =>
+        category.id ===
+        destinationId
+    );
+
+  if (
+    !category ||
+    !destination
+  ) {
+    return;
+  }
+
+  const confirmed =
+    confirm(
+      `Delete "${category.name}" and move its files to "${destination.name}"?`
+    );
+
+  if (!confirmed) return;
+
+  try {
+    await apiRequest(
+      `file-categories/${encodeURIComponent(
+        categoryId
+      )}?moveTo=${encodeURIComponent(
+        destinationId
+      )}`,
+      {
+        method: "DELETE"
+      }
+    );
+
+    swlFiles.forEach(file => {
+      if (
+        file.category ===
+        category.name
+      ) {
+        file.category =
+          destination.name;
+      }
+    });
+
+    fileCategories =
+      fileCategories.filter(
+        item =>
+          item.id !== categoryId
+      );
+
+    if (
+      activeFileCategory ===
+      category.name
+    ) {
+      activeFileCategory =
+        destination.name;
+    }
+
+    closeModal();
+
+    renderFilesContent();
+
+  } catch (err) {
+    alert(
+      `Could not delete that category. ${err.message}`
+    );
+  }
+}
 /* =========================================================
    ATTENTION
 ========================================================= */
@@ -6741,10 +8819,17 @@ document
     "click",
     () => {
       if (
-        currentScreen === "events"
-      ) {
-        openAddEventWizard();
-      }
+  currentScreen === "events"
+) {
+  openAddEventWizard();
+  return;
+}
+
+if (
+  currentScreen === "files"
+) {
+  openFileUpload();
+}
     }
   );
 
