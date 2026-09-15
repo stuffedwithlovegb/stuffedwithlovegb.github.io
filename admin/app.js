@@ -3019,334 +3019,326 @@ function renderInventory() {
     )
   ];
 
-  actualCategories.forEach(
-    category => {
-
-      const categoryItems =
-        state.inventory.filter(
-          item =>
-            item.category === category
-        );
-
-      html += `
-        <section
-          class="inventory-group"
-          data-inventory-group="${escapeHTML(category)}"
-        >
-
-          <div class="inventory-group-header">
-
-            <div class="inventory-group-title">
-              <h2>
-                ${
-                  category === "Plush"
-                    ? "Plush Friends"
-                    : escapeHTML(category)
-                }
-              </h2>
-
-              <span>
-                ${categoryItems.length}
-              </span>
-            </div>
-
-            <button
-              class="inventory-add-item-button"
-              onclick="openAddInventoryItem('${escapeHTML(category)}')"
-            >
-              ＋ Add Item
-            </button>
-
-          </div>
-
-          <div class="inventory-list-card">
-      `;
-
-      categoryItems.forEach(
-        item => {
-
-          const plush =
-            getPlushMeta(item.id);
-
-          const reserved =
-            calculateReserved(item.id);
-
-          const available =
-            item.onHand - reserved;
-
-          html += `
-            <div
-              class="inventory-item-row ${
-  category === "Plush"
-    ? "inventory-plush-card"
-    : "inventory-standard-row"
-}"
-
-              data-inventory-item
-              data-inventory-id="${item.id}"
-
-              data-category="${escapeHTML(category)}"
-
-              data-search="${escapeHTML(
-                `${
-                  inventoryDisplayName(item)
-                } ${item.name} ${category}`
-                  .toLowerCase()
-              )}"
-
-              onclick="openInventoryItem('${item.id}')"
-            >
-
-              <div class="inventory-item-left">
-
-               ${
-  category === "Plush"
-    ? `
-      <div
-        class="inventory-plush-thumb ${
-          inventoryImageUrl(item)
-            ? ""
-            : "inventory-plush-thumb-empty"
-        }"
-      >
-        ${
-          inventoryImageUrl(item)
-            ? `
-              <img
-                src="${inventoryImageUrl(item)}"
-                alt="${escapeHTML(
-                  inventoryDisplayName(item)
-                )}"
-              />
-            `
-            : `
-              <button
-                type="button"
-                class="inventory-add-photo-placeholder"
-                onclick="
-                  event.stopPropagation();
-                  chooseInventoryPhoto('${item.id}');
-                "
-                aria-label="Add photo"
-              >
-                <span class="inventory-add-photo-plus">
-                  ＋
-                </span>
-
-                <span class="inventory-add-photo-text">
-                  Add photo
-                </span>
-              </button>
-            `
-        }
-      </div>
-    `
-    : inventorySupportsPhoto(item)
-  ? `
-    <div
-      class="
-        inventory-generic-icon
-        inventory-photo-thumb
-        ${
-          inventoryImageUrl(item)
-            ? "has-photo"
-            : "inventory-photo-thumb-empty"
-        }
-      "
-    >
-      ${
-        inventoryImageUrl(item)
-          ? `
-            <img
-              src="${inventoryImageUrl(item)}"
-              alt="${escapeHTML(
-                inventoryDisplayName(item)
-              )}"
-            />
-          `
-          : `
-            <button
-              type="button"
-              class="inventory-add-photo-placeholder inventory-add-photo-small"
-              onclick="
-                event.stopPropagation();
-                chooseInventoryPhoto('${item.id}');
-              "
-              aria-label="Add photo"
-            >
-              <span class="inventory-add-photo-plus">
-                ＋
-              </span>
-            </button>
-          `
-      }
-    </div>
-  `
-  : `
-    <div
-      class="inventory-generic-icon inventory-generic-${category
-        .toLowerCase()
-        .replaceAll(" ", "-")}"
-    >
-      ${inventoryCategoryIcon(category)}
-    </div>
-  `
-
-}
-                <div class="inventory-item-copy">
-
-  <strong>
-    ${escapeHTML(
-      inventoryDisplayName(item)
-    )}
-  </strong>
-
-  ${
-    category === "Plush"
-      ? ""
-      : `
-        <div class="inventory-item-meta">
-
-          <span>
-            <strong data-inventory-on-hand>
-              ${item.onHand}
-            </strong>
-            on hand
-          </span>
-
-          <span>
-            <strong data-inventory-reserved>
-              ${reserved}
-            </strong>
-            reserved
-          </span>
-
-        </div>
-      `
-  }
-
-</div>
-              </div>
-${
-  category === "Plush"
-    ? `
-      <div class="inventory-plush-count-grid">
-
-        <div class="inventory-plush-count">
-
-          <strong data-inventory-on-hand>
-            ${item.onHand}
-          </strong>
-
-          <span>
-            On Hand
-          </span>
-
-        </div>
-
-        <div class="inventory-plush-count">
-
-          <strong data-inventory-reserved>
-            ${reserved}
-          </strong>
-
-          <span>
-            Reserved
-          </span>
-
-        </div>
-
-        <div
-          class="
-            inventory-plush-count
-            ${
-              available < 0
-                ? "short"
-                : ""
-            }
-          "
-        >
-
-          <strong data-inventory-available>
-            ${available}
-          </strong>
-
-          <span>
-            Available
-          </span>
-
-        </div>
-
-      </div>
-    `
-    : ""
-}
-              <div class="inventory-item-right">
-
-             ${
-  category !== "Plush"
-    ? `
-                <div
-                  class="inventory-available ${
-                    available < 0
-                      ? "short"
-                      : ""
-                  }"
-                >
-                `
-    : ""
-}
-                  <strong data-inventory-available>
-                    ${available}
-                  </strong>
-
-                  <span>available</span>
-                </div>
-
-               ${
-inventorySupportsPhoto(item)    ? `
-      <button
-        class="inventory-quick-six"
-        onclick="
-          event.stopPropagation();
-          changeInventoryBy(
-            '${item.id}',
-            6,
-            false
-          );
-        "
-        aria-label="Add six ${escapeHTML(
-          inventoryDisplayName(item)
-        )}"
-      >
-        +6
-      </button>
-    `
-    : ""
-}
-
-                <span class="inventory-chevron">
-                  ›
-                </span>
-
-              </div>
-
-            </div>
-          `;
-        }
+  actualCategories.forEach(category => {
+    const categoryItems =
+      state.inventory.filter(
+        item =>
+          item.category === category
       );
 
-      html += `
+    html += `
+      <section
+        class="inventory-group"
+        data-inventory-group="${escapeHTML(category)}"
+      >
+
+        <div class="inventory-group-header">
+
+          <div class="inventory-group-title">
+            <h2>
+              ${
+                category === "Plush"
+                  ? "Plush Friends"
+                  : escapeHTML(category)
+              }
+            </h2>
+
+            <span>
+              ${categoryItems.length}
+            </span>
           </div>
-        </section>
+
+          <button
+            class="inventory-add-item-button"
+            onclick="openAddInventoryItem('${escapeHTML(category)}')"
+          >
+            ＋ Add Item
+          </button>
+
+        </div>
+
+        <div class="inventory-list-card">
+    `;
+
+    categoryItems.forEach(item => {
+      const reserved =
+        calculateReserved(item.id);
+
+      const available =
+        item.onHand - reserved;
+
+      const imageUrl =
+        inventoryImageUrl(item);
+
+      const isPlush =
+        category === "Plush";
+
+      html += `
+        <div
+          class="inventory-item-row ${
+            isPlush
+              ? "inventory-plush-card"
+              : "inventory-standard-row"
+          }"
+
+          data-inventory-item
+          data-inventory-id="${item.id}"
+          data-category="${escapeHTML(category)}"
+
+          data-search="${escapeHTML(
+            `${
+              inventoryDisplayName(item)
+            } ${item.name} ${category}`
+              .toLowerCase()
+          )}"
+
+          onclick="openInventoryItem('${item.id}')"
+        >
+
+          <div class="inventory-item-left">
+
+            ${
+              isPlush
+                ? `
+                  <div
+                    class="inventory-plush-thumb ${
+                      imageUrl
+                        ? ""
+                        : "inventory-plush-thumb-empty"
+                    }"
+                  >
+                    ${
+                      imageUrl
+                        ? `
+                          <img
+                            src="${imageUrl}"
+                            alt="${escapeHTML(
+                              inventoryDisplayName(item)
+                            )}"
+                          />
+                        `
+                        : `
+                          <button
+                            type="button"
+                            class="inventory-add-photo-placeholder"
+                            onclick="
+                              event.stopPropagation();
+                              chooseInventoryPhoto('${item.id}');
+                            "
+                            aria-label="Add photo"
+                          >
+                            <span class="inventory-add-photo-plus">
+                              ＋
+                            </span>
+
+                            <span class="inventory-add-photo-text">
+                              Add photo
+                            </span>
+                          </button>
+                        `
+                    }
+                  </div>
+                `
+                : inventorySupportsPhoto(item)
+                  ? `
+                    <div
+                      class="
+                        inventory-generic-icon
+                        inventory-photo-thumb
+                        ${
+                          imageUrl
+                            ? "has-photo"
+                            : "inventory-photo-thumb-empty"
+                        }
+                      "
+                    >
+                      ${
+                        imageUrl
+                          ? `
+                            <img
+                              src="${imageUrl}"
+                              alt="${escapeHTML(
+                                inventoryDisplayName(item)
+                              )}"
+                            />
+                          `
+                          : `
+                            <button
+                              type="button"
+                              class="
+                                inventory-add-photo-placeholder
+                                inventory-add-photo-small
+                              "
+                              onclick="
+                                event.stopPropagation();
+                                chooseInventoryPhoto('${item.id}');
+                              "
+                              aria-label="Add photo"
+                            >
+                              <span class="inventory-add-photo-plus">
+                                ＋
+                              </span>
+                            </button>
+                          `
+                      }
+                    </div>
+                  `
+                  : `
+                    <div
+                      class="
+                        inventory-generic-icon
+                        inventory-generic-${category
+                          .toLowerCase()
+                          .replaceAll(" ", "-")}
+                      "
+                    >
+                      ${inventoryCategoryIcon(category)}
+                    </div>
+                  `
+            }
+
+            <div class="inventory-item-copy">
+
+              <strong>
+                ${escapeHTML(
+                  inventoryDisplayName(item)
+                )}
+              </strong>
+
+              ${
+                !isPlush
+                  ? `
+                    <div class="inventory-item-meta">
+
+                      <span>
+                        <strong data-inventory-on-hand>
+                          ${item.onHand}
+                        </strong>
+                        on hand
+                      </span>
+
+                      <span>
+                        <strong data-inventory-reserved>
+                          ${reserved}
+                        </strong>
+                        reserved
+                      </span>
+
+                    </div>
+                  `
+                  : ""
+              }
+
+            </div>
+
+          </div>
+
+          ${
+            isPlush
+              ? `
+                <div class="inventory-plush-count-grid">
+
+                  <div class="inventory-plush-count">
+                    <strong data-inventory-on-hand>
+                      ${item.onHand}
+                    </strong>
+
+                    <span>On Hand</span>
+                  </div>
+
+                  <div class="inventory-plush-count">
+                    <strong data-inventory-reserved>
+                      ${reserved}
+                    </strong>
+
+                    <span>Reserved</span>
+                  </div>
+
+                  <div
+                    class="inventory-plush-count ${
+                      available < 0
+                        ? "short"
+                        : ""
+                    }"
+                  >
+                    <strong data-inventory-available>
+                      ${available}
+                    </strong>
+
+                    <span>Available</span>
+                  </div>
+
+                </div>
+              `
+              : ""
+          }
+
+          <div class="inventory-item-right">
+
+            ${
+              !isPlush
+                ? `
+                  <div
+                    class="inventory-available ${
+                      available < 0
+                        ? "short"
+                        : ""
+                    }"
+                  >
+                    <strong data-inventory-available>
+                      ${available}
+                    </strong>
+
+                    <span>available</span>
+                  </div>
+                `
+                : ""
+            }
+
+            ${
+              isPlush
+                ? `
+                  <button
+                    class="inventory-quick-six"
+                    onclick="
+                      event.stopPropagation();
+                      changeInventoryBy(
+                        '${item.id}',
+                        6,
+                        false
+                      );
+                    "
+                    aria-label="Add six ${escapeHTML(
+                      inventoryDisplayName(item)
+                    )}"
+                  >
+                    +6
+                  </button>
+                `
+                : ""
+            }
+
+            <span class="inventory-chevron">
+              ›
+            </span>
+
+          </div>
+
+        </div>
       `;
-    }
-  );
+    });
+
+    html += `
+        </div>
+      </section>
+    `;
+  });
 
   main.innerHTML = html;
 
   filterInventoryRows();
 }
+
 
 function inventoryCategoryIcon(category) {
   switch (category) {
@@ -3382,49 +3374,61 @@ function setInventoryCategory(category) {
 
 
 function filterInventoryRows() {
-  const search = String(inventorySearch || "")
-    .trim()
-    .toLowerCase();
+  const search =
+    String(inventorySearch || "")
+      .trim()
+      .toLowerCase();
 
   document
     .querySelectorAll("[data-inventory-item]")
     .forEach(row => {
-      const category = row.dataset.category;
-      const searchable = row.dataset.search || "";
+      const category =
+        row.dataset.category;
 
-      const categoryMatch =
-        activeInventoryCategory === "All" ||
-        category === activeInventoryCategory;
+      const searchable =
+        row.dataset.search || "";
 
       const searchMatch =
         !search ||
         searchable.includes(search);
 
+      const categoryMatch =
+        activeInventoryCategory === "All" ||
+        category === activeInventoryCategory;
+
+      /*
+       * If the user is searching,
+       * search ALL inventory.
+       *
+       * If search is empty,
+       * respect the selected tab.
+       */
+      const shouldShow =
+        search
+          ? searchMatch
+          : categoryMatch;
+
       row.classList.toggle(
         "hidden",
-        !(categoryMatch && searchMatch)
+        !shouldShow
       );
     });
 
   document
     .querySelectorAll("[data-inventory-group]")
     .forEach(group => {
-      const category = group.dataset.inventoryGroup;
-
-      const categoryAllowed =
-        activeInventoryCategory === "All" ||
-        category === activeInventoryCategory;
-
-      const hasVisibleRows = [
-        ...group.querySelectorAll("[data-inventory-item]")
-      ].some(row => !row.classList.contains("hidden"));
+      const visibleItems =
+        group.querySelectorAll(
+          "[data-inventory-item]:not(.hidden)"
+        );
 
       group.classList.toggle(
         "hidden",
-        !categoryAllowed || !hasVisibleRows
+        visibleItems.length === 0
       );
     });
 }
+  
 
 function openInventoryItem(itemId) {
   const item =
