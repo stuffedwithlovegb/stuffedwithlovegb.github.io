@@ -133,6 +133,15 @@ async function handleApi(request, env, url) {
         id
       );
     }
+    if (resource === "client-notes") {
+      return handleClientNotes(
+        request,
+        env,
+        id,
+        action
+      );
+    }
+
 if (resource === "file-categories") {
   return handleFileCategories(
     request,
@@ -832,6 +841,182 @@ async function handleInventory(
 
   return error(
     "Unsupported inventory request.",
+    405
+  );
+}
+
+
+
+/* =========================================================
+   CLIENT NOTES
+========================================================= */
+
+async function ensureClientNotesTable(env) {
+  await env.DB
+    .prepare(`
+      CREATE TABLE IF NOT EXISTS client_notes (
+        id TEXT PRIMARY KEY,
+        client_key TEXT NOT NULL,
+        text TEXT NOT NULL,
+        created_at TEXT NOT NULL
+      )
+    `)
+    .run();
+
+  await env.DB
+    .prepare(`
+      CREATE INDEX IF NOT EXISTS idx_client_notes_client_key
+      ON client_notes (client_key, created_at)
+    `)
+    .run();
+}
+
+async function handleClientNotes(
+  request,
+  env,
+  id,
+  action
+) {
+  if (!id) {
+    return error(
+      "Client key is required.",
+      400
+    );
+  }
+
+  await ensureClientNotesTable(env);
+
+  let clientKey = "";
+
+  try {
+    clientKey =
+      decodeURIComponent(id);
+  } catch {
+    clientKey = id;
+  }
+
+  if (
+    request.method === "GET" &&
+    !action
+  ) {
+    const result =
+      await env.DB
+        .prepare(`
+          SELECT
+            id,
+            client_key,
+            text,
+            created_at
+          FROM client_notes
+          WHERE client_key = ?
+          ORDER BY created_at DESC
+        `)
+        .bind(clientKey)
+        .all();
+
+    return json({
+      ok: true,
+      notes:
+        result.results.map(row => ({
+          id: row.id,
+          clientKey: row.client_key,
+          text: row.text,
+          createdAt: row.created_at
+        }))
+    });
+  }
+
+  if (
+    request.method === "POST" &&
+    !action
+  ) {
+    const body =
+      await request.json();
+
+    const text =
+      String(body.text || "")
+        .trim();
+
+    if (!text) {
+      return error(
+        "Note text is required."
+      );
+    }
+
+    const note = {
+      id:
+        "client_note_" +
+        crypto.randomUUID(),
+      clientKey,
+      text,
+      createdAt:
+        new Date().toISOString()
+    };
+
+    await env.DB
+      .prepare(`
+        INSERT INTO client_notes (
+          id,
+          client_key,
+          text,
+          created_at
+        )
+        VALUES (?, ?, ?, ?)
+      `)
+      .bind(
+        note.id,
+        note.clientKey,
+        note.text,
+        note.createdAt
+      )
+      .run();
+
+    return json({
+      ok: true,
+      note
+    });
+  }
+
+  if (
+    request.method === "DELETE" &&
+    action
+  ) {
+    let noteId = "";
+
+    try {
+      noteId =
+        decodeURIComponent(action);
+    } catch {
+      noteId = action;
+    }
+
+    const result =
+      await env.DB
+        .prepare(`
+          DELETE FROM client_notes
+          WHERE id = ?
+            AND client_key = ?
+        `)
+        .bind(
+          noteId,
+          clientKey
+        )
+        .run();
+
+    if (!result.meta.changes) {
+      return error(
+        "Client note not found.",
+        404
+      );
+    }
+
+    return json({
+      ok: true
+    });
+  }
+
+  return error(
+    "Unsupported client note request.",
     405
   );
 }
