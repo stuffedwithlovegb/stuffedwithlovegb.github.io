@@ -362,9 +362,22 @@ const masterPackingList = [
   "Welcome sign",
   "Signage",
   "Trash bags",
+  "Felt wall",
   "Felt-wall accessories",
-  "Clothes / mini wardrobe rack"
+  "Clothes / mini wardrobe rack",
+  "Crash kit"
 ];
+
+const SWL_LOAD_ONLY_GEAR = new Set([
+  "Stuffing machine",
+  "EcoFlow / power",
+  "Tables",
+  "Wood crates",
+  "Photo-op pieces / photo hearts",
+  "Friend Hotel",
+  "Welcome sign",
+  "Felt wall"
+]);
 
 const SWL_LOADOUT_FINALE_LINES = [
   "THE FLUFF-MOBILE IS CLEARED FOR DEPARTURE.",
@@ -1154,6 +1167,7 @@ function buildEventLoadOut(event) {
         name,
         quantity,
         note,
+        loadOnly: SWL_LOAD_ONLY_GEAR.has(name),
         shortage: 0,
         status: normalizeLoadOutStatus(
           event.loadOut[key]
@@ -1170,9 +1184,12 @@ function buildEventLoadOut(event) {
 
 function loadOutCounts(event) {
   const rows = buildEventLoadOut(event).rows;
+  const packableRows = rows.filter(row => !row.loadOnly);
+
   return {
     total: rows.length,
-    packed: rows.filter(
+    packableTotal: packableRows.length,
+    packed: packableRows.filter(
       row => row.status === "packed" || row.status === "loaded"
     ).length,
     loaded: rows.filter(
@@ -1222,24 +1239,41 @@ function loadOutRowHTML(row, eventId) {
         </div>
       </div>
 
-      <div class="loadout-stepper" aria-label="${escapeHTML(row.name)} load status">
-        <button
-          type="button"
-          class="loadout-state-button ${status === "packed" || status === "loaded" ? "active" : ""}"
-          onclick="setLoadOutStatus('${eventId}', '${escapeHTML(row.key)}', '${status === "packed" ? "todo" : "packed"}')"
-        >
-          <span>✓</span>
-          Packed
-        </button>
-        <button
-          type="button"
-          class="loadout-state-button loaded ${status === "loaded" ? "active" : ""}"
-          onclick="setLoadOutStatus('${eventId}', '${escapeHTML(row.key)}', '${status === "loaded" ? "packed" : "loaded"}')"
-        >
-          <span>↗</span>
-          Loaded
-        </button>
-      </div>
+      ${
+        row.loadOnly
+          ? `
+              <div class="loadout-stepper load-only" aria-label="${escapeHTML(row.name)} load status">
+                <button
+                  type="button"
+                  class="loadout-state-button loaded ${status === "loaded" ? "active" : ""}"
+                  onclick="setLoadOutStatus('${eventId}', '${escapeHTML(row.key)}', '${status === "loaded" ? "todo" : "loaded"}')"
+                >
+                  <span>↗</span>
+                  ${status === "loaded" ? "Loaded" : "Load it"}
+                </button>
+              </div>
+            `
+          : `
+              <div class="loadout-stepper" aria-label="${escapeHTML(row.name)} load status">
+                <button
+                  type="button"
+                  class="loadout-state-button ${status === "packed" || status === "loaded" ? "active" : ""}"
+                  onclick="setLoadOutStatus('${eventId}', '${escapeHTML(row.key)}', '${status === "packed" ? "todo" : "packed"}')"
+                >
+                  <span>✓</span>
+                  Packed
+                </button>
+                <button
+                  type="button"
+                  class="loadout-state-button loaded ${status === "loaded" ? "active" : ""}"
+                  onclick="setLoadOutStatus('${eventId}', '${escapeHTML(row.key)}', '${status === "loaded" ? "packed" : "loaded"}')"
+                >
+                  <span>↗</span>
+                  Loaded
+                </button>
+              </div>
+            `
+      }
     </div>
   `;
 }
@@ -1280,9 +1314,9 @@ async function setLoadOutStatus(eventId, key, nextStatus) {
     });
   } else if (
     event.loadOut[key] === "packed" &&
-    after.packed === after.total &&
-    after.total > 0 &&
-    before.packed !== before.total
+    after.packed === after.packableTotal &&
+    after.packableTotal > 0 &&
+    before.packed !== before.packableTotal
   ) {
     requestAnimationFrame(() => {
       animateLoadOutTap(key);
@@ -4182,6 +4216,9 @@ function renderEventDetail() {
     const packed =
       loadOutSummary.packed;
 
+    const packableTotal =
+      loadOutSummary.packableTotal;
+
     const loaded =
       loadOutSummary.loaded;
 
@@ -4201,8 +4238,8 @@ function renderEventDetail() {
       shortages.length === 0;
 
     const allPacked =
-      total > 0 &&
-      packed === total;
+      packableTotal > 0 &&
+      packed === packableTotal;
 
     html += `
       <div class="loadout-hero ${ready ? "ready" : ""}">
@@ -4231,7 +4268,7 @@ function renderEventDetail() {
         <div class="loadout-progress-track">
           <div
             class="loadout-progress-packed"
-            style="width:${total ? Math.round((packed / total) * 100) : 0}%"
+            style="width:${packableTotal ? Math.round((packed / packableTotal) * 100) : 0}%"
           ></div>
           <div
             class="loadout-progress-loaded"
@@ -4240,7 +4277,7 @@ function renderEventDetail() {
         </div>
 
         <div class="loadout-progress-labels">
-          <span><strong>${packed}</strong>/${total} packed</span>
+          <span><strong>${packed}</strong>/${packableTotal} packable items packed</span>
           <span><strong>${loaded}</strong>/${total} loaded</span>
         </div>
       </div>
@@ -4270,6 +4307,7 @@ function renderEventDetail() {
       <div class="loadout-legend">
         <span><i class="loadout-dot packed"></i>Packed = in a tote / ready</span>
         <span><i class="loadout-dot loaded"></i>Loaded = actually in the vehicle</span>
+        <span><i class="loadout-dot load-only"></i>Big gear skips Packed and goes straight to Loaded</span>
       </div>
 
       <div class="event-section-heading loadout-heading">
