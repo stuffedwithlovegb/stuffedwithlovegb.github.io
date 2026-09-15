@@ -696,45 +696,101 @@ function pushNotificationStatus() {
   return "off";
 }
 
-function pushNotificationCardHTML() {
+function pushNotificationSettingsLabel() {
   const status = pushNotificationStatus();
-  if (status === "unsupported") return "";
+  if (status === "enabled") return "Notifications on";
+  if (status === "denied") return "Notifications blocked";
+  if (status === "unsupported") return "Notifications unavailable";
+  return "Set up notifications";
+}
 
+function pushNotificationSettingsHTML() {
+  if (!pushNotificationsSupported()) {
+    return `
+      <div class="swl-notification-settings-copy">
+        <strong>Notifications unavailable</strong>
+        <small>This browser/device does not currently support SWL push notifications.</small>
+      </div>
+    `;
+  }
+
+  const status = pushNotificationStatus();
   if (status === "enabled") {
     return `
-      <section class="swl-notification-card enabled">
-        <span class="swl-notification-icon">♥</span>
-        <div>
-          <strong>SWL nudges are on</strong>
-          <small>Event countdowns + reminders can find you even when Ops is closed.</small>
-        </div>
-        <button type="button" onclick="disablePushNotifications()">Turn off</button>
-      </section>
+      <div class="swl-notification-settings-copy">
+        <strong>SWL nudges are on</strong>
+        <small>One-week event heads-ups, tomorrow reminders, and dated Attention reminders are enabled on this device.</small>
+      </div>
+      <div class="swl-notification-settings-actions">
+        <button class="primary" type="button" onclick="sendTestPushNotification()">Send test notification</button>
+        <button class="quiet" type="button" onclick="disablePushNotifications(); closeModal();">Turn notifications off</button>
+      </div>
     `;
   }
 
   if (status === "denied") {
     return `
-      <section class="swl-notification-card blocked">
-        <span class="swl-notification-icon">!</span>
-        <div>
-          <strong>Notifications are blocked</strong>
-          <small>Allow notifications for SWL Ops in your browser/device settings to turn the cute nudges back on.</small>
-        </div>
-      </section>
+      <div class="swl-notification-settings-copy">
+        <strong>Notifications are blocked</strong>
+        <small>SWL Ops cannot ask again from inside the app. Re-enable notifications for SWL Ops in your iPhone/browser settings, then reopen Ops.</small>
+      </div>
     `;
   }
 
   return `
-    <section class="swl-notification-card">
-      <span class="swl-notification-icon">♥</span>
-      <div>
-        <strong>Want a little SWL nudge?</strong>
-        <small>Get automatic 1-week + tomorrow event reminders and your dated Attention reminders.</small>
-      </div>
-      <button type="button" onclick="enablePushNotifications()">Enable</button>
-    </section>
+    <div class="swl-notification-settings-copy">
+      <strong>Want a little SWL nudge?</strong>
+      <small>Turn on automatic one-week + tomorrow event reminders and your dated Attention reminders.</small>
+    </div>
+    <div class="swl-notification-settings-actions">
+      <button class="primary" type="button" onclick="enablePushNotifications()">Enable notifications</button>
+    </div>
   `;
+}
+
+function openNotificationSettings() {
+  document.getElementById("modalRoot").innerHTML = `
+    <div class="modal-backdrop" onclick="closeModalFromBackdrop(event)">
+      <section class="swl-notification-settings-sheet" role="dialog" aria-modal="true" aria-label="Notification settings">
+        <div class="swl-notification-settings-head">
+          <div>
+            <span class="swl-notification-settings-kicker">SWL OPS</span>
+            <h2>Notifications</h2>
+          </div>
+          <button class="swl-notification-settings-close" type="button" onclick="closeModal()" aria-label="Close">×</button>
+        </div>
+        ${pushNotificationSettingsHTML()}
+      </section>
+    </div>
+  `;
+}
+
+async function sendTestPushNotification() {
+  try {
+    const registration = await navigator.serviceWorker.ready;
+    const subscription = await registration.pushManager.getSubscription();
+    if (!subscription) {
+      alert("Notifications are not subscribed on this device yet.");
+      return;
+    }
+
+    const button = document.querySelector(".swl-notification-settings-actions .primary");
+    if (button) {
+      button.disabled = true;
+      button.textContent = "Sending…";
+    }
+
+    await apiRequest("push/test", {
+      method: "POST",
+      body: JSON.stringify({ endpoint: subscription.endpoint })
+    });
+
+    showSWLToast("🧸 Test nudge sent");
+    closeModal();
+  } catch (err) {
+    console.error(err);
+    alert(`Could not send the test notification. ${err.message}`);
+  }
 }
 
 async function enablePushNotifications() {
@@ -1231,8 +1287,6 @@ function renderHome() {
 
     </section>
 
-    ${pushNotificationCardHTML()}
-
     <section class="swl-home-glance">
 
       <button
@@ -1661,6 +1715,15 @@ function renderHome() {
     `;
   }
 
+
+  html += `
+    <div class="swl-home-utility-row">
+      <button type="button" class="swl-notification-settings-link" onclick="openNotificationSettings()">
+        <span aria-hidden="true">⚙</span>
+        <span>${pushNotificationSettingsLabel()}</span>
+      </button>
+    </div>
+  `;
 
   main.innerHTML = html;
 }
