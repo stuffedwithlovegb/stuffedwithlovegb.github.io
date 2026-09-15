@@ -257,7 +257,103 @@ async function handleEvents(
       event
     });
   }
+if (
+  request.method === "POST" &&
+  !id
+) {
+  const body =
+    await request.json();
 
+  const name =
+    String(body.name || "").trim();
+
+  const category =
+    String(body.category || "").trim();
+
+  const onHand =
+    Math.max(
+      0,
+      Number(body.onHand || 0)
+    );
+
+  const allowedCategories = [
+    "Plush",
+    "Outfits",
+    "Supplies",
+    "Shirts"
+  ];
+
+  if (!name) {
+    return error(
+      "Item name is required."
+    );
+  }
+
+  if (
+    !allowedCategories.includes(category)
+  ) {
+    return error(
+      "Valid inventory category is required."
+    );
+  }
+
+  if (!Number.isFinite(onHand)) {
+    return error(
+      "Valid starting quantity is required."
+    );
+  }
+
+  const id =
+    "inv_" +
+    crypto.randomUUID();
+
+  const unit =
+    category === "Plush"
+      ? "plush"
+      : "item";
+
+  const autoReserve =
+    category === "Plush"
+      ? 1
+      : 0;
+
+  await env.DB
+    .prepare(`
+      INSERT INTO inventory (
+        id,
+        name,
+        category,
+        on_hand,
+        unit,
+        auto_reserve
+      )
+      VALUES (?, ?, ?, ?, ?, ?)
+    `)
+    .bind(
+      id,
+      name,
+      category,
+      onHand,
+      unit,
+      autoReserve
+    )
+    .run();
+
+  const item = {
+    id,
+    name,
+    category,
+    onHand,
+    unit,
+    autoReserve:
+      Boolean(autoReserve)
+  };
+
+  return json({
+    ok: true,
+    item
+  });
+}
   if (
     request.method === "PUT" &&
     id
