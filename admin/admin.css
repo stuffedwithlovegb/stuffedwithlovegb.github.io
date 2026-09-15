@@ -3856,5 +3856,742 @@ a {
       scale(1.25)
       rotate(15deg);
   }
+/* =========================================================
+   SWL INVENTORY — BOUTIQUE PASS
+   ========================================================= */
 
+.inventory-toolbar {
+  margin-bottom: 30px;
+}
+
+
+/* SEARCH */
+
+.inventory-search-wrap {
+  margin-bottom: 14px;
+}
+
+.inventory-search {
+  height: 52px;
+
+  padding:
+    0
+    17px
+    0
+    44px;
+
+  border:
+    1px solid
+    rgba(76, 51, 37, 0.09);
+
+  border-radius: 17px;
+
+  background:
+    rgba(255, 255, 255, 0.82);
+
+  box-shadow:
+    0 3px 12px
+    rgba(76, 51, 37, 0.035);
+
+  font-size: 0.83rem;
+}
+
+.inventory-search-icon {
+  left: 16px;
+
+  color:
+    rgba(76, 51, 37, 0.45);
+}
+
+
+/* CATEGORY PILLS */
+
+.inventory-category-tabs {
+  gap: 8px;
+
+  padding:
+    1px
+    1px
+    6px;
+}
+
+.inventory-category-tab {
+  min-height: 37px;
+
+  padding:
+    0
+    16px;
+
+  border:
+    1px solid
+    rgba(76, 51, 37, 0.055);
+
+  background:
+    rgba(255, 255, 255, 0.62);
+
+  color: var(--brown-2);
+
+  font-size: 0.73rem;
+
+  box-shadow:
+    0 2px 7px
+    rgba(76, 51, 37, 0.025);
+
+  transition:
+    transform 0.15s ease,
+    background 0.15s ease;
+}
+
+.inventory-category-tab.active {
+  background: var(--yellow);
+
+  border-color:
+    rgba(196, 150, 35, 0.16);
+
+  color: var(--brown);
+
+  box-shadow:
+    0 4px 10px
+    rgba(121, 87, 18, 0.10);
+}
+
+.inventory-category-tab:active {
+  transform: scale(0.96);
+}
+
+
+/* GROUP */
+
+.inventory-group {
+  margin-bottom: 34px;
+}
+
+.inventory-group-header {
+  margin-bottom: 11px;
+
+  padding:
+    0
+    3px;
+}
+
+.inventory-group-header > div {
+  gap: 8px;
+}
+
+.inventory-group-header h2 {
+  font-size: 1.05rem;
+
+  letter-spacing:
+    -0.025em;
+}
+
+.inventory-group-header span {
+  min-width: 23px;
+  height: 23px;
+
+  background:
+    rgba(242, 204, 88, 0.18);
+
+  font-size: 0.65rem;
+}
+
+
+/*
+   Instead of one giant connected white list,
+   give every item its own little card.
+*/
+
+.inventory-list-card {
+  display: flex;
+  flex-direction: column;
+
+  gap: 9px;
+
+  overflow: visible;
+
+  border: 0;
+  border-radius: 0;
+
+  background: transparent;
+
+  box-shadow: none;
+}
+
+
+/* ITEM CARD */
+
+.inventory-item-row {
+  position: relative;
+
+  min-height: 84px;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  gap: 12px;
+
+  padding:
+    11px
+    12px;
+
+  border:
+    1px solid
+    rgba(76, 51, 37, 0.075) !important;
+
+  border-radius: 19px;
+
+  background:
+    rgba(255, 255, 255, 0.80);
+
+  box-shadow:
+    0 4px 14px
+    rgba(76, 51, 37, 0.04);
+
+  transition:
+    transform 0.14s ease,
+    background 0.14s ease,
+    box-shadow 0.14s ease;
+}
+
+.inventory-item-row:last-child {
+  border-bottom:
+    1px solid
+    rgba(76, 51, 37, 0.075);
+}
+
+.inventory-item-row:active {
+  transform: scale(0.985);
+
+  background:
+    rgba(255, 248, 224, 0.92);
+
+  box-shadow:
+    0 2px 8px
+    rgba(76, 51, 37, 0.035);
+}
+
+
+/* LEFT SIDE */
+
+.inventory-item-left {
+  flex: 1;
+
+  gap: 13px;
+}
+
+
+/* PLUSH PORTRAIT */
+
+.inventory-plush-thumb,
+.inventory-generic-icon {
+  width: 62px;
+  height: 62px;
+
+  border-radius: 17px;
+}
+
+.inventory-plush-thumb {
+  padding: 3px;
+
+  background:
+    linear-gradient(
+      145deg,
+      #fff8dd,
+      #f8e7aa
+    );
+
+  border:
+    1px solid
+    rgba(196, 150, 35, 0.10);
+
+  box-shadow:
+    inset 0 0 0 1px
+    rgba(255, 255, 255, 0.35);
+}
+
+.inventory-plush-thumb img {
+  width: 100%;
+  height: 100%;
+
+  object-fit: contain;
+
+  object-position: center;
+}
+
+
+/* NON-PLUSH ICON */
+
+.inventory-generic-icon {
+  background:
+    linear-gradient(
+      145deg,
+      #fff9e7,
+      #f9edc4
+    );
+
+  border:
+    1px solid
+    rgba(196, 150, 35, 0.10);
+
+  font-size: 1.2rem;
+}
+
+
+/* ITEM NAME */
+
+.inventory-item-copy strong {
+  max-width: 170px;
+
+  color: var(--brown);
+
+  font-size: 0.9rem;
+
+  letter-spacing:
+    -0.01em;
+}
+
+
+/* ON HAND / RESERVED */
+
+.inventory-item-meta {
+  display: flex;
+  flex-wrap: wrap;
+
+  gap: 5px;
+
+  margin-top: 6px;
+
+  color: var(--muted);
+
+  font-size: 0.65rem;
+}
+
+.inventory-item-meta span {
+  padding:
+    3px
+    6px;
+
+  border-radius: 999px;
+
+  background:
+    rgba(76, 51, 37, 0.045);
+}
+
+.inventory-item-meta span + span::before {
+  display: none;
+}
+
+
+/* RIGHT SIDE */
+
+.inventory-item-right {
+  gap: 7px;
+}
+
+
+/* AVAILABLE NUMBER */
+
+.inventory-available {
+  min-width: 42px;
+
+  text-align: center;
+}
+
+.inventory-available strong {
+  display: block;
+
+  color: var(--brown);
+
+  font-size: 1.15rem;
+
+  line-height: 1;
+
+  font-weight: 900;
+}
+
+.inventory-available span {
+  display: block;
+
+  margin-top: 4px;
+
+  color: var(--muted);
+
+  font-size: 0.56rem;
+
+  font-weight: 700;
+
+  text-transform: uppercase;
+
+  letter-spacing:
+    0.035em;
+}
+
+.inventory-available.short {
+  padding:
+    7px
+    5px;
+
+  border-radius: 11px;
+
+  background: var(--danger-soft);
+}
+
+
+/* +6 BUTTON */
+
+.inventory-quick-six {
+  min-width: 40px;
+  height: 38px;
+
+  padding:
+    0
+    8px;
+
+  border:
+    1px solid
+    rgba(196, 150, 35, 0.16);
+
+  border-radius: 12px;
+
+  background: var(--yellow);
+
+  color: var(--brown);
+
+  box-shadow:
+    0 3px 8px
+    rgba(121, 87, 18, 0.10);
+
+  font-size: 0.74rem;
+
+  transition:
+    transform 0.12s ease;
+}
+
+.inventory-quick-six:active {
+  transform: scale(0.91);
+}
+
+.inventory-chevron {
+  margin-left: -1px;
+
+  color:
+    rgba(76, 51, 37, 0.28);
+
+  font-size: 1.25rem;
+}
+
+
+/* =========================================================
+   INVENTORY ITEM SHEET
+   ========================================================= */
+
+.inventory-sheet {
+  background:
+    linear-gradient(
+      180deg,
+      #fffaf1,
+      #fff7e8
+    );
+}
+
+.inventory-modal-title {
+  gap: 14px;
+}
+
+.inventory-modal-plush {
+  width: 76px;
+  height: 76px;
+
+  padding: 4px;
+
+  border-radius: 20px;
+
+  background:
+    linear-gradient(
+      145deg,
+      #fff8dd,
+      #f7e3a0
+    );
+
+  border:
+    1px solid
+    rgba(196, 150, 35, 0.11);
+}
+
+.inventory-modal-plush img {
+  object-fit: contain;
+  object-position: center;
+}
+
+.inventory-modal-title h2 {
+  margin-top: 5px;
+
+  font-size: 1.3rem;
+
+  letter-spacing:
+    -0.03em;
+}
+
+
+/* THREE COUNTS */
+
+.inventory-count-summary {
+  gap: 8px;
+
+  margin-top: 8px;
+  margin-bottom: 32px;
+}
+
+.inventory-count-stat {
+  padding:
+    14px
+    6px;
+
+  border:
+    1px solid
+    rgba(76, 51, 37, 0.07);
+
+  border-radius: 16px;
+
+  background:
+    rgba(255, 255, 255, 0.72);
+}
+
+.inventory-count-stat strong {
+  margin-top: 3px;
+
+  font-size: 1.55rem;
+}
+
+.inventory-count-stat span {
+  font-size: 0.62rem;
+}
+
+.inventory-count-stat.available {
+  background:
+    var(--yellow-pale);
+
+  border-color:
+    rgba(196, 150, 35, 0.13);
+}
+
+
+/* ADJUST COUNT */
+
+.inventory-adjust-section h3 {
+  margin-bottom: 13px;
+
+  font-size: 0.92rem;
+}
+
+.inventory-stepper-card {
+  grid-template-columns:
+    60px
+    1fr
+    60px;
+
+  gap: 12px;
+
+  padding: 10px;
+
+  border:
+    1px solid
+    rgba(76, 51, 37, 0.07);
+
+  border-radius: 20px;
+
+  background:
+    rgba(255, 255, 255, 0.68);
+}
+
+.inventory-stepper-button {
+  width: 60px;
+  height: 60px;
+
+  border:
+    1px solid
+    rgba(76, 51, 37, 0.08);
+
+  border-radius: 16px;
+
+  background:
+    rgba(255, 255, 255, 0.90);
+
+  font-size: 1.7rem;
+
+  box-shadow:
+    0 2px 7px
+    rgba(76, 51, 37, 0.035);
+
+  transition:
+    transform 0.11s ease;
+}
+
+.inventory-stepper-button.add {
+  background: var(--yellow);
+
+  border-color:
+    rgba(196, 150, 35, 0.18);
+}
+
+.inventory-stepper-button:active {
+  transform: scale(0.91);
+}
+
+.inventory-stepper-number {
+  font-size: 2.05rem;
+}
+
+
+/* ADD SIX */
+
+.inventory-add-six {
+  min-height: 51px;
+
+  margin-top: 12px;
+
+  border-radius: 16px;
+
+  box-shadow:
+    0 4px 11px
+    rgba(121, 87, 18, 0.10);
+}
+
+
+/* RESERVED */
+
+.inventory-reserved-section {
+  margin-top: 38px;
+}
+
+.inventory-reservation-card {
+  border:
+    1px solid
+    rgba(76, 51, 37, 0.07);
+
+  border-radius: 16px;
+
+  background:
+    rgba(255, 255, 255, 0.72);
+}
+
+
+/* =========================================================
+   PHONE TUNING
+   ========================================================= */
+
+@media (max-width: 430px) {
+
+  .inventory-item-row {
+    min-height: 80px;
+
+    padding:
+      10px
+      9px;
+  }
+
+  .inventory-plush-thumb,
+  .inventory-generic-icon {
+    width: 56px;
+    height: 56px;
+
+    border-radius: 15px;
+  }
+
+  .inventory-item-left {
+    gap: 10px;
+  }
+
+  .inventory-item-copy strong {
+    max-width: 145px;
+
+    font-size: 0.84rem;
+  }
+
+  .inventory-item-meta {
+    gap: 3px;
+
+    font-size: 0.59rem;
+  }
+
+  .inventory-item-meta span {
+    padding:
+      2px
+      4px;
+  }
+
+  /*
+     Keep "available" visible now.
+     The previous CSS hid this on phones.
+  */
+
+  .inventory-available span {
+    display: block;
+  }
+
+  .inventory-available strong {
+    font-size: 1.05rem;
+  }
+
+  .inventory-available span {
+    font-size: 0.49rem;
+  }
+
+  .inventory-item-right {
+    gap: 5px;
+  }
+
+  .inventory-quick-six {
+    min-width: 37px;
+    height: 36px;
+
+    padding:
+      0
+      6px;
+  }
+
+  .inventory-chevron {
+    display: none;
+  }
+
+}
+
+
+/* =========================================================
+   +6 LITTLE BOOP
+   ========================================================= */
+
+.inventory-quick-six.inventory-boop,
+.inventory-add-six.inventory-boop {
+  animation:
+    swl-inventory-boop
+    0.38s
+    cubic-bezier(
+      0.16,
+      1.4,
+      0.3,
+      1
+    );
+}
+
+@keyframes swl-inventory-boop {
+
+  0% {
+    transform: scale(1);
+  }
+
+  45% {
+    transform:
+      scale(1.12)
+      rotate(-2deg);
+  }
+
+  100% {
+    transform:
+      scale(1)
+      rotate(0);
+  }
+
+}
 }
