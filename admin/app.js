@@ -2902,9 +2902,9 @@ function renderInventory() {
       const reserved = calculateReserved(item.id);
       const available = item.onHand - reserved;
 
-      html += `
-        <div
-          class="inventory-item-row"
+     html += `
+  <div
+    class="inventory-item-row ${plush ? "inventory-plush-card" : "inventory-standard-row"}"
           data-inventory-item
           data-category="${escapeHTML(category)}"
           data-search="${escapeHTML(
