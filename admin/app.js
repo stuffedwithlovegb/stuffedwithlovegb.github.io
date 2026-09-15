@@ -2974,26 +2974,42 @@ function renderInventory() {
               <div class="inventory-item-left">
 
                 ${
-                  plush
-                    ? `
-                      <div class="inventory-plush-thumb">
-                        <img
-                          src="${plush.image}"
-                          alt="${escapeHTML(plush.name)}"
-                        />
-                      </div>
-                    `
-                    : `
-                      <div
-                        class="inventory-generic-icon inventory-generic-${category
-                          .toLowerCase()
-                          .replaceAll(" ", "-")}"
-                      >
-                        ${inventoryCategoryIcon(category)}
-                      </div>
-                    `
-                }
-
+  category === "Plush"
+    ? `
+      <div
+        class="inventory-plush-thumb ${
+          plush ? "" : "inventory-plush-thumb-empty"
+        }"
+      >
+        ${
+          plush
+            ? `
+              <img
+                src="${plush.image}"
+                alt="${escapeHTML(plush.name)}"
+              />
+            `
+            : `
+              <div class="inventory-add-photo-placeholder">
+                <span class="inventory-add-photo-plus">＋</span>
+                <span class="inventory-add-photo-text">
+                  Add photo
+                </span>
+              </div>
+            `
+        }
+      </div>
+    `
+    : `
+      <div
+        class="inventory-generic-icon inventory-generic-${category
+          .toLowerCase()
+          .replaceAll(" ", "-")}"
+      >
+        ${inventoryCategoryIcon(category)}
+      </div>
+    `
+}
                 <div class="inventory-item-copy">
 
                   <strong>
