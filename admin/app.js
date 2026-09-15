@@ -2895,14 +2895,23 @@ function renderInventory() {
         data-inventory-group="${escapeHTML(category)}"
       >
         <div class="inventory-group-header">
-          <div>
-            <h2>
-              ${category === "Plush" ? "Plush Friends" : escapeHTML(category)}
-            </h2>
 
-            <span>${categoryItems.length}</span>
-          </div>
-        </div>
+  <div class="inventory-group-title">
+    <h2>
+      ${category === "Plush" ? "Plush Friends" : escapeHTML(category)}
+    </h2>
+
+    <span>${categoryItems.length}</span>
+  </div>
+
+  <button
+    class="inventory-add-item-button"
+    onclick="openAddInventoryItem('${escapeHTML(category)}')"
+  >
+    + Add Item
+  </button>
+
+</div>
 
         <div class="inventory-list-card">
     `;
@@ -3268,7 +3277,160 @@ function openInventoryItem(itemId) {
 
   document.getElementById("modalRoot").innerHTML = html;
 }
+function openAddInventoryItem(category) {
+  const html = `
+    <div
+      class="modal-backdrop"
+      onclick="closeModalFromBackdrop(event)"
+    >
 
+      <div class="modal-sheet inventory-add-sheet">
+
+        <div class="modal-title-row">
+
+          <div>
+            <div class="card-label">
+              ${escapeHTML(category)}
+            </div>
+
+            <h2>Add Inventory Item</h2>
+          </div>
+
+          <button
+            class="modal-close-button"
+            onclick="closeModal()"
+            aria-label="Close"
+          >
+            ×
+          </button>
+
+        </div>
+
+        <form
+          class="inventory-add-form"
+          onsubmit="
+            event.preventDefault();
+            createInventoryItem(
+              '${escapeHTML(category)}',
+              this
+            );
+          "
+        >
+
+          <label class="field-label">
+            Item Name
+
+            <input
+              name="itemName"
+              type="text"
+              placeholder="${
+                category === "Plush"
+                  ? "Example: Pink Axolotl"
+                  : category === "Outfits"
+                  ? "Example: Princess Outfit"
+                  : category === "Shirts"
+                  ? "Example: Black Plush T-Shirts"
+                  : "Example: Wishing Stars"
+              }"
+              required
+              autofocus
+            />
+          </label>
+
+          <label class="field-label">
+            Starting Quantity
+
+            <input
+              name="onHand"
+              type="number"
+              min="0"
+              step="1"
+              value="0"
+              required
+            />
+          </label>
+
+          <button
+            type="submit"
+            class="primary-button full-width"
+          >
+            Add to Inventory
+          </button>
+
+        </form>
+
+      </div>
+    </div>
+  `;
+
+  document.getElementById(
+    "modalRoot"
+  ).innerHTML = html;
+}
+async function createInventoryItem(
+  category,
+  form
+) {
+  const name =
+    form.itemName.value.trim();
+
+  const onHand =
+    Math.max(
+      0,
+      Number(form.onHand.value || 0)
+    );
+
+  if (!name) return;
+
+  const button =
+    form.querySelector(
+      'button[type="submit"]'
+    );
+
+  button.disabled = true;
+  button.textContent = "Adding...";
+
+  try {
+
+    const response =
+      await apiFetch(
+        "/admin/api/inventory",
+        {
+          method: "POST",
+
+          body: JSON.stringify({
+            name,
+            category,
+            onHand
+          })
+        }
+      );
+
+    /*
+      Add returned item to local state
+      without needing a full reload.
+    */
+
+    state.inventory.push(response);
+
+    closeModal();
+
+    activeInventoryCategory =
+      category;
+
+    renderInventory();
+
+  } catch (err) {
+
+    button.disabled = false;
+    button.textContent =
+      "Add to Inventory";
+
+    alert(
+      `Could not add that item. ${err.message}`
+    );
+  }
+}
 async function changeInventoryBy(
   itemId,
   delta,
