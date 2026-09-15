@@ -204,7 +204,7 @@ let state = createInitialState();
 let currentScreen = "home";
 let currentEventId = null;
 let activeEventTab = "info";
-let activeInventoryCategory = "All";
+let activeInventoryCategory = "Plush";
 let inventorySearch = "";
 let wizard = null;
 let wizardStep = 0;
@@ -675,6 +675,11 @@ function navigate(screen) {
     });
 
   render();
+   window.scrollTo({
+  top: 0,
+  left: 0,
+  behavior: "instant"
+});
 }
 
 function render() {
@@ -1333,6 +1338,11 @@ function openEvent(id) {
   activeEventTab = "info";
 
   render();
+   window.scrollTo({
+  top: 0,
+  left: 0,
+  behavior: "instant"
+});
 }
 function setEventTab(tab) {
   activeEventTab = tab;
@@ -2808,13 +2818,13 @@ function renderInventory() {
 
   const main = document.getElementById("mainContent");
 
-  const categories = [
-    "All",
-    "Plush",
-    "Outfits",
-    "Supplies",
-    "Shirts"
-  ];
+ const categories = [
+  "Plush",
+  "Outfits",
+  "Supplies",
+  "Shirts",
+  "All"
+];
 
   const hasShortage = state.inventory.some(
     item => inventoryAvailable(item.id) < 0
