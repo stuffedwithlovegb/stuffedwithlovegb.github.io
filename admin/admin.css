@@ -5620,3 +5620,103 @@ button.inventory-add-photo-placeholder {
 .inventory-item-meta {
   display: none !important;
 }
+/* =========================================================
+   🚨 NON-PLUSH INVENTORY — FINAL LAYOUT
+========================================================= */
+
+/* Keep left side compact */
+.inventory-standard-row
+.inventory-item-left {
+  min-width: 0 !important;
+  flex: 1 1 auto !important;
+}
+
+/* On hand + reserved stay beneath the item name */
+.inventory-standard-row
+.inventory-item-meta {
+  display: flex !important;
+  align-items: center !important;
+  gap: 5px !important;
+
+  margin-top: 4px !important;
+
+  color: var(--muted) !important;
+  font-size: 0.62rem !important;
+  line-height: 1.2 !important;
+}
+
+.inventory-standard-row
+.inventory-item-meta span {
+  display: inline !important;
+  white-space: nowrap !important;
+}
+
+/* Right side */
+.inventory-standard-row
+.inventory-item-right {
+  flex: 0 0 auto !important;
+
+  display: flex !important;
+  align-items: center !important;
+  gap: 7px !important;
+
+  margin-left: auto !important;
+}
+
+/* Make Available look intentional instead of a random number */
+.inventory-standard-row
+.inventory-available {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: flex-end !important;
+  justify-content: center !important;
+
+  min-width: 45px !important;
+
+  padding: 0 !important;
+  margin: 0 !important;
+
+  background: transparent !important;
+
+  text-align: right !important;
+}
+
+.inventory-standard-row
+.inventory-available strong {
+  display: block !important;
+
+  color: var(--brown) !important;
+
+  font-size: 1rem !important;
+  font-weight: 900 !important;
+  line-height: 1 !important;
+}
+
+.inventory-standard-row
+.inventory-available span {
+  display: block !important;
+
+  margin-top: 3px !important;
+
+  color: var(--muted) !important;
+
+  font-size: 0.48rem !important;
+  font-weight: 750 !important;
+  line-height: 1 !important;
+
+  text-transform: uppercase !important;
+}
+
+/* Shortages */
+.inventory-standard-row
+.inventory-available.short strong,
+.inventory-standard-row
+.inventory-available.short span {
+  color: var(--danger) !important;
+}
+
+/* Non-plush never gets +6 */
+.inventory-standard-row
+.inventory-quick-six {
+  display: none !important;
+}
