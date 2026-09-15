@@ -289,6 +289,7 @@ async function handleBootstrap(env) {
           client_id,
           name,
           role,
+          address,
           phone,
           email,
           is_primary,
@@ -310,6 +311,7 @@ async function handleBootstrap(env) {
       clientId: row.client_id,
       name: row.name || "",
       role: row.role || "",
+      address: row.address || "",
       phone: row.phone || "",
       email: row.email || "",
       isPrimary: Boolean(row.is_primary),
@@ -946,6 +948,7 @@ async function ensureClientsTables(env) {
         client_id TEXT NOT NULL,
         name TEXT,
         role TEXT,
+        address TEXT,
         phone TEXT,
         email TEXT,
         is_primary INTEGER NOT NULL DEFAULT 0,
@@ -954,6 +957,16 @@ async function ensureClientsTables(env) {
       )
     `)
     .run();
+
+  // Safe migration for databases created before contact addresses existed.
+  try {
+    await env.DB.prepare(`ALTER TABLE client_contacts ADD COLUMN address TEXT`).run();
+  } catch (err) {
+    // Duplicate-column errors are expected after the first successful migration.
+    if (!String(err?.message || err).toLowerCase().includes("duplicate column")) {
+      console.warn("client_contacts address migration:", err);
+    }
+  }
 
   await env.DB
     .prepare(`
@@ -990,6 +1003,7 @@ async function getClientRecord(env, clientId) {
           client_id,
           name,
           role,
+          address,
           phone,
           email,
           is_primary,
@@ -1011,6 +1025,7 @@ async function getClientRecord(env, clientId) {
       clientId: contact.client_id,
       name: contact.name || "",
       role: contact.role || "",
+      address: contact.address || "",
       phone: contact.phone || "",
       email: contact.email || "",
       isPrimary: Boolean(contact.is_primary),
@@ -1146,6 +1161,9 @@ async function handleClients(
       const role =
         String(contact.role || "").trim();
 
+      const address =
+        String(contact.address || "").trim();
+
       const phone =
         String(contact.phone || "").trim();
 
@@ -1155,7 +1173,8 @@ async function handleClients(
       if (
         !contactName &&
         !phone &&
-        !email
+        !email &&
+        !address
       ) {
         continue;
       }
@@ -1167,18 +1186,20 @@ async function handleClients(
             client_id,
             name,
             role,
+            address,
             phone,
             email,
             is_primary,
             created_at
           )
-          VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+          VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
         `)
         .bind(
           "contact_" + crypto.randomUUID(),
           clientId,
           contactName,
           role,
+          address,
           phone,
           email,
           index === 0 ? 1 : 0,
@@ -1267,6 +1288,9 @@ async function handleClients(
     const role =
       String(body.role || "").trim();
 
+    const address =
+      String(body.address || "").trim();
+
     const phone =
       String(body.phone || "").trim();
 
@@ -1276,11 +1300,8 @@ async function handleClients(
     const isPrimary =
       Boolean(body.isPrimary);
 
-    if (!name && !phone && !email) {
-      return error(
-        "Contact needs a name, phone number, or email."
-      );
-    }
+    // All contact fields are optional. An empty contact is allowed intentionally.
+
 
     if (
       isPrimary ||
@@ -1306,18 +1327,20 @@ async function handleClients(
           client_id,
           name,
           role,
+          address,
           phone,
           email,
           is_primary,
           created_at
         )
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
       `)
       .bind(
         "contact_" + crypto.randomUUID(),
         id,
         name,
         role,
+        address,
         phone,
         email,
         (isPrimary || !client.contacts.length) ? 1 : 0,
@@ -1339,6 +1362,67 @@ async function handleClients(
       client:
         await getClientRecord(env, id)
     });
+  }
+
+  if (
+    request.method === "PUT" &&
+    id &&
+    action === "contacts" &&
+    childId
+  ) {
+    const client = await getClientRecord(env, id);
+    if (!client) return error("Client not found.", 404);
+
+    const existing = client.contacts.find(contact => contact.id === childId);
+    if (!existing) return error("Contact not found.", 404);
+
+    const body = await request.json();
+    const name = String(body.name || "").trim();
+    const address = String(body.address || "").trim();
+    const phone = String(body.phone || "").trim();
+    const email = String(body.email || "").trim();
+    const isPrimary = Boolean(body.isPrimary);
+
+    if (isPrimary) {
+      await env.DB.prepare(`UPDATE client_contacts SET is_primary = 0 WHERE client_id = ?`).bind(id).run();
+    }
+
+    await env.DB.prepare(`
+      UPDATE client_contacts
+      SET name = ?, role = '', address = ?, phone = ?, email = ?, is_primary = ?
+      WHERE id = ? AND client_id = ?
+    `).bind(name, address, phone, email, isPrimary ? 1 : 0, childId, id).run();
+
+    const refreshed = await getClientRecord(env, id);
+    if (refreshed.contacts.length && !refreshed.contacts.some(contact => contact.isPrimary)) {
+      await env.DB.prepare(`UPDATE client_contacts SET is_primary = 1 WHERE id = ?`).bind(refreshed.contacts[0].id).run();
+    }
+
+    await env.DB.prepare(`UPDATE clients SET updated_at = ? WHERE id = ?`).bind(new Date().toISOString(), id).run();
+    return json({ ok: true, client: await getClientRecord(env, id) });
+  }
+
+  if (
+    request.method === "DELETE" &&
+    id &&
+    action === "contacts" &&
+    childId
+  ) {
+    const client = await getClientRecord(env, id);
+    if (!client) return error("Client not found.", 404);
+
+    const existing = client.contacts.find(contact => contact.id === childId);
+    if (!existing) return error("Contact not found.", 404);
+
+    await env.DB.prepare(`DELETE FROM client_contacts WHERE id = ? AND client_id = ?`).bind(childId, id).run();
+
+    const refreshed = await getClientRecord(env, id);
+    if (refreshed.contacts.length && !refreshed.contacts.some(contact => contact.isPrimary)) {
+      await env.DB.prepare(`UPDATE client_contacts SET is_primary = 1 WHERE id = ?`).bind(refreshed.contacts[0].id).run();
+    }
+
+    await env.DB.prepare(`UPDATE clients SET updated_at = ? WHERE id = ?`).bind(new Date().toISOString(), id).run();
+    return json({ ok: true, client: await getClientRecord(env, id) });
   }
 
   return error(
@@ -2004,7 +2088,7 @@ const category =
             size_bytes,
             created_at
           )
-          VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+          VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
         `)
         .bind(
           fileId,
