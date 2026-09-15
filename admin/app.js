@@ -343,9 +343,6 @@ async function saveInventoryItemToServer(item) {
   );
 }
 function inventoryImageUrl(item) {
-  const plush = getPlushMeta(item.id);
-
-  function inventoryImageUrl(item) {
   const plush =
     getPlushMeta(item.id);
 
@@ -357,8 +354,6 @@ function inventoryImageUrl(item) {
     )}`;
   }
 
-  return plush?.image || null;
-}
   return plush?.image || null;
 }
 
@@ -3046,10 +3041,10 @@ function renderInventory() {
           html += `
             <div
               class="inventory-item-row ${
-                plush
-                  ? "inventory-plush-card"
-                  : "inventory-standard-row"
-              }"
+  category === "Plush"
+    ? "inventory-plush-card"
+    : "inventory-standard-row"
+}"
 
               data-inventory-item
               data-inventory-id="${item.id}"
