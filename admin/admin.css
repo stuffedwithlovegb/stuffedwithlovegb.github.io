@@ -5257,3 +5257,58 @@ button.inventory-add-photo-placeholder {
 
   cursor: pointer;
 }
+/* =========================================================
+   FIX NEW PLUSH PHOTO SIZE
+========================================================= */
+
+.inventory-plush-thumb-empty {
+  flex: 0 0 54px;
+  width: 54px;
+  min-width: 54px;
+  height: 54px;
+  min-height: 54px;
+}
+
+.inventory-plush-thumb-empty
+.inventory-add-photo-placeholder {
+  width: 54px;
+  min-width: 54px;
+  max-width: 54px;
+
+  height: 54px;
+  min-height: 54px;
+  max-height: 54px;
+
+  flex: 0 0 54px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+
+  padding: 0;
+  margin: 0;
+}
+
+@media (max-width: 430px) {
+  .inventory-plush-thumb-empty {
+    flex-basis: 50px;
+    width: 50px;
+    min-width: 50px;
+    height: 50px;
+    min-height: 50px;
+  }
+
+  .inventory-plush-thumb-empty
+  .inventory-add-photo-placeholder {
+    width: 50px;
+    min-width: 50px;
+    max-width: 50px;
+
+    height: 50px;
+    min-height: 50px;
+    max-height: 50px;
+
+    flex-basis: 50px;
+  }
+}
