@@ -5130,3 +5130,68 @@ a {
   flex-shrink: 0;
   margin: 0;
 }
+/* =========================================================
+   NEW PLUSH PHOTO PLACEHOLDER
+========================================================= */
+
+.inventory-plush-thumb-empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  background:
+    linear-gradient(
+      145deg,
+      var(--cream-soft),
+      var(--yellow-pale)
+    );
+  border: 1.5px dashed rgba(76, 51, 37, 0.22);
+}
+
+.inventory-add-photo-placeholder {
+  width: 100%;
+  height: 100%;
+  min-width: 0;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  gap: 2px;
+
+  color: var(--brown);
+  text-align: center;
+  line-height: 1;
+}
+
+.inventory-add-photo-plus {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 22px;
+  height: 22px;
+
+  border-radius: 50%;
+
+  background: var(--yellow);
+  color: var(--brown);
+
+  font-size: 16px;
+  font-weight: 900;
+  line-height: 1;
+
+  box-shadow:
+    0 2px 5px rgba(76, 51, 37, 0.12);
+}
+
+.inventory-add-photo-text {
+  margin-top: 2px;
+
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: -0.1px;
+
+  white-space: nowrap;
+}
