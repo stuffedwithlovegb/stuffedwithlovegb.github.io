@@ -14,5 +14,26 @@
       "database_name": "stuffed-with-love-ops",
       "database_id": "8adeb632-4740-48de-bc12-75a9b0e8775f"
     }
-  ]
+  ],
+
+  "r2_buckets": [
+    {
+      "binding": "IMAGES",
+      "bucket_name": "swl-inventory-images"
+    }
+  ],
+
+  "observability": {
+    "logs": {
+      "enabled": true,
+      "head_sampling_rate": 1,
+      "invocation_logs": true,
+      "persist": true
+    },
+    "traces": {
+      "enabled": false,
+      "head_sampling_rate": 1,
+      "persist": true
+    }
+  }
 }
