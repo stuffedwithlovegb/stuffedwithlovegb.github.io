@@ -3271,12 +3271,21 @@ function openInventoryItem(itemId) {
 
   html += `
         </section>
+
+        <button
+          class="inventory-delete-button"
+          onclick="confirmDeleteInventoryItem('${item.id}')"
+        >
+          Delete Item
+        </button>
+
       </div>
     </div>
   `;
 
   document.getElementById("modalRoot").innerHTML = html;
 }
+
 function openAddInventoryItem(category) {
   const html = `
     <div
@@ -3366,6 +3375,55 @@ function openAddInventoryItem(category) {
   document.getElementById(
     "modalRoot"
   ).innerHTML = html;
+}
+function confirmDeleteInventoryItem(itemId) {
+  const item =
+    state.inventory.find(
+      item => item.id === itemId
+    );
+
+  if (!item) return;
+
+  const confirmed =
+    confirm(
+      `Delete "${inventoryDisplayName(item)}" from inventory?\n\nThis cannot be undone.`
+    );
+
+  if (!confirmed) return;
+
+  deleteInventoryItem(itemId);
+}
+
+
+async function deleteInventoryItem(itemId) {
+  const item =
+    state.inventory.find(
+      item => item.id === itemId
+    );
+
+  if (!item) return;
+
+  try {
+    await apiFetch(
+      `/admin/api/inventory/${itemId}`,
+      {
+        method: "DELETE"
+      }
+    );
+
+    state.inventory =
+      state.inventory.filter(
+        item => item.id !== itemId
+      );
+
+    closeModal();
+    renderInventory();
+
+  } catch (err) {
+    alert(
+      `Could not delete that item. ${err.message}`
+    );
+  }
 }
 async function createInventoryItem(
   category,
