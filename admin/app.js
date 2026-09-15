@@ -342,7 +342,92 @@ async function saveInventoryItemToServer(item) {
     }
   );
 }
+function inventoryImageUrl(item) {
+  const plush = getPlushMeta(item.id);
 
+  if (item.imageKey) {
+    return `/admin/api/inventory/${encodeURIComponent(item.id)}/image`;
+  }
+
+  return plush?.image || null;
+}
+
+
+function chooseInventoryPhoto(itemId) {
+  const input =
+    document.createElement("input");
+
+  input.type = "file";
+  input.accept = "image/*";
+
+  input.onchange = async () => {
+    const file = input.files?.[0];
+
+    if (!file) return;
+
+    await uploadInventoryPhoto(
+      itemId,
+      file
+    );
+  };
+
+  input.click();
+}
+
+
+async function uploadInventoryPhoto(
+  itemId,
+  file
+) {
+  const item =
+    getInventoryItem(itemId);
+
+  if (!item) return;
+
+  const formData =
+    new FormData();
+
+  formData.append(
+    "image",
+    file
+  );
+
+  try {
+    const response =
+      await fetch(
+        `/admin/api/inventory/${encodeURIComponent(itemId)}/image`,
+        {
+          method: "POST",
+          credentials: "same-origin",
+          body: formData
+        }
+      );
+
+    let data = null;
+
+    try {
+      data = await response.json();
+    } catch {}
+
+    if (!response.ok) {
+      throw new Error(
+        data?.error ||
+        `Upload failed (${response.status})`
+      );
+    }
+
+    item.imageKey =
+      data.imageKey;
+
+    renderInventory();
+    openInventoryItem(itemId);
+
+  } catch (err) {
+    alert(
+      `Could not upload that photo. ${err.message}`
+    );
+  }
+}
 async function createReminderOnServer(reminder) {
   return apiRequest(
     "reminders",
@@ -2973,31 +3058,58 @@ function renderInventory() {
 
               <div class="inventory-item-left">
 
-                ${
+               ${
   category === "Plush"
     ? `
       <div
         class="inventory-plush-thumb ${
-          plush ? "" : "inventory-plush-thumb-empty"
+          inventoryImageUrl(item)
+            ? ""
+            : "inventory-plush-thumb-empty"
         }"
       >
         ${
-          plush
+          inventoryImageUrl(item)
             ? `
               <img
-                src="${plush.image}"
-                alt="${escapeHTML(plush.name)}"
+                src="${inventoryImageUrl(item)}"
+                alt="${escapeHTML(
+                  inventoryDisplayName(item)
+                )}"
               />
             `
             : `
-              <div class="inventory-add-photo-placeholder">
-                <span class="inventory-add-photo-plus">＋</span>
+              <button
+                type="button"
+                class="inventory-add-photo-placeholder"
+                onclick="
+                  event.stopPropagation();
+                  chooseInventoryPhoto('${item.id}');
+                "
+                aria-label="Add photo"
+              >
+                <span class="inventory-add-photo-plus">
+                  ＋
+                </span>
+
                 <span class="inventory-add-photo-text">
                   Add photo
                 </span>
-              </div>
+              </button>
             `
         }
+      </div>
+    `
+    : `
+      <div
+        class="inventory-generic-icon inventory-generic-${category
+          .toLowerCase()
+          .replaceAll(" ", "-")}"
+      >
+        ${inventoryCategoryIcon(category)}
+      </div>
+    `
+}
       </div>
     `
     : `
@@ -3179,23 +3291,39 @@ function filterInventoryRows() {
 }
 
 function openInventoryItem(itemId) {
-  const item = getInventoryItem(itemId);
+  const item =
+    getInventoryItem(itemId);
 
   if (!item) return;
 
-  const plush = getPlushMeta(item.id);
-  const reserved = calculateReserved(item.id);
-  const available = item.onHand - reserved;
+  const plush =
+    getPlushMeta(item.id);
 
-  const reservingEvents = state.events
-    .filter(event => !event.closed)
-    .map(event => ({
-      event,
-      reservation: event.reservations?.find(
-        reservation => reservation.itemId === item.id
-      )
-    }))
-    .filter(entry => entry.reservation?.quantity);
+  const imageUrl =
+    inventoryImageUrl(item);
+
+  const reserved =
+    calculateReserved(item.id);
+
+  const available =
+    item.onHand - reserved;
+
+  const reservingEvents =
+    state.events
+      .filter(event => !event.closed)
+      .map(event => ({
+        event,
+        reservation:
+          event.reservations?.find(
+            reservation =>
+              reservation.itemId ===
+              item.id
+          )
+      }))
+      .filter(
+        entry =>
+          entry.reservation?.quantity
+      );
 
   let html = `
     <div
@@ -3210,26 +3338,101 @@ function openInventoryItem(itemId) {
           <div class="inventory-modal-title">
 
             ${
-              plush
+              item.category === "Plush"
                 ? `
-                  <div class="inventory-modal-plush">
-                    <img
-                      src="${plush.image}"
-                      alt="${escapeHTML(plush.name)}"
-                    />
-                  </div>
+                  <button
+                    type="button"
+                    class="
+                      inventory-modal-plush
+                      ${
+                        imageUrl
+                          ? ""
+                          : "inventory-modal-plush-empty"
+                      }
+                    "
+                    onclick="
+                      chooseInventoryPhoto(
+                        '${item.id}'
+                      )
+                    "
+                    aria-label="${
+                      imageUrl
+                        ? "Change photo"
+                        : "Add photo"
+                    }"
+                  >
+
+                    ${
+                      imageUrl
+                        ? `
+                          <img
+                            src="${imageUrl}"
+                            alt="${escapeHTML(
+                              inventoryDisplayName(item)
+                            )}"
+                          />
+                        `
+                        : `
+                          <div
+                            class="
+                              inventory-add-photo-placeholder
+                            "
+                          >
+                            <span
+                              class="
+                                inventory-add-photo-plus
+                              "
+                            >
+                              ＋
+                            </span>
+
+                            <span
+                              class="
+                                inventory-add-photo-text
+                              "
+                            >
+                              Add photo
+                            </span>
+                          </div>
+                        `
+                    }
+
+                  </button>
                 `
                 : ""
             }
 
             <div>
+
               <div class="card-label">
                 ${escapeHTML(item.category)}
               </div>
 
               <h2>
-                ${escapeHTML(inventoryDisplayName(item))}
+                ${escapeHTML(
+                  inventoryDisplayName(item)
+                )}
               </h2>
+
+              ${
+                item.category === "Plush" &&
+                imageUrl
+                  ? `
+                    <button
+                      type="button"
+                      class="inventory-change-photo"
+                      onclick="
+                        chooseInventoryPhoto(
+                          '${item.id}'
+                        )
+                      "
+                    >
+                      Change photo
+                    </button>
+                  `
+                  : ""
+              }
+
             </div>
 
           </div>
@@ -3244,37 +3447,52 @@ function openInventoryItem(itemId) {
 
         </div>
 
+
         <div
-  class="inventory-count-summary"
-  data-inventory-id="${item.id}"
->
+          class="inventory-count-summary"
+          data-inventory-id="${item.id}"
+        >
 
           <div class="inventory-count-stat">
+
             <strong data-inventory-on-hand>
-  ${item.onHand}
-</strong>
+              ${item.onHand}
+            </strong>
+
             <span>On Hand</span>
+
           </div>
 
+
           <div class="inventory-count-stat">
+
             <strong data-inventory-reserved>
-  ${reserved}
-</strong>
+              ${reserved}
+            </strong>
+
             <span>Reserved</span>
+
           </div>
+
 
           <div
             class="inventory-count-stat ${
-              available < 0 ? "short" : "available"
+              available < 0
+                ? "short"
+                : "available"
             }"
           >
+
             <strong data-inventory-available>
-  ${available}
-</strong>
+              ${available}
+            </strong>
+
             <span>Available</span>
+
           </div>
 
         </div>
+
 
         <section class="inventory-adjust-section">
 
@@ -3284,35 +3502,57 @@ function openInventoryItem(itemId) {
 
             <button
               class="inventory-stepper-button"
-              onclick="changeInventoryBy('${item.id}', -1)"
+              onclick="
+                changeInventoryBy(
+                  '${item.id}',
+                  -1
+                )
+              "
             >
               −
             </button>
 
             <div
-  class="inventory-stepper-number"
-  data-inventory-id="${item.id}"
->
-  <span data-inventory-stepper>
-    ${item.onHand}
-  </span>
-</div>
+              class="inventory-stepper-number"
+              data-inventory-id="${item.id}"
+            >
+
+              <span data-inventory-stepper>
+                ${item.onHand}
+              </span>
+
+            </div>
 
             <button
               class="inventory-stepper-button add"
-              onclick="changeInventoryBy('${item.id}', 1)"
+              onclick="
+                changeInventoryBy(
+                  '${item.id}',
+                  1
+                )
+              "
             >
               +
             </button>
 
           </div>
 
+
           ${
-            plush
+            item.category === "Plush"
               ? `
                 <button
-                  class="primary-button full-width inventory-add-six"
-                  onclick="changeInventoryBy('${item.id}', 6)"
+                  class="
+                    primary-button
+                    full-width
+                    inventory-add-six
+                  "
+                  onclick="
+                    changeInventoryBy(
+                      '${item.id}',
+                      6
+                    )
+                  "
                 >
                   + Add 6 Plush
                 </button>
@@ -3320,14 +3560,20 @@ function openInventoryItem(itemId) {
               : ""
           }
 
+
           <button
             class="inventory-set-exact"
-            onclick="setInventoryCount('${item.id}')"
+            onclick="
+              setInventoryCount(
+                '${item.id}'
+              )
+            "
           >
             Set exact count
           </button>
 
         </section>
+
 
         <section class="inventory-reserved-section">
 
@@ -3336,48 +3582,65 @@ function openInventoryItem(itemId) {
           </div>
   `;
 
+
   if (!reservingEvents.length) {
+
     html += `
       <div class="inventory-none-reserved">
         Nothing currently reserved.
       </div>
     `;
+
   } else {
-    reservingEvents.forEach(({ event, reservation }) => {
-      html += `
-        <button
-          class="inventory-reservation-card"
-          onclick="
-            closeModal();
-            openEvent('${event.id}');
-          "
-        >
 
-          <div>
-            <strong>
-              ${escapeHTML(event.name)}
-            </strong>
+    reservingEvents.forEach(
+      ({
+        event,
+        reservation
+      }) => {
 
-            <span>
-              ${reservation.quantity} reserved
-              ·
-              ${formatDate(event.date)}
-            </span>
-          </div>
+        html += `
+          <button
+            class="inventory-reservation-card"
+            onclick="
+              closeModal();
+              openEvent('${event.id}');
+            "
+          >
 
-          <span>›</span>
+            <div>
 
-        </button>
-      `;
-    });
+              <strong>
+                ${escapeHTML(event.name)}
+              </strong>
+
+              <span>
+                ${reservation.quantity}
+                reserved ·
+                ${formatDate(event.date)}
+              </span>
+
+            </div>
+
+            <span>›</span>
+
+          </button>
+        `;
+      }
+    );
   }
+
 
   html += `
         </section>
 
         <button
           class="inventory-delete-button"
-          onclick="confirmDeleteInventoryItem('${item.id}')"
+          onclick="
+            confirmDeleteInventoryItem(
+              '${item.id}'
+            )
+          "
         >
           Delete Item
         </button>
@@ -3386,7 +3649,9 @@ function openInventoryItem(itemId) {
     </div>
   `;
 
-  document.getElementById("modalRoot").innerHTML = html;
+  document
+    .getElementById("modalRoot")
+    .innerHTML = html;
 }
 
 function openAddInventoryItem(category) {
