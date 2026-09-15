@@ -378,6 +378,7 @@ let currentScreen = "home";
 let currentEventId = null;
 let currentClientKey = null;
 let clientSearch = "";
+let activeClientListTab = "upcoming";
 const clientNotesCache = new Map();
 let activeEventTab = "info";
 let activeInventoryCategory = "Plush";
@@ -1670,7 +1671,7 @@ function clientSearchText(client) {
     client.type,
     ...(client.contacts || []).flatMap(contact => [
       contact.name,
-      contact.role,
+      contact.address,
       contact.email,
       contact.phone
     ])
@@ -1789,122 +1790,68 @@ function clientCardHTML(client, showNext = false) {
   `;
 }
 
+function setClientListTab(tab) {
+  activeClientListTab = tab === "all" ? "all" : "upcoming";
+  renderClients();
+}
+
 function renderClients() {
   setHeader("Clients");
-
-  const main =
-    document.getElementById("mainContent");
-
-  const search =
-    normalizeClientText(clientSearch).toLowerCase();
-
-  const allClients =
-    getAllClients().filter(client =>
-      !search ||
-      clientSearchText(client).includes(search)
+  const main = document.getElementById("mainContent");
+  const search = normalizeClientText(clientSearch).toLowerCase();
+  const allClients = getAllClients().filter(client =>
+    !search || clientSearchText(client).includes(search)
+  );
+  const upcomingClients = allClients
+    .filter(client => clientUpcomingEvents(client).length > 0)
+    .sort((a, b) =>
+      clientEventDateValue(clientUpcomingEvents(a)[0]) -
+      clientEventDateValue(clientUpcomingEvents(b)[0])
     );
-
-  const upcomingClients =
-    allClients
-      .filter(client =>
-        clientUpcomingEvents(client).length > 0
-      )
-      .sort((a, b) =>
-        clientEventDateValue(clientUpcomingEvents(a)[0]) -
-        clientEventDateValue(clientUpcomingEvents(b)[0])
-      );
-
-  const alphabeticClients =
-    [...allClients].sort((a, b) =>
-      a.name.localeCompare(
-        b.name,
-        undefined,
-        { sensitivity: "base" }
-      )
-    );
+  const alphabeticClients = [...allClients].sort((a, b) =>
+    a.name.localeCompare(b.name, undefined, { sensitivity: "base" })
+  );
+  const visibleClients = activeClientListTab === "all"
+    ? alphabeticClients
+    : upcomingClients;
 
   let html = `
     <div class="swl-clients-toolbar">
       <div class="swl-client-search-wrap">
-        <input
-          class="swl-client-search"
-          type="search"
+        <input class="swl-client-search" type="search"
           placeholder="Search clients or contacts"
           value="${escapeHTML(clientSearch)}"
-          oninput="setClientSearch(this.value)"
-          autocomplete="off"
-        />
+          oninput="setClientSearch(this.value)" autocomplete="off" />
       </div>
+      <button class="primary-button swl-add-client-button" type="button" onclick="openAddClientModal()">+ Add Client</button>
+    </div>
 
-      <button
-        class="primary-button swl-add-client-button"
-        type="button"
-        onclick="openAddClientModal()"
-      >
-        + Add Client
+    <div class="swl-client-tabs" role="tablist" aria-label="Client list">
+      <button type="button" class="${activeClientListTab === "upcoming" ? "active" : ""}" onclick="setClientListTab('upcoming')">
+        Upcoming <span>${upcomingClients.length}</span>
+      </button>
+      <button type="button" class="${activeClientListTab === "all" ? "active" : ""}" onclick="setClientListTab('all')">
+        All Clients <span>${alphabeticClients.length}</span>
       </button>
     </div>
   `;
 
   if (!getAllClients().length) {
-    html += `
-      <div class="card empty-card">
-        <strong>No clients yet.</strong>
-        <p>
-          Add your first client here. Clients can exist
-          even when they do not have an event yet.
-        </p>
-      </div>
-    `;
-
-    main.innerHTML = html;
-    return;
-  }
-
-  if (!alphabeticClients.length) {
-    html += `
-      <div class="card empty-card">
-        <strong>No matches.</strong>
-        <p>Try a client name, contact, phone number, or email.</p>
-      </div>
-    `;
-
-    main.innerHTML = html;
-    return;
-  }
-
-  if (upcomingClients.length) {
+    html += `<div class="card empty-card"><strong>No clients yet.</strong><p>Add your first client here. Clients can exist even when they do not have an event yet.</p></div>`;
+  } else if (!visibleClients.length) {
+    html += `<div class="card empty-card"><strong>${search ? "No matches." : activeClientListTab === "upcoming" ? "No upcoming clients." : "No clients yet."}</strong><p>${search ? "Try a client name, contact, phone number, email, or address." : "Switch to All Clients to see everyone."}</p></div>`;
+  } else {
     html += `
       <section class="swl-client-section">
         <div class="swl-client-section-heading">
-          <h2>Upcoming Clients</h2>
-          <span>${upcomingClients.length}</span>
+          <h2>${activeClientListTab === "all" ? "All Clients" : "Upcoming Clients"}</h2>
+          <span>${visibleClients.length}</span>
         </div>
-
         <div class="swl-client-list">
-          ${upcomingClients
-            .map(client => clientCardHTML(client, true))
-            .join("")}
+          ${visibleClients.map(client => clientCardHTML(client, activeClientListTab === "upcoming")).join("")}
         </div>
-      </section>
-    `;
+      </section>`;
   }
-
-  html += `
-    <section class="swl-client-section">
-      <div class="swl-client-section-heading">
-        <h2>All Clients</h2>
-        <span>${alphabeticClients.length}</span>
-      </div>
-
-      <div class="swl-client-list">
-        ${alphabeticClients
-          .map(client => clientCardHTML(client))
-          .join("")}
-      </div>
-    </section>
-  `;
-
   main.innerHTML = html;
 }
 
@@ -1962,25 +1909,18 @@ function openAddClientModal() {
         </div>
 
         <div class="field">
-          <label>Role / relationship</label>
-          <input
-            id="newClientContactRole"
-            type="text"
-            placeholder="Mom, Events Manager, HR…"
-            autocomplete="off"
-          />
+          <label>Phone</label>
+          <input id="newClientContactPhone" type="tel" autocomplete="tel" />
         </div>
 
-        <div class="inline-fields">
-          <div class="field">
-            <label>Phone</label>
-            <input id="newClientContactPhone" type="tel" autocomplete="tel" />
-          </div>
+        <div class="field">
+          <label>Email</label>
+          <input id="newClientContactEmail" type="email" autocomplete="email" />
+        </div>
 
-          <div class="field">
-            <label>Email</label>
-            <input id="newClientContactEmail" type="email" autocomplete="email" />
-          </div>
+        <div class="field">
+          <label>Address</label>
+          <input id="newClientContactAddress" type="text" autocomplete="street-address" />
         </div>
 
         <button
@@ -2014,8 +1954,8 @@ async function saveNewClient() {
     name: normalizeClientText(
       document.getElementById("newClientContactName")?.value
     ),
-    role: normalizeClientText(
-      document.getElementById("newClientContactRole")?.value
+    address: normalizeClientText(
+      document.getElementById("newClientContactAddress")?.value
     ),
     phone: normalizeClientText(
       document.getElementById("newClientContactPhone")?.value
@@ -2027,7 +1967,7 @@ async function saveNewClient() {
 
   const hasContact =
     contact.name ||
-    contact.role ||
+    contact.address ||
     contact.phone ||
     contact.email;
 
@@ -2073,7 +2013,7 @@ async function ensurePersistedClient(client) {
         contacts: primary
           ? [{
               name: primary.name || client.name,
-              role: primary.role || "",
+              address: primary.address || "",
               phone: primary.phone || "",
               email: primary.email || ""
             }]
@@ -2091,146 +2031,89 @@ async function ensurePersistedClient(client) {
   };
 }
 
-function openAddContactModal(encodedClientKey) {
-  const key =
-    decodeURIComponent(encodedClientKey);
-
-  const client =
-    findClientByKey(key);
-
-  if (!client) return;
-
-  const root =
-    document.getElementById("modalRoot");
-
-  root.innerHTML = `
-    <div
-      class="modal-backdrop"
-      onclick="closeModalFromBackdrop(event)"
-    >
+function contactFormHTML(client, contact = null) {
+  const editing = Boolean(contact?.id);
+  return `
+    <div class="modal-backdrop" onclick="closeModalFromBackdrop(event)">
       <div class="modal-sheet swl-client-form-sheet">
         <div class="modal-handle"></div>
-
         <div class="modal-title-row">
-          <div>
-            <div class="card-label">${escapeHTML(client.name)}</div>
-            <h2>Add Contact</h2>
-          </div>
-
-          <button
-            class="modal-close"
-            type="button"
-            onclick="closeModal()"
-          >×</button>
+          <div><div class="card-label">${escapeHTML(client.name)}</div><h2>${editing ? "Edit Contact" : "Add Contact"}</h2></div>
+          <button class="modal-close" type="button" onclick="closeModal()">×</button>
         </div>
-
-        <div class="field">
-          <label>Name</label>
-          <input id="newContactName" type="text" autocomplete="off" />
-        </div>
-
-        <div class="field">
-          <label>Role / relationship</label>
-          <input
-            id="newContactRole"
-            type="text"
-            placeholder="Mom, Events Manager, HR…"
-            autocomplete="off"
-          />
-        </div>
-
-        <div class="field">
-          <label>Phone</label>
-          <input id="newContactPhone" type="tel" autocomplete="tel" />
-        </div>
-
-        <div class="field">
-          <label>Email</label>
-          <input id="newContactEmail" type="email" autocomplete="email" />
-        </div>
-
+        <div class="field"><label>Name</label><input id="contactFormName" type="text" value="${escapeHTML(contact?.name || "")}" autocomplete="off" /></div>
+        <div class="field"><label>Phone</label><input id="contactFormPhone" type="tel" value="${escapeHTML(contact?.phone || "")}" autocomplete="tel" /></div>
+        <div class="field"><label>Email</label><input id="contactFormEmail" type="email" value="${escapeHTML(contact?.email || "")}" autocomplete="email" /></div>
+        <div class="field"><label>Address</label><input id="contactFormAddress" type="text" value="${escapeHTML(contact?.address || "")}" autocomplete="street-address" /></div>
         <label class="swl-primary-contact-toggle">
-          <input id="newContactPrimary" type="checkbox" />
+          <input id="contactFormPrimary" type="checkbox" ${contact?.isPrimary ? "checked" : ""} />
           <span>Make primary contact</span>
         </label>
-
-        <button
-          class="primary-button full-width"
-          type="button"
-          onclick="saveNewContact('${encodeURIComponent(client.key)}')"
-        >
-          Add Contact
-        </button>
+        <div class="swl-contact-form-actions">
+          <button class="primary-button full-width" type="button" onclick="saveContactForm('${encodeURIComponent(client.key)}','${contact?.id ? encodeURIComponent(contact.id) : ""}')">${editing ? "Save Changes" : "Add Contact"}</button>
+          ${editing ? `<button class="danger-button full-width" type="button" onclick="deleteContact('${encodeURIComponent(client.key)}','${encodeURIComponent(contact.id)}')">Delete Contact</button>` : ""}
+        </div>
       </div>
-    </div>
-  `;
+    </div>`;
 }
 
-async function saveNewContact(encodedClientKey) {
-  const key =
-    decodeURIComponent(encodedClientKey);
-
-  let client =
-    findClientByKey(key);
-
+function openAddContactModal(encodedClientKey) {
+  const client = findClientByKey(decodeURIComponent(encodedClientKey));
   if (!client) return;
+  document.getElementById("modalRoot").innerHTML = contactFormHTML(client);
+}
 
+function openEditContactModal(encodedClientKey, encodedContactId) {
+  const client = findClientByKey(decodeURIComponent(encodedClientKey));
+  const contact = client?.contacts?.find(item => item.id === decodeURIComponent(encodedContactId));
+  if (!client || !contact) return;
+  document.getElementById("modalRoot").innerHTML = contactFormHTML(client, contact);
+}
+
+async function saveContactForm(encodedClientKey, encodedContactId = "") {
+  let client = findClientByKey(decodeURIComponent(encodedClientKey));
+  if (!client) return;
+  const contactId = encodedContactId ? decodeURIComponent(encodedContactId) : "";
   const contact = {
-    name: normalizeClientText(
-      document.getElementById("newContactName")?.value
-    ),
-    role: normalizeClientText(
-      document.getElementById("newContactRole")?.value
-    ),
-    phone: normalizeClientText(
-      document.getElementById("newContactPhone")?.value
-    ),
-    email: normalizeClientText(
-      document.getElementById("newContactEmail")?.value
-    ),
-    isPrimary:
-      Boolean(
-        document.getElementById("newContactPrimary")?.checked
-      )
+    name: normalizeClientText(document.getElementById("contactFormName")?.value),
+    phone: normalizeClientText(document.getElementById("contactFormPhone")?.value),
+    email: normalizeClientText(document.getElementById("contactFormEmail")?.value),
+    address: normalizeClientText(document.getElementById("contactFormAddress")?.value),
+    isPrimary: Boolean(document.getElementById("contactFormPrimary")?.checked)
   };
-
-  if (
-    !contact.name &&
-    !contact.phone &&
-    !contact.email
-  ) {
-    alert("Add at least a name, phone number, or email.");
-    return;
-  }
-
   try {
-    client =
-      await ensurePersistedClient(client);
-
-    const response =
-      await apiRequest(
-        `clients/${encodeURIComponent(client.id)}/contacts`,
-        {
-          method: "POST",
-          body: JSON.stringify(contact)
-        }
-      );
-
-    const index =
-      state.clients.findIndex(item =>
-        item.id === client.id
-      );
-
-    if (index >= 0) {
-      state.clients[index] =
-        response.client;
-    }
-
+    client = await ensurePersistedClient(client);
+    const response = await apiRequest(
+      contactId
+        ? `clients/${encodeURIComponent(client.id)}/contacts/${encodeURIComponent(contactId)}`
+        : `clients/${encodeURIComponent(client.id)}/contacts`,
+      { method: contactId ? "PUT" : "POST", body: JSON.stringify(contact) }
+    );
+    const index = state.clients.findIndex(item => item.id === client.id);
+    if (index >= 0) state.clients[index] = response.client;
     closeModal();
-    showSWLToast("Contact added");
+    showSWLToast(contactId ? "Contact updated" : "Contact added");
     renderClientDetail();
   } catch (err) {
-    alert(`Could not add that contact. ${err.message}`);
+    alert(`Could not save that contact. ${err.message}`);
+  }
+}
+
+async function deleteContact(encodedClientKey, encodedContactId) {
+  let client = findClientByKey(decodeURIComponent(encodedClientKey));
+  if (!client?.id) return;
+  const contactId = decodeURIComponent(encodedContactId);
+  const contact = client.contacts?.find(item => item.id === contactId);
+  if (!confirm(`Delete ${contact?.name || "this contact"}? This cannot be undone.`)) return;
+  try {
+    const response = await apiRequest(`clients/${encodeURIComponent(client.id)}/contacts/${encodeURIComponent(contactId)}`, { method: "DELETE" });
+    const index = state.clients.findIndex(item => item.id === client.id);
+    if (index >= 0) state.clients[index] = response.client;
+    closeModal();
+    showSWLToast("Contact deleted");
+    renderClientDetail();
+  } catch (err) {
+    alert(`Could not delete that contact. ${err.message}`);
   }
 }
 
@@ -2253,51 +2136,34 @@ function clientEventCardHTML(event) {
   `;
 }
 
-function clientContactCardHTML(client, contact) {
-  const phoneHref =
-    normalizedClientPhone(contact.phone);
+function formatClientPhone(value) {
+  const digits = String(value || "").replace(/\D/g, "");
+  const local = digits.length === 11 && digits.startsWith("1") ? digits.slice(1) : digits;
+  return local.length === 10 ? `(${local.slice(0,3)}) ${local.slice(3,6)}-${local.slice(6)}` : String(value || "");
+}
 
+function clientContactCardHTML(client, contact) {
+  const phoneHref = normalizedClientPhone(contact.phone);
+  const hasDetails = contact.phone || contact.email || contact.address;
   return `
     <div class="card swl-contact-card">
       <div class="swl-contact-card-top">
-        <div>
-          <strong>
-            ${escapeHTML(contact.name || "Contact")}
-            ${contact.isPrimary ? `<span class="swl-primary-pill">Primary</span>` : ""}
-          </strong>
-
-          ${contact.role
-            ? `<small>${escapeHTML(contact.role)}</small>`
-            : ""}
+        <div class="swl-contact-heading">
+          <strong>${escapeHTML(contact.name || "Contact")}</strong>
+          ${contact.isPrimary ? `<span class="swl-primary-pill">PRIMARY</span>` : ""}
         </div>
+        <button class="swl-contact-edit" type="button" onclick="openEditContactModal('${encodeURIComponent(client.key)}','${encodeURIComponent(contact.id)}')">Edit</button>
       </div>
-
-      <div class="swl-contact-details">
-        ${contact.phone
-          ? `<span>${escapeHTML(contact.phone)}</span>`
-          : ""}
-        ${contact.email
-          ? `<span>${escapeHTML(contact.email)}</span>`
-          : ""}
-      </div>
-
-      ${(phoneHref || contact.email)
-        ? `
-          <div class="swl-client-actions compact">
-            ${phoneHref
-              ? `
-                <a href="sms:${escapeHTML(phoneHref)}">Text</a>
-                <a href="tel:${escapeHTML(phoneHref)}">Call</a>
-              `
-              : ""}
-            ${contact.email
-              ? `<a href="mailto:${escapeHTML(contact.email)}">Email</a>`
-              : ""}
-          </div>
-        `
-        : ""}
-    </div>
-  `;
+      ${hasDetails ? `<div class="swl-contact-details">
+        ${contact.phone ? `<div><span>Phone</span><strong>${escapeHTML(formatClientPhone(contact.phone))}</strong></div>` : ""}
+        ${contact.email ? `<div><span>Email</span><strong>${escapeHTML(contact.email)}</strong></div>` : ""}
+        ${contact.address ? `<div><span>Address</span><strong>${escapeHTML(contact.address)}</strong></div>` : ""}
+      </div>` : `<div class="swl-contact-empty-detail">No contact details added yet.</div>`}
+      ${(phoneHref || contact.email) ? `<div class="swl-client-actions compact">
+        ${phoneHref ? `<a href="sms:${escapeHTML(phoneHref)}">Text</a><a href="tel:${escapeHTML(phoneHref)}">Call</a>` : ""}
+        ${contact.email ? `<a href="mailto:${escapeHTML(contact.email)}">Email</a>` : ""}
+      </div>` : ""}
+    </div>`;
 }
 
 async function loadClientNotes(clientKey, force = false) {
@@ -8261,7 +8127,12 @@ function createBlankEventDraft() {
 
     address: "",
 
-    guestCount: "",
+    guestCount: "", // legacy alias for SWL capacity
+    eventAttendance: "",
+    swlCapacity: "",
+    heartQuantity: "",
+    bagQuantity: "",
+    plushQuantities: {},
 
     package: "",
 
@@ -8319,6 +8190,14 @@ function normalizeEventDraft(event) {
 
   merged.reservations ||=
     [];
+
+  merged.plushQuantities ||= {};
+  // Existing events used guestCount for both attendance and inventory planning.
+  // Preserve that value as SWL capacity until the event is edited.
+  if (merged.swlCapacity === "" || merged.swlCapacity == null) merged.swlCapacity = merged.guestCount || "";
+  if (merged.eventAttendance === "" || merged.eventAttendance == null) merged.eventAttendance = merged.guestCount || "";
+  if (merged.heartQuantity === "" || merged.heartQuantity == null) merged.heartQuantity = merged.swlCapacity || "";
+  if (merged.bagQuantity === "" || merged.bagQuantity == null) merged.bagQuantity = isVendorEventType(merged.eventType) ? 0 : (merged.swlCapacity || "");
 
   merged.eventNotes ||=
     merged.arrivalNotes || "";
@@ -8422,7 +8301,7 @@ function calculateEventTotal(
 
   const guestCount =
     Number(
-      event.guestCount || 0
+      event.swlCapacity ?? event.guestCount ?? 0
     );
 
   const base =
@@ -8487,100 +8366,55 @@ function recalculatePayment() {
    RESERVATIONS
 ========================================================= */
 
+function isVendorEventType(type) {
+  return type === "Community Event";
+}
+
+function isContractedEventType(type) {
+  return type === "Corporate / Partner";
+}
+
+function isCustomEventType(type) {
+  return type === "Custom";
+}
+
+function plannedSWLCount(event = wizard) {
+  return Math.max(0, Number(event?.swlCapacity ?? event?.guestCount ?? 0));
+}
+
+function applyEventTypeDefaults(event = wizard, force = false) {
+  if (!event) return;
+  const capacity = plannedSWLCount(event);
+  if (force || event.heartQuantity === "" || event.heartQuantity == null) event.heartQuantity = capacity || "";
+  if (force || event.bagQuantity === "" || event.bagQuantity == null) event.bagQuantity = isVendorEventType(event.eventType) ? 0 : (capacity || "");
+  event.guestCount = capacity || ""; // keep older screens/data compatible
+}
+
 function buildReservationsForWizard() {
   if (!wizard) return;
-
   const reservations = [];
+  const capacity = plannedSWLCount(wizard);
+  const manualPlush = isVendorEventType(wizard.eventType) || isContractedEventType(wizard.eventType) || isCustomEventType(wizard.eventType);
 
-  const guestCount =
-    Number(
-      wizard.guestCount || 0
-    );
+  wizard.selectedPlush.forEach(plushId => {
+    const quantity = manualPlush
+      ? Math.max(0, Number(wizard.plushQuantities?.[plushId] || 0))
+      : capacity + (capacity > 0 ? 2 : 0);
+    if (quantity > 0) reservations.push({ itemId: plushId, quantity });
+  });
 
-  /*
-    EACH OFFERED PLUSH:
-    guest count + 2 backups.
-  */
+  const hearts = Math.max(0, Number(wizard.heartQuantity || 0));
+  const bags = Math.max(0, Number(wizard.bagQuantity || 0));
+  if (hearts > 0) reservations.push({ itemId: "hearts", quantity: hearts });
+  if (bags > 0) reservations.push({ itemId: "travel-bags", quantity: bags });
 
-  wizard.selectedPlush.forEach(
-    plushId => {
-      reservations.push({
-        itemId: plushId,
-        quantity:
-          guestCount + 2
-      });
-    }
-  );
-
-  /*
-    HEARTS + TRAVEL BAGS
-  */
-
-  if (guestCount > 0) {
-    reservations.push({
-      itemId: "hearts",
-      quantity: guestCount
-    });
-
-    reservations.push({
-      itemId: "travel-bags",
-      quantity: guestCount
-    });
+  if (wizard.package === "$40 Package") {
+    reservations.push({ itemId: "white-shirt", quantity: capacity + Number(wizard.extraShirts || 0) });
+  } else if (Number(wizard.extraShirts || 0) > 0) {
+    reservations.push({ itemId: "white-shirt", quantity: Number(wizard.extraShirts || 0) });
   }
-
-  /*
-    SHIRTS
-
-    $35 DOES NOT INCLUDE SHIRTS.
-
-    $40 DOES.
-  */
-
-  if (
-    wizard.package === "$40 Package"
-  ) {
-    reservations.push({
-      itemId: "white-shirt",
-      quantity:
-        guestCount +
-        Number(
-          wizard.extraShirts || 0
-        )
-    });
-  } else if (
-    Number(
-      wizard.extraShirts || 0
-    ) > 0
-  ) {
-    reservations.push({
-      itemId: "white-shirt",
-      quantity:
-        Number(
-          wizard.extraShirts
-        )
-    });
-  }
-
-  /*
-    VOICE CHIPS
-  */
-
-  if (
-    Number(
-      wizard.voiceChips || 0
-    ) > 0
-  ) {
-    reservations.push({
-      itemId: "sound",
-      quantity:
-        Number(
-          wizard.voiceChips
-        )
-    });
-  }
-
-  wizard.reservations =
-    reservations;
+  if (Number(wizard.voiceChips || 0) > 0) reservations.push({ itemId: "sound", quantity: Number(wizard.voiceChips || 0) });
+  wizard.reservations = reservations;
 }
 
 
@@ -8763,7 +8597,7 @@ function basicsStepHTML() {
           Event type
         </label>
 
-        <select id="eventType">
+        <select id="eventType" onchange="changeWizardEventType(this.value)">
 
           ${[
             "Birthday Party",
@@ -8887,126 +8721,29 @@ function basicsStepHTML() {
 ========================================================= */
 
 function partyStepHTML() {
+  const vendor = isVendorEventType(wizard.eventType);
+  const contracted = isContractedEventType(wizard.eventType);
+  const custom = isCustomEventType(wizard.eventType);
+  const manualPlush = vendor || contracted || custom;
   return `
     <div class="card form-card">
+      ${(vendor || contracted) ? `
+        <div class="inline-fields swl-capacity-fields">
+          <div class="field"><label>Event attendance</label><input id="eventAttendance" type="number" min="0" value="${wizard.eventAttendance || ""}" placeholder="5000" /><small>Informational only. Never reserves inventory.</small></div>
+          <div class="field"><label>SWL capacity</label><input id="swlCapacity" type="number" min="0" value="${wizard.swlCapacity || ""}" placeholder="120" oninput="updateCapacityDefaults(this.value)" /><small>How many experiences we are actually preparing for.</small></div>
+        </div>` : `
+        <div class="field"><label>${wizard.eventType === "Birthday Party" ? "Participating kids" : "SWL planned guests"}</label><input id="swlCapacity" type="number" min="0" value="${wizard.swlCapacity || wizard.guestCount || ""}" placeholder="15" oninput="updateCapacityDefaults(this.value)" /></div>`}
+
+      ${!vendor && !contracted ? `<div class="field"><label>Package</label><div class="choice-grid">${packageChoice("$30 Package")}${packageChoice("$35 Package")}${packageChoice("$40 Package")}${packageChoice("Custom")}</div></div>` : `<div class="status-banner">${vendor ? "Vendor / community planning mode" : "Contracted event planning mode"}: inventory is based on the exact quantities below, not total event attendance.</div>`}
+
+      ${wizard.eventType === "Birthday Party" ? `<div class="inline-fields"><div class="field"><label>Birthday child</label><input id="specialGuestName" value="${escapeHTML(wizard.specialGuestName)}" placeholder="Name" /></div><div class="field"><label>Age</label><input id="specialGuestAge" type="number" min="1" value="${escapeHTML(wizard.specialGuestAge)}" /></div></div>` : `<div class="field"><label>Guest of honor</label><input id="specialGuestName" value="${escapeHTML(wizard.specialGuestName)}" placeholder="Optional" /></div>`}
 
       <div class="field">
-
-        <label>
-          Guest count
-        </label>
-
-        <input
-          id="guestCount"
-          type="number"
-          min="1"
-          value="${wizard.guestCount}"
-          placeholder="15"
-          oninput="updatePlushReservationLabels()"
-        />
-
+        <label>${manualPlush ? "Plush we're bringing" : "Plush options being offered"}</label>
+        <small>${manualPlush ? "Choose the styles, then set the exact quantity of each one." : "Select every plush guests can choose from. Birthday/private events keep the existing capacity + 2 backup reservation behavior."}</small>
+        <div class="plush-choice-grid" style="margin-top:12px;">${getEventPlushOptions().map(plush => plushChoice(plush)).join("")}</div>
       </div>
-
-      <div class="field">
-
-        <label>
-          Package
-        </label>
-
-        <div class="choice-grid">
-
-          ${packageChoice("$30 Package")}
-          ${packageChoice("$35 Package")}
-          ${packageChoice("$40 Package")}
-          ${packageChoice("Custom")}
-
-        </div>
-
-      </div>
-
-      ${
-        wizard.eventType ===
-        "Birthday Party"
-
-          ? `
-            <div class="inline-fields">
-
-              <div class="field">
-
-                <label>
-                  Birthday child
-                </label>
-
-                <input
-                  id="specialGuestName"
-                  value="${escapeHTML(wizard.specialGuestName)}"
-                  placeholder="Name"
-                />
-
-              </div>
-
-              <div class="field">
-
-                <label>
-                  Age
-                </label>
-
-                <input
-                  id="specialGuestAge"
-                  type="number"
-                  min="1"
-                  value="${escapeHTML(wizard.specialGuestAge)}"
-                />
-
-              </div>
-
-            </div>
-          `
-
-          : `
-            <div class="field">
-
-              <label>
-                Guest of honor
-              </label>
-
-              <input
-                id="specialGuestName"
-                value="${escapeHTML(wizard.specialGuestName)}"
-                placeholder="Optional"
-              />
-
-            </div>
-          `
-      }
-
-      <div class="field">
-
-        <label>
-          Plush options being offered
-        </label>
-
-        <small>
-          Select every plush guests can choose from.
-          We reserve guest count + 2 of each one.
-        </small>
-
-        <div
-          class="plush-choice-grid"
-          style="margin-top:12px;"
-        >
-          ${getEventPlushOptions()
-  .map(
-    plush =>
-      plushChoice(plush)
-  )
-  .join("")}
-        </div>
-
-      </div>
-
-    </div>
-  `;
+    </div>`;
 }
 
 function packageChoice(
@@ -9051,80 +8788,18 @@ function packageChoice(
 }
 
 function plushChoice(plush) {
-  const selected =
-    wizard.selectedPlush.includes(
-      plush.id
-    );
-
-  const guestCount =
-    Number(
-      wizard.guestCount || 0
-    );
-
-  const bringCount =
-    guestCount > 0
-      ? guestCount + 2
-      : 0;
-
+  const selected = wizard.selectedPlush.includes(plush.id);
+  const manual = isVendorEventType(wizard.eventType) || isContractedEventType(wizard.eventType) || isCustomEventType(wizard.eventType);
+  const capacity = plannedSWLCount(wizard);
+  const quantity = manual ? Number(wizard.plushQuantities?.[plush.id] || 0) : (capacity > 0 ? capacity + 2 : 0);
   return `
-    <button
-      type="button"
-      data-plush="${plush.id}"
-      class="plush-choice-card ${
-        selected ? "selected" : ""
-      }"
-      onclick="
-        togglePlushWithoutJump(
-          this,
-          '${plush.id}'
-        )
-      "
-    >
-
-      <div class="plush-choice-image">
-
-        ${
-          plush.image
-            ? `
-              <img
-                src="${plush.image}"
-                alt="${escapeHTML(
-                  plush.name
-                )}"
-              />
-            `
-            : `
-              <div class="plush-choice-no-photo">
-                <span>♥</span>
-                <small>No photo</small>
-              </div>
-            `
-        }
-
-        <span class="plush-choice-check">
-          ✓
-        </span>
-
-      </div>
-
-      <div class="plush-choice-copy">
-
-        <strong>
-          ${escapeHTML(plush.name)}
-        </strong>
-
-        <span class="plush-reservation-label">
-          ${
-            bringCount
-              ? `${bringCount} reserved`
-              : "Set guest count"
-          }
-        </span>
-
-      </div>
-
-    </button>
-  `;
+    <div class="plush-choice-card ${selected ? "selected" : ""}" data-plush="${plush.id}">
+      <button type="button" class="swl-plush-select-button" onclick="togglePlushWithoutJump(this.closest('.plush-choice-card'),'${plush.id}')">
+        <div class="plush-choice-image">${plush.image ? `<img src="${plush.image}" alt="${escapeHTML(plush.name)}" />` : `<div class="plush-choice-no-photo"><span>♥</span><small>No photo</small></div>`}<span class="plush-choice-check">✓</span></div>
+        <div class="plush-choice-copy"><strong>${escapeHTML(plush.name)}</strong><span class="plush-reservation-label">${selected ? (manual ? `${quantity} planned` : `${quantity} reserved`) : "Not selected"}</span></div>
+      </button>
+      ${manual ? `<div class="swl-plush-qty"><button type="button" onclick="adjustWizardPlushQuantity('${plush.id}',-1)">−</button><input id="plushQty-${plush.id}" type="number" min="0" value="${quantity}" oninput="setWizardPlushQuantity('${plush.id}',this.value)" /><button type="button" onclick="adjustWizardPlushQuantity('${plush.id}',1)">+</button></div>` : ""}
+    </div>`;
 }
 
 /* =========================================================
@@ -9132,136 +8807,23 @@ function plushChoice(plush) {
 ========================================================= */
 
 function extrasStepHTML() {
-  if (
-    wizard.package === "Custom"
-  ) {
-    return `
-      <div class="card form-card">
-
-        <div class="field">
-
-          <label>
-            Custom requirements
-          </label>
-
-          <textarea
-            id="customRequirements"
-            placeholder="Example: 2 plush, hiking outfits, retirement embroidery..."
-          >${escapeHTML(wizard.customRequirements)}</textarea>
-
-        </div>
-
-        <div class="field">
-
-          <label>
-            Voice chips
-          </label>
-
-          <input
-            id="voiceChips"
-            type="number"
-            min="0"
-            value="${wizard.voiceChips}"
-          />
-
-        </div>
-
-      </div>
-    `;
-  }
-
+  const vendor = isVendorEventType(wizard.eventType);
+  const capacity = plannedSWLCount(wizard);
+  applyEventTypeDefaults(wizard, false);
   return `
     <div class="card form-card">
-
-      ${
-        wizard.package === "$35 Package" ||
-        wizard.package === "$40 Package"
-          ? `
-            <div class="status-banner">
-              ✓ Birthday plush outfit is included in this package.
-            </div>
-          `
-          : ""
-      }
-
-      <div class="field">
-
-        <label>
-          Extra outfits
-        </label>
-
-        <input
-          id="extraOutfits"
-          type="number"
-          min="0"
-          value="${wizard.extraOutfits}"
-        />
-
-        <small>
-          ${money(ADD_ON_PRICING.outfit)} each
-        </small>
-
+      <div class="status-banner">Inventory uses these actual event quantities. Change any default whenever the event needs something different.</div>
+      <div class="inline-fields swl-consumable-fields">
+        <div class="field"><label>Wishing hearts</label><input id="heartQuantity" type="number" min="0" value="${wizard.heartQuantity ?? capacity}" /><small>Defaults to one per SWL planned guest.</small></div>
+        <div class="field"><label>Travel bags</label><input id="bagQuantity" type="number" min="0" value="${wizard.bagQuantity ?? (vendor ? 0 : capacity)}" /><small>${vendor ? "Vendor events default to 0." : "Defaults to one per planned guest."}</small></div>
       </div>
-
-      <div class="field">
-
-        <label>
-          Voice chips
-        </label>
-
-        <input
-          id="voiceChips"
-          type="number"
-          min="0"
-          value="${wizard.voiceChips}"
-        />
-
-        <small>
-          ${money(ADD_ON_PRICING.voiceChip)} each
-        </small>
-
-      </div>
-
-      <div class="field">
-
-        <label>
-          Extra T-shirts
-        </label>
-
-        <input
-          id="extraShirts"
-          type="number"
-          min="0"
-          value="${wizard.extraShirts}"
-        />
-
-        <small>
-          ${money(ADD_ON_PRICING.extraShirt)} each
-        </small>
-
-      </div>
-
-      <div class="field">
-
-        <label>
-          Extra vinyl designs
-        </label>
-
-        <input
-          id="extraVinyl"
-          type="number"
-          min="0"
-          value="${wizard.extraVinyl}"
-        />
-
-        <small>
-          ${money(ADD_ON_PRICING.vinyl)} each
-        </small>
-
-      </div>
-
-    </div>
-  `;
+      ${wizard.package === "Custom" || vendor || isContractedEventType(wizard.eventType) ? `<div class="field"><label>Custom requirements</label><textarea id="customRequirements" placeholder="Anything special for this event…">${escapeHTML(wizard.customRequirements)}</textarea></div>` : ""}
+      ${!vendor && !isContractedEventType(wizard.eventType) && (wizard.package === "$35 Package" || wizard.package === "$40 Package") ? `<div class="status-banner">✓ Birthday plush outfit is included in this package.</div>` : ""}
+      <div class="field"><label>Extra outfits</label><input id="extraOutfits" type="number" min="0" value="${wizard.extraOutfits}" /></div>
+      <div class="field"><label>Voice chips</label><input id="voiceChips" type="number" min="0" value="${wizard.voiceChips}" /></div>
+      <div class="field"><label>Extra T-shirts</label><input id="extraShirts" type="number" min="0" value="${wizard.extraShirts}" /></div>
+      <div class="field"><label>Extra vinyl designs</label><input id="extraVinyl" type="number" min="0" value="${wizard.extraVinyl}" /></div>
+    </div>`;
 }
 
 
@@ -9590,10 +9152,10 @@ function reviewStepHTML() {
 
       <div class="detail-row">
 
-        <span>Guests</span>
+        <span>SWL capacity</span>
 
         <strong>
-          ${wizard.guestCount || "—"}
+          ${wizard.swlCapacity || wizard.guestCount || "—"}
         </strong>
 
       </div>
@@ -9670,9 +9232,9 @@ ${escapeHTML(plushName)}                      </span>
 
                       <strong>
                         ${
-                          Number(
-                            wizard.guestCount || 0
-                          ) + 2
+                          (isVendorEventType(wizard.eventType) || isContractedEventType(wizard.eventType) || isCustomEventType(wizard.eventType))
+                            ? Number(wizard.plushQuantities?.[plushId] || 0)
+                            : plannedSWLCount(wizard) + 2
                         }
                       </strong>
 
@@ -9875,6 +9437,9 @@ function syncWizardFromCurrentStep() {
       wizard.customRequirements =
         get("customRequirements").value;
     }
+
+    if (get("heartQuantity")) wizard.heartQuantity = Number(get("heartQuantity").value || 0);
+    if (get("bagQuantity")) wizard.bagQuantity = Number(get("bagQuantity").value || 0);
   }
 
   if (wizardStep === 3) {
@@ -9909,37 +9474,50 @@ function syncWizardFromCurrentStep() {
 }
 
 function syncPartyFields() {
-  const guestCount =
-    document.getElementById(
-      "guestCount"
-    );
-
-  const specialGuestName =
-    document.getElementById(
-      "specialGuestName"
-    );
-
-  const specialGuestAge =
-    document.getElementById(
-      "specialGuestAge"
-    );
-
-  if (guestCount) {
-    wizard.guestCount =
-      Number(
-        guestCount.value || 0
-      );
+  const capacityField = document.getElementById("swlCapacity");
+  const attendanceField = document.getElementById("eventAttendance");
+  const specialGuestName = document.getElementById("specialGuestName");
+  const specialGuestAge = document.getElementById("specialGuestAge");
+  if (capacityField) {
+    wizard.swlCapacity = Number(capacityField.value || 0);
+    wizard.guestCount = wizard.swlCapacity;
   }
+  if (attendanceField) wizard.eventAttendance = Number(attendanceField.value || 0);
+  if (specialGuestName) wizard.specialGuestName = specialGuestName.value;
+  if (specialGuestAge) wizard.specialGuestAge = specialGuestAge.value;
+  document.querySelectorAll('[id^="plushQty-"]').forEach(input => {
+    wizard.plushQuantities[input.id.replace("plushQty-", "")] = Math.max(0, Number(input.value || 0));
+  });
+}
 
-  if (specialGuestName) {
-    wizard.specialGuestName =
-      specialGuestName.value;
-  }
+function changeWizardEventType(value) {
+  wizard.eventType = value;
+  if (isVendorEventType(value) || isContractedEventType(value)) wizard.package = "Custom";
+  applyEventTypeDefaults(wizard, true);
+}
 
-  if (specialGuestAge) {
-    wizard.specialGuestAge =
-      specialGuestAge.value;
-  }
+function updateCapacityDefaults(value) {
+  const previous = plannedSWLCount(wizard);
+  wizard.swlCapacity = Math.max(0, Number(value || 0));
+  wizard.guestCount = wizard.swlCapacity;
+  if (wizard.heartQuantity === "" || Number(wizard.heartQuantity) === previous) wizard.heartQuantity = wizard.swlCapacity;
+  if (!isVendorEventType(wizard.eventType) && (wizard.bagQuantity === "" || Number(wizard.bagQuantity) === previous)) wizard.bagQuantity = wizard.swlCapacity;
+  updatePlushReservationLabels();
+}
+
+function setWizardPlushQuantity(plushId, value) {
+  wizard.plushQuantities ||= {};
+  wizard.plushQuantities[plushId] = Math.max(0, Number(value || 0));
+  const card = document.querySelector(`[data-plush="${plushId}"]`);
+  const label = card?.querySelector(".plush-reservation-label");
+  if (label) label.textContent = `${wizard.plushQuantities[plushId]} planned`;
+}
+
+function adjustWizardPlushQuantity(plushId, delta) {
+  const input = document.getElementById(`plushQty-${plushId}`);
+  const next = Math.max(0, Number(input?.value || wizard.plushQuantities?.[plushId] || 0) + delta);
+  if (input) input.value = next;
+  setWizardPlushQuantity(plushId, next);
 }
 
 
@@ -10030,6 +9608,10 @@ function togglePlushWithoutJump(
     wizard.selectedPlush.push(
       plushId
     );
+    wizard.plushQuantities ||= {};
+    if ((isVendorEventType(wizard.eventType) || isContractedEventType(wizard.eventType) || isCustomEventType(wizard.eventType)) && wizard.plushQuantities[plushId] == null) {
+      wizard.plushQuantities[plushId] = 0;
+    }
 
     button.classList.add(
       "selected"
@@ -10052,29 +9634,16 @@ function togglePlushWithoutJump(
 }
 
 function updatePlushReservationLabels() {
-  const guestField =
-    document.getElementById(
-      "guestCount"
-    );
-
-  const guestCount =
-    Number(
-      guestField?.value || 0
-    );
-
-  wizard.guestCount =
-    guestCount;
-
-  document
-    .querySelectorAll(
-      ".plush-reservation-label"
-    )
-    .forEach(label => {
-      label.textContent =
-        guestCount > 0
-          ? `${guestCount + 2} will be reserved`
-          : "Enter guest count above";
-    });
+  const capacity = plannedSWLCount(wizard);
+  const manual = isVendorEventType(wizard.eventType) || isContractedEventType(wizard.eventType) || isCustomEventType(wizard.eventType);
+  document.querySelectorAll(".plush-choice-card").forEach(card => {
+    const plushId = card.dataset.plush;
+    const label = card.querySelector(".plush-reservation-label");
+    if (!label) return;
+    if (!wizard.selectedPlush.includes(plushId)) label.textContent = "Not selected";
+    else if (manual) label.textContent = `${Number(wizard.plushQuantities?.[plushId] || 0)} planned`;
+    else label.textContent = capacity > 0 ? `${capacity + 2} will be reserved` : "Enter planned guests above";
+  });
 }
 
 
@@ -10106,8 +9675,7 @@ function wizardNext() {
 
   if (wizardStep === 1) {
     if (
-      !wizard.guestCount ||
-      wizard.guestCount < 1
+      !plannedSWLCount(wizard)
     ) {
       alert(
         "Enter the guest count."
@@ -10116,11 +9684,8 @@ function wizardNext() {
       return;
     }
 
-    if (!wizard.package) {
-      alert(
-        "Choose a package or Custom."
-      );
-
+    if (!wizard.package && !isVendorEventType(wizard.eventType) && !isContractedEventType(wizard.eventType)) {
+      alert("Choose a package or Custom.");
       return;
     }
   }
