@@ -6946,3 +6946,78 @@ button.inventory-add-photo-placeholder {
 
   background: #fff;
 }
+
+/* =========================================================
+   SWL DELIGHT PASS — FINAL OVERRIDES
+========================================================= */
+
+.bottom-nav {
+  grid-template-columns: repeat(5, 1fr);
+}
+
+.swl-daily-message {
+  max-width: 520px;
+  margin-bottom: 0 !important;
+}
+
+.swl-pressed {
+  transform: scale(0.975) !important;
+  transition: transform 90ms ease !important;
+}
+
+.swl-toast {
+  position: fixed;
+  left: 50%;
+  bottom: calc(88px + env(safe-area-inset-bottom));
+  z-index: 250;
+  max-width: calc(100vw - 36px);
+  padding: 11px 15px;
+  border: 1px solid rgba(76, 51, 37, 0.12);
+  border-radius: 999px;
+  background: rgba(76, 51, 37, 0.94);
+  color: #fffaf1;
+  box-shadow: 0 10px 28px rgba(76, 51, 37, 0.18);
+  font-size: 0.78rem;
+  font-weight: 800;
+  line-height: 1.2;
+  text-align: center;
+  pointer-events: none;
+  opacity: 0;
+  transform: translate(-50%, 12px) scale(0.96);
+  transition: opacity 180ms ease, transform 180ms ease;
+}
+
+.swl-toast.show {
+  opacity: 1;
+  transform: translate(-50%, 0) scale(1);
+}
+
+.swl-number-pop {
+  animation: swlNumberPop 260ms ease;
+}
+
+@keyframes swlNumberPop {
+  0% { transform: scale(1); }
+  45% { transform: scale(1.18); }
+  100% { transform: scale(1); }
+}
+
+.pack-done-message.pack-done-pop {
+  animation: swlDonePop 560ms cubic-bezier(.2,.9,.25,1.2);
+}
+
+@keyframes swlDonePop {
+  0% { transform: translateY(8px) scale(0.96); opacity: 0; }
+  60% { transform: translateY(-2px) scale(1.025); opacity: 1; }
+  100% { transform: translateY(0) scale(1); opacity: 1; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .swl-pressed,
+  .swl-toast,
+  .swl-number-pop,
+  .pack-done-message.pack-done-pop {
+    animation: none !important;
+    transition: none !important;
+  }
+}
