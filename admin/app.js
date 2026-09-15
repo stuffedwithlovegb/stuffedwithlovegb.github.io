@@ -711,9 +711,7 @@ function renderHome() {
   setHeader("Ops");
 
   const main =
-    document.getElementById(
-      "mainContent"
-    );
+    document.getElementById("mainContent");
 
   const upcoming =
     [...state.events]
@@ -724,38 +722,191 @@ function renderHome() {
           new Date(b.date)
       );
 
-  const nextEvent =
-    upcoming[0];
+  const nextEvent = upcoming[0];
+  const issues = allCurrentIssues();
 
-  const issues =
-    allCurrentIssues();
+  const manualReminders =
+    state.attention.filter(
+      item =>
+        item.type === "manual" &&
+        !item.done
+    );
 
-  let html = "";
+  const hour =
+    new Date().getHours();
 
-  if (issues.length === 0) {
-    html += `
-      <div class="status-banner">
-        Everything’s looking good. Nothing needs you right now. ❤️
+  const greeting =
+    hour < 12
+      ? "Good morning!"
+      : hour < 17
+        ? "Good afternoon!"
+        : "Good evening!";
+
+  let html = `
+
+    <section class="swl-home-welcome">
+
+      <div class="swl-home-welcome-copy">
+
+        <div class="swl-home-greeting">
+          ${greeting}
+        </div>
+
+        <h2>
+          Let’s make more
+          <span>happy hugs</span>
+          today.
+        </h2>
+
+        <p>
+          Here’s what’s happening with
+          Stuffed With Love.
+        </p>
+
       </div>
-    `;
-  } else {
-    html += `
-      <div class="status-banner warning">
-        You’ve got ${issues.length}
-        thing${issues.length === 1 ? "" : "s"}
-        that need attention.
-      </div>
-    `;
-  }
 
-  html += `
-    <section class="section">
-      <div class="section-heading">
+      <div class="swl-home-heart">
+        ♥
+      </div>
+
+    </section>
+
+
+    <section class="swl-home-glance">
+
+      <button
+        class="swl-glance-card"
+        onclick="navigate('events')"
+      >
+        <strong>${upcoming.length}</strong>
+        <span>Upcoming</span>
+      </button>
+
+      <button
+        class="swl-glance-card ${
+          issues.length ? "needs-attention" : ""
+        }"
+        onclick="navigate('attention')"
+      >
+        <strong>${issues.length}</strong>
+        <span>Attention</span>
+      </button>
+
+      <button
+        class="swl-glance-card"
+        onclick="navigate('attention')"
+      >
+        <strong>${manualReminders.length}</strong>
+        <span>Reminders</span>
+      </button>
+
+    </section>
+
+
+    <section class="swl-home-section">
+
+      <div class="swl-home-section-title">
+        <h2>Quick Actions</h2>
+      </div>
+
+      <div class="swl-quick-grid">
+
+        <button
+          class="swl-quick-action primary"
+          onclick="openAddEventWizard()"
+        >
+          <span class="swl-quick-icon">＋</span>
+
+          <span>
+            <strong>Add Event</strong>
+            <small>Book something new</small>
+          </span>
+        </button>
+
+        <button
+          class="swl-quick-action"
+          onclick="navigate('inventory')"
+        >
+          <span class="swl-quick-icon">♥</span>
+
+          <span>
+            <strong>Inventory</strong>
+            <small>Check what’s ready</small>
+          </span>
+        </button>
+
+        ${
+          nextEvent
+            ? `
+              <button
+                class="swl-quick-action"
+                onclick="
+                  openEvent('${nextEvent.id}');
+                  setEventTab('pack');
+                "
+              >
+                <span class="swl-quick-icon">✓</span>
+
+                <span>
+                  <strong>Packing List</strong>
+                  <small>Prep the next event</small>
+                </span>
+              </button>
+            `
+            : `
+              <button
+                class="swl-quick-action"
+                onclick="navigate('events')"
+              >
+                <span class="swl-quick-icon">✓</span>
+
+                <span>
+                  <strong>Packing List</strong>
+                  <small>No event selected</small>
+                </span>
+              </button>
+            `
+        }
+
+        <button
+          class="swl-quick-action"
+          onclick="navigate('attention')"
+        >
+          <span class="swl-quick-icon">!</span>
+
+          <span>
+            <strong>Attention</strong>
+            <small>See what needs you</small>
+          </span>
+        </button>
+
+      </div>
+
+    </section>
+
+
+    <section class="swl-home-section">
+
+      <div class="swl-home-section-title">
+
         <h2>Next Up</h2>
+
+        ${
+          upcoming.length
+            ? `
+              <button onclick="navigate('events')">
+                All events
+              </button>
+            `
+            : ""
+        }
+
       </div>
   `;
 
+
   if (!nextEvent) {
+
     html += `
       <div class="card empty-card">
 
@@ -764,22 +915,15 @@ function renderHome() {
         </strong>
 
         <p>
-          When you add your first event,
+          When you add an event,
           it’ll show up here.
         </p>
 
-        <div style="margin-top:16px;">
-          <button
-            class="primary-button full-width"
-            onclick="openAddEventWizard()"
-          >
-            + Add Event
-          </button>
-        </div>
-
       </div>
     `;
+
   } else {
+
     const issuesForEvent =
       eventIssues(nextEvent);
 
@@ -787,239 +931,275 @@ function renderHome() {
       daysUntil(nextEvent.date);
 
     html += `
-      <div
-        class="card hero-card tap-card"
+      <button
+        class="swl-next-event-card"
         onclick="openEvent('${nextEvent.id}')"
       >
 
-        <div class="card-label">
-          Next event
-        </div>
+        <div class="swl-next-date">
 
-        <h2>
-          ${escapeHTML(nextEvent.name)}
-        </h2>
+          <span>
+            ${new Date(
+              `${nextEvent.date}T12:00:00`
+            )
+              .toLocaleDateString(
+                "en-US",
+                { month: "short" }
+              )
+              .toUpperCase()}
+          </span>
 
-        <div>
-          ${formatDate(nextEvent.date)}
-          ${
-            nextEvent.time
-              ? ` · ${formatTime(nextEvent.time)}`
-              : ""
-          }
-        </div>
-
-        <div class="meta-row">
-
-          ${
-            days !== null
-              ? `
-                <span class="pill">
-                  ${
-                    days === 0
-                      ? "Today"
-                      : `${days} days`
-                  }
-                </span>
-              `
-              : ""
-          }
-
-          ${
-            nextEvent.guestCount
-              ? `
-                <span class="pill">
-                  ${nextEvent.guestCount} guests
-                </span>
-              `
-              : ""
-          }
-
-          ${
-            nextEvent.package
-              ? `
-                <span class="pill">
-                  ${escapeHTML(nextEvent.package)}
-                </span>
-              `
-              : ""
-          }
-
-          ${
-            issuesForEvent.length
-              ? `
-                <span class="pill warning">
-                  ${issuesForEvent.length}
-                  need attention
-                </span>
-              `
-              : `
-                <span class="pill success">
-                  ✓ On track
-                </span>
-              `
-          }
+          <strong>
+            ${new Date(
+              `${nextEvent.date}T12:00:00`
+            ).getDate()}
+          </strong>
 
         </div>
+
+
+        <div class="swl-next-copy">
+
+          <div class="swl-next-topline">
+
+            <span>
+              ${
+                days === 0
+                  ? "Today"
+                  : days === 1
+                    ? "Tomorrow"
+                    : days > 1
+                      ? `In ${days} days`
+                      : "Upcoming"
+              }
+            </span>
+
+            ${
+              issuesForEvent.length
+                ? `
+                  <span class="swl-next-warning">
+                    ${issuesForEvent.length}
+                    need attention
+                  </span>
+                `
+                : `
+                  <span class="swl-next-ready">
+                    ✓ On track
+                  </span>
+                `
+            }
+
+          </div>
+
+          <strong class="swl-next-name">
+            ${escapeHTML(nextEvent.name)}
+          </strong>
+
+          <div class="swl-next-meta">
+
+            ${
+              nextEvent.time
+                ? formatTime(nextEvent.time)
+                : "Time not set"
+            }
+
+            ${
+              nextEvent.guestCount
+                ? ` · ${nextEvent.guestCount} guests`
+                : ""
+            }
+
+          </div>
+
+        </div>
+
+        <span class="swl-next-arrow">›</span>
+
+      </button>
+    `;
+  }
+
+
+  html += `
+    </section>
+
+
+    <section class="swl-home-section">
+
+      <div class="swl-home-section-title">
+
+        <h2>Needs Attention</h2>
 
         ${
-          Number(nextEvent.balanceDue || 0) > 0
+          issues.length
             ? `
-              <div
-                style="
-                  margin-top:15px;
-                  font-weight:800;
-                "
-              >
-                ${money(nextEvent.balanceDue)}
-                due
-              </div>
+              <button onclick="navigate('attention')">
+                View all
+              </button>
             `
             : ""
         }
 
       </div>
-    `;
-  }
-
-  html += `
-    </section>
-
-    <section class="section">
-
-      <div class="section-heading">
-        <h2>Needs Attention</h2>
-
-        <button
-          onclick="navigate('attention')"
-        >
-          View all
-        </button>
-      </div>
   `;
 
-  if (issues.length === 0) {
-    html += `
-      <div class="card empty-card">
-        <strong>
-          ✓ Nothing needs your attention
-        </strong>
 
-        <p>
-          Your future events are currently on track.
-        </p>
+  if (!issues.length) {
+
+    html += `
+      <div class="swl-all-good">
+
+        <span>✓</span>
+
+        <div>
+          <strong>
+            Everything looks good.
+          </strong>
+
+          <p>
+            Nothing needs you right now.
+          </p>
+        </div>
+
       </div>
     `;
+
   } else {
+
+    html += `
+      <div class="swl-attention-list">
+    `;
+
     issues
       .slice(0, 3)
       .forEach(issue => {
+
         const event =
           state.events.find(
             e => e.id === issue.eventId
           );
 
         html += `
-          <div
-            class="card list-card tap-card"
+          <button
+            class="swl-attention-item"
             ${
               issue.eventId
                 ? `onclick="openEvent('${issue.eventId}')"`
-                : ""
+                : `onclick="navigate('attention')"`
             }
           >
-            <h3>
-              ${escapeHTML(issue.title)}
-            </h3>
 
-            <p>
-              ${
-                event
-                  ? escapeHTML(event.name)
-                  : "Reminder"
-              }
-            </p>
-          </div>
+            <span class="swl-attention-mark">
+              !
+            </span>
+
+            <span class="swl-attention-copy">
+
+              <strong>
+                ${escapeHTML(issue.title)}
+              </strong>
+
+              <small>
+                ${
+                  event
+                    ? escapeHTML(event.name)
+                    : "Reminder"
+                }
+              </small>
+
+            </span>
+
+            <span class="swl-attention-arrow">
+              ›
+            </span>
+
+          </button>
         `;
       });
+
+    html += `
+      </div>
+    `;
   }
+
 
   html += `
     </section>
   `;
 
-  if (upcoming.length > 1) {
-    html += `
-      <section class="section">
 
-        <div class="section-heading">
+  if (upcoming.length > 1) {
+
+    html += `
+      <section class="swl-home-section">
+
+        <div class="swl-home-section-title">
+
           <h2>Coming Up</h2>
 
-          <button
-            onclick="navigate('events')"
-          >
+          <button onclick="navigate('events')">
             View all
           </button>
+
         </div>
+
+        <div class="swl-coming-list">
     `;
 
     upcoming
-      .slice(1, 5)
+      .slice(1, 4)
       .forEach(event => {
+
         const issueCount =
           eventIssues(event).length;
 
         html += `
-          <div
-            class="card list-card tap-card"
+          <button
+            class="swl-coming-event"
             onclick="openEvent('${event.id}')"
           >
 
-            <h3>
-              ${escapeHTML(event.name)}
-            </h3>
+            <div>
 
-            <p>
-              ${formatDate(event.date)}
-              ${
-                event.time
-                  ? ` · ${formatTime(event.time)}`
-                  : ""
-              }
-              ${
-                event.guestCount
-                  ? ` · ${event.guestCount} guests`
-                  : ""
-              }
-            </p>
+              <strong>
+                ${escapeHTML(event.name)}
+              </strong>
 
-            <div class="meta-row">
-
-              ${
-                issueCount
-                  ? `
-                    <span class="pill warning">
-                      ⚠ ${issueCount}
-                      issue${issueCount === 1 ? "" : "s"}
-                    </span>
-                  `
-                  : `
-                    <span class="pill success">
-                      ✓ On track
-                    </span>
-                  `
-              }
+              <span>
+                ${formatDate(event.date)}
+                ${
+                  event.time
+                    ? ` · ${formatTime(event.time)}`
+                    : ""
+                }
+              </span>
 
             </div>
 
-          </div>
+            ${
+              issueCount
+                ? `
+                  <span class="swl-coming-status warning">
+                    ${issueCount}
+                  </span>
+                `
+                : `
+                  <span class="swl-coming-status">
+                    ✓
+                  </span>
+                `
+            }
+
+          </button>
         `;
       });
 
     html += `
+        </div>
       </section>
     `;
   }
+
 
   main.innerHTML = html;
 }
