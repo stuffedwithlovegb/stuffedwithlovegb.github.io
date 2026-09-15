@@ -5483,3 +5483,140 @@ button.inventory-add-photo-placeholder {
   }
 
 }
+/* =========================================================
+   🚨 FINAL INVENTORY OVERRIDE — DO NOT PUT CSS BELOW THIS
+========================================================= */
+
+/* ALL plush photo areas must be identical */
+.inventory-group[data-inventory-group="Plush"]
+.inventory-plush-card
+.inventory-plush-thumb,
+.inventory-group[data-inventory-group="Plush"]
+.inventory-plush-card
+.inventory-plush-thumb.inventory-plush-thumb-empty {
+  flex: 0 0 122px !important;
+
+  width: 100% !important;
+  min-width: 100% !important;
+  max-width: 100% !important;
+
+  height: 122px !important;
+  min-height: 122px !important;
+  max-height: 122px !important;
+
+  padding: 8px !important;
+
+  border-radius: 0 !important;
+}
+
+/* New plush "Add Photo" area fills the same 122px photo box */
+.inventory-group[data-inventory-group="Plush"]
+.inventory-plush-card
+.inventory-plush-thumb-empty
+.inventory-add-photo-placeholder {
+  flex: 1 1 auto !important;
+
+  width: 100% !important;
+  min-width: 100% !important;
+  max-width: 100% !important;
+
+  height: 100% !important;
+  min-height: 100% !important;
+  max-height: 100% !important;
+
+  padding: 0 !important;
+  margin: 0 !important;
+}
+
+/* Keep actual plush photos contained */
+.inventory-group[data-inventory-group="Plush"]
+.inventory-plush-card
+.inventory-plush-thumb img {
+  display: block !important;
+
+  width: 100% !important;
+  height: 100% !important;
+
+  object-fit: contain !important;
+  object-position: center !important;
+}
+
+/* Keep plush cards consistent */
+.inventory-group[data-inventory-group="Plush"]
+.inventory-plush-card {
+  min-height: 272px !important;
+}
+
+/* Consistent name area */
+.inventory-group[data-inventory-group="Plush"]
+.inventory-plush-card
+.inventory-item-copy {
+  min-height: 48px !important;
+
+  padding: 11px 11px 5px !important;
+}
+
+/* Three-count row */
+.inventory-group[data-inventory-group="Plush"]
+.inventory-plush-card
+.inventory-plush-count-grid {
+  flex: 0 0 auto !important;
+
+  width: calc(100% - 20px) !important;
+
+  margin:
+    4px
+    10px
+    0 !important;
+}
+
+/* Bottom area only holds the +6 */
+.inventory-group[data-inventory-group="Plush"]
+.inventory-plush-card
+.inventory-item-right {
+  width: 100% !important;
+
+  display: flex !important;
+  align-items: center !important;
+  justify-content: flex-end !important;
+
+  gap: 0 !important;
+
+  margin-top: auto !important;
+
+  padding:
+    7px
+    10px
+    10px !important;
+}
+
+/* +6 stays LITTLE */
+.inventory-group[data-inventory-group="Plush"]
+.inventory-plush-card
+.inventory-quick-six {
+  flex: 0 0 43px !important;
+
+  width: 43px !important;
+  min-width: 43px !important;
+  max-width: 43px !important;
+
+  height: 37px !important;
+  min-height: 37px !important;
+  max-height: 37px !important;
+
+  padding: 0 !important;
+
+  border-radius: 12px !important;
+
+  font-size: 0.72rem !important;
+  line-height: 1 !important;
+
+  white-space: nowrap !important;
+}
+
+/* Kill old plush metadata layout */
+.inventory-group[data-inventory-group="Plush"]
+.inventory-plush-card
+.inventory-item-meta {
+  display: none !important;
+}
