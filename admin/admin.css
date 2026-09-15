@@ -5195,3 +5195,65 @@ a {
 
   white-space: nowrap;
 }
+/* =========================================================
+   INVENTORY PHOTO UPLOAD
+========================================================= */
+
+button.inventory-add-photo-placeholder {
+  appearance: none;
+  border: 0;
+  padding: 0;
+  margin: 0;
+  background: transparent;
+  font: inherit;
+  cursor: pointer;
+}
+
+.inventory-modal-plush {
+  appearance: none;
+  border: 0;
+  padding: 0;
+  margin: 0;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  overflow: hidden;
+  cursor: pointer;
+}
+
+.inventory-modal-plush img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.inventory-modal-plush-empty {
+  background:
+    linear-gradient(
+      145deg,
+      var(--cream-soft),
+      var(--yellow-pale)
+    );
+
+  border:
+    1.5px dashed
+    rgba(76, 51, 37, 0.22);
+}
+
+.inventory-change-photo {
+  appearance: none;
+  border: 0;
+  background: transparent;
+
+  padding: 3px 0 0;
+  margin: 0;
+
+  color: var(--muted);
+  font: inherit;
+  font-size: 12px;
+  font-weight: 700;
+
+  cursor: pointer;
+}
