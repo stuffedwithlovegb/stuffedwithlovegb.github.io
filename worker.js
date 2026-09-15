@@ -570,17 +570,20 @@ async function handleInventory(
     const imageKey =
       `inventory/${id}/${crypto.randomUUID()}.${extension}`;
 
-    await env.IMAGES.put(
-      imageKey,
-      file.stream(),
-      {
-        httpMetadata: {
-          contentType:
-            file.type ||
-            "image/jpeg"
-        }
-      }
-    );
+    const imageBytes =
+  await file.arrayBuffer();
+
+await env.IMAGES.put(
+  imageKey,
+  imageBytes,
+  {
+    httpMetadata: {
+      contentType:
+        file.type ||
+        "image/jpeg"
+    }
+  }
+);
 
     await env.DB
       .prepare(`
