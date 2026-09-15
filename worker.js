@@ -36,6 +36,51 @@ function error(message, status = 400) {
   );
 }
 
+function safeFileName(name) {
+  const cleaned = String(name || "file")
+    .trim()
+    .replace(/[\/\\]/g, "-")
+    .replace(/[\u0000-\u001F\u007F]/g, "")
+    .replace(/\s+/g, " ");
+
+  return cleaned || "file";
+}
+
+function fileExtension(name) {
+  const safeName = safeFileName(name);
+
+  const dotIndex =
+    safeName.lastIndexOf(".");
+
+  if (
+    dotIndex <= 0 ||
+    dotIndex === safeName.length - 1
+  ) {
+    return "";
+  }
+
+  return safeName
+    .slice(dotIndex)
+    .toLowerCase()
+    .replace(/[^a-z0-9.]/g, "");
+}
+
+function mapFileRow(row) {
+  return {
+    id: row.id,
+    name: row.name,
+    category: row.category,
+    originalName:
+      row.original_name || row.name,
+    contentType:
+      row.content_type ||
+      "application/octet-stream",
+    sizeBytes:
+      Number(row.size_bytes || 0),
+    createdAt: row.created_at
+  };
+}
+
 
 /* =========================================================
    API ROUTER
@@ -86,6 +131,15 @@ async function handleApi(request, env, url) {
         request,
         env,
         id
+      );
+    }
+
+    if (resource === "files") {
+      return handleFiles(
+        request,
+        env,
+        id,
+        action
       );
     }
 
@@ -571,19 +625,19 @@ async function handleInventory(
       `inventory/${id}/${crypto.randomUUID()}.${extension}`;
 
     const imageBytes =
-  await file.arrayBuffer();
+      await file.arrayBuffer();
 
-await env.IMAGES.put(
-  imageKey,
-  imageBytes,
-  {
-    httpMetadata: {
-      contentType:
-        file.type ||
-        "image/jpeg"
-    }
-  }
-);
+    await env.IMAGES.put(
+      imageKey,
+      imageBytes,
+      {
+        httpMetadata: {
+          contentType:
+            file.type ||
+            "image/jpeg"
+        }
+      }
+    );
 
     await env.DB
       .prepare(`
@@ -772,6 +826,464 @@ await env.IMAGES.put(
 
   return error(
     "Unsupported inventory request.",
+    405
+  );
+}
+
+
+/* =========================================================
+   FILES
+========================================================= */
+
+async function handleFiles(
+  request,
+  env,
+  id,
+  action
+) {
+
+  // GET ALL FILES
+  if (
+    request.method === "GET" &&
+    !id
+  ) {
+    const result = await env.DB
+      .prepare(`
+        SELECT
+          id,
+          name,
+          category,
+          original_name,
+          content_type,
+          size_bytes,
+          created_at
+        FROM files
+        ORDER BY created_at DESC
+      `)
+      .all();
+
+    return json({
+      ok: true,
+      files:
+        result.results.map(
+          row => mapFileRow(row)
+        )
+    });
+  }
+
+
+  // UPLOAD FILE
+  if (
+    request.method === "POST" &&
+    !id
+  ) {
+    const formData =
+      await request.formData();
+
+    const file =
+      formData.get("file");
+
+    if (
+      !file ||
+      typeof file === "string"
+    ) {
+      return error(
+        "File is required."
+      );
+    }
+
+    const originalName =
+      safeFileName(
+        file.name || "file"
+      );
+
+    const requestedName =
+      String(
+        formData.get("name") || ""
+      ).trim();
+
+    const name =
+      requestedName ||
+      originalName;
+
+    const requestedCategory =
+      String(
+        formData.get("category") ||
+        "Other"
+      ).trim();
+
+    const allowedCategories = [
+      "Brand",
+      "Cricut",
+      "Printables",
+      "Event Assets",
+      "Other"
+    ];
+
+    const category =
+      allowedCategories.includes(
+        requestedCategory
+      )
+        ? requestedCategory
+        : "Other";
+
+    /*
+      Keep this intentionally larger than
+      inventory-photo uploads because Files
+      can contain PDFs, ZIPs, PPTX, etc.
+
+      25 MB is plenty for the internal SWL
+      file cabinet without letting one upload
+      get ridiculous.
+    */
+    const maxBytes =
+      25 * 1024 * 1024;
+
+    if (file.size > maxBytes) {
+      return error(
+        "File must be 25 MB or smaller."
+      );
+    }
+
+    const fileId =
+      "file_" +
+      crypto.randomUUID();
+
+    const extension =
+      fileExtension(originalName);
+
+    const r2Key =
+      `files/${fileId}/${crypto.randomUUID()}${extension}`;
+
+    const contentType =
+      file.type ||
+      "application/octet-stream";
+
+    const createdAt =
+      new Date().toISOString();
+
+    const bytes =
+      await file.arrayBuffer();
+
+    await env.IMAGES.put(
+      r2Key,
+      bytes,
+      {
+        httpMetadata: {
+          contentType
+        },
+        customMetadata: {
+          originalName
+        }
+      }
+    );
+
+    try {
+      await env.DB
+        .prepare(`
+          INSERT INTO files (
+            id,
+            name,
+            category,
+            r2_key,
+            original_name,
+            content_type,
+            size_bytes,
+            created_at
+          )
+          VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+        `)
+        .bind(
+          fileId,
+          name,
+          category,
+          r2Key,
+          originalName,
+          contentType,
+          file.size,
+          createdAt
+        )
+        .run();
+
+    } catch (err) {
+      // If D1 fails, don't leave an
+      // orphaned object sitting in R2.
+      await env.IMAGES.delete(r2Key);
+      throw err;
+    }
+
+    return json({
+      ok: true,
+      file: {
+        id: fileId,
+        name,
+        category,
+        originalName,
+        contentType,
+        sizeBytes: file.size,
+        createdAt
+      }
+    });
+  }
+
+
+  // DOWNLOAD / OPEN FILE
+  if (
+    request.method === "GET" &&
+    id &&
+    action === "download"
+  ) {
+    const fileRecord =
+      await env.DB
+        .prepare(`
+          SELECT
+            id,
+            name,
+            r2_key,
+            original_name,
+            content_type
+          FROM files
+          WHERE id = ?
+        `)
+        .bind(id)
+        .first();
+
+    if (!fileRecord) {
+      return error(
+        "File not found.",
+        404
+      );
+    }
+
+    const object =
+      await env.IMAGES.get(
+        fileRecord.r2_key
+      );
+
+    if (!object) {
+      return error(
+        "Stored file not found.",
+        404
+      );
+    }
+
+    const headers =
+      new Headers();
+
+    object.writeHttpMetadata(
+      headers
+    );
+
+    headers.set(
+      "Content-Type",
+      fileRecord.content_type ||
+      headers.get("Content-Type") ||
+      "application/octet-stream"
+    );
+
+    const downloadName =
+      safeFileName(
+        fileRecord.original_name ||
+        fileRecord.name ||
+        "file"
+      )
+        .replace(/"/g, "");
+
+    /*
+      inline lets images/PDFs open directly
+      in the browser when supported, while
+      other file types still download/open
+      according to the device.
+    */
+    headers.set(
+      "Content-Disposition",
+      `inline; filename="${downloadName}"`
+    );
+
+    headers.set(
+      "Cache-Control",
+      "private, max-age=300"
+    );
+
+    return new Response(
+      object.body,
+      {
+        headers
+      }
+    );
+  }
+
+
+  // UPDATE FILE NAME / CATEGORY
+  if (
+    request.method === "PUT" &&
+    id &&
+    !action
+  ) {
+    const existing =
+      await env.DB
+        .prepare(`
+          SELECT
+            id,
+            name,
+            category,
+            original_name,
+            content_type,
+            size_bytes,
+            created_at
+          FROM files
+          WHERE id = ?
+        `)
+        .bind(id)
+        .first();
+
+    if (!existing) {
+      return error(
+        "File not found.",
+        404
+      );
+    }
+
+    const body =
+      await request.json();
+
+    const name =
+      String(
+        body.name ??
+        existing.name
+      ).trim();
+
+    if (!name) {
+      return error(
+        "File name is required."
+      );
+    }
+
+    const allowedCategories = [
+      "Brand",
+      "Cricut",
+      "Printables",
+      "Event Assets",
+      "Other"
+    ];
+
+    const requestedCategory =
+      String(
+        body.category ??
+        existing.category
+      ).trim();
+
+    if (
+      !allowedCategories.includes(
+        requestedCategory
+      )
+    ) {
+      return error(
+        "Valid file category is required."
+      );
+    }
+
+    const result =
+      await env.DB
+        .prepare(`
+          UPDATE files
+          SET
+            name = ?,
+            category = ?
+          WHERE id = ?
+        `)
+        .bind(
+          name,
+          requestedCategory,
+          id
+        )
+        .run();
+
+    if (!result.meta.changes) {
+      return error(
+        "File not found.",
+        404
+      );
+    }
+
+    return json({
+      ok: true,
+      file: {
+        id,
+        name,
+        category:
+          requestedCategory,
+        originalName:
+          existing.original_name ||
+          existing.name,
+        contentType:
+          existing.content_type ||
+          "application/octet-stream",
+        sizeBytes:
+          Number(
+            existing.size_bytes || 0
+          ),
+        createdAt:
+          existing.created_at
+      }
+    });
+  }
+
+
+  // DELETE FILE
+  if (
+    request.method === "DELETE" &&
+    id &&
+    !action
+  ) {
+    const fileRecord =
+      await env.DB
+        .prepare(`
+          SELECT
+            id,
+            r2_key
+          FROM files
+          WHERE id = ?
+        `)
+        .bind(id)
+        .first();
+
+    if (!fileRecord) {
+      return error(
+        "File not found.",
+        404
+      );
+    }
+
+    /*
+      Delete from R2 first.
+
+      If R2 deletion throws, D1 remains intact,
+      so the user still has a valid file record
+      instead of silently losing track of it.
+    */
+    if (fileRecord.r2_key) {
+      await env.IMAGES.delete(
+        fileRecord.r2_key
+      );
+    }
+
+    await env.DB
+      .prepare(`
+        DELETE FROM files
+        WHERE id = ?
+      `)
+      .bind(id)
+      .run();
+
+    return json({
+      ok: true
+    });
+  }
+
+
+  return error(
+    "Unsupported file request.",
     405
   );
 }
