@@ -406,7 +406,8 @@ function createInitialState() {
     events: [],
     inventory: structuredClone(inventorySeed),
     attention: [],
-    notes: []
+    notes: [],
+    clients: []
   };
 }
 
@@ -479,7 +480,10 @@ async function loadStateFromServer() {
     attention:
       data.attention || [],
 
-    notes: []
+    notes: [],
+
+    clients:
+      data.clients || []
   };
 }
 
@@ -1551,74 +1555,62 @@ function normalizedClientPhone(value = "") {
 
 function clientKeyForEvent(event) {
   const email =
-    normalizeClientText(
-      event.hostEmail
-    ).toLowerCase();
+    normalizeClientText(event.hostEmail).toLowerCase();
 
   const phone =
-    normalizedClientPhone(
-      event.hostPhone
-    );
+    normalizedClientPhone(event.hostPhone);
 
-  /*
-    Never merge people by name alone.
-    Email is strongest, then phone.
-    If neither exists, that event gets
-    its own client record in the directory.
-  */
   if (email) return `email:${email}`;
   if (phone) return `phone:${phone}`;
 
   return `event:${event.id}`;
 }
 
-function getClientsFromEvents() {
+function eventDerivedClients() {
   const clients = new Map();
 
   state.events.forEach(event => {
-    const name =
-      normalizeClientText(
-        event.hostName
-      );
+    const name = normalizeClientText(event.hostName);
+    const email = normalizeClientText(event.hostEmail);
+    const phone = normalizeClientText(event.hostPhone);
 
-    const email =
-      normalizeClientText(
-        event.hostEmail
-      );
+    if (!name && !email && !phone) return;
 
-    const phone =
-      normalizeClientText(
-        event.hostPhone
-      );
-
-    if (!name && !email && !phone) {
-      return;
-    }
-
-    const key =
-      clientKeyForEvent(event);
+    const key = clientKeyForEvent(event);
 
     if (!clients.has(key)) {
       clients.set(key, {
+        id: null,
         key,
-        name:
-          name ||
-          email ||
-          phone ||
-          "Unnamed client",
-        email,
-        phone,
-        events: []
+        legacyKey: key,
+        name: name || email || phone || "Unnamed client",
+        type: "person",
+        contacts: [],
+        events: [],
+        importedFromEvents: true
       });
     }
 
-    const client =
-      clients.get(key);
+    const client = clients.get(key);
 
-    // Keep the newest non-empty contact info.
     if (name) client.name = name;
-    if (email) client.email = email;
-    if (phone) client.phone = phone;
+
+    if (
+      (email || phone) &&
+      !client.contacts.some(contact =>
+        normalizeClientText(contact.email).toLowerCase() === email &&
+        normalizedClientPhone(contact.phone) === normalizedClientPhone(phone)
+      )
+    ) {
+      client.contacts.push({
+        id: null,
+        name: name || client.name,
+        role: "",
+        email,
+        phone,
+        isPrimary: client.contacts.length === 0
+      });
+    }
 
     client.events.push(event);
   });
@@ -1626,10 +1618,67 @@ function getClientsFromEvents() {
   return [...clients.values()];
 }
 
+function getAllClients() {
+  const derived = eventDerivedClients();
+  const persisted = (state.clients || []).map(client => ({
+    ...client,
+    key: client.legacyKey || `client:${client.id}`,
+    contacts: client.contacts || [],
+    events: [],
+    importedFromEvents: false
+  }));
+
+  const claimedLegacyKeys =
+    new Set(
+      persisted
+        .map(client => client.legacyKey)
+        .filter(Boolean)
+    );
+
+  persisted.forEach(client => {
+    if (!client.legacyKey) return;
+
+    const match =
+      derived.find(item =>
+        item.key === client.legacyKey
+      );
+
+    if (match) {
+      client.events.push(...match.events);
+    }
+  });
+
+  const unclaimed =
+    derived.filter(client =>
+      !claimedLegacyKeys.has(client.key)
+    );
+
+  return [...persisted, ...unclaimed];
+}
+
+function clientPrimaryContact(client) {
+  return (
+    client.contacts?.find(contact => contact.isPrimary) ||
+    client.contacts?.[0] ||
+    null
+  );
+}
+
+function clientSearchText(client) {
+  return [
+    client.name,
+    client.type,
+    ...(client.contacts || []).flatMap(contact => [
+      contact.name,
+      contact.role,
+      contact.email,
+      contact.phone
+    ])
+  ].join(" ").toLowerCase();
+}
+
 function clientEventDateValue(event) {
-  if (!event?.date) {
-    return Number.POSITIVE_INFINITY;
-  }
+  if (!event?.date) return Number.POSITIVE_INFINITY;
 
   return new Date(
     `${event.date}T12:00:00`
@@ -1641,9 +1690,7 @@ function isClientEventUpcoming(event) {
   if (!event.date) return true;
 
   const eventDate =
-    new Date(
-      `${event.date}T12:00:00`
-    );
+    new Date(`${event.date}T12:00:00`);
 
   const today = new Date();
   today.setHours(0, 0, 0, 0);
@@ -1652,7 +1699,7 @@ function isClientEventUpcoming(event) {
 }
 
 function clientUpcomingEvents(client) {
-  return [...client.events]
+  return [...(client.events || [])]
     .filter(isClientEventUpcoming)
     .sort(
       (a, b) =>
@@ -1662,11 +1709,8 @@ function clientUpcomingEvents(client) {
 }
 
 function clientPastEvents(client) {
-  return [...client.events]
-    .filter(
-      event =>
-        !isClientEventUpcoming(event)
-    )
+  return [...(client.events || [])]
+    .filter(event => !isClientEventUpcoming(event))
     .sort(
       (a, b) =>
         clientEventDateValue(b) -
@@ -1675,11 +1719,8 @@ function clientPastEvents(client) {
 }
 
 function findClientByKey(key) {
-  return getClientsFromEvents()
-    .find(
-      client =>
-        client.key === key
-    ) || null;
+  return getAllClients()
+    .find(client => client.key === key) || null;
 }
 
 function setClientSearch(value) {
@@ -1691,9 +1732,7 @@ function openClient(encodedKey) {
   currentClientKey =
     decodeURIComponent(encodedKey);
 
-  currentScreen =
-    "client-detail";
-
+  currentScreen = "client-detail";
   render();
 
   window.scrollTo({
@@ -1703,25 +1742,21 @@ function openClient(encodedKey) {
   });
 }
 
-function clientCardHTML(
-  client,
-  showNext = false
-) {
-  const upcoming =
-    clientUpcomingEvents(client);
-
-  const nextEvent =
-    upcoming[0];
+function clientCardHTML(client, showNext = false) {
+  const upcoming = clientUpcomingEvents(client);
+  const nextEvent = upcoming[0];
+  const primary = clientPrimaryContact(client);
 
   const initial =
-    (client.name || "?")
-      .charAt(0)
-      .toUpperCase();
+    (client.name || "?").charAt(0).toUpperCase();
 
   let subline =
-    client.email ||
-    client.phone ||
-    "Contact info not added";
+    primary?.name ||
+    primary?.email ||
+    primary?.phone ||
+    (client.importedFromEvents
+      ? "From an existing event"
+      : "No contacts yet");
 
   if (showNext && nextEvent) {
     subline =
@@ -1738,23 +1773,18 @@ function clientCardHTML(
       </span>
 
       <span class="swl-client-card-copy">
-        <strong>
-          ${escapeHTML(client.name)}
-        </strong>
-
-        <span>
-          ${escapeHTML(subline)}
-        </span>
-
+        <strong>${escapeHTML(client.name)}</strong>
+        <span>${escapeHTML(subline)}</span>
         <small>
-          ${client.events.length}
-          ${client.events.length === 1 ? "event" : "events"}
+          ${(client.contacts || []).length}
+          ${(client.contacts || []).length === 1 ? "contact" : "contacts"}
+          ·
+          ${(client.events || []).length}
+          ${(client.events || []).length === 1 ? "event" : "events"}
         </small>
       </span>
 
-      <span class="swl-client-chevron">
-        ›
-      </span>
+      <span class="swl-client-chevron">›</span>
     </button>
   `;
 }
@@ -1763,80 +1793,66 @@ function renderClients() {
   setHeader("Clients");
 
   const main =
-    document.getElementById(
-      "mainContent"
-    );
+    document.getElementById("mainContent");
 
   const search =
-    normalizeClientText(
-      clientSearch
-    ).toLowerCase();
+    normalizeClientText(clientSearch).toLowerCase();
 
   const allClients =
-    getClientsFromEvents()
-      .filter(client => {
-        if (!search) return true;
-
-        return [
-          client.name,
-          client.email,
-          client.phone
-        ]
-          .join(" ")
-          .toLowerCase()
-          .includes(search);
-      });
+    getAllClients().filter(client =>
+      !search ||
+      clientSearchText(client).includes(search)
+    );
 
   const upcomingClients =
     allClients
-      .filter(
-        client =>
-          clientUpcomingEvents(client)
-            .length > 0
+      .filter(client =>
+        clientUpcomingEvents(client).length > 0
       )
-      .sort((a, b) => {
-        const aEvent =
-          clientUpcomingEvents(a)[0];
-
-        const bEvent =
-          clientUpcomingEvents(b)[0];
-
-        return (
-          clientEventDateValue(aEvent) -
-          clientEventDateValue(bEvent)
-        );
-      });
+      .sort((a, b) =>
+        clientEventDateValue(clientUpcomingEvents(a)[0]) -
+        clientEventDateValue(clientUpcomingEvents(b)[0])
+      );
 
   const alphabeticClients =
-    [...allClients].sort(
-      (a, b) =>
-        a.name.localeCompare(
-          b.name,
-          undefined,
-          { sensitivity: "base" }
-        )
+    [...allClients].sort((a, b) =>
+      a.name.localeCompare(
+        b.name,
+        undefined,
+        { sensitivity: "base" }
+      )
     );
 
   let html = `
-    <div class="swl-client-search-wrap">
-      <input
-        class="swl-client-search"
-        type="search"
-        placeholder="Search clients"
-        value="${escapeHTML(clientSearch)}"
-        oninput="setClientSearch(this.value)"
-        autocomplete="off"
-      />
+    <div class="swl-clients-toolbar">
+      <div class="swl-client-search-wrap">
+        <input
+          class="swl-client-search"
+          type="search"
+          placeholder="Search clients or contacts"
+          value="${escapeHTML(clientSearch)}"
+          oninput="setClientSearch(this.value)"
+          autocomplete="off"
+        />
+      </div>
+
+      <button
+        class="primary-button swl-add-client-button"
+        type="button"
+        onclick="openAddClientModal()"
+      >
+        + Add Client
+      </button>
     </div>
   `;
 
-  if (!getClientsFromEvents().length) {
+  if (!getAllClients().length) {
     html += `
       <div class="card empty-card">
         <strong>No clients yet.</strong>
         <p>
-          Clients appear automatically
-          from the contact info on your events.
+          Add your first client here. Clients can exist
+          even when they do not have an event yet.
         </p>
       </div>
     `;
@@ -1845,17 +1861,11 @@ function renderClients() {
     return;
   }
 
-  if (
-    !upcomingClients.length &&
-    !alphabeticClients.length
-  ) {
+  if (!alphabeticClients.length) {
     html += `
       <div class="card empty-card">
         <strong>No matches.</strong>
-        <p>
-          Try a name, phone number,
-          or email address.
-        </p>
+        <p>Try a client name, contact, phone number, or email.</p>
       </div>
     `;
 
@@ -1873,13 +1883,7 @@ function renderClients() {
 
         <div class="swl-client-list">
           ${upcomingClients
-            .map(
-              client =>
-                clientCardHTML(
-                  client,
-                  true
-                )
-            )
+            .map(client => clientCardHTML(client, true))
             .join("")}
         </div>
       </section>
@@ -1895,16 +1899,339 @@ function renderClients() {
 
       <div class="swl-client-list">
         ${alphabeticClients
-          .map(
-            client =>
-              clientCardHTML(client)
-          )
+          .map(client => clientCardHTML(client))
           .join("")}
       </div>
     </section>
   `;
 
   main.innerHTML = html;
+}
+
+function openAddClientModal() {
+  const root =
+    document.getElementById("modalRoot");
+
+  root.innerHTML = `
+    <div
+      class="modal-backdrop"
+      onclick="closeModalFromBackdrop(event)"
+    >
+      <div class="modal-sheet swl-client-form-sheet">
+        <div class="modal-handle"></div>
+
+        <div class="modal-title-row">
+          <div>
+            <div class="card-label">CLIENTS</div>
+            <h2>Add Client</h2>
+          </div>
+
+          <button
+            class="modal-close"
+            type="button"
+            onclick="closeModal()"
+          >×</button>
+        </div>
+
+        <div class="field">
+          <label>Client name</label>
+          <input
+            id="newClientName"
+            type="text"
+            placeholder="Smith Family or Discover Green Bay"
+            autocomplete="off"
+          />
+        </div>
+
+        <div class="field">
+          <label>Client type</label>
+          <select id="newClientType">
+            <option value="person">Person / Family</option>
+            <option value="organization">Organization / Business</option>
+          </select>
+        </div>
+
+        <div class="swl-contact-form-heading">
+          First contact
+          <small>Optional — you can add more after saving.</small>
+        </div>
+
+        <div class="field">
+          <label>Contact name</label>
+          <input id="newClientContactName" type="text" autocomplete="off" />
+        </div>
+
+        <div class="field">
+          <label>Role / relationship</label>
+          <input
+            id="newClientContactRole"
+            type="text"
+            placeholder="Mom, Events Manager, HR…"
+            autocomplete="off"
+          />
+        </div>
+
+        <div class="inline-fields">
+          <div class="field">
+            <label>Phone</label>
+            <input id="newClientContactPhone" type="tel" autocomplete="tel" />
+          </div>
+
+          <div class="field">
+            <label>Email</label>
+            <input id="newClientContactEmail" type="email" autocomplete="email" />
+          </div>
+        </div>
+
+        <button
+          class="primary-button full-width"
+          type="button"
+          onclick="saveNewClient()"
+        >
+          Save Client
+        </button>
+      </div>
+    </div>
+  `;
+}
+
+async function saveNewClient() {
+  const name =
+    normalizeClientText(
+      document.getElementById("newClientName")?.value
+    );
+
+  if (!name) {
+    alert("Give the client a name.");
+    return;
+  }
+
+  const type =
+    document.getElementById("newClientType")?.value ||
+    "person";
+
+  const contact = {
+    name: normalizeClientText(
+      document.getElementById("newClientContactName")?.value
+    ),
+    role: normalizeClientText(
+      document.getElementById("newClientContactRole")?.value
+    ),
+    phone: normalizeClientText(
+      document.getElementById("newClientContactPhone")?.value
+    ),
+    email: normalizeClientText(
+      document.getElementById("newClientContactEmail")?.value
+    )
+  };
+
+  const hasContact =
+    contact.name ||
+    contact.role ||
+    contact.phone ||
+    contact.email;
+
+  try {
+    const response =
+      await apiRequest("clients", {
+        method: "POST",
+        body: JSON.stringify({
+          name,
+          type,
+          contacts: hasContact ? [contact] : []
+        })
+      });
+
+    state.clients.push(response.client);
+
+    closeModal();
+    showSWLToast("Client added");
+
+    currentClientKey =
+      response.client.legacyKey ||
+      `client:${response.client.id}`;
+
+    currentScreen = "client-detail";
+    render();
+  } catch (err) {
+    alert(`Could not add that client. ${err.message}`);
+  }
+}
+
+async function ensurePersistedClient(client) {
+  if (client.id) return client;
+
+  const primary = clientPrimaryContact(client);
+
+  const response =
+    await apiRequest("clients", {
+      method: "POST",
+      body: JSON.stringify({
+        name: client.name,
+        type: client.type || "person",
+        legacyKey: client.key,
+        contacts: primary
+          ? [{
+              name: primary.name || client.name,
+              role: primary.role || "",
+              phone: primary.phone || "",
+              email: primary.email || ""
+            }]
+          : []
+      })
+    });
+
+  state.clients.push(response.client);
+
+  return {
+    ...response.client,
+    key: response.client.legacyKey || `client:${response.client.id}`,
+    events: client.events || [],
+    importedFromEvents: false
+  };
+}
+
+function openAddContactModal(encodedClientKey) {
+  const key =
+    decodeURIComponent(encodedClientKey);
+
+  const client =
+    findClientByKey(key);
+
+  if (!client) return;
+
+  const root =
+    document.getElementById("modalRoot");
+
+  root.innerHTML = `
+    <div
+      class="modal-backdrop"
+      onclick="closeModalFromBackdrop(event)"
+    >
+      <div class="modal-sheet swl-client-form-sheet">
+        <div class="modal-handle"></div>
+
+        <div class="modal-title-row">
+          <div>
+            <div class="card-label">${escapeHTML(client.name)}</div>
+            <h2>Add Contact</h2>
+          </div>
+
+          <button
+            class="modal-close"
+            type="button"
+            onclick="closeModal()"
+          >×</button>
+        </div>
+
+        <div class="field">
+          <label>Name</label>
+          <input id="newContactName" type="text" autocomplete="off" />
+        </div>
+
+        <div class="field">
+          <label>Role / relationship</label>
+          <input
+            id="newContactRole"
+            type="text"
+            placeholder="Mom, Events Manager, HR…"
+            autocomplete="off"
+          />
+        </div>
+
+        <div class="field">
+          <label>Phone</label>
+          <input id="newContactPhone" type="tel" autocomplete="tel" />
+        </div>
+
+        <div class="field">
+          <label>Email</label>
+          <input id="newContactEmail" type="email" autocomplete="email" />
+        </div>
+
+        <label class="swl-primary-contact-toggle">
+          <input id="newContactPrimary" type="checkbox" />
+          <span>Make primary contact</span>
+        </label>
+
+        <button
+          class="primary-button full-width"
+          type="button"
+          onclick="saveNewContact('${encodeURIComponent(client.key)}')"
+        >
+          Add Contact
+        </button>
+      </div>
+    </div>
+  `;
+}
+
+async function saveNewContact(encodedClientKey) {
+  const key =
+    decodeURIComponent(encodedClientKey);
+
+  let client =
+    findClientByKey(key);
+
+  if (!client) return;
+
+  const contact = {
+    name: normalizeClientText(
+      document.getElementById("newContactName")?.value
+    ),
+    role: normalizeClientText(
+      document.getElementById("newContactRole")?.value
+    ),
+    phone: normalizeClientText(
+      document.getElementById("newContactPhone")?.value
+    ),
+    email: normalizeClientText(
+      document.getElementById("newContactEmail")?.value
+    ),
+    isPrimary:
+      Boolean(
+        document.getElementById("newContactPrimary")?.checked
+      )
+  };
+
+  if (
+    !contact.name &&
+    !contact.phone &&
+    !contact.email
+  ) {
+    alert("Add at least a name, phone number, or email.");
+    return;
+  }
+
+  try {
+    client =
+      await ensurePersistedClient(client);
+
+    const response =
+      await apiRequest(
+        `clients/${encodeURIComponent(client.id)}/contacts`,
+        {
+          method: "POST",
+          body: JSON.stringify(contact)
+        }
+      );
+
+    const index =
+      state.clients.findIndex(item =>
+        item.id === client.id
+      );
+
+    if (index >= 0) {
+      state.clients[index] =
+        response.client;
+    }
+
+    closeModal();
+    showSWLToast("Contact added");
+    renderClientDetail();
+  } catch (err) {
+    alert(`Could not add that contact. ${err.message}`);
+  }
 }
 
 function clientEventCardHTML(event) {
@@ -1914,42 +2241,71 @@ function clientEventCardHTML(event) {
       onclick="openEvent('${event.id}')"
     >
       <span>
-        <strong>
-          ${escapeHTML(
-            event.name || "Event"
-          )}
-        </strong>
-
+        <strong>${escapeHTML(event.name || "Event")}</strong>
         <small>
-          ${escapeHTML(
-            formatDate(event.date)
-          )}
-          ${
-            event.package
-              ? ` · ${escapeHTML(event.package)}`
-              : ""
-          }
+          ${escapeHTML(formatDate(event.date))}
+          ${event.package ? ` · ${escapeHTML(event.package)}` : ""}
         </small>
       </span>
 
-      <span class="swl-client-chevron">
-        ›
-      </span>
+      <span class="swl-client-chevron">›</span>
     </button>
   `;
 }
 
-async function loadClientNotes(
-  clientKey,
-  force = false
-) {
+function clientContactCardHTML(client, contact) {
+  const phoneHref =
+    normalizedClientPhone(contact.phone);
+
+  return `
+    <div class="card swl-contact-card">
+      <div class="swl-contact-card-top">
+        <div>
+          <strong>
+            ${escapeHTML(contact.name || "Contact")}
+            ${contact.isPrimary ? `<span class="swl-primary-pill">Primary</span>` : ""}
+          </strong>
+
+          ${contact.role
+            ? `<small>${escapeHTML(contact.role)}</small>`
+            : ""}
+        </div>
+      </div>
+
+      <div class="swl-contact-details">
+        ${contact.phone
+          ? `<span>${escapeHTML(contact.phone)}</span>`
+          : ""}
+        ${contact.email
+          ? `<span>${escapeHTML(contact.email)}</span>`
+          : ""}
+      </div>
+
+      ${(phoneHref || contact.email)
+        ? `
+          <div class="swl-client-actions compact">
+            ${phoneHref
+              ? `
+                <a href="sms:${escapeHTML(phoneHref)}">Text</a>
+                <a href="tel:${escapeHTML(phoneHref)}">Call</a>
+              `
+              : ""}
+            ${contact.email
+              ? `<a href="mailto:${escapeHTML(contact.email)}">Email</a>`
+              : ""}
+          </div>
+        `
+        : ""}
+    </div>
+  `;
+}
+
+async function loadClientNotes(clientKey, force = false) {
   if (
     !force &&
     clientNotesCache.has(clientKey)
   ) {
-    return clientNotesCache.get(
-      clientKey
-    );
+    return clientNotesCache.get(clientKey);
   }
 
   const response =
@@ -1957,14 +2313,8 @@ async function loadClientNotes(
       `client-notes/${encodeURIComponent(clientKey)}`
     );
 
-  const notes =
-    response.notes || [];
-
-  clientNotesCache.set(
-    clientKey,
-    notes
-  );
-
+  const notes = response.notes || [];
+  clientNotesCache.set(clientKey, notes);
   return notes;
 }
 
@@ -1980,15 +2330,11 @@ function clientNotesHTML(notes) {
   return notes
     .map(note => `
       <div class="swl-client-note">
-        <div>
-          ${escapeHTML(note.text)}
-        </div>
+        <div>${escapeHTML(note.text)}</div>
 
         <div class="swl-client-note-bottom">
           <small>
-            ${new Date(
-              note.createdAt
-            ).toLocaleDateString(
+            ${new Date(note.createdAt).toLocaleDateString(
               "en-US",
               {
                 month: "short",
@@ -2015,9 +2361,7 @@ function clientNotesHTML(notes) {
 
 async function renderClientDetail() {
   const client =
-    findClientByKey(
-      currentClientKey
-    );
+    findClientByKey(currentClientKey);
 
   if (!client) {
     navigate("clients");
@@ -2027,20 +2371,16 @@ async function renderClientDetail() {
   setHeader("Client");
 
   const main =
-    document.getElementById(
-      "mainContent"
-    );
-
-  const phoneHref =
-    normalizedClientPhone(
-      client.phone
-    );
+    document.getElementById("mainContent");
 
   const upcoming =
     clientUpcomingEvents(client);
 
   const past =
     clientPastEvents(client);
+
+  const contacts =
+    client.contacts || [];
 
   main.innerHTML = `
     <button
@@ -2055,130 +2395,83 @@ async function renderClientDetail() {
       <div class="swl-client-profile-top">
         <span class="swl-client-avatar large">
           ${escapeHTML(
-            client.name
-              .charAt(0)
-              .toUpperCase()
+            client.name.charAt(0).toUpperCase()
           )}
         </span>
 
         <div>
-          <h2>
-            ${escapeHTML(client.name)}
-          </h2>
-
+          <h2>${escapeHTML(client.name)}</h2>
           <p>
-            ${client.events.length}
-            ${client.events.length === 1 ? "event" : "events"}
+            ${client.type === "organization" ? "Organization" : "Client"}
+            · ${contacts.length}
+            ${contacts.length === 1 ? "contact" : "contacts"}
+            · ${(client.events || []).length}
+            ${(client.events || []).length === 1 ? "event" : "events"}
           </p>
         </div>
       </div>
-
-      <div class="swl-client-contact-lines">
-        ${
-          client.phone
-            ? `
-              <div>
-                <span>Phone</span>
-                <strong>${escapeHTML(client.phone)}</strong>
-              </div>
-            `
-            : ""
-        }
-
-        ${
-          client.email
-            ? `
-              <div>
-                <span>Email</span>
-                <strong>${escapeHTML(client.email)}</strong>
-              </div>
-            `
-            : ""
-        }
-
-        ${
-          !client.phone &&
-          !client.email
-            ? `
-              <div>
-                <span>Contact</span>
-                <strong>Not added yet</strong>
-              </div>
-            `
-            : ""
-        }
-      </div>
-
-      ${
-        phoneHref ||
-        client.email
-          ? `
-            <div class="swl-client-actions">
-              ${
-                phoneHref
-                  ? `
-                    <a href="sms:${escapeHTML(phoneHref)}">
-                      Text
-                    </a>
-                    <a href="tel:${escapeHTML(phoneHref)}">
-                      Call
-                    </a>
-                  `
-                  : ""
-              }
-
-              ${
-                client.email
-                  ? `
-                    <a href="mailto:${escapeHTML(client.email)}">
-                      Email
-                    </a>
-                  `
-                  : ""
-              }
-            </div>
-          `
-          : ""
-      }
     </section>
 
-    ${
-      upcoming.length
-        ? `
-          <section class="swl-client-section">
-            <div class="swl-client-section-heading">
-              <h2>Upcoming Events</h2>
-              <span>${upcoming.length}</span>
-            </div>
+    <section class="swl-client-section">
+      <div class="swl-client-section-heading">
+        <h2>Contacts</h2>
 
-            <div class="swl-client-list">
-              ${upcoming
-                .map(clientEventCardHTML)
-                .join("")}
-            </div>
-          </section>
-        `
-        : ""
-    }
+        <button
+          class="swl-section-action"
+          type="button"
+          onclick="openAddContactModal('${encodeURIComponent(client.key)}')"
+        >
+          + Add Contact
+        </button>
+      </div>
 
-    ${
-      past.length
-        ? `
-          <section class="swl-client-section">
-            <div class="swl-client-section-heading">
-              <h2>Past Events</h2>
-              <span>${past.length}</span>
-            </div>
+      <div class="swl-client-list">
+        ${
+          contacts.length
+            ? contacts
+                .map(contact =>
+                  clientContactCardHTML(client, contact)
+                )
+                .join("")
+            : `
+              <div class="card empty-card swl-small-empty">
+                <strong>No contacts yet.</strong>
+                <p>Add anyone you may need to call, text, or email for this client.</p>
+              </div>
+            `
+        }
+      </div>
+    </section>
 
-            <div class="swl-client-list">
-              ${past
-                .map(clientEventCardHTML)
-                .join("")}
-            </div>
-          </section>
-        `
-        : ""
-    }
+    ${upcoming.length
+      ? `
+        <section class="swl-client-section">
+          <div class="swl-client-section-heading">
+            <h2>Upcoming Events</h2>
+            <span>${upcoming.length}</span>
+          </div>
+
+          <div class="swl-client-list">
+            ${upcoming.map(clientEventCardHTML).join("")}
+          </div>
+        </section>
+      `
+      : ""}
+
+    ${past.length
+      ? `
+        <section class="swl-client-section">
+          <div class="swl-client-section-heading">
+            <h2>Past Events</h2>
+            <span>${past.length}</span>
+          </div>
+
+          <div class="swl-client-list">
+            ${past.map(clientEventCardHTML).join("")}
+          </div>
+        </section>
+      `
+      : ""}
 
     <section class="swl-client-section">
       <div class="swl-client-section-heading">
@@ -2213,23 +2506,17 @@ async function renderClientDetail() {
 
   try {
     const notes =
-      await loadClientNotes(
-        client.key
-      );
+      await loadClientNotes(client.key);
 
     if (
-      currentScreen !==
-        "client-detail" ||
-      currentClientKey !==
-        client.key
+      currentScreen !== "client-detail" ||
+      currentClientKey !== client.key
     ) {
       return;
     }
 
     const list =
-      document.getElementById(
-        "clientNotesList"
-      );
+      document.getElementById("clientNotesList");
 
     if (list) {
       list.innerHTML =
@@ -2237,9 +2524,7 @@ async function renderClientDetail() {
     }
   } catch (err) {
     const list =
-      document.getElementById(
-        "clientNotesList"
-      );
+      document.getElementById("clientNotesList");
 
     if (list) {
       list.innerHTML = `
@@ -2251,23 +2536,15 @@ async function renderClientDetail() {
   }
 }
 
-async function saveClientNote(
-  encodedClientKey
-) {
+async function saveClientNote(encodedClientKey) {
   const clientKey =
-    decodeURIComponent(
-      encodedClientKey
-    );
+    decodeURIComponent(encodedClientKey);
 
   const input =
-    document.getElementById(
-      "clientNoteText"
-    );
+    document.getElementById("clientNoteText");
 
   const text =
-    normalizeClientText(
-      input?.value
-    );
+    normalizeClientText(input?.value);
 
   if (!text) return;
 
@@ -2276,30 +2553,18 @@ async function saveClientNote(
       `client-notes/${encodeURIComponent(clientKey)}`,
       {
         method: "POST",
-        body: JSON.stringify({
-          text
-        })
+        body: JSON.stringify({ text })
       }
     );
 
-    if (input) {
-      input.value = "";
-    }
+    if (input) input.value = "";
 
-    await loadClientNotes(
-      clientKey,
-      true
-    );
+    await loadClientNotes(clientKey, true);
 
-    showSWLToast(
-      "Client note saved"
-    );
-
+    showSWLToast("Client note saved");
     renderClientDetail();
   } catch (err) {
-    alert(
-      `Could not save that note. ${err.message}`
-    );
+    alert(`Could not save that note. ${err.message}`);
   }
 }
 
@@ -2308,41 +2573,25 @@ async function deleteClientNote(
   encodedNoteId
 ) {
   const clientKey =
-    decodeURIComponent(
-      encodedClientKey
-    );
+    decodeURIComponent(encodedClientKey);
 
   const noteId =
-    decodeURIComponent(
-      encodedNoteId
-    );
+    decodeURIComponent(encodedNoteId);
 
-  if (
-    !confirm(
-      "Delete this client note?"
-    )
-  ) {
+  if (!confirm("Delete this client note?")) {
     return;
   }
 
   try {
     await apiRequest(
       `client-notes/${encodeURIComponent(clientKey)}/${encodeURIComponent(noteId)}`,
-      {
-        method: "DELETE"
-      }
+      { method: "DELETE" }
     );
 
-    await loadClientNotes(
-      clientKey,
-      true
-    );
-
+    await loadClientNotes(clientKey, true);
     renderClientDetail();
   } catch (err) {
-    alert(
-      `Could not delete that note. ${err.message}`
-    );
+    alert(`Could not delete that note. ${err.message}`);
   }
 }
 
