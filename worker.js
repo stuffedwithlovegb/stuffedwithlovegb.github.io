@@ -9,6 +9,10 @@ export default {
 
     // Everything else = normal website files
     return env.ASSETS.fetch(request);
+  },
+
+  async scheduled(controller, env, ctx) {
+    ctx.waitUntil(processPushNotifications(env));
   }
 };
 
@@ -126,6 +130,10 @@ async function handleApi(request, env, url) {
       );
     }
 
+    if (resource === "push") {
+      return handlePush(request, env, id);
+    }
+
     if (resource === "notes") {
       return handleNotes(
         request,
@@ -197,6 +205,7 @@ if (resource === "file-categories") {
 
 async function handleBootstrap(env) {
   await ensureClientsTables(env);
+  await ensurePushTables(env);
   const eventsResult = await env.DB
     .prepare(`
       SELECT data
@@ -2535,6 +2544,285 @@ async function handleReminders(
   );
 }
 
+
+
+/* =========================================================
+   PUSH NOTIFICATIONS
+========================================================= */
+
+async function ensurePushTables(env) {
+  await env.DB.prepare(`
+    CREATE TABLE IF NOT EXISTS push_subscriptions (
+      endpoint TEXT PRIMARY KEY,
+      p256dh TEXT NOT NULL,
+      auth TEXT NOT NULL,
+      created_at TEXT NOT NULL,
+      last_seen TEXT NOT NULL
+    )
+  `).run();
+
+  await env.DB.prepare(`
+    CREATE TABLE IF NOT EXISTS push_pending (
+      id TEXT PRIMARY KEY,
+      endpoint TEXT NOT NULL,
+      notification_key TEXT NOT NULL,
+      title TEXT NOT NULL,
+      body TEXT NOT NULL,
+      url TEXT NOT NULL DEFAULT '/admin/',
+      created_at TEXT NOT NULL,
+      UNIQUE(endpoint, notification_key)
+    )
+  `).run();
+
+  await env.DB.prepare(`
+    CREATE TABLE IF NOT EXISTS push_deliveries (
+      endpoint TEXT NOT NULL,
+      notification_key TEXT NOT NULL,
+      sent_at TEXT NOT NULL,
+      PRIMARY KEY(endpoint, notification_key)
+    )
+  `).run();
+}
+
+async function handlePush(request, env, action) {
+  await ensurePushTables(env);
+
+  if (request.method === "POST" && action === "subscribe") {
+    const body = await request.json();
+    const endpoint = String(body?.endpoint || "").trim();
+    const p256dh = String(body?.keys?.p256dh || "").trim();
+    const auth = String(body?.keys?.auth || "").trim();
+    if (!endpoint || !p256dh || !auth) return error("Valid push subscription required.");
+
+    const now = new Date().toISOString();
+    await env.DB.prepare(`
+      INSERT INTO push_subscriptions (endpoint, p256dh, auth, created_at, last_seen)
+      VALUES (?, ?, ?, ?, ?)
+      ON CONFLICT(endpoint) DO UPDATE SET
+        p256dh = excluded.p256dh,
+        auth = excluded.auth,
+        last_seen = excluded.last_seen
+    `).bind(endpoint, p256dh, auth, now, now).run();
+
+    return json({ ok: true });
+  }
+
+  if (request.method === "POST" && action === "unsubscribe") {
+    const body = await request.json();
+    const endpoint = String(body?.endpoint || "").trim();
+    if (endpoint) {
+      await env.DB.prepare(`DELETE FROM push_subscriptions WHERE endpoint = ?`).bind(endpoint).run();
+      await env.DB.prepare(`DELETE FROM push_pending WHERE endpoint = ?`).bind(endpoint).run();
+    }
+    return json({ ok: true });
+  }
+
+  if (request.method === "POST" && action === "pending") {
+    const body = await request.json();
+    const endpoint = String(body?.endpoint || "").trim();
+    if (!endpoint) return error("Push endpoint required.");
+
+    const row = await env.DB.prepare(`
+      SELECT id, title, body, url
+      FROM push_pending
+      WHERE endpoint = ?
+      ORDER BY created_at ASC
+      LIMIT 1
+    `).bind(endpoint).first();
+
+    if (!row) return json({ ok: true, notification: null });
+    await env.DB.prepare(`DELETE FROM push_pending WHERE id = ?`).bind(row.id).run();
+    return json({ ok: true, notification: { title: row.title, body: row.body, url: row.url } });
+  }
+
+  return error("Unsupported push request.", 405);
+}
+
+function swlLocalParts(date = new Date()) {
+  const parts = new Intl.DateTimeFormat("en-US", {
+    timeZone: "America/Chicago",
+    year: "numeric", month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit", hour12: false
+  }).formatToParts(date);
+  const get = type => Number(parts.find(part => part.type === type)?.value || 0);
+  return { year:get("year"), month:get("month"), day:get("day"), hour:get("hour"), minute:get("minute") };
+}
+
+function swlDateOnlyValue(value) {
+  const match = String(value || "").match(/^(\d{4})-(\d{2})-(\d{2})$/);
+  if (!match) return null;
+  return Date.UTC(Number(match[1]), Number(match[2])-1, Number(match[3]));
+}
+
+function swlTodayValue() {
+  const p = swlLocalParts();
+  return Date.UTC(p.year, p.month-1, p.day);
+}
+
+function swlPick(list, key) {
+  let hash = 2166136261;
+  for (const char of String(key)) { hash ^= char.charCodeAt(0); hash = Math.imul(hash, 16777619); }
+  return list[(hash >>> 0) % list.length];
+}
+
+function eventPushCopy(event, days) {
+  const name = event.name || "Your SWL event";
+  const capacity = Number(event.swlCapacity || event.guestCount || 0);
+  if (days === 7) {
+    return {
+      title: swlPick(["🧸 One week to go!", "💛 Seven days until the fluff flies", "✨ One week until event magic"], event.id + "-7"),
+      body: swlPick([
+        `${name} is one week away — time to give prep a little love.`,
+        `${name} is coming up next week${capacity ? ` · ${capacity} SWL guests planned` : ""}.`,
+        `The plush countdown is on: one week until ${name}.`
+      ], event.id + "-7-body")
+    };
+  }
+  return {
+    title: swlPick(["💛 Tomorrow’s the day!", "🧸 Plush friends, report for duty", "✨ Event magic tomorrow"], event.id + "-1"),
+    body: swlPick([
+      `${name} is tomorrow${capacity ? ` · ${capacity} SWL guests planned` : ""}.`,
+      `One sleep until ${name}. Time for the final fluff check.`,
+      `${name} is tomorrow — hearts, fluff, and tiny friends at the ready.`
+    ], event.id + "-1-body")
+  };
+}
+
+function reminderPushCopy(reminder, now) {
+  const due = reminder.remind_by ? new Date(reminder.remind_by) : null;
+  const lateMinutes = due ? Math.max(0, (now - due) / 60000) : 0;
+  if (lateMinutes > 60) {
+    return {
+      title: swlPick(["👀 This one still needs some love", "🧸 Tiny nudge from Ops", "💛 One loose end is waving"], reminder.id),
+      body: `${reminder.title} is overdue.`
+    };
+  }
+  return {
+    title: swlPick(["✨ A little SWL nudge", "💛 Friendly fluff reminder", "🧸 Ops remembered for you"], reminder.id),
+    body: `${reminder.title} is due now.`
+  };
+}
+
+async function processPushNotifications(env) {
+  if (!env.VAPID_PRIVATE_JWK) {
+    console.warn("Push skipped: VAPID_PRIVATE_JWK is not configured.");
+    return;
+  }
+
+  await ensurePushTables(env);
+  const subscriptions = (await env.DB.prepare(`SELECT endpoint FROM push_subscriptions`).all()).results || [];
+  if (!subscriptions.length) return;
+
+  const candidates = [];
+  const local = swlLocalParts();
+  const today = swlTodayValue();
+
+  if (local.hour >= 9) {
+    const rows = (await env.DB.prepare(`SELECT id, data FROM events`).all()).results || [];
+    for (const row of rows) {
+      let event;
+      try { event = JSON.parse(row.data); } catch { continue; }
+      if (!event || event.closed || !event.date) continue;
+      const value = swlDateOnlyValue(event.date);
+      if (value == null) continue;
+      const days = Math.round((value - today) / 86400000);
+      if (days !== 7 && days !== 1) continue;
+      const copy = eventPushCopy(event, days);
+      candidates.push({ key:`event:${event.id}:${event.date}:${days}`, ...copy, url:"/admin/" });
+    }
+  }
+
+  const now = new Date();
+  const reminders = (await env.DB.prepare(`
+    SELECT id, title, remind_by, done
+    FROM reminders
+    WHERE done = 0 AND remind_by IS NOT NULL
+  `).all()).results || [];
+
+  for (const reminder of reminders) {
+    const due = new Date(reminder.remind_by);
+    if (Number.isNaN(due.getTime()) || due > now) continue;
+    const copy = reminderPushCopy(reminder, now);
+    candidates.push({ key:`reminder:${reminder.id}`, ...copy, url:"/admin/" });
+  }
+
+  for (const sub of subscriptions) {
+    for (const candidate of candidates) {
+      const already = await env.DB.prepare(`
+        SELECT 1 FROM push_deliveries WHERE endpoint = ? AND notification_key = ?
+      `).bind(sub.endpoint, candidate.key).first();
+      if (already) continue;
+
+      const pendingId = crypto.randomUUID();
+      try {
+        await env.DB.prepare(`
+          INSERT OR IGNORE INTO push_pending (id, endpoint, notification_key, title, body, url, created_at)
+          VALUES (?, ?, ?, ?, ?, ?, ?)
+        `).bind(pendingId, sub.endpoint, candidate.key, candidate.title, candidate.body, candidate.url, now.toISOString()).run();
+
+        const response = await sendEmptyWebPush(env, sub.endpoint);
+        if (response.status === 404 || response.status === 410) {
+          await env.DB.prepare(`DELETE FROM push_subscriptions WHERE endpoint = ?`).bind(sub.endpoint).run();
+          await env.DB.prepare(`DELETE FROM push_pending WHERE endpoint = ?`).bind(sub.endpoint).run();
+          break;
+        }
+        if (!response.ok) {
+          console.warn("Push service returned", response.status);
+          continue;
+        }
+
+        await env.DB.prepare(`
+          INSERT OR IGNORE INTO push_deliveries (endpoint, notification_key, sent_at) VALUES (?, ?, ?)
+        `).bind(sub.endpoint, candidate.key, now.toISOString()).run();
+      } catch (err) {
+        console.error("Push send failed", err);
+      }
+    }
+  }
+}
+
+function base64UrlBytes(bytes) {
+  let binary = "";
+  for (const byte of bytes) binary += String.fromCharCode(byte);
+  return btoa(binary).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/g, "");
+}
+
+function base64UrlText(value) {
+  return base64UrlBytes(new TextEncoder().encode(value));
+}
+
+function base64UrlDecode(value) {
+  const normalized = String(value).replace(/-/g, "+").replace(/_/g, "/");
+  const padded = normalized + "=".repeat((4 - normalized.length % 4) % 4);
+  const binary = atob(padded);
+  return Uint8Array.from(binary, char => char.charCodeAt(0));
+}
+
+async function vapidToken(env, endpoint) {
+  const jwk = JSON.parse(env.VAPID_PRIVATE_JWK);
+  const publicKey = base64UrlBytes(Uint8Array.from([4, ...base64UrlDecode(jwk.x), ...base64UrlDecode(jwk.y)]));
+  const header = base64UrlText(JSON.stringify({ typ:"JWT", alg:"ES256" }));
+  const payload = base64UrlText(JSON.stringify({
+    aud: new URL(endpoint).origin,
+    exp: Math.floor(Date.now()/1000) + 12*60*60,
+    sub: env.VAPID_SUBJECT || "mailto:hello@stuffedwithlovegb.com"
+  }));
+  const unsigned = `${header}.${payload}`;
+  const key = await crypto.subtle.importKey("jwk", jwk, { name:"ECDSA", namedCurve:"P-256" }, false, ["sign"]);
+  const signature = new Uint8Array(await crypto.subtle.sign({ name:"ECDSA", hash:"SHA-256" }, key, new TextEncoder().encode(unsigned)));
+  return { token:`${unsigned}.${base64UrlBytes(signature)}`, publicKey };
+}
+
+async function sendEmptyWebPush(env, endpoint) {
+  const vapid = await vapidToken(env, endpoint);
+  return fetch(endpoint, {
+    method: "POST",
+    headers: {
+      "Authorization": `vapid t=${vapid.token},k=${vapid.publicKey}`,
+      "TTL": "300",
+      "Urgency": "normal"
+    }
+  });
+}
 
 /* =========================================================
    NOTES
