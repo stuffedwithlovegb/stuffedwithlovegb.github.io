@@ -2514,9 +2514,10 @@ function renderEventDetail() {
 
         html += `
           <label
-            class="
-              toggle-row
-              pack-row
+  data-packing-id="${item.id}"
+  class="
+    toggle-row
+    pack-row
               ${
                 item.done
                   ? "done"
@@ -2564,8 +2565,16 @@ function renderEventDetail() {
                   pack-done-message
                 "
               >
-                ♥ Packed and ready
-                to go.
+                <div class="pack-done-icon">
+  ♥
+</div>
+
+<div>
+  <strong>ALL PACKED!</strong>
+  <span>
+    The fluff-mobile is ready to roll.
+  </span>
+</div>
               </div>
             `
           : ""
@@ -2601,22 +2610,162 @@ async function togglePacking(
 
   const previous = item.done;
 
+  const wasComplete =
+    event.packing.length > 0 &&
+    event.packing.every(item => item.done);
+
   item.done = checked;
+
+  const isComplete =
+    event.packing.length > 0 &&
+    event.packing.every(item => item.done);
+
   updateAttentionBadge();
 
+  /*
+     Immediate feedback.
+
+     iOS PWAs don't give us true native haptics,
+     but vibration works where supported.
+  */
+
+  if (checked) {
+
+    if (isComplete && !wasComplete) {
+
+      if ("vibrate" in navigator) {
+        navigator.vibrate([
+          55,
+          45,
+          90,
+          45,
+          150
+        ]);
+      }
+
+    } else {
+
+      if ("vibrate" in navigator) {
+        navigator.vibrate(35);
+      }
+
+    }
+  }
+
+
+  /*
+     Re-render immediately so:
+     0/17 → 1/17
+     percentage changes
+     progress bar moves
+     checked row gets its done styling
+  */
+
+  renderEventDetail();
+
+
+  /*
+     Completion celebration happens only
+     when the LAST unchecked item is checked.
+  */
+
+  if (
+    checked &&
+    isComplete &&
+    !wasComplete
+  ) {
+    requestAnimationFrame(() => {
+      celebratePackingComplete();
+    });
+  } else if (checked) {
+    requestAnimationFrame(() => {
+      animatePackingTap(packingId);
+    });
+  }
+
+
   try {
+
     await saveEventToServer(event);
+
   } catch (err) {
+
     item.done = previous;
+
+    renderEventDetail();
 
     alert(
       `Could not save that packing change. ${err.message}`
     );
-
-    renderEventDetail();
   }
 }
+function animatePackingTap(packingId) {
+  const row =
+    document.querySelector(
+      `[data-packing-id="${packingId}"]`
+    );
 
+  if (!row) return;
+
+  row.classList.add("just-packed");
+
+  setTimeout(() => {
+    row.classList.remove("just-packed");
+  }, 420);
+}
+
+
+function celebratePackingComplete() {
+  const card =
+    document.querySelector(
+      ".pack-progress-card"
+    );
+
+  const list =
+    document.querySelector(
+      ".pack-list-card"
+    );
+
+  if (card) {
+    card.classList.add(
+      "pack-celebration"
+    );
+  }
+
+  if (list) {
+    list.classList.add(
+      "pack-list-complete-pop"
+    );
+  }
+
+
+  /*
+     Tiny floating hearts.
+     Intentionally a LITTLE goofy.
+  */
+
+  const celebration =
+    document.createElement("div");
+
+  celebration.className =
+    "pack-heart-burst";
+
+  celebration.innerHTML = `
+    <span>♥</span>
+    <span>♥</span>
+    <span>♥</span>
+    <span>♥</span>
+    <span>♥</span>
+  `;
+
+  document.body.appendChild(
+    celebration
+  );
+
+  setTimeout(() => {
+    celebration.remove();
+  }, 1300);
+}
 async function deleteEvent(id) {
   if (
     !confirm(
