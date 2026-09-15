@@ -358,13 +358,20 @@ const masterPackingList = [
   "Photo-op pieces / photo hearts",
   "Friend Hotel",
   "Adoption certificates",
-  "Wishing hearts",
   "Pens",
   "Welcome sign",
   "Signage",
   "Trash bags",
   "Felt-wall accessories",
   "Clothes / mini wardrobe rack"
+];
+
+const SWL_LOADOUT_FINALE_LINES = [
+  "THE FLUFF-MOBILE IS CLEARED FOR DEPARTURE.",
+  "Every friend is accounted for. Go make some magic.",
+  "Bins packed. Hearts packed. Tiny best friends ready.",
+  "Load-out complete. The plush crew is officially road-ready.",
+  "Nothing left behind but an unreasonable amount of confidence."
 ];
 
 
@@ -451,6 +458,7 @@ function normalizeLoadedEvent(event) {
 
   normalized.selectedPlush ||= [];
   normalized.reservations ||= [];
+  normalized.loadOut ||= {};
 
   normalized.packing =
     normalized.packing?.length
@@ -1018,6 +1026,306 @@ function inventoryAvailable(itemId) {
   );
 }
 
+
+/* =========================================================
+   INTELLIGENT LOAD OUT
+========================================================= */
+
+function loadOutKeyForReservation(itemId) {
+  return `inventory:${itemId}`;
+}
+
+function loadOutKeyForGear(name) {
+  return `gear:${name}`;
+}
+
+function normalizeLoadOutStatus(value) {
+  return ["packed", "loaded"].includes(value)
+    ? value
+    : "todo";
+}
+
+function ensureEventLoadOut(event) {
+  event.loadOut ||= {};
+
+  // Carry forward the old packing checklist so an already-checked
+  // piece of equipment does not suddenly look unpacked after upgrade.
+  for (const oldItem of event.packing || []) {
+    if (!oldItem?.name || !oldItem.done) continue;
+    const key = loadOutKeyForGear(oldItem.name);
+    if (!event.loadOut[key]) {
+      event.loadOut[key] = "loaded";
+    }
+  }
+
+  return event.loadOut;
+}
+
+function buildEventLoadOut(event) {
+  ensureEventLoadOut(event);
+
+  const inventoryRows = [];
+  const seenInventory = new Set();
+
+  for (const reservation of event.reservations || []) {
+    const quantity = Math.max(0, Number(reservation.quantity || 0));
+    if (!quantity) continue;
+
+    const item = getInventoryItem(reservation.itemId);
+    if (!item) continue;
+
+    const otherReserved =
+      calculateReserved(item.id) - quantity;
+
+    const availableForThisEvent =
+      Number(item.onHand || 0) - otherReserved;
+
+    const shortage =
+      Math.max(0, quantity - availableForThisEvent);
+
+    const key =
+      loadOutKeyForReservation(item.id);
+
+    seenInventory.add(item.id);
+
+    inventoryRows.push({
+      key,
+      kind: "inventory",
+      itemId: item.id,
+      name: inventoryDisplayName(item),
+      quantity,
+      unit: item.unit || "item",
+      image: inventoryImageUrl(item),
+      shortage,
+      availableForThisEvent,
+      status: normalizeLoadOutStatus(
+        event.loadOut[key]
+      )
+    });
+  }
+
+  // Fluff is intentionally not auto-reserved, but it absolutely belongs
+  // on load-out. Keep it as a visual supply check instead of inventing
+  // a per-plush fluff quantity before SWL has real usage data.
+  const fluff = getInventoryItem("fluff");
+  if (fluff && !seenInventory.has("fluff")) {
+    const key = loadOutKeyForReservation("fluff");
+    inventoryRows.push({
+      key,
+      kind: "inventory",
+      itemId: "fluff",
+      name: inventoryDisplayName(fluff),
+      quantity: null,
+      unit: fluff.unit || "boxes",
+      image: inventoryImageUrl(fluff),
+      shortage: 0,
+      availableForThisEvent: Number(fluff.onHand || 0),
+      note: `${Number(fluff.onHand || 0)} ${fluff.unit || "on hand"} · check supply`,
+      status: normalizeLoadOutStatus(
+        event.loadOut[key]
+      )
+    });
+  }
+
+  const capacity = plannedSWLCount(event);
+
+  const gearRows = masterPackingList
+    .filter(name => name !== "Fluff")
+    .map(name => {
+      const key = loadOutKeyForGear(name);
+      let quantity = null;
+      let note = "";
+
+      if (name === "Adoption certificates" && capacity > 0) {
+        quantity = capacity;
+      }
+
+      if (name === "Stuffing machine") {
+        quantity = 1;
+      }
+
+      if (name === "EcoFlow / power") {
+        quantity = 1;
+      }
+
+      return {
+        key,
+        kind: "gear",
+        name,
+        quantity,
+        note,
+        shortage: 0,
+        status: normalizeLoadOutStatus(
+          event.loadOut[key]
+        )
+      };
+    });
+
+  return {
+    inventoryRows,
+    gearRows,
+    rows: [...inventoryRows, ...gearRows]
+  };
+}
+
+function loadOutCounts(event) {
+  const rows = buildEventLoadOut(event).rows;
+  return {
+    total: rows.length,
+    packed: rows.filter(
+      row => row.status === "packed" || row.status === "loaded"
+    ).length,
+    loaded: rows.filter(
+      row => row.status === "loaded"
+    ).length,
+    shortages: rows.filter(
+      row => Number(row.shortage || 0) > 0
+    )
+  };
+}
+
+function loadOutStatusLabel(status) {
+  if (status === "loaded") return "Loaded";
+  if (status === "packed") return "Packed";
+  return "Not packed";
+}
+
+function loadOutRowHTML(row, eventId) {
+  const status = normalizeLoadOutStatus(row.status);
+  const quantityText =
+    row.quantity != null
+      ? `${row.quantity}`
+      : "";
+
+  const image = row.image
+    ? `<img class="loadout-item-image" src="${escapeHTML(row.image)}" alt="" />`
+    : `<div class="loadout-item-icon" aria-hidden="true">${row.kind === "gear" ? "✦" : "♥"}</div>`;
+
+  const detail = row.shortage
+    ? `<span class="loadout-shortage">Need ${row.quantity} · only ${Math.max(0, row.availableForThisEvent)} available · short ${row.shortage}</span>`
+    : row.note
+      ? `<span class="loadout-row-note">${escapeHTML(row.note)}</span>`
+      : row.quantity != null
+        ? `<span class="loadout-row-note">${row.kind === "inventory" ? "Bring" : "Bring"} ${quantityText}</span>`
+        : "";
+
+  return `
+    <div class="loadout-row ${status}" data-loadout-key="${escapeHTML(row.key)}">
+      <div class="loadout-row-main">
+        ${image}
+        <div class="loadout-row-copy">
+          <div class="loadout-row-title-line">
+            <strong>${escapeHTML(row.name)}</strong>
+            ${row.quantity != null ? `<span class="loadout-quantity">${quantityText}</span>` : ""}
+          </div>
+          ${detail}
+        </div>
+      </div>
+
+      <div class="loadout-stepper" aria-label="${escapeHTML(row.name)} load status">
+        <button
+          type="button"
+          class="loadout-state-button ${status === "packed" || status === "loaded" ? "active" : ""}"
+          onclick="setLoadOutStatus('${eventId}', '${escapeHTML(row.key)}', '${status === "packed" ? "todo" : "packed"}')"
+        >
+          <span>✓</span>
+          Packed
+        </button>
+        <button
+          type="button"
+          class="loadout-state-button loaded ${status === "loaded" ? "active" : ""}"
+          onclick="setLoadOutStatus('${eventId}', '${escapeHTML(row.key)}', '${status === "loaded" ? "packed" : "loaded"}')"
+        >
+          <span>↗</span>
+          Loaded
+        </button>
+      </div>
+    </div>
+  `;
+}
+
+async function setLoadOutStatus(eventId, key, nextStatus) {
+  const event =
+    state.events.find(
+      item => item.id === eventId
+    );
+
+  if (!event) return;
+
+  ensureEventLoadOut(event);
+
+  const previous =
+    normalizeLoadOutStatus(
+      event.loadOut[key]
+    );
+
+  const before = loadOutCounts(event);
+
+  event.loadOut[key] =
+    normalizeLoadOutStatus(nextStatus);
+
+  const after = loadOutCounts(event);
+
+  renderEventDetail();
+
+  if (
+    event.loadOut[key] === "loaded" &&
+    after.loaded === after.total &&
+    after.total > 0 &&
+    after.shortages.length === 0 &&
+    before.loaded !== before.total
+  ) {
+    requestAnimationFrame(() => {
+      celebratePackingComplete();
+    });
+  } else if (
+    event.loadOut[key] === "packed" &&
+    after.packed === after.total &&
+    after.total > 0 &&
+    before.packed !== before.total
+  ) {
+    requestAnimationFrame(() => {
+      animateLoadOutTap(key);
+      showSWLToast(
+        "✨ Everything is packed. Time to load the fluff-mobile.",
+        { duration: 2200 }
+      );
+    });
+  } else if (
+    event.loadOut[key] === "packed" ||
+    event.loadOut[key] === "loaded"
+  ) {
+    requestAnimationFrame(() => {
+      animateLoadOutTap(key);
+    });
+  }
+
+  try {
+    await saveEventToServer(event);
+  } catch (err) {
+    event.loadOut[key] = previous;
+    renderEventDetail();
+    alert(
+      `Could not save that load-out change. ${err.message}`
+    );
+  }
+}
+
+function animateLoadOutTap(key) {
+  const row =
+    [...document.querySelectorAll("[data-loadout-key]")]
+      .find(element => element.dataset.loadoutKey === key);
+
+  if (!row) return;
+
+  row.classList.remove("just-packed");
+  void row.offsetWidth;
+  row.classList.add("just-packed");
+
+  setTimeout(() => {
+    row.classList.remove("just-packed");
+  }, 430);
+}
 
 /* =========================================================
    EVENT ISSUES
@@ -2850,17 +3158,24 @@ function renderEventDetail() {
       })
     );
 
+  ensureEventLoadOut(event);
+
+  const loadOut =
+    buildEventLoadOut(event);
+
+  const loadOutSummary =
+    loadOutCounts(event);
+
   const packingDone =
-    event.packing.filter(
-      item => item.done
-    ).length;
+    loadOutSummary.loaded;
 
   const packingTotal =
-    event.packing.length;
+    loadOutSummary.total;
 
   const packingComplete =
     packingTotal > 0 &&
-    packingDone === packingTotal;
+    packingDone === packingTotal &&
+    loadOutSummary.shortages.length === 0;
 
   let html = `
     <button
@@ -3856,173 +4171,151 @@ function renderEventDetail() {
 
 
   /*
-     PACK TAB
+     PACK / INTELLIGENT LOAD OUT TAB
   */
 
   if (activeEventTab === "pack") {
 
-    const percentPacked =
-      packingTotal
+    const total =
+      loadOutSummary.total;
+
+    const packed =
+      loadOutSummary.packed;
+
+    const loaded =
+      loadOutSummary.loaded;
+
+    const shortages =
+      loadOutSummary.shortages;
+
+    const percentLoaded =
+      total
         ? Math.round(
-            (
-              packingDone /
-              packingTotal
-            ) * 100
+            (loaded / total) * 100
           )
         : 0;
 
+    const ready =
+      total > 0 &&
+      loaded === total &&
+      shortages.length === 0;
+
+    const allPacked =
+      total > 0 &&
+      packed === total;
 
     html += `
-      <div
-        class="
-          pack-progress-card
-          ${
-            packingComplete
-              ? "complete"
-              : ""
-          }
-        "
-      >
-
-        <div>
-
-          <div class="card-label">
-            Packing progress
+      <div class="loadout-hero ${ready ? "ready" : ""}">
+        <div class="loadout-hero-top">
+          <div>
+            <div class="card-label">
+              Intelligent load out
+            </div>
+            <h3>
+              ${
+                ready
+                  ? "Ready to roll 💛"
+                  : allPacked
+                    ? "Packed. Now load the fluff-mobile."
+                    : "Let’s get this event out the door."
+              }
+            </h3>
           </div>
 
-          <strong>
-            ${packingDone}
-            of
-            ${packingTotal}
-            packed
-          </strong>
-
-        </div>
-
-        <div
-          class="
-            pack-progress-number
-          "
-        >
-          ${percentPacked}%
-        </div>
-
-      </div>
-
-
-      <div class="pack-progress-track">
-
-        <div
-          class="
-            pack-progress-fill
-          "
-          style="
-            width:
-            ${percentPacked}%;
-          "
-        ></div>
-
-      </div>
-
-
-      <div
-        class="
-          event-section-heading
-          pack-heading
-        "
-      >
-
-        <div>
-
-          <div class="card-label">
-            Load up
+          <div class="loadout-ring">
+            <strong>${percentLoaded}%</strong>
+            <span>loaded</span>
           </div>
-
-          <h3>
-            Packing checklist
-          </h3>
-
         </div>
 
-      </div>
+        <div class="loadout-progress-track">
+          <div
+            class="loadout-progress-packed"
+            style="width:${total ? Math.round((packed / total) * 100) : 0}%"
+          ></div>
+          <div
+            class="loadout-progress-loaded"
+            style="width:${percentLoaded}%"
+          ></div>
+        </div>
 
-
-      <div
-        class="
-          card
-          detail-card
-          pack-list-card
-        "
-      >
-    `;
-
-
-    event.packing.forEach(
-      item => {
-
-        html += `
-          <label
-  data-packing-id="${item.id}"
-  class="
-    toggle-row
-    pack-row
-              ${
-                item.done
-                  ? "done"
-                  : ""
-              }
-            "
-          >
-
-            <span>
-              ${escapeHTML(
-                item.name
-              )}
-            </span>
-
-            <input
-              type="checkbox"
-              ${
-                item.done
-                  ? "checked"
-                  : ""
-              }
-              onchange="
-                togglePacking(
-                  '${event.id}',
-                  '${item.id}',
-                  this.checked
-                )
-              "
-            />
-
-          </label>
-        `;
-      }
-    );
-
-
-    html += `
+        <div class="loadout-progress-labels">
+          <span><strong>${packed}</strong>/${total} packed</span>
+          <span><strong>${loaded}</strong>/${total} loaded</span>
+        </div>
       </div>
 
       ${
-        packingComplete
+        shortages.length
           ? `
-              <div
-                class="
-                  pack-done-message
-                "
-              >
-                <div class="pack-done-icon">
-  ♥
-</div>
+              <div class="loadout-readiness warning">
+                <div class="loadout-readiness-icon">!</div>
+                <div>
+                  <strong>${shortages.length} ${shortages.length === 1 ? "thing needs" : "things need"} attention</strong>
+                  <span>Ops found ${shortages.length === 1 ? "a shortage" : "shortages"} before you started loading. Very rude of inventory, very helpful of Ops.</span>
+                </div>
+              </div>
+            `
+          : `
+              <div class="loadout-readiness ${ready ? "ready" : ""}">
+                <div class="loadout-readiness-icon">${ready ? "♥" : "✓"}</div>
+                <div>
+                  <strong>${ready ? "FULLY LOADED" : "Inventory check looks good"}</strong>
+                  <span>${ready ? "Every planned item is accounted for and in the fluff-mobile." : "No reservation shortages detected for this event."}</span>
+                </div>
+              </div>
+            `
+      }
 
-<div>
-  <strong>ALL PACKED!</strong>
-  <span>
-    The fluff-mobile is ready to roll.
-  </span>
-</div>
+      <div class="loadout-legend">
+        <span><i class="loadout-dot packed"></i>Packed = in a tote / ready</span>
+        <span><i class="loadout-dot loaded"></i>Loaded = actually in the vehicle</span>
+      </div>
+
+      <div class="event-section-heading loadout-heading">
+        <div>
+          <div class="card-label">Event-specific</div>
+          <h3>Friends & supplies</h3>
+        </div>
+        <span class="loadout-section-count">${loadOut.inventoryRows.length}</span>
+      </div>
+
+      <div class="card loadout-list-card">
+        ${
+          loadOut.inventoryRows.length
+            ? loadOut.inventoryRows
+                .map(row => loadOutRowHTML(row, event.id))
+                .join("")
+            : `
+                <div class="loadout-empty">
+                  No inventory quantities are attached to this event yet.
+                </div>
+              `
+        }
+      </div>
+
+      <div class="event-section-heading loadout-heading">
+        <div>
+          <div class="card-label">The actual stuff</div>
+          <h3>Equipment & setup</h3>
+        </div>
+        <span class="loadout-section-count">${loadOut.gearRows.length}</span>
+      </div>
+
+      <div class="card loadout-list-card">
+        ${loadOut.gearRows
+          .map(row => loadOutRowHTML(row, event.id))
+          .join("")}
+      </div>
+
+      ${
+        ready
+          ? `
+              <div class="loadout-ready-card">
+                <div class="loadout-ready-sparkles" aria-hidden="true">✦ ♥ ✦</div>
+                <strong>READY TO ROLL!</strong>
+                <span>The fluff-mobile is cleared for departure.</span>
+                <small>Everything planned for this event is loaded.</small>
               </div>
             `
           : ""
@@ -4203,10 +4496,10 @@ function celebratePackingComplete() {
     <div class="swl-finale-glow"></div>
     <div class="swl-finale-particles" aria-hidden="true">${particles}</div>
     <div class="swl-finale-card">
-      <div class="swl-finale-kicker">PACKING COMPLETE</div>
-      <div class="swl-finale-title">ALL PACKED!</div>
+      <div class="swl-finale-kicker">LOAD OUT COMPLETE</div>
+      <div class="swl-finale-title">READY TO ROLL!</div>
       <div class="swl-finale-heart">♥</div>
-      <div class="swl-finale-copy">The fluff-mobile is ready to roll.</div>
+      <div class="swl-finale-copy">${SWL_LOADOUT_FINALE_LINES[swlHash(`${currentEventId || "swl"}-loadout`) % SWL_LOADOUT_FINALE_LINES.length]}</div>
     </div>
   `;
 
@@ -8347,6 +8640,8 @@ function createBlankEventDraft() {
 
     reservations: [],
 
+    loadOut: {},
+
     packing:
       masterPackingList.map(
         name => ({
@@ -8377,6 +8672,8 @@ function normalizeEventDraft(event) {
 
   merged.reservations ||=
     [];
+
+  merged.loadOut ||= {};
 
   merged.plushQuantities ||= {};
   // Existing events used guestCount for both attendance and inventory planning.
