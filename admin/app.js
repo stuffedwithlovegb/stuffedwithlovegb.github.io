@@ -6630,6 +6630,7 @@ function openFileUpload() {
         class="
           modal-sheet
           files-modal-sheet
+          file-batch-sheet
         "
       >
 
@@ -6640,7 +6641,10 @@ function openFileUpload() {
               FILES
             </div>
 
-            <h2>Upload File</h2>
+            <h2>Upload Files</h2>
+            <div class="file-batch-subtitle">
+              Pick one or a whole handful. Ops will file them away one at a time.
+            </div>
           </div>
 
           <button
@@ -6658,7 +6662,7 @@ function openFileUpload() {
           class="file-upload-form"
           onsubmit="
             event.preventDefault();
-            uploadSWLFile(this);
+            uploadSWLFiles(this);
           "
         >
 
@@ -6668,11 +6672,12 @@ function openFileUpload() {
           >
 
             <input
-              name="file"
+              name="files"
               type="file"
+              multiple
               required
               onchange="
-                fileChosenForUpload(this);
+                filesChosenForUpload(this);
               "
             />
 
@@ -6681,30 +6686,23 @@ function openFileUpload() {
             </span>
 
             <strong id="filePickerTitle">
-              Choose a file
+              Choose files
             </strong>
 
             <span id="filePickerMeta">
-              Up to 25 MB
+              Select one or multiple · 25 MB max each
             </span>
 
           </label>
 
+          <div
+            id="fileBatchList"
+            class="file-batch-list"
+            hidden
+          ></div>
 
           <label class="field-label">
-            Display Name
-
-            <input
-              name="displayName"
-              type="text"
-              placeholder="File name"
-              required
-            />
-          </label>
-
-
-          <label class="field-label">
-            Category
+            Category for this batch
 
             <select
               name="category"
@@ -6714,6 +6712,27 @@ function openFileUpload() {
             </select>
           </label>
 
+          <div
+            id="fileUploadProgress"
+            class="file-upload-progress"
+            hidden
+          >
+            <div class="file-upload-progress-copy">
+              <strong id="fileUploadProgressTitle">
+                Packing files into the cabinet…
+              </strong>
+              <span id="fileUploadProgressCount">
+                0 of 0 uploaded
+              </span>
+            </div>
+
+            <div class="file-upload-progress-track">
+              <div
+                id="fileUploadProgressBar"
+                class="file-upload-progress-bar"
+              ></div>
+            </div>
+          </div>
 
           <button
             type="submit"
@@ -6722,8 +6741,9 @@ function openFileUpload() {
               full-width
               file-save-button
             "
+            id="fileBatchUploadButton"
           >
-            Save File
+            Choose Files First
           </button>
 
         </form>
@@ -6741,28 +6761,11 @@ function openFileUpload() {
 }
 
 
-function fileChosenForUpload(input) {
-  const file =
-    input.files?.[0];
-
-  if (!file) return;
-
-  const form =
-    input.closest("form");
-
-  const nameInput =
-    form?.elements
-      ?.displayName;
-
-  if (
-    nameInput &&
-    !nameInput.value.trim()
-  ) {
-    nameInput.value =
-      removeFileExtension(
-        file.name
-      );
-  }
+function filesChosenForUpload(input) {
+  const files =
+    Array.from(
+      input.files || []
+    );
 
   const title =
     document.getElementById(
@@ -6779,22 +6782,104 @@ function fileChosenForUpload(input) {
       "filePickerLabel"
     );
 
+  const list =
+    document.getElementById(
+      "fileBatchList"
+    );
+
+  const button =
+    document.getElementById(
+      "fileBatchUploadButton"
+    );
+
+  if (!files.length) {
+    if (title) title.textContent = "Choose files";
+    if (meta) {
+      meta.textContent =
+        "Select one or multiple · 25 MB max each";
+    }
+    if (label) {
+      label.classList.remove(
+        "has-file"
+      );
+    }
+    if (list) {
+      list.hidden = true;
+      list.innerHTML = "";
+    }
+    if (button) {
+      button.textContent =
+        "Choose Files First";
+      button.disabled = true;
+    }
+    return;
+  }
+
   if (title) {
     title.textContent =
-      file.name;
+      files.length === 1
+        ? files[0].name
+        : `${files.length} files selected`;
   }
 
   if (meta) {
-    meta.textContent =
-      formatFileSize(
-        file.size
+    const totalBytes =
+      files.reduce(
+        (sum, file) =>
+          sum + file.size,
+        0
       );
+
+    meta.textContent =
+      `${formatFileSize(totalBytes)} total`;
   }
 
   if (label) {
     label.classList.add(
       "has-file"
     );
+  }
+
+  if (list) {
+    list.hidden = false;
+    list.innerHTML = `
+      <div class="file-batch-heading">
+        <strong>${files.length === 1 ? "Ready to file" : `${files.length} files ready`}</strong>
+        <span>Names can be cleaned up before uploading.</span>
+      </div>
+
+      ${files
+        .map((file, index) => `
+          <div class="file-batch-item">
+            <div class="file-batch-file-icon">📄</div>
+            <div class="file-batch-file-copy">
+              <input
+                class="file-batch-name-input"
+                name="displayName_${index}"
+                type="text"
+                value="${escapeHTML(
+                  removeFileExtension(
+                    file.name
+                  )
+                )}"
+                aria-label="Display name for ${escapeHTML(file.name)}"
+              />
+              <span>
+                ${escapeHTML(file.name)} · ${formatFileSize(file.size)}
+              </span>
+            </div>
+          </div>
+        `)
+        .join("")}
+    `;
+  }
+
+  if (button) {
+    button.disabled = false;
+    button.textContent =
+      files.length === 1
+        ? "Upload File"
+        : `Upload ${files.length} Files`;
   }
 }
 
@@ -6817,104 +6902,260 @@ function removeFileExtension(name) {
 }
 
 
-async function uploadSWLFile(form) {
-  const file =
-    form.elements
-      .file
-      .files?.[0];
+async function uploadSWLFiles(form) {
+  const files =
+    Array.from(
+      form.elements
+        .files
+        .files || []
+    );
 
-  if (!file) return;
-
-  const name =
-    form.elements
-      .displayName
-      .value
-      .trim();
+  if (!files.length) return;
 
   const category =
     form.elements
       .category
       .value;
 
-  if (!name) return;
-
   const button =
     form.querySelector(
       'button[type="submit"]'
     );
 
+  const pickerInput =
+    form.elements.files;
+
+  const categorySelect =
+    form.elements.category;
+
+  const progress =
+    document.getElementById(
+      "fileUploadProgress"
+    );
+
+  const progressTitle =
+    document.getElementById(
+      "fileUploadProgressTitle"
+    );
+
+  const progressCount =
+    document.getElementById(
+      "fileUploadProgressCount"
+    );
+
+  const progressBar =
+    document.getElementById(
+      "fileUploadProgressBar"
+    );
+
   button.disabled = true;
-  button.textContent =
-    "Uploading…";
+  pickerInput.disabled = true;
+  categorySelect.disabled = true;
 
-  const formData =
-    new FormData();
+  if (progress) {
+    progress.hidden = false;
+  }
 
-  formData.append(
-    "file",
-    file
-  );
+  if (progressTitle) {
+    progressTitle.textContent =
+      files.length === 1
+        ? "Packing this file into the cabinet…"
+        : `Packing ${files.length} files into the cabinet…`;
+  }
 
-  formData.append(
-    "name",
-    name
-  );
+  const uploaded = [];
+  const failed = [];
+  const maxBytes =
+    25 * 1024 * 1024;
 
-  formData.append(
-    "category",
-    category
-  );
+  for (
+    let index = 0;
+    index < files.length;
+    index++
+  ) {
+    const file = files[index];
+    const nameInput =
+      form.elements[
+        `displayName_${index}`
+      ];
 
-  try {
-    const response =
-      await fetch(
-        "/admin/api/files",
-        {
-          method: "POST",
-          credentials:
-            "same-origin",
-          body: formData
+    const name =
+      String(
+        nameInput?.value ||
+        removeFileExtension(file.name)
+      ).trim() ||
+      removeFileExtension(file.name) ||
+      file.name;
+
+    if (file.size > maxBytes) {
+      failed.push({
+        file,
+        reason: "Over the 25 MB limit"
+      });
+    } else {
+      const formData =
+        new FormData();
+
+      formData.append(
+        "file",
+        file
+      );
+
+      formData.append(
+        "name",
+        name
+      );
+
+      formData.append(
+        "category",
+        category
+      );
+
+      try {
+        const response =
+          await fetch(
+            "/admin/api/files",
+            {
+              method: "POST",
+              credentials:
+                "same-origin",
+              body: formData
+            }
+          );
+
+        let data = null;
+
+        try {
+          data =
+            await response.json();
+        } catch {}
+
+        if (!response.ok) {
+          throw new Error(
+            data?.error ||
+            `Upload failed (${response.status})`
+          );
         }
-      );
 
-    let data = null;
+        uploaded.push(
+          data.file
+        );
 
-    try {
-      data =
-        await response.json();
-    } catch {}
-
-    if (!response.ok) {
-      throw new Error(
-        data?.error ||
-        `Upload failed (${response.status})`
-      );
+      } catch (err) {
+        failed.push({
+          file,
+          reason:
+            err?.message ||
+            "Upload failed"
+        });
+      }
     }
 
+    const completed =
+      index + 1;
+
+    if (progressCount) {
+      progressCount.textContent =
+        `${uploaded.length} of ${files.length} uploaded`;
+    }
+
+    if (progressBar) {
+      progressBar.style.width =
+        `${Math.round(
+          (completed / files.length) * 100
+        )}%`;
+    }
+  }
+
+  if (uploaded.length) {
     swlFiles.unshift(
-      data.file
-    );
-
-    closeModal();
-
-    /*
-      Keep the user where they were.
-      If they were viewing a category
-      and uploaded there, it'll appear
-      immediately.
-    */
-    renderFilesContent();
-    showSWLToast("File saved");
-
-  } catch (err) {
-    button.disabled = false;
-    button.textContent =
-      "Save File";
-
-    alert(
-      `Could not upload that file. ${err.message}`
+      ...uploaded.reverse()
     );
   }
+
+  renderFilesContent();
+
+  if (!failed.length) {
+    if (progressTitle) {
+      progressTitle.textContent =
+        "✨ Filed away!";
+    }
+
+    if (progressCount) {
+      progressCount.textContent =
+        files.length === 1
+          ? "1 file safely in the cabinet"
+          : `${files.length} files safely in the cabinet`;
+    }
+
+    button.textContent =
+      "✨ Filed Away!";
+
+    showSWLToast(
+      files.length === 1
+        ? "✨ File filed away!"
+        : `✨ ${files.length} files filed away!`
+    );
+
+    window.setTimeout(
+      () => closeModal(),
+      650
+    );
+
+    return;
+  }
+
+  if (progressTitle) {
+    progressTitle.textContent =
+      uploaded.length
+        ? "Most made it safely 💛"
+        : "These files need another try";
+  }
+
+  if (progressCount) {
+    progressCount.textContent =
+      `${uploaded.length} uploaded · ${failed.length} failed`;
+  }
+
+  const list =
+    document.getElementById(
+      "fileBatchList"
+    );
+
+  if (list) {
+    list.hidden = false;
+    list.innerHTML = `
+      <div class="file-batch-heading file-batch-failed-heading">
+        <strong>${failed.length} ${failed.length === 1 ? "file needs" : "files need"} another try</strong>
+        <span>The successful uploads are already safe. Nothing was rolled back.</span>
+      </div>
+
+      ${failed
+        .map(item => `
+          <div class="file-batch-item file-batch-item-failed">
+            <div class="file-batch-file-icon">!</div>
+            <div class="file-batch-file-copy">
+              <strong>${escapeHTML(item.file.name)}</strong>
+              <span>${escapeHTML(item.reason)}</span>
+            </div>
+          </div>
+        `)
+        .join("")}
+    `;
+  }
+
+  button.disabled = false;
+  button.textContent =
+    "Choose Files to Try Again";
+  button.type = "button";
+  button.onclick = () => {
+    closeModal();
+    openFileUpload();
+  };
+
+  showSWLToast(
+    `${uploaded.length} saved · ${failed.length} need another try`
+  );
 }
 
 
