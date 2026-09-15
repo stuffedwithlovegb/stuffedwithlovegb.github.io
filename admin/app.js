@@ -87,117 +87,117 @@ const ADD_ON_PRICING = {
 ========================================================= */
 
 const SWL_DAILY_MESSAGES = [
-  'Small steps still stuff big dreams.',
-  'Make it cute. Make it work.',
-  'A little fluff goes a long way.',
-  'Today’s a good day to make something fun.',
-  'One event at a time.',
-  'The details are the magic.',
-  'Keep it simple. Keep it special.',
-  'Built with fluff and a mildly concerning amount of determination.',
-  'Good things are getting stuffed.',
-  'Tiny progress counts.',
-  'You’re building the thing.',
-  'One more box checked.',
-  'Make the next thing easier.',
-  'Cute can also be organized.',
-  'The fluff-mobile has places to be.',
-  'Future you appreciates this.',
-  'A stocked shelf is a peaceful shelf.',
-  'Keep the chaos fluffy.',
-  'Today’s mission: less remembering, more doing.',
-  'The bears are not going to pack themselves.',
-  'Make room for the fun part.',
-  'A smooth event starts here.',
-  'You’ve got this one.',
-  'Check it. Pack it. Done.',
-  'Good systems make better parties.',
-  'Keep moving. Keep fluffing.',
-  'One less thing in your head.',
-  'The little stuff matters.',
-  'Ready beats perfect.',
-  'Make it easy on event-day you.',
-  'There is probably glitter somewhere.',
-  'Progress looks good on you.',
-  'A good plan leaves room for fun.',
-  'Stocked, packed, loved.',
-  'Do the next useful thing.',
-  'The magic is in the prep.',
-  'Less scrambling. More stuffing.',
-  'A tiny bit more ready than yesterday.',
-  'Keep the wheels on the fluff-mobile.',
-  'This is what building a business looks like.',
-  'Make today’s future problem disappear.',
-  'One tap closer to ready.',
-  'Organized enough to be dangerous.',
-  'Plush first. Panic never.',
-  'Today’s vibe: handled.',
-  'Keep the good stuff moving.',
-  'Make it warm. Make it memorable.',
-  'The checklist knows the way.',
-  'A little prep now saves a lot of WTF later.',
-  'You can absolutely make this easier.',
-  'Another day, another pile of plush.',
-  'The fun part works because this part works.',
-  'Do it once. Make it repeatable.',
-  'There’s something satisfying about a clean checklist.',
-  'A calm event starts with boring little wins.',
-  'The tiny systems are doing their job.',
-  'Keep building the version that runs smoother.',
-  'Nothing fancy. Just useful.',
-  'Make the next event better than the last.',
-  'You’re allowed to make operations cute.',
-  'Stuff. Fluff. Get shit done.',
-  'One less loose end.',
-  'Today’s progress can be small and still count.',
-  'The plush are ready when you are.',
-  'Put it where future you can find it.',
-  'The goal is fewer ‘where the hell is that?’ moments.',
-  'Keep the good chaos contained.',
-  'A packed bin is a love language.',
-  'You don’t have to remember what the app remembers.',
-  'Make the business easier to run.',
-  'One clean little win.',
-  'The party starts long before the party.',
-  'Build it once. Use it forever.',
-  'Prep now. Breathe later.',
-  'The Friend Hotel appreciates your organization.',
-  'Inventory math: surprisingly less fun than stuffing bears.',
-  'The machine gets the glory. Prep does the work.',
-  'Everything important deserves a home.',
-  'Another box checked is another brain cell freed.',
-  'You’re making this more real every day.',
-  'Keep the process as lovable as the plush.',
-  'A good setup feels effortless because it wasn’t.',
-  'The boring stuff is secretly the good stuff.',
-  'Ready is a very nice feeling.',
-  'Do the thing that makes tomorrow easier.',
-  'The next event is getting closer. So are you.',
-  'A little organization, a lot less chaos.',
-  'Your future self says thanks.',
-  'This business runs on fluff and follow-through.',
-  'Keep the list shorter than the stress.',
-  'Today can be a maintenance day. That counts.',
-  'Every smooth event has a pile of prep behind it.',
-  'The goal: show up ready and make it look easy.',
-  'Don’t carry it in your brain if Ops can carry it.',
-  'There’s always one more plush somewhere.',
-  'Make the system earn its spot.',
-  'Keep what works. Fix what annoys you.',
-  'You’re not running a warehouse. Thank God.',
-  'Useful first. Cute second. Ideally both.',
-  'Okay, what actually needs doing today?'
+  "Fluff first. Everything else will figure itself out.",
+  "Somewhere, a teddy bear is waiting for its big day.",
+  "May your bins be packed and your fluff stay fluffy.",
+  "Another day at the office. The office has teddy bears.",
+  "Tiny shirts. Big responsibilities.",
+  "The Friend Hotel is accepting very important guests today.",
+  "Wishing hearts make excellent coworkers.",
+  "Keep calm and check the plush count.",
+  "The fluff-mobile has places to be and friends to deliver.",
+  "A little heart goes in every friend. That is just good business.",
+  "Today's forecast: partly cloudy with a chance of plush.",
+  "There are worse problems than having too many teddy bears.",
+  "Pack the hearts. The magic needs supplies.",
+  "Stuff, fluff, love, repeat.",
+  "The plush friends have requested snacks. Request denied.",
+  "A well-packed bin is basically a love letter to event-day you.",
+  "Every friend starts out a little flat. Relatable.",
+  "The stuffing machine believes in you.",
+  "Today's tiny mission: make the next party extra lovable.",
+  "One heart, one hug, one very fluffy friend at a time.",
+  "The Friend Hotel has no vacancies after a good party.",
+  "If found buried in plush, please send fluff.",
+  "A pile of plush is just a party waiting to happen.",
+  "The bears are ready. Are the travel bags?",
+  "Today's dress code: tiny T-shirts and excellent vibes.",
+  "Some businesses have spreadsheets. We have wishing hearts.",
+  "Keep the fluff-mobile fueled and the plush friends fabulous.",
+  "Little hearts. Big memories.",
+  "Every packed crate is one step closer to somebody's new best friend.",
+  "The golden retriever plush would like to speak to management. Again.",
+  "Today's agenda: fluff, friends, and a suspicious number of bins.",
+  "The orange kitty has contributed absolutely nothing to prep.",
+  "Make room. The plush parade is coming through.",
+  "Friend Hotel check-in starts whenever the stuffing stops.",
+  "A tiny T-shirt can fix almost anything.",
+  "May your vinyl press straight and your plush counts match.",
+  "The best kind of inventory has faces.",
+  "Somebody's favorite stuffed friend is sitting in one of these bins.",
+  "Fluff happens. Pack extra.",
+  "Heart ceremony supplies: tiny hearts, big feelings.",
+  "The bears asked for a day off. Absolutely not.",
+  "Plush math is still math, but at least it is cute.",
+  "Today's goal: fewer loose ends, more stuffed friends.",
+  "Travel bags ready? Hearts ready? Fluff ready? Cute.",
+  "The stuffing machine gets loud when it is excited.",
+  "Every event needs a little prep and a lot of fluff.",
+  "The plush friends are unionizing for more cuddles.",
+  "One more party means one more batch of tiny best friends.",
+  "Keep the hearts close and the fluff closer.",
+  "SWL Ops: because the bears refuse to manage their own calendar.",
+  "The Friend Hotel concierge is wildly underpaid.",
+  "Today's important business: deciding which plush gets the cute outfit.",
+  "A full fluff box is a beautiful thing.",
+  "Somewhere in Green Bay, a kid is about to meet their new best friend.",
+  "Nothing says operations like 40 tiny shirts in a tote.",
+  "The magic starts before the machine ever turns on.",
+  "Pack it with love. Label it so we can find it.",
+  "The plush friends appreciate your attention to detail. Probably.",
+  "May all your wishing hearts make it into the right bin.",
+  "Good morning from the Department of Stuff, Fluff & Love.",
+  "The bears have reviewed today's schedule and seem cautiously optimistic.",
+  "Today's vibe: soft, fluffy, and weirdly organized.",
+  "One tiny heart can carry a whole lot of love.",
+  "The machine stuffs the plush. You make the memory.",
+  "Friends do not let friends forget the EcoFlow.",
+  "The plush lineup is looking ridiculously cute today.",
+  "Another event, another chance to make a tiny bit of magic.",
+  "Check the bins before the bins check you.",
+  "The orange kitty says inventory is somebody else's problem.",
+  "Nothing to see here. Just a perfectly normal amount of stuffed animals.",
+  "Friend Hotel housekeeping has been notified.",
+  "Today's reminder from the plush council: bring the hearts.",
+  "Fluff is basically confetti with a job.",
+  "The travel bags are ready for their tiny passengers.",
+  "May your setup be smooth and your plush stay upright.",
+  "The golden retriever is emotionally prepared for today's workload.",
+  "One event closer to a whole lot of happy kids.",
+  "Stuffed With Love runs on hearts, fluff, and remembering the extension cord.",
+  "The tiny wardrobe department is open for business.",
+  "Today's plush forecast: extremely huggable.",
+  "The Friend Hotel would like to remind you that checkout is adorable.",
+  "Every heart ceremony deserves a little extra magic.",
+  "Keep the machine humming and the hearts coming.",
+  "The frogs are judging the packing list. Politely.",
+  "Today's big task might fit in a very small travel bag.",
+  "The bears are packed. The chaos is contained. Beautiful.",
+  "Somewhere under all that fluff is a very good plan.",
+  "The unicorn department has requested more sparkle. Of course it has.",
+  "Little friends, little shirts, very big operation.",
+  "May your event be full of smiles and free of missing power cords.",
+  "The dino has volunteered for quality control.",
+  "Every plush deserves a heart. Every bin deserves a label.",
+  "The Friend Hotel front desk is ready when you are.",
+  "Stuff. Fluff. Love. Try not to lose the scissors.",
+  "Today's business plan: make something somebody will hug for years.",
+  "Plush friends do not care about perfect. They care about fluffy.",
+  "One more checked box means one less bear-related emergency.",
+  "The wishing hearts are small. Their job is not.",
+  "SWL Ops is awake. The plush friends are pretending not to be.",
+  "Let's make today's pile of plush somebody's favorite memory."
 ];
 
 const SWL_RARE_MESSAGES = [
-  '✨ Secret fluff unlocked. Carry on.',
-  'The plush council has reviewed your work. Approved.',
-  'Extremely official business operations happening here.',
-  'Rare message! Go buy a lottery ticket. Actually, maybe don’t.',
-  'The fluff-mobile whispers: check your gas tank.',
-  'A wild productivity appeared.',
-  'Somewhere, a tiny teddy bear believes in this spreadsheet-adjacent nonsense.',
-  'Achievement unlocked: suspiciously organized.'
+  "✨ Secret fluff unlocked. The plush council grants you one extremely official wish.",
+  "🧸 RARE BEAR SIGHTING: management has approved one unnecessary tiny outfit.",
+  "The Friend Hotel penthouse is open. Nobody knows what that means, but congratulations.",
+  "A golden retriever, an orange kitty, and a teddy bear walk into Ops. Payroll gets weird.",
+  "✨ You found the emergency reserve of magical fluff. Please use irresponsibly.",
+  "The plush council met after hours. Their only note was: more hearts.",
+  "Achievement unlocked: Supreme Keeper of the Fluff-Mobile Keys.",
+  "RARE MESSAGE! A tiny teddy has officially named you Employee of the Forever."
 ];
 
 function swlDateKey(date = new Date()) {
@@ -671,6 +671,129 @@ async function saveReminderToServer(reminder) {
 }
 
 
+
+/* =========================================================
+   PUSH NOTIFICATIONS
+========================================================= */
+
+const SWL_VAPID_PUBLIC_KEY = "BOyv9e4JdzUNpAIb8RA877ScMncpw3lRyhdl0QGLjKISC2rXHrM9y2FSncoC5yrgQQJhUNA0guclbB0_GL2tXSQ";
+
+function swlBase64UrlToUint8Array(value) {
+  const padding = "=".repeat((4 - value.length % 4) % 4);
+  const base64 = (value + padding).replace(/-/g, "+").replace(/_/g, "/");
+  const raw = atob(base64);
+  return Uint8Array.from([...raw].map(char => char.charCodeAt(0)));
+}
+
+function pushNotificationsSupported() {
+  return "serviceWorker" in navigator && "PushManager" in window && "Notification" in window;
+}
+
+function pushNotificationStatus() {
+  if (!pushNotificationsSupported()) return "unsupported";
+  if (Notification.permission === "denied") return "denied";
+  if (Notification.permission === "granted") return "enabled";
+  return "off";
+}
+
+function pushNotificationCardHTML() {
+  const status = pushNotificationStatus();
+  if (status === "unsupported") return "";
+
+  if (status === "enabled") {
+    return `
+      <section class="swl-notification-card enabled">
+        <span class="swl-notification-icon">♥</span>
+        <div>
+          <strong>SWL nudges are on</strong>
+          <small>Event countdowns + reminders can find you even when Ops is closed.</small>
+        </div>
+        <button type="button" onclick="disablePushNotifications()">Turn off</button>
+      </section>
+    `;
+  }
+
+  if (status === "denied") {
+    return `
+      <section class="swl-notification-card blocked">
+        <span class="swl-notification-icon">!</span>
+        <div>
+          <strong>Notifications are blocked</strong>
+          <small>Allow notifications for SWL Ops in your browser/device settings to turn the cute nudges back on.</small>
+        </div>
+      </section>
+    `;
+  }
+
+  return `
+    <section class="swl-notification-card">
+      <span class="swl-notification-icon">♥</span>
+      <div>
+        <strong>Want a little SWL nudge?</strong>
+        <small>Get automatic 1-week + tomorrow event reminders and your dated Attention reminders.</small>
+      </div>
+      <button type="button" onclick="enablePushNotifications()">Enable</button>
+    </section>
+  `;
+}
+
+async function enablePushNotifications() {
+  if (!pushNotificationsSupported()) {
+    alert("Push notifications are not supported on this device/browser.");
+    return;
+  }
+
+  try {
+    const permission = await Notification.requestPermission();
+    if (permission !== "granted") {
+      render();
+      return;
+    }
+
+    const registration = await navigator.serviceWorker.ready;
+    let subscription = await registration.pushManager.getSubscription();
+
+    if (!subscription) {
+      subscription = await registration.pushManager.subscribe({
+        userVisibleOnly: true,
+        applicationServerKey: swlBase64UrlToUint8Array(SWL_VAPID_PUBLIC_KEY)
+      });
+    }
+
+    await apiRequest("push/subscribe", {
+      method: "POST",
+      body: JSON.stringify(subscription.toJSON())
+    });
+
+    showSWLToast("♥ SWL nudges are on");
+    render();
+  } catch (err) {
+    console.error(err);
+    alert(`Could not turn on notifications. ${err.message}`);
+  }
+}
+
+async function disablePushNotifications() {
+  try {
+    const registration = await navigator.serviceWorker.ready;
+    const subscription = await registration.pushManager.getSubscription();
+
+    if (subscription) {
+      await apiRequest("push/unsubscribe", {
+        method: "POST",
+        body: JSON.stringify({ endpoint: subscription.endpoint })
+      });
+      await subscription.unsubscribe();
+    }
+
+    showSWLToast("SWL nudges are off");
+    render();
+  } catch (err) {
+    console.error(err);
+    alert(`Could not turn off notifications. ${err.message}`);
+  }
+}
+
 /* =========================================================
    BASIC UTILITIES
 ========================================================= */
@@ -1108,6 +1231,7 @@ function renderHome() {
 
     </section>
 
+    ${pushNotificationCardHTML()}
 
     <section class="swl-home-glance">
 
