@@ -3109,18 +3109,7 @@ function renderInventory() {
         ${inventoryCategoryIcon(category)}
       </div>
     `
-}
-      </div>
-    `
-    : `
-      <div
-        class="inventory-generic-icon inventory-generic-${category
-          .toLowerCase()
-          .replaceAll(" ", "-")}"
-      >
-        ${inventoryCategoryIcon(category)}
-      </div>
-    `
+
 }
                 <div class="inventory-item-copy">
 
