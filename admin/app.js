@@ -83,6 +83,179 @@ const ADD_ON_PRICING = {
 
 
 /* =========================================================
+   LITTLE DELIGHT
+========================================================= */
+
+const SWL_DAILY_MESSAGES = [
+  'Small steps still stuff big dreams.',
+  'Make it cute. Make it work.',
+  'A little fluff goes a long way.',
+  'Today’s a good day to make something fun.',
+  'One event at a time.',
+  'The details are the magic.',
+  'Keep it simple. Keep it special.',
+  'Built with fluff and a mildly concerning amount of determination.',
+  'Good things are getting stuffed.',
+  'Tiny progress counts.',
+  'You’re building the thing.',
+  'One more box checked.',
+  'Make the next thing easier.',
+  'Cute can also be organized.',
+  'The fluff-mobile has places to be.',
+  'Future you appreciates this.',
+  'A stocked shelf is a peaceful shelf.',
+  'Keep the chaos fluffy.',
+  'Today’s mission: less remembering, more doing.',
+  'The bears are not going to pack themselves.',
+  'Make room for the fun part.',
+  'A smooth event starts here.',
+  'You’ve got this one.',
+  'Check it. Pack it. Done.',
+  'Good systems make better parties.',
+  'Keep moving. Keep fluffing.',
+  'One less thing in your head.',
+  'The little stuff matters.',
+  'Ready beats perfect.',
+  'Make it easy on event-day you.',
+  'There is probably glitter somewhere.',
+  'Progress looks good on you.',
+  'A good plan leaves room for fun.',
+  'Stocked, packed, loved.',
+  'Do the next useful thing.',
+  'The magic is in the prep.',
+  'Less scrambling. More stuffing.',
+  'A tiny bit more ready than yesterday.',
+  'Keep the wheels on the fluff-mobile.',
+  'This is what building a business looks like.',
+  'Make today’s future problem disappear.',
+  'One tap closer to ready.',
+  'Organized enough to be dangerous.',
+  'Plush first. Panic never.',
+  'Today’s vibe: handled.',
+  'Keep the good stuff moving.',
+  'Make it warm. Make it memorable.',
+  'The checklist knows the way.',
+  'A little prep now saves a lot of WTF later.',
+  'You can absolutely make this easier.',
+  'Another day, another pile of plush.',
+  'The fun part works because this part works.',
+  'Do it once. Make it repeatable.',
+  'There’s something satisfying about a clean checklist.',
+  'A calm event starts with boring little wins.',
+  'The tiny systems are doing their job.',
+  'Keep building the version that runs smoother.',
+  'Nothing fancy. Just useful.',
+  'Make the next event better than the last.',
+  'You’re allowed to make operations cute.',
+  'Stuff. Fluff. Get shit done.',
+  'One less loose end.',
+  'Today’s progress can be small and still count.',
+  'The plush are ready when you are.',
+  'Put it where future you can find it.',
+  'The goal is fewer ‘where the hell is that?’ moments.',
+  'Keep the good chaos contained.',
+  'A packed bin is a love language.',
+  'You don’t have to remember what the app remembers.',
+  'Make the business easier to run.',
+  'One clean little win.',
+  'The party starts long before the party.',
+  'Build it once. Use it forever.',
+  'Prep now. Breathe later.',
+  'The Friend Hotel appreciates your organization.',
+  'Inventory math: surprisingly less fun than stuffing bears.',
+  'The machine gets the glory. Prep does the work.',
+  'Everything important deserves a home.',
+  'Another box checked is another brain cell freed.',
+  'You’re making this more real every day.',
+  'Keep the process as lovable as the plush.',
+  'A good setup feels effortless because it wasn’t.',
+  'The boring stuff is secretly the good stuff.',
+  'Ready is a very nice feeling.',
+  'Do the thing that makes tomorrow easier.',
+  'The next event is getting closer. So are you.',
+  'A little organization, a lot less chaos.',
+  'Your future self says thanks.',
+  'This business runs on fluff and follow-through.',
+  'Keep the list shorter than the stress.',
+  'Today can be a maintenance day. That counts.',
+  'Every smooth event has a pile of prep behind it.',
+  'The goal: show up ready and make it look easy.',
+  'Don’t carry it in your brain if Ops can carry it.',
+  'There’s always one more plush somewhere.',
+  'Make the system earn its spot.',
+  'Keep what works. Fix what annoys you.',
+  'You’re not running a warehouse. Thank God.',
+  'Useful first. Cute second. Ideally both.',
+  'Okay, what actually needs doing today?'
+];
+
+const SWL_RARE_MESSAGES = [
+  '✨ Secret fluff unlocked. Carry on.',
+  'The plush council has reviewed your work. Approved.',
+  'Extremely official business operations happening here.',
+  'Rare message! Go buy a lottery ticket. Actually, maybe don’t.',
+  'The fluff-mobile whispers: check your gas tank.',
+  'A wild productivity appeared.',
+  'Somewhere, a tiny teddy bear believes in this spreadsheet-adjacent nonsense.',
+  'Achievement unlocked: suspiciously organized.'
+];
+
+function swlDateKey(date = new Date()) {
+  return `${date.getFullYear()}-${String(date.getMonth()+1).padStart(2,"0")}-${String(date.getDate()).padStart(2,"0")}`;
+}
+
+function swlHash(value) {
+  let hash = 2166136261;
+  for (const char of String(value)) {
+    hash ^= char.charCodeAt(0);
+    hash = Math.imul(hash, 16777619);
+  }
+  return hash >>> 0;
+}
+
+function getSWLDailyMessage() {
+  const key = swlDateKey();
+  const hash = swlHash(`swl-${key}`);
+  // Roughly 1 in 40 days gets one of the intentionally rare lines.
+  if (hash % 40 === 0) {
+    return SWL_RARE_MESSAGES[hash % SWL_RARE_MESSAGES.length];
+  }
+  return SWL_DAILY_MESSAGES[hash % SWL_DAILY_MESSAGES.length];
+}
+
+function showSWLToast(message, options = {}) {
+  const existing = document.querySelector(".swl-toast");
+  if (existing) existing.remove();
+
+  const toast = document.createElement("div");
+  toast.className = `swl-toast ${options.type || "success"}`;
+  toast.setAttribute("role", "status");
+  toast.textContent = message;
+  document.body.appendChild(toast);
+
+  requestAnimationFrame(() => toast.classList.add("show"));
+  setTimeout(() => {
+    toast.classList.remove("show");
+    setTimeout(() => toast.remove(), 220);
+  }, options.duration || 1450);
+}
+
+function animateInventoryCount(itemId, delta) {
+  document.querySelectorAll(`[data-inventory-id="${itemId}"]`).forEach(element => {
+    element.querySelectorAll("[data-inventory-on-hand], [data-inventory-stepper]").forEach(number => {
+      number.classList.remove("swl-number-pop");
+      void number.offsetWidth;
+      number.classList.add("swl-number-pop");
+    });
+  });
+
+  if (Number(delta)) {
+    showSWLToast(`${delta > 0 ? "+" : ""}${delta} inventory`);
+  }
+}
+
+
+/* =========================================================
    INVENTORY
 ========================================================= */
 
@@ -887,16 +1060,9 @@ function renderHome() {
           ${greeting}
         </div>
 
-        <h2>
-          Let’s make more
-          <span>happy hugs</span>
-          today.
+        <h2 class="swl-daily-message">
+          ${escapeHTML(getSWLDailyMessage())}
         </h2>
-
-        <p>
-          Here’s what’s happening with
-          Stuffed With Love.
-        </p>
 
       </div>
 
@@ -2856,56 +3022,33 @@ function animatePackingTap(packingId) {
 
 
 function celebratePackingComplete() {
-  const card =
-    document.querySelector(
-      ".pack-progress-card"
-    );
+  document.querySelectorAll(".pack-heart-burst").forEach(node => node.remove());
 
-  const list =
-    document.querySelector(
-      ".pack-list-card"
-    );
+  const card = document.querySelector(".pack-progress-card");
+  const list = document.querySelector(".pack-list-card");
+  const done = document.querySelector(".pack-done-message");
 
-  if (card) {
-    card.classList.add(
-      "pack-celebration"
-    );
-  }
+  [card, list, done].forEach(element => {
+    if (!element) return;
+    element.classList.remove("pack-celebration", "pack-list-complete-pop", "pack-done-pop");
+    void element.offsetWidth;
+  });
 
-  if (list) {
-    list.classList.add(
-      "pack-list-complete-pop"
-    );
-  }
+  if (card) card.classList.add("pack-celebration");
+  if (list) list.classList.add("pack-list-complete-pop");
+  if (done) done.classList.add("pack-done-pop");
 
+  const celebration = document.createElement("div");
+  celebration.className = "pack-heart-burst";
+  celebration.setAttribute("aria-hidden", "true");
+  celebration.innerHTML = `<span>♥</span><span>♥</span><span>♥</span><span>♥</span><span>♥</span><span>♥</span><span>♥</span>`;
+  document.body.appendChild(celebration);
 
-  /*
-     Tiny floating hearts.
-     Intentionally a LITTLE goofy.
-  */
+  showSWLToast("All packed. Fluff-mobile ready. ♥", { duration: 1900 });
 
-  const celebration =
-    document.createElement("div");
-
-  celebration.className =
-    "pack-heart-burst";
-
-  celebration.innerHTML = `
-    <span>♥</span>
-    <span>♥</span>
-    <span>♥</span>
-    <span>♥</span>
-    <span>♥</span>
-  `;
-
-  document.body.appendChild(
-    celebration
-  );
-
-  setTimeout(() => {
-    celebration.remove();
-  }, 1300);
+  setTimeout(() => celebration.remove(), 1500);
 }
+
 async function deleteEvent(id) {
   if (
     !confirm(
@@ -4036,6 +4179,7 @@ async function changeInventoryBy(
 
   updateAttentionBadge();
   updateInventoryItemNumbers(itemId);
+  animateInventoryCount(itemId, Number(delta || 0));
 }
 function updateInventoryItemNumbers(itemId) {
   const item =
@@ -4149,6 +4293,7 @@ async function setInventoryCount(
   renderInventory();
 
   openInventoryItem(itemId);
+  showSWLToast("Inventory count saved");
 }
 /* =========================================================
    FILES
@@ -5252,6 +5397,7 @@ async function uploadSWLFile(form) {
       immediately.
     */
     renderFilesContent();
+    showSWLToast("File saved");
 
   } catch (err) {
     button.disabled = false;
@@ -9054,6 +9200,7 @@ async function saveEventFromWizard() {
     "event-detail";
 
   render();
+  showSWLToast(isEdit ? "Event updated" : "Event booked ♥");
 }
 
 
@@ -9118,6 +9265,22 @@ if (
 }
     }
   );
+
+document.addEventListener("pointerdown", event => {
+  const target = event.target.closest("button, .tap-card, .file-row, .recent-file-card");
+  if (!target || target.disabled) return;
+  target.classList.add("swl-pressed");
+});
+
+document.addEventListener("pointerup", event => {
+  const target = event.target.closest("button, .tap-card, .file-row, .recent-file-card");
+  if (!target) return;
+  setTimeout(() => target.classList.remove("swl-pressed"), 90);
+});
+
+document.addEventListener("pointercancel", () => {
+  document.querySelectorAll(".swl-pressed").forEach(node => node.classList.remove("swl-pressed"));
+});
 
 async function initializeApp() {
   const main =
