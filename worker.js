@@ -142,6 +142,16 @@ async function handleApi(request, env, url) {
       );
     }
 
+    if (resource === "clients") {
+      return handleClients(
+        request,
+        env,
+        id,
+        action,
+        parts[3]
+      );
+    }
+
 if (resource === "file-categories") {
   return handleFileCategories(
     request,
@@ -186,6 +196,7 @@ if (resource === "file-categories") {
 ========================================================= */
 
 async function handleBootstrap(env) {
+  await ensureClientsTables(env);
   const eventsResult = await env.DB
     .prepare(`
       SELECT data
@@ -255,11 +266,74 @@ async function handleBootstrap(env) {
       })
     );
 
+  const clientsResult =
+    await env.DB
+      .prepare(`
+        SELECT
+          id,
+          name,
+          type,
+          legacy_key,
+          created_at,
+          updated_at
+        FROM clients
+        ORDER BY name COLLATE NOCASE ASC
+      `)
+      .all();
+
+  const contactsResult =
+    await env.DB
+      .prepare(`
+        SELECT
+          id,
+          client_id,
+          name,
+          role,
+          phone,
+          email,
+          is_primary,
+          created_at
+        FROM client_contacts
+        ORDER BY is_primary DESC, created_at ASC
+      `)
+      .all();
+
+  const contactsByClient = new Map();
+
+  for (const row of contactsResult.results) {
+    if (!contactsByClient.has(row.client_id)) {
+      contactsByClient.set(row.client_id, []);
+    }
+
+    contactsByClient.get(row.client_id).push({
+      id: row.id,
+      clientId: row.client_id,
+      name: row.name || "",
+      role: row.role || "",
+      phone: row.phone || "",
+      email: row.email || "",
+      isPrimary: Boolean(row.is_primary),
+      createdAt: row.created_at
+    });
+  }
+
+  const clients =
+    clientsResult.results.map(row => ({
+      id: row.id,
+      name: row.name,
+      type: row.type || "person",
+      legacyKey: row.legacy_key || null,
+      contacts: contactsByClient.get(row.id) || [],
+      createdAt: row.created_at,
+      updatedAt: row.updated_at
+    }));
+
   return json({
     ok: true,
     events,
     inventory,
-    attention: reminders
+    attention: reminders,
+    clients
   });
 }
 
@@ -845,6 +919,433 @@ async function handleInventory(
   );
 }
 
+
+
+/* =========================================================
+   CLIENTS
+========================================================= */
+
+async function ensureClientsTables(env) {
+  await env.DB
+    .prepare(`
+      CREATE TABLE IF NOT EXISTS clients (
+        id TEXT PRIMARY KEY,
+        name TEXT NOT NULL,
+        type TEXT NOT NULL DEFAULT 'person',
+        legacy_key TEXT UNIQUE,
+        created_at TEXT NOT NULL,
+        updated_at TEXT NOT NULL
+      )
+    `)
+    .run();
+
+  await env.DB
+    .prepare(`
+      CREATE TABLE IF NOT EXISTS client_contacts (
+        id TEXT PRIMARY KEY,
+        client_id TEXT NOT NULL,
+        name TEXT,
+        role TEXT,
+        phone TEXT,
+        email TEXT,
+        is_primary INTEGER NOT NULL DEFAULT 0,
+        created_at TEXT NOT NULL,
+        FOREIGN KEY (client_id) REFERENCES clients(id) ON DELETE CASCADE
+      )
+    `)
+    .run();
+
+  await env.DB
+    .prepare(`
+      CREATE INDEX IF NOT EXISTS idx_client_contacts_client
+      ON client_contacts (client_id, is_primary, created_at)
+    `)
+    .run();
+}
+
+async function getClientRecord(env, clientId) {
+  const row =
+    await env.DB
+      .prepare(`
+        SELECT
+          id,
+          name,
+          type,
+          legacy_key,
+          created_at,
+          updated_at
+        FROM clients
+        WHERE id = ?
+      `)
+      .bind(clientId)
+      .first();
+
+  if (!row) return null;
+
+  const contacts =
+    await env.DB
+      .prepare(`
+        SELECT
+          id,
+          client_id,
+          name,
+          role,
+          phone,
+          email,
+          is_primary,
+          created_at
+        FROM client_contacts
+        WHERE client_id = ?
+        ORDER BY is_primary DESC, created_at ASC
+      `)
+      .bind(clientId)
+      .all();
+
+  return {
+    id: row.id,
+    name: row.name,
+    type: row.type || "person",
+    legacyKey: row.legacy_key || null,
+    contacts: contacts.results.map(contact => ({
+      id: contact.id,
+      clientId: contact.client_id,
+      name: contact.name || "",
+      role: contact.role || "",
+      phone: contact.phone || "",
+      email: contact.email || "",
+      isPrimary: Boolean(contact.is_primary),
+      createdAt: contact.created_at
+    })),
+    createdAt: row.created_at,
+    updatedAt: row.updated_at
+  };
+}
+
+async function handleClients(
+  request,
+  env,
+  id,
+  action,
+  childId
+) {
+  await ensureClientsTables(env);
+
+  if (
+    request.method === "GET" &&
+    !id
+  ) {
+    const result =
+      await env.DB
+        .prepare(`
+          SELECT id
+          FROM clients
+          ORDER BY name COLLATE NOCASE ASC
+        `)
+        .all();
+
+    const clients = [];
+
+    for (const row of result.results) {
+      const client =
+        await getClientRecord(env, row.id);
+
+      if (client) clients.push(client);
+    }
+
+    return json({
+      ok: true,
+      clients
+    });
+  }
+
+  if (
+    request.method === "POST" &&
+    !id
+  ) {
+    const body =
+      await request.json();
+
+    const name =
+      String(body.name || "").trim();
+
+    const type =
+      body.type === "organization"
+        ? "organization"
+        : "person";
+
+    const legacyKey =
+      String(body.legacyKey || "").trim() ||
+      null;
+
+    if (!name) {
+      return error("Client name is required.");
+    }
+
+    if (legacyKey) {
+      const existing =
+        await env.DB
+          .prepare(`
+            SELECT id
+            FROM clients
+            WHERE legacy_key = ?
+          `)
+          .bind(legacyKey)
+          .first();
+
+      if (existing) {
+        return json({
+          ok: true,
+          client:
+            await getClientRecord(
+              env,
+              existing.id
+            )
+        });
+      }
+    }
+
+    const now =
+      new Date().toISOString();
+
+    const clientId =
+      "client_" + crypto.randomUUID();
+
+    await env.DB
+      .prepare(`
+        INSERT INTO clients (
+          id,
+          name,
+          type,
+          legacy_key,
+          created_at,
+          updated_at
+        )
+        VALUES (?, ?, ?, ?, ?, ?)
+      `)
+      .bind(
+        clientId,
+        name,
+        type,
+        legacyKey,
+        now,
+        now
+      )
+      .run();
+
+    const contacts =
+      Array.isArray(body.contacts)
+        ? body.contacts
+        : [];
+
+    for (let index = 0; index < contacts.length; index++) {
+      const contact = contacts[index];
+
+      const contactName =
+        String(contact.name || "").trim();
+
+      const role =
+        String(contact.role || "").trim();
+
+      const phone =
+        String(contact.phone || "").trim();
+
+      const email =
+        String(contact.email || "").trim();
+
+      if (
+        !contactName &&
+        !phone &&
+        !email
+      ) {
+        continue;
+      }
+
+      await env.DB
+        .prepare(`
+          INSERT INTO client_contacts (
+            id,
+            client_id,
+            name,
+            role,
+            phone,
+            email,
+            is_primary,
+            created_at
+          )
+          VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+        `)
+        .bind(
+          "contact_" + crypto.randomUUID(),
+          clientId,
+          contactName,
+          role,
+          phone,
+          email,
+          index === 0 ? 1 : 0,
+          now
+        )
+        .run();
+    }
+
+    return json({
+      ok: true,
+      client:
+        await getClientRecord(
+          env,
+          clientId
+        )
+    });
+  }
+
+  if (
+    request.method === "PUT" &&
+    id &&
+    !action
+  ) {
+    const body =
+      await request.json();
+
+    const name =
+      String(body.name || "").trim();
+
+    const type =
+      body.type === "organization"
+        ? "organization"
+        : "person";
+
+    if (!name) {
+      return error("Client name is required.");
+    }
+
+    const result =
+      await env.DB
+        .prepare(`
+          UPDATE clients
+          SET
+            name = ?,
+            type = ?,
+            updated_at = ?
+          WHERE id = ?
+        `)
+        .bind(
+          name,
+          type,
+          new Date().toISOString(),
+          id
+        )
+        .run();
+
+    if (!result.meta.changes) {
+      return error("Client not found.", 404);
+    }
+
+    return json({
+      ok: true,
+      client:
+        await getClientRecord(env, id)
+    });
+  }
+
+  if (
+    request.method === "POST" &&
+    id &&
+    action === "contacts"
+  ) {
+    const client =
+      await getClientRecord(env, id);
+
+    if (!client) {
+      return error("Client not found.", 404);
+    }
+
+    const body =
+      await request.json();
+
+    const name =
+      String(body.name || "").trim();
+
+    const role =
+      String(body.role || "").trim();
+
+    const phone =
+      String(body.phone || "").trim();
+
+    const email =
+      String(body.email || "").trim();
+
+    const isPrimary =
+      Boolean(body.isPrimary);
+
+    if (!name && !phone && !email) {
+      return error(
+        "Contact needs a name, phone number, or email."
+      );
+    }
+
+    if (
+      isPrimary ||
+      !client.contacts.length
+    ) {
+      await env.DB
+        .prepare(`
+          UPDATE client_contacts
+          SET is_primary = 0
+          WHERE client_id = ?
+        `)
+        .bind(id)
+        .run();
+    }
+
+    const now =
+      new Date().toISOString();
+
+    await env.DB
+      .prepare(`
+        INSERT INTO client_contacts (
+          id,
+          client_id,
+          name,
+          role,
+          phone,
+          email,
+          is_primary,
+          created_at
+        )
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+      `)
+      .bind(
+        "contact_" + crypto.randomUUID(),
+        id,
+        name,
+        role,
+        phone,
+        email,
+        (isPrimary || !client.contacts.length) ? 1 : 0,
+        now
+      )
+      .run();
+
+    await env.DB
+      .prepare(`
+        UPDATE clients
+        SET updated_at = ?
+        WHERE id = ?
+      `)
+      .bind(now, id)
+      .run();
+
+    return json({
+      ok: true,
+      client:
+        await getClientRecord(env, id)
+    });
+  }
+
+  return error(
+    "Unsupported client request.",
+    405
+  );
+}
 
 
 /* =========================================================
