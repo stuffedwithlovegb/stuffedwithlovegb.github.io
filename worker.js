@@ -133,7 +133,13 @@ async function handleApi(request, env, url) {
         id
       );
     }
-
+if (resource === "file-categories") {
+  return handleFileCategories(
+    request,
+    env,
+    id
+  );
+}
     if (resource === "files") {
       return handleFiles(
         request,
@@ -834,7 +840,324 @@ async function handleInventory(
 /* =========================================================
    FILES
 ========================================================= */
+/* =========================================================
+   FILE CATEGORIES
+========================================================= */
 
+async function handleFileCategories(
+  request,
+  env,
+  id
+) {
+
+  // GET ALL CATEGORIES
+  if (
+    request.method === "GET" &&
+    !id
+  ) {
+    const result = await env.DB
+      .prepare(`
+        SELECT
+          id,
+          name,
+          sort_order,
+          created_at
+        FROM file_categories
+        ORDER BY sort_order ASC, name ASC
+      `)
+      .all();
+
+    return json({
+      ok: true,
+      categories:
+        result.results.map(row => ({
+          id: row.id,
+          name: row.name,
+          sortOrder: row.sort_order,
+          createdAt: row.created_at
+        }))
+    });
+  }
+
+
+  // CREATE CATEGORY
+  if (
+    request.method === "POST" &&
+    !id
+  ) {
+    const body =
+      await request.json();
+
+    const name =
+      String(body.name || "")
+        .trim();
+
+    if (!name) {
+      return error(
+        "Category name is required."
+      );
+    }
+
+    const existing =
+      await env.DB
+        .prepare(`
+          SELECT id
+          FROM file_categories
+          WHERE LOWER(name) = LOWER(?)
+        `)
+        .bind(name)
+        .first();
+
+    if (existing) {
+      return error(
+        "That category already exists."
+      );
+    }
+
+    const maxOrder =
+      await env.DB
+        .prepare(`
+          SELECT MAX(sort_order) AS max_order
+          FROM file_categories
+        `)
+        .first();
+
+    const sortOrder =
+      Number(maxOrder?.max_order || 0) + 10;
+
+    const category = {
+      id:
+        "cat_" +
+        crypto.randomUUID(),
+      name,
+      sortOrder,
+      createdAt:
+        new Date().toISOString()
+    };
+
+    await env.DB
+      .prepare(`
+        INSERT INTO file_categories (
+          id,
+          name,
+          sort_order,
+          created_at
+        )
+        VALUES (?, ?, ?, ?)
+      `)
+      .bind(
+        category.id,
+        category.name,
+        category.sortOrder,
+        category.createdAt
+      )
+      .run();
+
+    return json({
+      ok: true,
+      category
+    });
+  }
+
+
+  // RENAME CATEGORY
+  if (
+    request.method === "PUT" &&
+    id
+  ) {
+    const body =
+      await request.json();
+
+    const name =
+      String(body.name || "")
+        .trim();
+
+    if (!name) {
+      return error(
+        "Category name is required."
+      );
+    }
+
+    const category =
+      await env.DB
+        .prepare(`
+          SELECT
+            id,
+            name
+          FROM file_categories
+          WHERE id = ?
+        `)
+        .bind(id)
+        .first();
+
+    if (!category) {
+      return error(
+        "Category not found.",
+        404
+      );
+    }
+
+    const duplicate =
+      await env.DB
+        .prepare(`
+          SELECT id
+          FROM file_categories
+          WHERE
+            LOWER(name) = LOWER(?)
+            AND id != ?
+        `)
+        .bind(
+          name,
+          id
+        )
+        .first();
+
+    if (duplicate) {
+      return error(
+        "That category already exists."
+      );
+    }
+
+    /*
+      Files currently store the category name,
+      so rename both the category and every file
+      using it.
+    */
+    await env.DB.batch([
+      env.DB
+        .prepare(`
+          UPDATE files
+          SET category = ?
+          WHERE category = ?
+        `)
+        .bind(
+          name,
+          category.name
+        ),
+
+      env.DB
+        .prepare(`
+          UPDATE file_categories
+          SET name = ?
+          WHERE id = ?
+        `)
+        .bind(
+          name,
+          id
+        )
+    ]);
+
+    return json({
+      ok: true,
+      category: {
+        id,
+        name
+      }
+    });
+  }
+
+
+  // DELETE CATEGORY
+  if (
+    request.method === "DELETE" &&
+    id
+  ) {
+    const url =
+      new URL(request.url);
+
+    const moveTo =
+      String(
+        url.searchParams.get("moveTo") ||
+        ""
+      ).trim();
+
+    if (!moveTo) {
+      return error(
+        "Choose a category to move the files into before deleting this category."
+      );
+    }
+
+    const category =
+      await env.DB
+        .prepare(`
+          SELECT
+            id,
+            name
+          FROM file_categories
+          WHERE id = ?
+        `)
+        .bind(id)
+        .first();
+
+    if (!category) {
+      return error(
+        "Category not found.",
+        404
+      );
+    }
+
+    const destination =
+      await env.DB
+        .prepare(`
+          SELECT
+            id,
+            name
+          FROM file_categories
+          WHERE id = ?
+        `)
+        .bind(moveTo)
+        .first();
+
+    if (!destination) {
+      return error(
+        "Destination category not found.",
+        404
+      );
+    }
+
+    if (
+      destination.id === category.id
+    ) {
+      return error(
+        "Choose a different destination category."
+      );
+    }
+
+    /*
+      Move the files first, then remove
+      the category itself.
+    */
+    await env.DB.batch([
+      env.DB
+        .prepare(`
+          UPDATE files
+          SET category = ?
+          WHERE category = ?
+        `)
+        .bind(
+          destination.name,
+          category.name
+        ),
+
+      env.DB
+        .prepare(`
+          DELETE FROM file_categories
+          WHERE id = ?
+        `)
+        .bind(id)
+    ]);
+
+    return json({
+      ok: true
+    });
+  }
+
+
+  return error(
+    "Unsupported file category request.",
+    405
+  );
+}
 async function handleFiles(
   request,
   env,
@@ -912,20 +1235,24 @@ async function handleFiles(
         "Other"
       ).trim();
 
-    const allowedCategories = [
-      "Brand",
-      "Cricut",
-      "Printables",
-      "Event Assets",
-      "Other"
-    ];
+   const categoryRecord =
+  await env.DB
+    .prepare(`
+      SELECT name
+      FROM file_categories
+      WHERE name = ?
+    `)
+    .bind(requestedCategory)
+    .first();
 
-    const category =
-      allowedCategories.includes(
-        requestedCategory
-      )
-        ? requestedCategory
-        : "Other";
+if (!categoryRecord) {
+  return error(
+    "Valid file category is required."
+  );
+}
+
+const category =
+  categoryRecord.name;
 
     /*
       Keep this intentionally larger than
@@ -1159,29 +1486,27 @@ async function handleFiles(
       );
     }
 
-    const allowedCategories = [
-      "Brand",
-      "Cricut",
-      "Printables",
-      "Event Assets",
-      "Other"
-    ];
-
     const requestedCategory =
-      String(
-        body.category ??
-        existing.category
-      ).trim();
+  String(
+    body.category ??
+    existing.category
+  ).trim();
 
-    if (
-      !allowedCategories.includes(
-        requestedCategory
-      )
-    ) {
-      return error(
-        "Valid file category is required."
-      );
-    }
+const categoryRecord =
+  await env.DB
+    .prepare(`
+      SELECT name
+      FROM file_categories
+      WHERE name = ?
+    `)
+    .bind(requestedCategory)
+    .first();
+
+if (!categoryRecord) {
+  return error(
+    "Valid file category is required."
+  );
+}
 
     const result =
       await env.DB
