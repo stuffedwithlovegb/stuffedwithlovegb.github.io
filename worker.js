@@ -54,6 +54,7 @@ async function handleApi(request, env, url) {
 
     const resource = parts[0];
     const id = parts[1];
+    const action = parts[2];
 
     if (resource === "events") {
       return handleEvents(
@@ -67,7 +68,8 @@ async function handleApi(request, env, url) {
       return handleInventory(
         request,
         env,
-        id
+        id,
+        action
       );
     }
 
@@ -131,7 +133,8 @@ async function handleBootstrap(env) {
         category,
         on_hand,
         unit,
-        auto_reserve
+        auto_reserve,
+        image_key
       FROM inventory
       ORDER BY category, name
     `)
@@ -164,7 +167,9 @@ async function handleBootstrap(env) {
         onHand: row.on_hand,
         unit: row.unit,
         autoReserve:
-          Boolean(row.auto_reserve)
+          Boolean(row.auto_reserve),
+        imageKey:
+          row.image_key || null
       })
     );
 
@@ -343,7 +348,8 @@ async function handleEvents(
 async function handleInventory(
   request,
   env,
-  id
+  id,
+  action
 ) {
 
   // GET ALL INVENTORY
@@ -359,7 +365,8 @@ async function handleInventory(
           category,
           on_hand,
           unit,
-          auto_reserve
+          auto_reserve,
+          image_key
         FROM inventory
         ORDER BY category, name
       `)
@@ -377,7 +384,9 @@ async function handleInventory(
             onHand: row.on_hand,
             unit: row.unit,
             autoReserve:
-              Boolean(row.auto_reserve)
+              Boolean(row.auto_reserve),
+            imageKey:
+              row.image_key || null
           })
         )
     });
@@ -477,7 +486,8 @@ async function handleInventory(
       onHand,
       unit,
       autoReserve:
-        Boolean(autoReserve)
+        Boolean(autoReserve),
+      imageKey: null
     };
 
     return json({
@@ -487,10 +497,183 @@ async function handleInventory(
   }
 
 
+  // UPLOAD INVENTORY IMAGE
+  if (
+    request.method === "POST" &&
+    id &&
+    action === "image"
+  ) {
+    const item = await env.DB
+      .prepare(`
+        SELECT
+          id,
+          image_key
+        FROM inventory
+        WHERE id = ?
+      `)
+      .bind(id)
+      .first();
+
+    if (!item) {
+      return error(
+        "Inventory item not found.",
+        404
+      );
+    }
+
+    const formData =
+      await request.formData();
+
+    const file =
+      formData.get("image");
+
+    if (
+      !file ||
+      typeof file === "string"
+    ) {
+      return error(
+        "Image file is required."
+      );
+    }
+
+    if (
+      !file.type ||
+      !file.type.startsWith("image/")
+    ) {
+      return error(
+        "File must be an image."
+      );
+    }
+
+    const maxBytes =
+      10 * 1024 * 1024;
+
+    if (file.size > maxBytes) {
+      return error(
+        "Image must be 10 MB or smaller."
+      );
+    }
+
+    const rawExtension =
+      file.name
+        ?.split(".")
+        .pop()
+        ?.toLowerCase()
+        .replace(
+          /[^a-z0-9]/g,
+          ""
+        );
+
+    const extension =
+      rawExtension || "jpg";
+
+    const imageKey =
+      `inventory/${id}/${crypto.randomUUID()}.${extension}`;
+
+    await env.IMAGES.put(
+      imageKey,
+      file.stream(),
+      {
+        httpMetadata: {
+          contentType:
+            file.type ||
+            "image/jpeg"
+        }
+      }
+    );
+
+    await env.DB
+      .prepare(`
+        UPDATE inventory
+        SET image_key = ?
+        WHERE id = ?
+      `)
+      .bind(
+        imageKey,
+        id
+      )
+      .run();
+
+    // Remove previous uploaded image
+    // after new image has saved successfully.
+    if (item.image_key) {
+      await env.IMAGES.delete(
+        item.image_key
+      );
+    }
+
+    return json({
+      ok: true,
+      imageKey,
+      imageUrl:
+        `/admin/api/inventory/${encodeURIComponent(id)}/image`
+    });
+  }
+
+
+  // SERVE INVENTORY IMAGE
+  if (
+    request.method === "GET" &&
+    id &&
+    action === "image"
+  ) {
+    const item = await env.DB
+      .prepare(`
+        SELECT image_key
+        FROM inventory
+        WHERE id = ?
+      `)
+      .bind(id)
+      .first();
+
+    if (
+      !item ||
+      !item.image_key
+    ) {
+      return error(
+        "Image not found.",
+        404
+      );
+    }
+
+    const object =
+      await env.IMAGES.get(
+        item.image_key
+      );
+
+    if (!object) {
+      return error(
+        "Image not found.",
+        404
+      );
+    }
+
+    const headers =
+      new Headers();
+
+    object.writeHttpMetadata(
+      headers
+    );
+
+    headers.set(
+      "Cache-Control",
+      "private, max-age=3600"
+    );
+
+    return new Response(
+      object.body,
+      {
+        headers
+      }
+    );
+  }
+
+
   // UPDATE INVENTORY COUNT
   if (
     request.method === "PUT" &&
-    id
+    id &&
+    !action
   ) {
     const body =
       await request.json();
@@ -536,8 +719,25 @@ async function handleInventory(
   // DELETE INVENTORY ITEM
   if (
     request.method === "DELETE" &&
-    id
+    id &&
+    !action
   ) {
+    const item = await env.DB
+      .prepare(`
+        SELECT image_key
+        FROM inventory
+        WHERE id = ?
+      `)
+      .bind(id)
+      .first();
+
+    if (!item) {
+      return error(
+        "Inventory item not found.",
+        404
+      );
+    }
+
     const result = await env.DB
       .prepare(`
         DELETE FROM inventory
@@ -550,6 +750,14 @@ async function handleInventory(
       return error(
         "Inventory item not found.",
         404
+      );
+    }
+
+    // Don't leave abandoned uploaded
+    // images sitting in R2.
+    if (item.image_key) {
+      await env.IMAGES.delete(
+        item.image_key
       );
     }
 
