@@ -5300,6 +5300,11 @@ function openFileDetail(fileId) {
       `)
       .join("");
 
+  const canPreview =
+    type.isImage ||
+    type.label === "SVG" ||
+    type.label === "PDF";
+
   const html = `
     <div
       class="modal-backdrop"
@@ -5381,20 +5386,49 @@ function openFileDetail(fileId) {
         </div>
 
 
-        <a
-          class="
-            primary-button
-            full-width
-            file-open-button
-          "
-          href="/admin/api/files/${encodeURIComponent(
-            file.id
-          )}/download"
-          target="_blank"
-          rel="noopener"
-        >
-          Open File
-        </a>
+        <div class="file-detail-actions">
+
+          ${
+            canPreview
+              ? `
+                <button
+                  type="button"
+                  class="
+                    primary-button
+                    full-width
+                  "
+                  onclick="previewSWLFile(
+                    decodeURIComponent(
+                      '${encodeURIComponent(
+                        file.id
+                      )}'
+                    )
+                  )"
+                >
+                  Preview
+                </button>
+              `
+              : ""
+          }
+
+          <button
+            type="button"
+            class="
+              secondary-button
+              full-width
+            "
+            onclick="saveSWLFile(
+              decodeURIComponent(
+                '${encodeURIComponent(
+                  file.id
+                )}'
+              )
+            )"
+          >
+            Save / Download
+          </button>
+
+        </div>
 
 
         <form
@@ -5402,7 +5436,11 @@ function openFileDetail(fileId) {
           onsubmit="
             event.preventDefault();
             saveFileChanges(
-              ${JSON.stringify(file.id)},
+              decodeURIComponent(
+                '${encodeURIComponent(
+                  file.id
+                )}'
+              ),
               this
             );
           "
@@ -5450,10 +5488,12 @@ function openFileDetail(fileId) {
         <button
           class="file-delete-button"
           onclick="confirmDeleteSWLFile(
-  decodeURIComponent(
-    '${encodeURIComponent(file.id)}'
-  )
-)"
+            decodeURIComponent(
+              '${encodeURIComponent(
+                file.id
+              )}'
+            )
+          )"
         >
           Delete File
         </button>
@@ -5470,6 +5510,234 @@ function openFileDetail(fileId) {
     .innerHTML = html;
 }
 
+function previewSWLFile(fileId) {
+  const file =
+    swlFiles.find(
+      file =>
+        file.id === fileId
+    );
+
+  if (!file) return;
+
+  const type =
+    getFileTypeInfo(file);
+
+  const url =
+    `/admin/api/files/${
+      encodeURIComponent(file.id)
+    }/download`;
+
+  let previewHTML = "";
+
+  if (
+    type.isImage ||
+    type.label === "SVG"
+  ) {
+    previewHTML = `
+      <div class="swl-file-viewer-body">
+        <img
+          src="${url}"
+          alt="${escapeHTML(
+            file.name
+          )}"
+        />
+      </div>
+    `;
+  } else if (
+    type.label === "PDF"
+  ) {
+    previewHTML = `
+      <div
+        class="
+          swl-file-viewer-body
+          swl-pdf-viewer
+        "
+      >
+        <iframe
+          src="${url}"
+          title="${escapeHTML(
+            file.name
+          )}"
+        ></iframe>
+      </div>
+    `;
+  } else {
+    return;
+  }
+
+  document
+    .getElementById(
+      "modalRoot"
+    )
+    .innerHTML = `
+      <div class="swl-file-viewer">
+
+        <div class="swl-file-viewer-header">
+
+          <button
+            type="button"
+            class="swl-file-viewer-back"
+            onclick="openFileDetail(
+              decodeURIComponent(
+                '${encodeURIComponent(
+                  file.id
+                )}'
+              )
+            )"
+          >
+            ‹ Back
+          </button>
+
+          <strong>
+            ${escapeHTML(
+              file.name
+            )}
+          </strong>
+
+          <button
+            type="button"
+            class="swl-file-viewer-close"
+            onclick="closeModal()"
+            aria-label="Close preview"
+          >
+            ×
+          </button>
+
+        </div>
+
+        ${previewHTML}
+
+      </div>
+    `;
+}
+
+
+async function saveSWLFile(fileId) {
+  const file =
+    swlFiles.find(
+      file =>
+        file.id === fileId
+    );
+
+  if (!file) return;
+
+  const url =
+    `/admin/api/files/${
+      encodeURIComponent(file.id)
+    }/download`;
+
+  try {
+    const response =
+      await fetch(
+        url,
+        {
+          credentials:
+            "same-origin"
+        }
+      );
+
+    if (!response.ok) {
+      throw new Error(
+        `Could not load file (${response.status})`
+      );
+    }
+
+    const blob =
+      await response.blob();
+
+    const downloadName =
+      file.originalName ||
+      file.name ||
+      "file";
+
+    /*
+      iPhone/iPad:
+      Use the native share sheet whenever
+      the browser supports sharing files.
+
+      This gives you Save to Files,
+      AirDrop, Messages, etc.
+    */
+    if (
+      navigator.share &&
+      navigator.canShare
+    ) {
+      try {
+        const shareFile =
+          new File(
+            [blob],
+            downloadName,
+            {
+              type:
+                file.contentType ||
+                blob.type ||
+                "application/octet-stream"
+            }
+          );
+
+        if (
+          navigator.canShare({
+            files: [shareFile]
+          })
+        ) {
+          await navigator.share({
+            files: [shareFile],
+            title: file.name
+          });
+
+          return;
+        }
+      } catch (err) {
+        /*
+          AbortError just means the user
+          closed the share sheet.
+        */
+        if (
+          err?.name ===
+          "AbortError"
+        ) {
+          return;
+        }
+      }
+    }
+
+    /*
+      Desktop / browsers without
+      file sharing:
+      trigger a normal download.
+    */
+    const blobUrl =
+      URL.createObjectURL(blob);
+
+    const anchor =
+      document.createElement("a");
+
+    anchor.href =
+      blobUrl;
+
+    anchor.download =
+      downloadName;
+
+    document.body.appendChild(
+      anchor
+    );
+
+    anchor.click();
+
+    anchor.remove();
+
+    setTimeout(() => {
+      URL.revokeObjectURL(
+        blobUrl
+      );
+    }, 1000);
+
+  } catch (err) {
+    alert(
+      `Could not save that file. ${err.message}`
+    );
+  }
+}
 
 async function saveFileChanges(
   fileId,
