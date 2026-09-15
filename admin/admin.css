@@ -8189,3 +8189,17 @@ button.inventory-add-photo-placeholder {
     animation: none !important;
   }
 }
+
+
+/* Load-only gear skips the packing stage and goes straight into the vehicle. */
+.loadout-stepper.load-only {
+  grid-template-columns: 1fr;
+}
+
+.loadout-stepper.load-only .loadout-state-button {
+  width: 100%;
+}
+
+.loadout-dot.load-only {
+  background: var(--brown-2);
+}
