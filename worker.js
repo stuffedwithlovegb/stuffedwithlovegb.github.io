@@ -98,6 +98,7 @@ async function handleApi(request, env, url) {
       "API route not found.",
       404
     );
+
   } catch (err) {
     console.error(err);
 
@@ -257,103 +258,7 @@ async function handleEvents(
       event
     });
   }
-if (
-  request.method === "POST" &&
-  !id
-) {
-  const body =
-    await request.json();
 
-  const name =
-    String(body.name || "").trim();
-
-  const category =
-    String(body.category || "").trim();
-
-  const onHand =
-    Math.max(
-      0,
-      Number(body.onHand || 0)
-    );
-
-  const allowedCategories = [
-    "Plush",
-    "Outfits",
-    "Supplies",
-    "Shirts"
-  ];
-
-  if (!name) {
-    return error(
-      "Item name is required."
-    );
-  }
-
-  if (
-    !allowedCategories.includes(category)
-  ) {
-    return error(
-      "Valid inventory category is required."
-    );
-  }
-
-  if (!Number.isFinite(onHand)) {
-    return error(
-      "Valid starting quantity is required."
-    );
-  }
-
-  const id =
-    "inv_" +
-    crypto.randomUUID();
-
-  const unit =
-    category === "Plush"
-      ? "plush"
-      : "item";
-
-  const autoReserve =
-    category === "Plush"
-      ? 1
-      : 0;
-
-  await env.DB
-    .prepare(`
-      INSERT INTO inventory (
-        id,
-        name,
-        category,
-        on_hand,
-        unit,
-        auto_reserve
-      )
-      VALUES (?, ?, ?, ?, ?, ?)
-    `)
-    .bind(
-      id,
-      name,
-      category,
-      onHand,
-      unit,
-      autoReserve
-    )
-    .run();
-
-  const item = {
-    id,
-    name,
-    category,
-    onHand,
-    unit,
-    autoReserve:
-      Boolean(autoReserve)
-  };
-
-  return json({
-    ok: true,
-    item
-  });
-}
   if (
     request.method === "PUT" &&
     id
@@ -440,6 +345,8 @@ async function handleInventory(
   env,
   id
 ) {
+
+  // GET ALL INVENTORY
   if (
     request.method === "GET" &&
     !id
@@ -476,6 +383,111 @@ async function handleInventory(
     });
   }
 
+
+  // CREATE INVENTORY ITEM
+  if (
+    request.method === "POST" &&
+    !id
+  ) {
+    const body =
+      await request.json();
+
+    const name =
+      String(body.name || "").trim();
+
+    const category =
+      String(body.category || "").trim();
+
+    const rawOnHand =
+      Number(body.onHand ?? 0);
+
+    const allowedCategories = [
+      "Plush",
+      "Outfits",
+      "Supplies",
+      "Shirts"
+    ];
+
+    if (!name) {
+      return error(
+        "Item name is required."
+      );
+    }
+
+    if (
+      !allowedCategories.includes(category)
+    ) {
+      return error(
+        "Valid inventory category is required."
+      );
+    }
+
+    if (
+      !Number.isFinite(rawOnHand) ||
+      rawOnHand < 0
+    ) {
+      return error(
+        "Valid starting quantity is required."
+      );
+    }
+
+    const onHand =
+      Math.floor(rawOnHand);
+
+    const itemId =
+      "inv_" +
+      crypto.randomUUID();
+
+    const unit =
+      category === "Plush"
+        ? "plush"
+        : "item";
+
+    const autoReserve =
+      category === "Plush"
+        ? 1
+        : 0;
+
+    await env.DB
+      .prepare(`
+        INSERT INTO inventory (
+          id,
+          name,
+          category,
+          on_hand,
+          unit,
+          auto_reserve
+        )
+        VALUES (?, ?, ?, ?, ?, ?)
+      `)
+      .bind(
+        itemId,
+        name,
+        category,
+        onHand,
+        unit,
+        autoReserve
+      )
+      .run();
+
+    const item = {
+      id: itemId,
+      name,
+      category,
+      onHand,
+      unit,
+      autoReserve:
+        Boolean(autoReserve)
+    };
+
+    return json({
+      ok: true,
+      item
+    });
+  }
+
+
+  // UPDATE INVENTORY COUNT
   if (
     request.method === "PUT" &&
     id
@@ -519,29 +531,34 @@ async function handleInventory(
       onHand
     });
   }
-if (
-  request.method === "DELETE" &&
-  id
-) {
-  const result = await env.DB
-    .prepare(`
-      DELETE FROM inventory
-      WHERE id = ?
-    `)
-    .bind(id)
-    .run();
 
-  if (!result.meta.changes) {
-    return error(
-      "Inventory item not found.",
-      404
-    );
+
+  // DELETE INVENTORY ITEM
+  if (
+    request.method === "DELETE" &&
+    id
+  ) {
+    const result = await env.DB
+      .prepare(`
+        DELETE FROM inventory
+        WHERE id = ?
+      `)
+      .bind(id)
+      .run();
+
+    if (!result.meta.changes) {
+      return error(
+        "Inventory item not found.",
+        404
+      );
+    }
+
+    return json({
+      ok: true
+    });
   }
 
-  return json({
-    ok: true
-  });
-}
+
   return error(
     "Unsupported inventory request.",
     405
