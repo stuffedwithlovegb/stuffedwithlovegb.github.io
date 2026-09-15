@@ -4595,3 +4595,374 @@ a {
 
 }
 }
+/* =========================================================
+   INVENTORY V2 — ACTUALLY DIFFERENT 😂
+   ========================================================= */
+
+
+/* Plush Friends become a card grid */
+
+.inventory-group[data-inventory-group="Plush"]
+.inventory-list-card {
+  display: grid;
+
+  grid-template-columns:
+    repeat(2, minmax(0, 1fr));
+
+  gap: 10px;
+}
+
+
+/* Individual plush card */
+
+.inventory-plush-card {
+  min-width: 0;
+  min-height: 220px;
+
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+
+  gap: 0;
+
+  padding: 0;
+
+  overflow: hidden;
+
+  border:
+    1px solid
+    rgba(76, 51, 37, 0.08) !important;
+
+  border-radius: 21px;
+
+  background:
+    rgba(255, 255, 255, 0.82);
+
+  box-shadow:
+    0 5px 16px
+    rgba(76, 51, 37, 0.045);
+}
+
+
+/* Top half */
+
+.inventory-plush-card
+.inventory-item-left {
+  width: 100%;
+
+  display: block;
+}
+
+
+/* Big plush image */
+
+.inventory-plush-card
+.inventory-plush-thumb {
+  width: 100%;
+  height: 122px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 8px;
+
+  border: 0;
+  border-bottom:
+    1px solid
+    rgba(76, 51, 37, 0.055);
+
+  border-radius: 0;
+
+  background:
+    linear-gradient(
+      145deg,
+      #fff9e8,
+      #faedbf
+    );
+
+  box-shadow: none;
+}
+
+.inventory-plush-card
+.inventory-plush-thumb img {
+  width: 100%;
+  height: 100%;
+
+  object-fit: contain;
+
+  object-position: center;
+}
+
+
+/* Name and counts */
+
+.inventory-plush-card
+.inventory-item-copy {
+  padding:
+    11px
+    11px
+    5px;
+}
+
+.inventory-plush-card
+.inventory-item-copy strong {
+  max-width: none;
+
+  overflow: visible;
+
+  color: var(--brown);
+
+  font-size: 0.86rem;
+
+  line-height: 1.2;
+
+  white-space: normal;
+}
+
+.inventory-plush-card
+.inventory-item-meta {
+  display: flex;
+
+  gap: 5px;
+
+  margin-top: 6px;
+
+  font-size: 0.58rem;
+}
+
+.inventory-plush-card
+.inventory-item-meta span {
+  padding: 0;
+
+  background: none;
+
+  white-space: nowrap;
+}
+
+.inventory-plush-card
+.inventory-item-meta span + span::before {
+  content: "·";
+
+  display: inline;
+
+  margin-right: 5px;
+}
+
+
+/* Bottom count/action area */
+
+.inventory-plush-card
+.inventory-item-right {
+  width: 100%;
+
+  display: grid;
+
+  grid-template-columns:
+    1fr
+    auto;
+
+  align-items: center;
+
+  gap: 8px;
+
+  margin-top: auto;
+
+  padding:
+    8px
+    10px
+    11px;
+}
+
+
+/* Available becomes the star */
+
+.inventory-plush-card
+.inventory-available {
+  min-width: 0;
+
+  text-align: left;
+}
+
+.inventory-plush-card
+.inventory-available strong {
+  display: inline;
+
+  color: var(--brown);
+
+  font-size: 1.25rem;
+
+  line-height: 1;
+
+  font-weight: 950;
+}
+
+.inventory-plush-card
+.inventory-available span {
+  display: inline;
+
+  margin:
+    0
+    0
+    0
+    4px;
+
+  color: var(--muted);
+
+  font-size: 0.55rem;
+
+  font-weight: 750;
+
+  letter-spacing: 0;
+
+  text-transform: none;
+}
+
+
+/* +6 is a real action */
+
+.inventory-plush-card
+.inventory-quick-six {
+  min-width: 43px;
+  height: 37px;
+
+  padding:
+    0
+    8px;
+
+  border-radius: 12px;
+
+  background: var(--yellow);
+
+  font-size: 0.72rem;
+
+  box-shadow:
+    0 3px 8px
+    rgba(121, 87, 18, 0.10);
+}
+
+
+/* Don't need a chevron on a card */
+
+.inventory-plush-card
+.inventory-chevron {
+  display: none;
+}
+
+
+/* Shortage still screams appropriately */
+
+.inventory-plush-card
+.inventory-available.short {
+  padding: 0;
+
+  background: transparent;
+}
+
+.inventory-plush-card
+.inventory-available.short strong,
+.inventory-plush-card
+.inventory-available.short span {
+  color: var(--danger);
+}
+
+
+/* =========================================================
+   NON-PLUSH — KEEP THESE COMPACT
+   ========================================================= */
+
+.inventory-standard-row {
+  min-height: 68px;
+
+  padding:
+    9px
+    11px;
+
+  border-radius: 17px;
+}
+
+.inventory-standard-row
+.inventory-generic-icon {
+  width: 46px;
+  height: 46px;
+
+  border-radius: 13px;
+}
+
+.inventory-standard-row
+.inventory-item-copy strong {
+  font-size: 0.83rem;
+}
+
+
+/* =========================================================
+   PLUSH SECTION HEADER — LITTLE MORE PERSONALITY
+   ========================================================= */
+
+.inventory-group[data-inventory-group="Plush"]
+.inventory-group-header {
+  margin-bottom: 12px;
+}
+
+.inventory-group[data-inventory-group="Plush"]
+.inventory-group-header h2 {
+  font-size: 1.12rem;
+}
+
+.inventory-group[data-inventory-group="Plush"]
+.inventory-group-header h2::after {
+  content: " ♥";
+
+  color: var(--yellow);
+
+  font-size: 0.85rem;
+}
+
+
+/* =========================================================
+   MOBILE
+   ========================================================= */
+
+@media (max-width: 390px) {
+
+  .inventory-group[data-inventory-group="Plush"]
+  .inventory-list-card {
+    gap: 8px;
+  }
+
+  .inventory-plush-card {
+    min-height: 208px;
+  }
+
+  .inventory-plush-card
+  .inventory-plush-thumb {
+    height: 112px;
+  }
+
+  .inventory-plush-card
+  .inventory-item-copy {
+    padding:
+      9px
+      9px
+      4px;
+  }
+
+  .inventory-plush-card
+  .inventory-item-copy strong {
+    font-size: 0.79rem;
+  }
+
+  .inventory-plush-card
+  .inventory-item-meta {
+    font-size: 0.53rem;
+  }
+
+  .inventory-plush-card
+  .inventory-item-right {
+    padding:
+      7px
+      9px
+      9px;
+  }
+
+}
