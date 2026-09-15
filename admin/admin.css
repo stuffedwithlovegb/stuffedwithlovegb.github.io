@@ -5101,3 +5101,32 @@ a {
   font-size: 16px;
   font-weight: 800;
 }
+.inventory-group-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+
+  margin-bottom: 22px;
+}
+
+.inventory-group-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+
+  min-width: 0;
+}
+
+.inventory-group-title h2 {
+  margin: 0;
+}
+
+.inventory-group-title span {
+  flex-shrink: 0;
+}
+
+.inventory-add-item-button {
+  flex-shrink: 0;
+  margin: 0;
+}
