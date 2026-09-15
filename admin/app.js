@@ -1,10445 +1,7723 @@
 /* =========================================================
-   BUSINESS DATA
-========================================================= */
+   STUFFED WITH LOVE OPS
+   Complete app stylesheet
+   ========================================================= */
 
-const PLUSH_OPTIONS = [
-  {
-    id: "golden",
-    name: "Golden Retriever",
-    image: "/admin/golden-retriever.png"
-  },
-  {
-    id: "bear",
-    name: "Classic Teddy",
-    image: "/admin/classic-teddy.png"
-  },
-  {
-    id: "cat",
-    name: "Orange Kitty",
-    image: "/admin/orange-kitty.png"
-  },
-  {
-    id: "unicorn",
-    name: "Unicorn",
-    image: "/admin/unicorn.png"
-  },
-  {
-    id: "dino",
-    name: "Dino",
-    image: "/admin/dino.png"
-  },
-  {
-    id: "frog",
-    name: "Frog",
-    image: "/admin/frog.png"
-  }
-];
+:root {
+  --cream: #fbf3e5;
+  --cream-soft: #fffaf1;
+  --cream-deep: #f2e2c7;
 
-function getPlushMeta(itemId) {
-  return PLUSH_OPTIONS.find(
-    plush => plush.id === itemId
-  ) || null;
-}
+  --yellow: #f2cc58;
+  --yellow-soft: #f9e6a3;
+  --yellow-pale: #fff6d8;
 
-function inventoryDisplayName(item) {
-  return (
-    getPlushMeta(item.id)?.name ||
-    item.name
-  );
-}
+  --brown: #4c3325;
+  --brown-2: #715544;
+  --brown-soft: #927c6c;
 
-const PACKAGE_DATA = {
-  "$30 Package": {
-    pricePerGuest: 30,
-    description:
-      "Stuffing experience, heart ceremony, adoption certificate + travel bag"
-  },
+  --text: #37271f;
+  --muted: #8a7465;
 
-  "$35 Package": {
-    pricePerGuest: 35,
-    description:
-      "Everything in $30 + birthday plush outfit"
-  },
+  --line: rgba(76, 51, 37, 0.11);
+  --line-strong: rgba(76, 51, 37, 0.17);
 
-  "$40 Package": {
-    pricePerGuest: 40,
-    description:
-      "Full birthday experience with shirt, vinyl, accessories + birthday outfit"
-  },
+  --danger: #b4574c;
+  --danger-soft: #fae5e0;
 
-  Custom: {
-    pricePerGuest: null,
-    description:
-      "For private, corporate, partner or unusual events"
-  }
-};
+  --white: #ffffff;
 
-const ADD_ON_PRICING = {
-  outfit: 8,
-  voiceChip: 10,
-  extraShirt: 5,
-  vinyl: 5
-};
+  --shadow:
+    0 8px 24px rgba(76, 51, 37, 0.065);
 
+  --shadow-soft:
+    0 3px 12px rgba(76, 51, 37, 0.05);
 
-/* =========================================================
-   LITTLE DELIGHT
-========================================================= */
-
-const SWL_DAILY_MESSAGES = [
-  'Small steps still stuff big dreams.',
-  'Make it cute. Make it work.',
-  'A little fluff goes a long way.',
-  'Today’s a good day to make something fun.',
-  'One event at a time.',
-  'The details are the magic.',
-  'Keep it simple. Keep it special.',
-  'Built with fluff and a mildly concerning amount of determination.',
-  'Good things are getting stuffed.',
-  'Tiny progress counts.',
-  'You’re building the thing.',
-  'One more box checked.',
-  'Make the next thing easier.',
-  'Cute can also be organized.',
-  'The fluff-mobile has places to be.',
-  'Future you appreciates this.',
-  'A stocked shelf is a peaceful shelf.',
-  'Keep the chaos fluffy.',
-  'Today’s mission: less remembering, more doing.',
-  'The bears are not going to pack themselves.',
-  'Make room for the fun part.',
-  'A smooth event starts here.',
-  'You’ve got this one.',
-  'Check it. Pack it. Done.',
-  'Good systems make better parties.',
-  'Keep moving. Keep fluffing.',
-  'One less thing in your head.',
-  'The little stuff matters.',
-  'Ready beats perfect.',
-  'Make it easy on event-day you.',
-  'There is probably glitter somewhere.',
-  'Progress looks good on you.',
-  'A good plan leaves room for fun.',
-  'Stocked, packed, loved.',
-  'Do the next useful thing.',
-  'The magic is in the prep.',
-  'Less scrambling. More stuffing.',
-  'A tiny bit more ready than yesterday.',
-  'Keep the wheels on the fluff-mobile.',
-  'This is what building a business looks like.',
-  'Make today’s future problem disappear.',
-  'One tap closer to ready.',
-  'Organized enough to be dangerous.',
-  'Plush first. Panic never.',
-  'Today’s vibe: handled.',
-  'Keep the good stuff moving.',
-  'Make it warm. Make it memorable.',
-  'The checklist knows the way.',
-  'A little prep now saves a lot of WTF later.',
-  'You can absolutely make this easier.',
-  'Another day, another pile of plush.',
-  'The fun part works because this part works.',
-  'Do it once. Make it repeatable.',
-  'There’s something satisfying about a clean checklist.',
-  'A calm event starts with boring little wins.',
-  'The tiny systems are doing their job.',
-  'Keep building the version that runs smoother.',
-  'Nothing fancy. Just useful.',
-  'Make the next event better than the last.',
-  'You’re allowed to make operations cute.',
-  'Stuff. Fluff. Get shit done.',
-  'One less loose end.',
-  'Today’s progress can be small and still count.',
-  'The plush are ready when you are.',
-  'Put it where future you can find it.',
-  'The goal is fewer ‘where the hell is that?’ moments.',
-  'Keep the good chaos contained.',
-  'A packed bin is a love language.',
-  'You don’t have to remember what the app remembers.',
-  'Make the business easier to run.',
-  'One clean little win.',
-  'The party starts long before the party.',
-  'Build it once. Use it forever.',
-  'Prep now. Breathe later.',
-  'The Friend Hotel appreciates your organization.',
-  'Inventory math: surprisingly less fun than stuffing bears.',
-  'The machine gets the glory. Prep does the work.',
-  'Everything important deserves a home.',
-  'Another box checked is another brain cell freed.',
-  'You’re making this more real every day.',
-  'Keep the process as lovable as the plush.',
-  'A good setup feels effortless because it wasn’t.',
-  'The boring stuff is secretly the good stuff.',
-  'Ready is a very nice feeling.',
-  'Do the thing that makes tomorrow easier.',
-  'The next event is getting closer. So are you.',
-  'A little organization, a lot less chaos.',
-  'Your future self says thanks.',
-  'This business runs on fluff and follow-through.',
-  'Keep the list shorter than the stress.',
-  'Today can be a maintenance day. That counts.',
-  'Every smooth event has a pile of prep behind it.',
-  'The goal: show up ready and make it look easy.',
-  'Don’t carry it in your brain if Ops can carry it.',
-  'There’s always one more plush somewhere.',
-  'Make the system earn its spot.',
-  'Keep what works. Fix what annoys you.',
-  'You’re not running a warehouse. Thank God.',
-  'Useful first. Cute second. Ideally both.',
-  'Okay, what actually needs doing today?'
-];
-
-const SWL_RARE_MESSAGES = [
-  '✨ Secret fluff unlocked. Carry on.',
-  'The plush council has reviewed your work. Approved.',
-  'Extremely official business operations happening here.',
-  'Rare message! Go buy a lottery ticket. Actually, maybe don’t.',
-  'The fluff-mobile whispers: check your gas tank.',
-  'A wild productivity appeared.',
-  'Somewhere, a tiny teddy bear believes in this spreadsheet-adjacent nonsense.',
-  'Achievement unlocked: suspiciously organized.'
-];
-
-function swlDateKey(date = new Date()) {
-  return `${date.getFullYear()}-${String(date.getMonth()+1).padStart(2,"0")}-${String(date.getDate()).padStart(2,"0")}`;
-}
-
-function swlHash(value) {
-  let hash = 2166136261;
-  for (const char of String(value)) {
-    hash ^= char.charCodeAt(0);
-    hash = Math.imul(hash, 16777619);
-  }
-  return hash >>> 0;
-}
-
-function getSWLDailyMessage() {
-  const key = swlDateKey();
-  const hash = swlHash(`swl-${key}`);
-  // Roughly 1 in 40 days gets one of the intentionally rare lines.
-  if (hash % 40 === 0) {
-    return SWL_RARE_MESSAGES[hash % SWL_RARE_MESSAGES.length];
-  }
-  return SWL_DAILY_MESSAGES[hash % SWL_DAILY_MESSAGES.length];
-}
-
-function showSWLToast(message, options = {}) {
-  const existing = document.querySelector(".swl-toast");
-  if (existing) existing.remove();
-
-  const toast = document.createElement("div");
-  toast.className = `swl-toast ${options.type || "success"}`;
-  toast.setAttribute("role", "status");
-  toast.textContent = message;
-  document.body.appendChild(toast);
-
-  requestAnimationFrame(() => toast.classList.add("show"));
-  setTimeout(() => {
-    toast.classList.remove("show");
-    setTimeout(() => toast.remove(), 220);
-  }, options.duration || 1450);
-}
-
-function animateInventoryCount(itemId, delta) {
-  document.querySelectorAll(`[data-inventory-id="${itemId}"]`).forEach(element => {
-    element.querySelectorAll("[data-inventory-on-hand], [data-inventory-stepper]").forEach(number => {
-      number.classList.remove("swl-number-pop");
-      void number.offsetWidth;
-      number.classList.add("swl-number-pop");
-    });
-  });
-
-  if (Number(delta)) {
-    showSWLToast(`${delta > 0 ? "+" : ""}${delta} inventory`);
-  }
+  --radius: 22px;
+  --radius-sm: 15px;
 }
 
 
 /* =========================================================
-   INVENTORY
-========================================================= */
+   RESET / BASE
+   ========================================================= */
 
-const inventorySeed = [
-  {
-    id: "golden",
-    name: "Golden Retrievers",
-    category: "Plush",
-    onHand: 27
-  },
-  {
-    id: "bear",
-    name: "Honey Bears",
-    category: "Plush",
-    onHand: 42
-  },
-  {
-    id: "cat",
-    name: "Orange Cats",
-    category: "Plush",
-    onHand: 18
-  },
-  {
-    id: "unicorn",
-    name: "Unicorns",
-    category: "Plush",
-    onHand: 41
-  },
-  {
-    id: "dino",
-    name: "Dinos",
-    category: "Plush",
-    onHand: 36
-  },
-  {
-    id: "frog",
-    name: "Frogs",
-    category: "Plush",
-    onHand: 10
-  },
-  {
-    id: "sound",
-    name: "Sound / Voice Chips",
-    category: "Supplies",
-    onHand: 18
-  },
-  {
-    id: "girl-bday",
-    name: "Girl Birthday Outfits",
-    category: "Outfits",
-    onHand: 18
-  },
-  {
-    id: "boy-bday",
-    name: "Boy Birthday Outfits",
-    category: "Outfits",
-    onHand: 24
-  },
-  {
-    id: "travel-bags",
-    name: "Travel Bags",
-    category: "Supplies",
-    onHand: 135
-  },
-  {
-    id: "hearts",
-    name: "Wishing Hearts",
-    category: "Supplies",
-    onHand: 300
-  },
-  {
-    id: "white-shirt",
-    name: "White T-Shirts",
-    category: "Shirts",
-    onHand: 50
-  },
-  {
-    id: "fluff",
-    name: "Fluff",
-    category: "Supplies",
-    onHand: 2,
-    unit: "boxes",
-    autoReserve: false
-  }
-];
-
-
-/* =========================================================
-   PACKING
-========================================================= */
-
-const masterPackingList = [
-  "Stuffing machine",
-  "Fluff",
-  "EcoFlow / power",
-  "Rugs",
-  "Tablecloths",
-  "Tables",
-  "Wood crates",
-  "Photo-op pieces / photo hearts",
-  "Friend Hotel",
-  "Adoption certificates",
-  "Wishing hearts",
-  "Pens",
-  "Welcome sign",
-  "Signage",
-  "Trash bags",
-  "Felt-wall accessories",
-  "Clothes / mini wardrobe rack"
-];
-
-
-/* =========================================================
-   APP STATE
-========================================================= */
-
-let state = createInitialState();
-
-let currentScreen = "home";
-let currentEventId = null;
-let currentClientKey = null;
-let clientSearch = "";
-const clientNotesCache = new Map();
-let activeEventTab = "info";
-let activeInventoryCategory = "Plush";
-let inventorySearch = "";
-let wizard = null;
-let wizardStep = 0;
-
-let wizardMode = "add";
-let editingEventId = null;
-
-const wizardSteps = [
-  "Basics",
-  "Party",
-  "Extras",
-  "Payment",
-  "Review"
-];
-
-
-/* =========================================================
-   STATE / D1 API
-========================================================= */
-
-function createInitialState() {
-  return {
-    events: [],
-    inventory: structuredClone(inventorySeed),
-    attention: [],
-    notes: [],
-    clients: []
-  };
+* {
+  box-sizing: border-box;
 }
 
-async function apiRequest(path, options = {}) {
-  const response = await fetch(
-    `/admin/api/${path}`,
-    {
-      credentials: "same-origin",
-      headers: {
-        "Content-Type": "application/json",
-        ...(options.headers || {})
-      },
-      ...options
-    }
-  );
+html {
+  background: var(--cream);
+}
 
-  let data = null;
+body {
+  margin: 0;
+  min-height: 100vh;
 
-  try {
-    data = await response.json();
-  } catch {
-    // Cloudflare or the Worker may occasionally
-    // return a non-JSON error page.
-  }
+  font-family:
+    Inter,
+    ui-rounded,
+    "SF Pro Rounded",
+    "Segoe UI",
+    sans-serif;
 
-  if (!response.ok) {
-    throw new Error(
-      data?.error ||
-      `Request failed (${response.status})`
+  color: var(--text);
+
+  background:
+    linear-gradient(
+      180deg,
+      #fffaf1 0%,
+      var(--cream) 55%,
+      #f6e9d2 100%
     );
-  }
-
-  return data;
 }
 
-function normalizeLoadedEvent(event) {
-  const normalized = {
-    ...event
-  };
-
-  normalized.selectedPlush ||= [];
-  normalized.reservations ||= [];
-
-  normalized.packing =
-    normalized.packing?.length
-      ? normalized.packing
-      : masterPackingList.map(
-          name => ({
-            id: makeId("pack"),
-            name,
-            done: false
-          })
-        );
-
-  return normalized;
+button,
+input,
+select,
+textarea {
+  font: inherit;
 }
 
-async function loadStateFromServer() {
-  const data =
-    await apiRequest("bootstrap");
-
-  state = {
-    events: (data.events || []).map(
-      normalizeLoadedEvent
-    ),
-
-    inventory:
-      data.inventory || [],
-
-    attention:
-      data.attention || [],
-
-    notes: [],
-
-    clients:
-      data.clients || []
-  };
+button {
+  cursor: pointer;
 }
 
-async function saveEventToServer(
-  event,
-  isNew = false
-) {
-  return apiRequest(
-    isNew
-      ? "events"
-      : `events/${encodeURIComponent(event.id)}`,
-    {
-      method: isNew ? "POST" : "PUT",
-      body: JSON.stringify(event)
-    }
-  );
+a {
+  color: inherit;
 }
 
-async function deleteEventFromServer(id) {
-  return apiRequest(
-    `events/${encodeURIComponent(id)}`,
-    {
-      method: "DELETE"
-    }
-  );
+.hidden {
+  display: none !important;
 }
 
-async function saveInventoryItemToServer(item) {
-  return apiRequest(
-    `inventory/${encodeURIComponent(item.id)}`,
-    {
-      method: "PUT",
-      body: JSON.stringify({
-        onHand: item.onHand
-      })
-    }
-  );
-}
-function inventoryImageUrl(item) {
-  const plush =
-    getPlushMeta(item.id);
-
-  if (item.imageKey) {
-    return `/admin/api/inventory/${encodeURIComponent(
-      item.id
-    )}/image?v=${encodeURIComponent(
-      item.imageKey
-    )}`;
-  }
-
-  return plush?.image || null;
+.muted {
+  color: var(--muted);
+  line-height: 1.5;
 }
 
-function inventorySupportsPhoto(item) {
-  return [
-    "Plush",
-    "Outfits",
-    "Shirts"
-  ].includes(item?.category);
+.warning-text {
+  color: var(--danger);
+  font-weight: 800;
 }
 
-function getEventPlushOptions() {
-  return state.inventory
-    .filter(
-      item =>
-        item.category === "Plush"
+.success-text {
+  color: var(--brown);
+  font-weight: 800;
+}
+
+#app {
+  min-height: 100vh;
+
+  padding-bottom:
+    calc(
+      92px +
+      env(safe-area-inset-bottom)
+    );
+}
+
+
+/* =========================================================
+   TOP BAR
+   ========================================================= */
+
+.topbar {
+  position: sticky;
+  top: 0;
+  z-index: 30;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  padding:
+    calc(
+      18px +
+      env(safe-area-inset-top)
     )
-    .map(item => ({
-      id: item.id,
-      name:
-        inventoryDisplayName(item),
-      image:
-        inventoryImageUrl(item)
-    }));
-}
-
-function getEventPlushName(plushId) {
-  const item =
-    getInventoryItem(plushId);
-
-  if (item) {
-    return inventoryDisplayName(item);
-  }
-
-  return (
-    getPlushMeta(plushId)?.name ||
-    plushId
-  );
-}
-
-function chooseInventoryPhoto(itemId) {
-  const input =
-    document.createElement("input");
-
-  input.type = "file";
-  input.accept = "image/*";
-
-  input.onchange = async () => {
-    const file = input.files?.[0];
-
-    if (!file) return;
-
-    await uploadInventoryPhoto(
-      itemId,
-      file
-    );
-  };
-
-  input.click();
-}
-
-
-async function uploadInventoryPhoto(
-  itemId,
-  file
-) {
-  const item =
-    getInventoryItem(itemId);
-
-  if (!item) return;
-
-  const formData =
-    new FormData();
-
-  formData.append(
-    "image",
-    file
-  );
-
-  try {
-    const response =
-      await fetch(
-        `/admin/api/inventory/${encodeURIComponent(itemId)}/image`,
-        {
-          method: "POST",
-          credentials: "same-origin",
-          body: formData
-        }
-      );
-
-    let data = null;
-
-    try {
-      data = await response.json();
-    } catch {}
-
-    if (!response.ok) {
-      throw new Error(
-        data?.error ||
-        `Upload failed (${response.status})`
-      );
-    }
-
-    item.imageKey =
-      data.imageKey;
-
-    renderInventory();
-    openInventoryItem(itemId);
-
-  } catch (err) {
-    alert(
-      `Could not upload that photo. ${err.message}`
-    );
-  }
-}
-async function createReminderOnServer(reminder) {
-  return apiRequest(
-    "reminders",
-    {
-      method: "POST",
-      body: JSON.stringify(reminder)
-    }
-  );
-}
-
-async function saveReminderToServer(reminder) {
-  return apiRequest(
-    `reminders/${encodeURIComponent(reminder.id)}`,
-    {
-      method: "PUT",
-      body: JSON.stringify(reminder)
-    }
-  );
-}
-
-
-/* =========================================================
-   BASIC UTILITIES
-========================================================= */
-
-function makeId(prefix = "id") {
-  return `${prefix}-${Date.now()}-${Math.random()
-    .toString(36)
-    .slice(2, 8)}`;
-}
-
-function escapeHTML(value = "") {
-  return String(value)
-    .replaceAll("&", "&amp;")
-    .replaceAll("<", "&lt;")
-    .replaceAll(">", "&gt;")
-    .replaceAll('"', "&quot;")
-    .replaceAll("'", "&#039;");
-}
-
-function money(value) {
-  return new Intl.NumberFormat("en-US", {
-    style: "currency",
-    currency: "USD"
-  }).format(Number(value || 0));
-}
-
-function formatDate(dateString) {
-  if (!dateString) return "Date not set";
-
-  const date =
-    new Date(`${dateString}T12:00:00`);
-
-  return date.toLocaleDateString(
-    "en-US",
-    {
-      weekday: "short",
-      month: "short",
-      day: "numeric"
-    }
-  );
-}
-
-function formatTime(timeString) {
-  if (!timeString) return "";
-
-  const [hourString, minuteString] =
-    timeString.split(":");
-
-  const hour = Number(hourString);
-  const minute = Number(minuteString || 0);
-
-  const suffix =
-    hour >= 12 ? "PM" : "AM";
-
-  const normalHour =
-    hour % 12 || 12;
-
-  return `${normalHour}:${String(minute).padStart(2, "0")} ${suffix}`;
-}
-
-function daysUntil(dateString) {
-  if (!dateString) return null;
-
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
-
-  const date =
-    new Date(`${dateString}T00:00:00`);
-
-  return Math.ceil(
-    (date - today) / 86400000
-  );
-}
-function formatReminderDue(remindBy) {
-  if (!remindBy) return "";
-
-  const date = new Date(remindBy);
-
-  if (Number.isNaN(date.getTime())) {
-    return "";
-  }
-
-  return date.toLocaleString(
-    "en-US",
-    {
-      month: "short",
-      day: "numeric",
-      hour: "numeric",
-      minute: "2-digit"
-    }
-  );
-}
-
-function reminderSortValue(reminder) {
-  if (!reminder.remindBy) {
-    return Number.MAX_SAFE_INTEGER;
-  }
-
-  const value =
-    new Date(reminder.remindBy).getTime();
-
-  return Number.isNaN(value)
-    ? Number.MAX_SAFE_INTEGER
-    : value;
-}
-
-function getEventReminders(
-  eventId,
-  includeDone = false
-) {
-  return state.attention
-    .filter(reminder => {
-      if (
-        reminder.type !== "manual" ||
-        reminder.eventId !== eventId
-      ) {
-        return false;
-      }
-
-      return includeDone
-        ? true
-        : !reminder.done;
-    })
-    .sort(
-      (a, b) =>
-        reminderSortValue(a) -
-        reminderSortValue(b)
-    );
-}
-
-/* =========================================================
-   INVENTORY
-========================================================= */
-
-function getInventoryItem(itemId) {
-  return state.inventory.find(
-    item => item.id === itemId
-  );
-}
-
-function calculateReserved(itemId) {
-  return state.events
-    .filter(event => !event.closed)
-    .reduce((total, event) => {
-      const reservation =
-        event.reservations?.find(
-          r => r.itemId === itemId
-        );
-
-      return (
-        total +
-        Number(reservation?.quantity || 0)
-      );
-    }, 0);
-}
-
-function inventoryAvailable(itemId) {
-  const item =
-    getInventoryItem(itemId);
-
-  if (!item) return 0;
-
-  return (
-    item.onHand -
-    calculateReserved(itemId)
-  );
-}
-
-
-/* =========================================================
-   EVENT ISSUES
-========================================================= */
-
-function eventIssues(event) {
-  const issues = [];
-
-  if (!event.date) {
-    issues.push("Event date is missing");
-  }
-
-  if (!event.address) {
-    issues.push("Address is missing");
-  }
-
-  if (!event.hostName) {
-    issues.push("Host name is missing");
-  }
-
-  for (
-    const reservation
-    of event.reservations || []
-  ) {
-    const item =
-      getInventoryItem(
-        reservation.itemId
-      );
-
-    if (!item) continue;
-
-    const otherReserved =
-      calculateReserved(item.id) -
-      Number(reservation.quantity || 0);
-
-    const availableForThisEvent =
-      item.onHand -
-      otherReserved;
-
-    if (
-      reservation.quantity >
-      availableForThisEvent
-    ) {
-      const shortage =
-        reservation.quantity -
-        availableForThisEvent;
-
-      issues.push(
-        `Short ${shortage} ${item.name}`
-      );
-    }
-  }
-
-  return issues;
-}
-
-function allCurrentIssues() {
-  const generated = [];
-
-  for (
-    const event
-    of state.events.filter(
-      event => !event.closed
-    )
-  ) {
-    eventIssues(event).forEach(issue => {
-      generated.push({
-        id: `${event.id}-${issue}`,
-        eventId: event.id,
-        title: issue,
-        type: "generated"
-      });
-    });
-  }
-
-  const manual =
-    state.attention.filter(
-      item => !item.done
-    );
-
-  return [
-    ...generated,
-    ...manual
-  ];
-}
-
-
-/* =========================================================
-   HEADER / NAV
-========================================================= */
-
-function updateAttentionBadge() {
-  const badge =
-    document.getElementById(
-      "attentionBadge"
-    );
-
-  if (!badge) return;
-
-  const count =
-    allCurrentIssues().length;
-
-  badge.textContent = count;
-
-  badge.classList.toggle(
-    "hidden",
-    count === 0
-  );
-}
-
-function ensureSWLHeaderBrand() {
-  const topbar = document.querySelector(".topbar");
-  if (!topbar) return;
-
-  const brandCopy = topbar.querySelector(":scope > div");
-  if (brandCopy) {
-    brandCopy.classList.add("swl-topbar-brand-copy");
-  }
-
-  if (!topbar.querySelector(".swl-topbar-logo")) {
-    const logo = document.createElement("img");
-    logo.className = "swl-topbar-logo";
-    logo.src = "swl-logo.png";
-    logo.alt = "Stuffed With Love";
-    logo.decoding = "async";
-
-    const action = document.getElementById("headerAction");
-    topbar.insertBefore(logo, action || null);
-  }
-}
-
-function setHeader(title) {
-  ensureSWLHeaderBrand();
-
-  document.getElementById(
-    "pageTitle"
-  ).textContent = title;
-
-  // The page-level actions already live inside each screen.
-  // Keep the top bar clean: no mystery + button.
-  const action =
-    document.getElementById(
-      "headerAction"
-    );
-
-  action.classList.add("hidden");
-}
-
-function navigate(screen) {
-  currentScreen = screen;
-  currentEventId = null;
-  currentClientKey = null;
-
-  document
-    .querySelectorAll(".nav-item")
-    .forEach(button => {
-      button.classList.toggle(
-        "active",
-        button.dataset.screen === screen
-      );
-    });
-
-  render();
-   window.scrollTo({
-  top: 0,
-  left: 0,
-  behavior: "instant"
-});
-}
-
-function render() {
-  updateAttentionBadge();
-
-  switch (currentScreen) {
-    case "events":
-      renderEvents();
-      break;
-
-    case "inventory":
-  renderInventory();
-  break;
-
-case "files":
-  renderFiles();
-  break;
-
-case "clients":
-  renderClients();
-  break;
-
-case "client-detail":
-  renderClientDetail();
-  break;
-
-case "attention":
-      renderAttention();
-      break;
-
-    case "event-detail":
-      renderEventDetail();
-      break;
-
-    default:
-      renderHome();
-  }
-}
-
-
-/* =========================================================
-   HOME
-========================================================= */
-
-function renderHome() {
-  setHeader("Ops");
-
-  const main =
-    document.getElementById("mainContent");
-
-  const upcoming =
-    [...state.events]
-      .filter(event => !event.closed)
-      .sort(
-        (a, b) =>
-          new Date(a.date) -
-          new Date(b.date)
-      );
-
-  const nextEvent = upcoming[0];
-  const issues = allCurrentIssues();
-
-  const manualReminders =
-    state.attention.filter(
-      item =>
-        item.type === "manual" &&
-        !item.done
-    );
-
-  const hour =
-    new Date().getHours();
-
-  const greeting =
-    hour < 12
-      ? "Good morning!"
-      : hour < 17
-        ? "Good afternoon!"
-        : "Good evening!";
-
-  let html = `
-
-    <section class="swl-home-welcome">
-
-      <div class="swl-home-welcome-copy">
-
-        <div class="swl-home-greeting">
-          ${greeting}
-        </div>
-
-        <h2 class="swl-daily-message">
-          ${escapeHTML(getSWLDailyMessage())}
-        </h2>
-
-      </div>
-
-      <div class="swl-home-heart">
-        ♥
-      </div>
-
-    </section>
-
-
-    <section class="swl-home-glance">
-
-      <button
-        class="swl-glance-card"
-        onclick="navigate('events')"
-      >
-        <strong>${upcoming.length}</strong>
-        <span>Upcoming</span>
-      </button>
-
-      <button
-        class="swl-glance-card ${
-          issues.length ? "needs-attention" : ""
-        }"
-        onclick="navigate('attention')"
-      >
-        <strong>${issues.length}</strong>
-        <span>Attention</span>
-      </button>
-
-      <button
-        class="swl-glance-card"
-        onclick="navigate('attention')"
-      >
-        <strong>${manualReminders.length}</strong>
-        <span>Reminders</span>
-      </button>
-
-    </section>
-
-
-    <section class="swl-home-section">
-
-      <div class="swl-home-section-title">
-        <h2>Quick Actions</h2>
-      </div>
-
-      <div class="swl-quick-grid">
-
-        <button
-          class="swl-quick-action primary"
-          onclick="openAddEventWizard()"
-        >
-          <span class="swl-quick-icon">＋</span>
-
-          <span>
-            <strong>Add Event</strong>
-            <small>Book something new</small>
-          </span>
-        </button>
-
-        <button
-          class="swl-quick-action"
-          onclick="navigate('inventory')"
-        >
-          <span class="swl-quick-icon">♥</span>
-
-          <span>
-            <strong>Inventory</strong>
-            <small>Check what’s ready</small>
-          </span>
-        </button>
-
-        ${
-          nextEvent
-            ? `
-              <button
-                class="swl-quick-action"
-                onclick="
-                  openEvent('${nextEvent.id}');
-                  setEventTab('pack');
-                "
-              >
-                <span class="swl-quick-icon">✓</span>
-
-                <span>
-                  <strong>Packing List</strong>
-                  <small>Prep the next event</small>
-                </span>
-              </button>
-            `
-            : `
-              <button
-                class="swl-quick-action"
-                onclick="navigate('events')"
-              >
-                <span class="swl-quick-icon">✓</span>
-
-                <span>
-                  <strong>Packing List</strong>
-                  <small>No event selected</small>
-                </span>
-              </button>
-            `
-        }
-
-        <button
-          class="swl-quick-action"
-          onclick="navigate('clients')"
-        >
-          <span class="swl-quick-icon">☺</span>
-
-          <span>
-            <strong>Clients</strong>
-            <small>Contacts & event history</small>
-          </span>
-        </button>
-
-      </div>
-
-    </section>
-
-
-    <section class="swl-home-section">
-
-      <div class="swl-home-section-title">
-
-        <h2>Next Up</h2>
-
-        ${
-          upcoming.length
-            ? `
-              <button onclick="navigate('events')">
-                All events
-              </button>
-            `
-            : ""
-        }
-
-      </div>
-  `;
-
-
-  if (!nextEvent) {
-
-    html += `
-      <div class="card empty-card">
-
-        <strong>
-          No events booked yet.
-        </strong>
-
-        <p>
-          When you add an event,
-          it’ll show up here.
-        </p>
-
-      </div>
-    `;
-
-  } else {
-
-    const issuesForEvent =
-      eventIssues(nextEvent);
-
-    const days =
-      daysUntil(nextEvent.date);
-
-    html += `
-      <button
-        class="swl-next-event-card"
-        onclick="openEvent('${nextEvent.id}')"
-      >
-
-        <div class="swl-next-date">
-
-          <span>
-            ${new Date(
-              `${nextEvent.date}T12:00:00`
-            )
-              .toLocaleDateString(
-                "en-US",
-                { month: "short" }
-              )
-              .toUpperCase()}
-          </span>
-
-          <strong>
-            ${new Date(
-              `${nextEvent.date}T12:00:00`
-            ).getDate()}
-          </strong>
-
-        </div>
-
-
-        <div class="swl-next-copy">
-
-          <div class="swl-next-topline">
-
-            <span>
-              ${
-                days === 0
-                  ? "Today"
-                  : days === 1
-                    ? "Tomorrow"
-                    : days > 1
-                      ? `In ${days} days`
-                      : "Upcoming"
-              }
-            </span>
-
-            ${
-              issuesForEvent.length
-                ? `
-                  <span class="swl-next-warning">
-                    ${issuesForEvent.length}
-                    need attention
-                  </span>
-                `
-                : `
-                  <span class="swl-next-ready">
-                    ✓ On track
-                  </span>
-                `
-            }
-
-          </div>
-
-          <strong class="swl-next-name">
-            ${escapeHTML(nextEvent.name)}
-          </strong>
-
-          <div class="swl-next-meta">
-
-            ${
-              nextEvent.time
-                ? formatTime(nextEvent.time)
-                : "Time not set"
-            }
-
-            ${
-              nextEvent.guestCount
-                ? ` · ${nextEvent.guestCount} guests`
-                : ""
-            }
-
-          </div>
-
-        </div>
-
-        <span class="swl-next-arrow">›</span>
-
-      </button>
-    `;
-  }
-
-
-  html += `
-    </section>
-
-
-    <section class="swl-home-section">
-
-      <div class="swl-home-section-title">
-
-        <h2>Needs Attention</h2>
-
-        ${
-          issues.length
-            ? `
-              <button onclick="navigate('attention')">
-                View all
-              </button>
-            `
-            : ""
-        }
-
-      </div>
-  `;
-
-
-  if (!issues.length) {
-
-    html += `
-      <div class="swl-all-good">
-
-        <span>✓</span>
-
-        <div>
-          <strong>
-            Everything looks good.
-          </strong>
-
-          <p>
-            Nothing needs you right now.
-          </p>
-        </div>
-
-      </div>
-    `;
-
-  } else {
-
-    html += `
-      <div class="swl-attention-list">
-    `;
-
-    issues
-      .slice(0, 3)
-      .forEach(issue => {
-
-        const event =
-          state.events.find(
-            e => e.id === issue.eventId
-          );
-
-        html += `
-          <button
-            class="swl-attention-item"
-            ${
-              issue.eventId
-                ? `onclick="openEvent('${issue.eventId}')"`
-                : `onclick="navigate('attention')"`
-            }
-          >
-
-            <span class="swl-attention-mark">
-              !
-            </span>
-
-            <span class="swl-attention-copy">
-
-              <strong>
-                ${escapeHTML(issue.title)}
-              </strong>
-
-              <small>
-                ${
-                  event
-                    ? escapeHTML(event.name)
-                    : "Reminder"
-                }
-              </small>
-
-            </span>
-
-            <span class="swl-attention-arrow">
-              ›
-            </span>
-
-          </button>
-        `;
-      });
-
-    html += `
-      </div>
-    `;
-  }
-
-
-  html += `
-    </section>
-  `;
-
-
-  if (upcoming.length > 1) {
-
-    html += `
-      <section class="swl-home-section">
-
-        <div class="swl-home-section-title">
-
-          <h2>Coming Up</h2>
-
-          <button onclick="navigate('events')">
-            View all
-          </button>
-
-        </div>
-
-        <div class="swl-coming-list">
-    `;
-
-    upcoming
-      .slice(1, 4)
-      .forEach(event => {
-
-        const issueCount =
-          eventIssues(event).length;
-
-        html += `
-          <button
-            class="swl-coming-event"
-            onclick="openEvent('${event.id}')"
-          >
-
-            <div>
-
-              <strong>
-                ${escapeHTML(event.name)}
-              </strong>
-
-              <span>
-                ${formatDate(event.date)}
-                ${
-                  event.time
-                    ? ` · ${formatTime(event.time)}`
-                    : ""
-                }
-              </span>
-
-            </div>
-
-            ${
-              issueCount
-                ? `
-                  <span class="swl-coming-status warning">
-                    ${issueCount}
-                  </span>
-                `
-                : `
-                  <span class="swl-coming-status">
-                    ✓
-                  </span>
-                `
-            }
-
-          </button>
-        `;
-      });
-
-    html += `
-        </div>
-      </section>
-    `;
-  }
-
-
-  main.innerHTML = html;
-}
-
-/* =========================================================
-   CLIENTS
-========================================================= */
-
-function normalizeClientText(value = "") {
-  return String(value || "").trim();
-}
-
-function normalizedClientPhone(value = "") {
-  return normalizeClientText(value)
-    .replace(/[^\d+]/g, "");
-}
-
-function clientKeyForEvent(event) {
-  const email =
-    normalizeClientText(event.hostEmail).toLowerCase();
-
-  const phone =
-    normalizedClientPhone(event.hostPhone);
-
-  if (email) return `email:${email}`;
-  if (phone) return `phone:${phone}`;
-
-  return `event:${event.id}`;
-}
-
-function eventDerivedClients() {
-  const clients = new Map();
-
-  state.events.forEach(event => {
-    const name = normalizeClientText(event.hostName);
-    const email = normalizeClientText(event.hostEmail);
-    const phone = normalizeClientText(event.hostPhone);
-
-    if (!name && !email && !phone) return;
-
-    const key = clientKeyForEvent(event);
-
-    if (!clients.has(key)) {
-      clients.set(key, {
-        id: null,
-        key,
-        legacyKey: key,
-        name: name || email || phone || "Unnamed client",
-        type: "person",
-        contacts: [],
-        events: [],
-        importedFromEvents: true
-      });
-    }
-
-    const client = clients.get(key);
-
-    if (name) client.name = name;
-
-    if (
-      (email || phone) &&
-      !client.contacts.some(contact =>
-        normalizeClientText(contact.email).toLowerCase() === email &&
-        normalizedClientPhone(contact.phone) === normalizedClientPhone(phone)
-      )
-    ) {
-      client.contacts.push({
-        id: null,
-        name: name || client.name,
-        role: "",
-        email,
-        phone,
-        isPrimary: client.contacts.length === 0
-      });
-    }
-
-    client.events.push(event);
-  });
-
-  return [...clients.values()];
-}
-
-function getAllClients() {
-  const derived = eventDerivedClients();
-  const persisted = (state.clients || []).map(client => ({
-    ...client,
-    key: client.legacyKey || `client:${client.id}`,
-    contacts: client.contacts || [],
-    events: [],
-    importedFromEvents: false
-  }));
-
-  const claimedLegacyKeys =
-    new Set(
-      persisted
-        .map(client => client.legacyKey)
-        .filter(Boolean)
-    );
-
-  persisted.forEach(client => {
-    if (!client.legacyKey) return;
-
-    const match =
-      derived.find(item =>
-        item.key === client.legacyKey
-      );
-
-    if (match) {
-      client.events.push(...match.events);
-    }
-  });
-
-  const unclaimed =
-    derived.filter(client =>
-      !claimedLegacyKeys.has(client.key)
-    );
-
-  return [...persisted, ...unclaimed];
-}
-
-function clientPrimaryContact(client) {
-  return (
-    client.contacts?.find(contact => contact.isPrimary) ||
-    client.contacts?.[0] ||
-    null
-  );
-}
-
-function clientSearchText(client) {
-  return [
-    client.name,
-    client.type,
-    ...(client.contacts || []).flatMap(contact => [
-      contact.name,
-      contact.role,
-      contact.email,
-      contact.phone
-    ])
-  ].join(" ").toLowerCase();
-}
-
-function clientEventDateValue(event) {
-  if (!event?.date) return Number.POSITIVE_INFINITY;
-
-  return new Date(
-    `${event.date}T12:00:00`
-  ).getTime();
-}
-
-function isClientEventUpcoming(event) {
-  if (event.closed) return false;
-  if (!event.date) return true;
-
-  const eventDate =
-    new Date(`${event.date}T12:00:00`);
-
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
-
-  return eventDate >= today;
-}
-
-function clientUpcomingEvents(client) {
-  return [...(client.events || [])]
-    .filter(isClientEventUpcoming)
-    .sort(
-      (a, b) =>
-        clientEventDateValue(a) -
-        clientEventDateValue(b)
-    );
-}
-
-function clientPastEvents(client) {
-  return [...(client.events || [])]
-    .filter(event => !isClientEventUpcoming(event))
-    .sort(
-      (a, b) =>
-        clientEventDateValue(b) -
-        clientEventDateValue(a)
-    );
-}
-
-function findClientByKey(key) {
-  return getAllClients()
-    .find(client => client.key === key) || null;
-}
-
-function setClientSearch(value) {
-  clientSearch = value || "";
-  renderClients();
-}
-
-function openClient(encodedKey) {
-  currentClientKey =
-    decodeURIComponent(encodedKey);
-
-  currentScreen = "client-detail";
-  render();
-
-  window.scrollTo({
-    top: 0,
-    left: 0,
-    behavior: "instant"
-  });
-}
-
-function clientCardHTML(client, showNext = false) {
-  const upcoming = clientUpcomingEvents(client);
-  const nextEvent = upcoming[0];
-  const primary = clientPrimaryContact(client);
-
-  const initial =
-    (client.name || "?").charAt(0).toUpperCase();
-
-  let subline =
-    primary?.name ||
-    primary?.email ||
-    primary?.phone ||
-    (client.importedFromEvents
-      ? "From an existing event"
-      : "No contacts yet");
-
-  if (showNext && nextEvent) {
-    subline =
-      `${formatDate(nextEvent.date)} · ${nextEvent.name || "Event"}`;
-  }
-
-  return `
-    <button
-      class="card swl-client-card tap-card"
-      onclick="openClient('${encodeURIComponent(client.key)}')"
-    >
-      <span class="swl-client-avatar">
-        ${escapeHTML(initial)}
-      </span>
-
-      <span class="swl-client-card-copy">
-        <strong>${escapeHTML(client.name)}</strong>
-        <span>${escapeHTML(subline)}</span>
-        <small>
-          ${(client.contacts || []).length}
-          ${(client.contacts || []).length === 1 ? "contact" : "contacts"}
-          ·
-          ${(client.events || []).length}
-          ${(client.events || []).length === 1 ? "event" : "events"}
-        </small>
-      </span>
-
-      <span class="swl-client-chevron">›</span>
-    </button>
-  `;
-}
-
-function renderClients() {
-  setHeader("Clients");
-
-  const main =
-    document.getElementById("mainContent");
-
-  const search =
-    normalizeClientText(clientSearch).toLowerCase();
-
-  const allClients =
-    getAllClients().filter(client =>
-      !search ||
-      clientSearchText(client).includes(search)
-    );
-
-  const upcomingClients =
-    allClients
-      .filter(client =>
-        clientUpcomingEvents(client).length > 0
-      )
-      .sort((a, b) =>
-        clientEventDateValue(clientUpcomingEvents(a)[0]) -
-        clientEventDateValue(clientUpcomingEvents(b)[0])
-      );
-
-  const alphabeticClients =
-    [...allClients].sort((a, b) =>
-      a.name.localeCompare(
-        b.name,
-        undefined,
-        { sensitivity: "base" }
-      )
-    );
-
-  let html = `
-    <div class="swl-clients-toolbar">
-      <div class="swl-client-search-wrap">
-        <input
-          class="swl-client-search"
-          type="search"
-          placeholder="Search clients or contacts"
-          value="${escapeHTML(clientSearch)}"
-          oninput="setClientSearch(this.value)"
-          autocomplete="off"
-        />
-      </div>
-
-      <button
-        class="primary-button swl-add-client-button"
-        type="button"
-        onclick="openAddClientModal()"
-      >
-        + Add Client
-      </button>
-    </div>
-  `;
-
-  if (!getAllClients().length) {
-    html += `
-      <div class="card empty-card">
-        <strong>No clients yet.</strong>
-        <p>
-          Add your first client here. Clients can exist
-          even when they do not have an event yet.
-        </p>
-      </div>
-    `;
-
-    main.innerHTML = html;
-    return;
-  }
-
-  if (!alphabeticClients.length) {
-    html += `
-      <div class="card empty-card">
-        <strong>No matches.</strong>
-        <p>Try a client name, contact, phone number, or email.</p>
-      </div>
-    `;
-
-    main.innerHTML = html;
-    return;
-  }
-
-  if (upcomingClients.length) {
-    html += `
-      <section class="swl-client-section">
-        <div class="swl-client-section-heading">
-          <h2>Upcoming Clients</h2>
-          <span>${upcomingClients.length}</span>
-        </div>
-
-        <div class="swl-client-list">
-          ${upcomingClients
-            .map(client => clientCardHTML(client, true))
-            .join("")}
-        </div>
-      </section>
-    `;
-  }
-
-  html += `
-    <section class="swl-client-section">
-      <div class="swl-client-section-heading">
-        <h2>All Clients</h2>
-        <span>${alphabeticClients.length}</span>
-      </div>
-
-      <div class="swl-client-list">
-        ${alphabeticClients
-          .map(client => clientCardHTML(client))
-          .join("")}
-      </div>
-    </section>
-  `;
-
-  main.innerHTML = html;
-}
-
-function openAddClientModal() {
-  const root =
-    document.getElementById("modalRoot");
-
-  root.innerHTML = `
-    <div
-      class="modal-backdrop"
-      onclick="closeModalFromBackdrop(event)"
-    >
-      <div class="modal-sheet swl-client-form-sheet">
-        <div class="modal-handle"></div>
-
-        <div class="modal-title-row">
-          <div>
-            <div class="card-label">CLIENTS</div>
-            <h2>Add Client</h2>
-          </div>
-
-          <button
-            class="modal-close"
-            type="button"
-            onclick="closeModal()"
-          >×</button>
-        </div>
-
-        <div class="field">
-          <label>Client name</label>
-          <input
-            id="newClientName"
-            type="text"
-            placeholder="Smith Family or Discover Green Bay"
-            autocomplete="off"
-          />
-        </div>
-
-        <div class="field">
-          <label>Client type</label>
-          <select id="newClientType">
-            <option value="person">Person / Family</option>
-            <option value="organization">Organization / Business</option>
-          </select>
-        </div>
-
-        <div class="swl-contact-form-heading">
-          First contact
-          <small>Optional — you can add more after saving.</small>
-        </div>
-
-        <div class="field">
-          <label>Contact name</label>
-          <input id="newClientContactName" type="text" autocomplete="off" />
-        </div>
-
-        <div class="field">
-          <label>Role / relationship</label>
-          <input
-            id="newClientContactRole"
-            type="text"
-            placeholder="Mom, Events Manager, HR…"
-            autocomplete="off"
-          />
-        </div>
-
-        <div class="inline-fields">
-          <div class="field">
-            <label>Phone</label>
-            <input id="newClientContactPhone" type="tel" autocomplete="tel" />
-          </div>
-
-          <div class="field">
-            <label>Email</label>
-            <input id="newClientContactEmail" type="email" autocomplete="email" />
-          </div>
-        </div>
-
-        <button
-          class="primary-button full-width"
-          type="button"
-          onclick="saveNewClient()"
-        >
-          Save Client
-        </button>
-      </div>
-    </div>
-  `;
-}
-
-async function saveNewClient() {
-  const name =
-    normalizeClientText(
-      document.getElementById("newClientName")?.value
-    );
-
-  if (!name) {
-    alert("Give the client a name.");
-    return;
-  }
-
-  const type =
-    document.getElementById("newClientType")?.value ||
-    "person";
-
-  const contact = {
-    name: normalizeClientText(
-      document.getElementById("newClientContactName")?.value
-    ),
-    role: normalizeClientText(
-      document.getElementById("newClientContactRole")?.value
-    ),
-    phone: normalizeClientText(
-      document.getElementById("newClientContactPhone")?.value
-    ),
-    email: normalizeClientText(
-      document.getElementById("newClientContactEmail")?.value
-    )
-  };
-
-  const hasContact =
-    contact.name ||
-    contact.role ||
-    contact.phone ||
-    contact.email;
-
-  try {
-    const response =
-      await apiRequest("clients", {
-        method: "POST",
-        body: JSON.stringify({
-          name,
-          type,
-          contacts: hasContact ? [contact] : []
-        })
-      });
-
-    state.clients.push(response.client);
-
-    closeModal();
-    showSWLToast("Client added");
-
-    currentClientKey =
-      response.client.legacyKey ||
-      `client:${response.client.id}`;
-
-    currentScreen = "client-detail";
-    render();
-  } catch (err) {
-    alert(`Could not add that client. ${err.message}`);
-  }
-}
-
-async function ensurePersistedClient(client) {
-  if (client.id) return client;
-
-  const primary = clientPrimaryContact(client);
-
-  const response =
-    await apiRequest("clients", {
-      method: "POST",
-      body: JSON.stringify({
-        name: client.name,
-        type: client.type || "person",
-        legacyKey: client.key,
-        contacts: primary
-          ? [{
-              name: primary.name || client.name,
-              role: primary.role || "",
-              phone: primary.phone || "",
-              email: primary.email || ""
-            }]
-          : []
-      })
-    });
-
-  state.clients.push(response.client);
-
-  return {
-    ...response.client,
-    key: response.client.legacyKey || `client:${response.client.id}`,
-    events: client.events || [],
-    importedFromEvents: false
-  };
-}
-
-function openAddContactModal(encodedClientKey) {
-  const key =
-    decodeURIComponent(encodedClientKey);
-
-  const client =
-    findClientByKey(key);
-
-  if (!client) return;
-
-  const root =
-    document.getElementById("modalRoot");
-
-  root.innerHTML = `
-    <div
-      class="modal-backdrop"
-      onclick="closeModalFromBackdrop(event)"
-    >
-      <div class="modal-sheet swl-client-form-sheet">
-        <div class="modal-handle"></div>
-
-        <div class="modal-title-row">
-          <div>
-            <div class="card-label">${escapeHTML(client.name)}</div>
-            <h2>Add Contact</h2>
-          </div>
-
-          <button
-            class="modal-close"
-            type="button"
-            onclick="closeModal()"
-          >×</button>
-        </div>
-
-        <div class="field">
-          <label>Name</label>
-          <input id="newContactName" type="text" autocomplete="off" />
-        </div>
-
-        <div class="field">
-          <label>Role / relationship</label>
-          <input
-            id="newContactRole"
-            type="text"
-            placeholder="Mom, Events Manager, HR…"
-            autocomplete="off"
-          />
-        </div>
-
-        <div class="field">
-          <label>Phone</label>
-          <input id="newContactPhone" type="tel" autocomplete="tel" />
-        </div>
-
-        <div class="field">
-          <label>Email</label>
-          <input id="newContactEmail" type="email" autocomplete="email" />
-        </div>
-
-        <label class="swl-primary-contact-toggle">
-          <input id="newContactPrimary" type="checkbox" />
-          <span>Make primary contact</span>
-        </label>
-
-        <button
-          class="primary-button full-width"
-          type="button"
-          onclick="saveNewContact('${encodeURIComponent(client.key)}')"
-        >
-          Add Contact
-        </button>
-      </div>
-    </div>
-  `;
-}
-
-async function saveNewContact(encodedClientKey) {
-  const key =
-    decodeURIComponent(encodedClientKey);
-
-  let client =
-    findClientByKey(key);
-
-  if (!client) return;
-
-  const contact = {
-    name: normalizeClientText(
-      document.getElementById("newContactName")?.value
-    ),
-    role: normalizeClientText(
-      document.getElementById("newContactRole")?.value
-    ),
-    phone: normalizeClientText(
-      document.getElementById("newContactPhone")?.value
-    ),
-    email: normalizeClientText(
-      document.getElementById("newContactEmail")?.value
-    ),
-    isPrimary:
-      Boolean(
-        document.getElementById("newContactPrimary")?.checked
-      )
-  };
-
-  if (
-    !contact.name &&
-    !contact.phone &&
-    !contact.email
-  ) {
-    alert("Add at least a name, phone number, or email.");
-    return;
-  }
-
-  try {
-    client =
-      await ensurePersistedClient(client);
-
-    const response =
-      await apiRequest(
-        `clients/${encodeURIComponent(client.id)}/contacts`,
-        {
-          method: "POST",
-          body: JSON.stringify(contact)
-        }
-      );
-
-    const index =
-      state.clients.findIndex(item =>
-        item.id === client.id
-      );
-
-    if (index >= 0) {
-      state.clients[index] =
-        response.client;
-    }
-
-    closeModal();
-    showSWLToast("Contact added");
-    renderClientDetail();
-  } catch (err) {
-    alert(`Could not add that contact. ${err.message}`);
-  }
-}
-
-function clientEventCardHTML(event) {
-  return `
-    <button
-      class="card swl-client-event-card tap-card"
-      onclick="openEvent('${event.id}')"
-    >
-      <span>
-        <strong>${escapeHTML(event.name || "Event")}</strong>
-        <small>
-          ${escapeHTML(formatDate(event.date))}
-          ${event.package ? ` · ${escapeHTML(event.package)}` : ""}
-        </small>
-      </span>
-
-      <span class="swl-client-chevron">›</span>
-    </button>
-  `;
-}
-
-function clientContactCardHTML(client, contact) {
-  const phoneHref =
-    normalizedClientPhone(contact.phone);
-
-  return `
-    <div class="card swl-contact-card">
-      <div class="swl-contact-card-top">
-        <div>
-          <strong>
-            ${escapeHTML(contact.name || "Contact")}
-            ${contact.isPrimary ? `<span class="swl-primary-pill">Primary</span>` : ""}
-          </strong>
-
-          ${contact.role
-            ? `<small>${escapeHTML(contact.role)}</small>`
-            : ""}
-        </div>
-      </div>
-
-      <div class="swl-contact-details">
-        ${contact.phone
-          ? `<span>${escapeHTML(contact.phone)}</span>`
-          : ""}
-        ${contact.email
-          ? `<span>${escapeHTML(contact.email)}</span>`
-          : ""}
-      </div>
-
-      ${(phoneHref || contact.email)
-        ? `
-          <div class="swl-client-actions compact">
-            ${phoneHref
-              ? `
-                <a href="sms:${escapeHTML(phoneHref)}">Text</a>
-                <a href="tel:${escapeHTML(phoneHref)}">Call</a>
-              `
-              : ""}
-            ${contact.email
-              ? `<a href="mailto:${escapeHTML(contact.email)}">Email</a>`
-              : ""}
-          </div>
-        `
-        : ""}
-    </div>
-  `;
-}
-
-async function loadClientNotes(clientKey, force = false) {
-  if (
-    !force &&
-    clientNotesCache.has(clientKey)
-  ) {
-    return clientNotesCache.get(clientKey);
-  }
-
-  const response =
-    await apiRequest(
-      `client-notes/${encodeURIComponent(clientKey)}`
-    );
-
-  const notes = response.notes || [];
-  clientNotesCache.set(clientKey, notes);
-  return notes;
-}
-
-function clientNotesHTML(notes) {
-  if (!notes.length) {
-    return `
-      <div class="swl-client-notes-empty">
-        No client notes yet.
-      </div>
-    `;
-  }
-
-  return notes
-    .map(note => `
-      <div class="swl-client-note">
-        <div>${escapeHTML(note.text)}</div>
-
-        <div class="swl-client-note-bottom">
-          <small>
-            ${new Date(note.createdAt).toLocaleDateString(
-              "en-US",
-              {
-                month: "short",
-                day: "numeric",
-                year: "numeric"
-              }
-            )}
-          </small>
-
-          <button
-            type="button"
-            onclick="deleteClientNote(
-              '${encodeURIComponent(note.clientKey)}',
-              '${encodeURIComponent(note.id)}'
-            )"
-          >
-            Delete
-          </button>
-        </div>
-      </div>
-    `)
-    .join("");
-}
-
-async function renderClientDetail() {
-  const client =
-    findClientByKey(currentClientKey);
-
-  if (!client) {
-    navigate("clients");
-    return;
-  }
-
-  setHeader("Client");
-
-  const main =
-    document.getElementById("mainContent");
-
-  const upcoming =
-    clientUpcomingEvents(client);
-
-  const past =
-    clientPastEvents(client);
-
-  const contacts =
-    client.contacts || [];
-
-  main.innerHTML = `
-    <button
-      class="swl-client-back"
-      type="button"
-      onclick="navigate('clients')"
-    >
-      ‹ Clients
-    </button>
-
-    <section class="card swl-client-profile">
-      <div class="swl-client-profile-top">
-        <span class="swl-client-avatar large">
-          ${escapeHTML(
-            client.name.charAt(0).toUpperCase()
-          )}
-        </span>
-
-        <div>
-          <h2>${escapeHTML(client.name)}</h2>
-          <p>
-            ${client.type === "organization" ? "Organization" : "Client"}
-            · ${contacts.length}
-            ${contacts.length === 1 ? "contact" : "contacts"}
-            · ${(client.events || []).length}
-            ${(client.events || []).length === 1 ? "event" : "events"}
-          </p>
-        </div>
-      </div>
-    </section>
-
-    <section class="swl-client-section">
-      <div class="swl-client-section-heading">
-        <h2>Contacts</h2>
-
-        <button
-          class="swl-section-action"
-          type="button"
-          onclick="openAddContactModal('${encodeURIComponent(client.key)}')"
-        >
-          + Add Contact
-        </button>
-      </div>
-
-      <div class="swl-client-list">
-        ${
-          contacts.length
-            ? contacts
-                .map(contact =>
-                  clientContactCardHTML(client, contact)
-                )
-                .join("")
-            : `
-              <div class="card empty-card swl-small-empty">
-                <strong>No contacts yet.</strong>
-                <p>Add anyone you may need to call, text, or email for this client.</p>
-              </div>
-            `
-        }
-      </div>
-    </section>
-
-    ${upcoming.length
-      ? `
-        <section class="swl-client-section">
-          <div class="swl-client-section-heading">
-            <h2>Upcoming Events</h2>
-            <span>${upcoming.length}</span>
-          </div>
-
-          <div class="swl-client-list">
-            ${upcoming.map(clientEventCardHTML).join("")}
-          </div>
-        </section>
-      `
-      : ""}
-
-    ${past.length
-      ? `
-        <section class="swl-client-section">
-          <div class="swl-client-section-heading">
-            <h2>Past Events</h2>
-            <span>${past.length}</span>
-          </div>
-
-          <div class="swl-client-list">
-            ${past.map(clientEventCardHTML).join("")}
-          </div>
-        </section>
-      `
-      : ""}
-
-    <section class="swl-client-section">
-      <div class="swl-client-section-heading">
-        <h2>Client Notes</h2>
-      </div>
-
-      <div class="card swl-client-note-compose">
-        <textarea
-          id="clientNoteText"
-          placeholder="Anything worth remembering about this client?"
-        ></textarea>
-
-        <button
-          class="primary-button"
-          type="button"
-          onclick="saveClientNote('${encodeURIComponent(client.key)}')"
-        >
-          Add Note
-        </button>
-      </div>
-
-      <div
-        id="clientNotesList"
-        class="swl-client-notes-list"
-      >
-        <div class="swl-client-notes-empty">
-          Loading notes…
-        </div>
-      </div>
-    </section>
-  `;
-
-  try {
-    const notes =
-      await loadClientNotes(client.key);
-
-    if (
-      currentScreen !== "client-detail" ||
-      currentClientKey !== client.key
-    ) {
-      return;
-    }
-
-    const list =
-      document.getElementById("clientNotesList");
-
-    if (list) {
-      list.innerHTML =
-        clientNotesHTML(notes);
-    }
-  } catch (err) {
-    const list =
-      document.getElementById("clientNotesList");
-
-    if (list) {
-      list.innerHTML = `
-        <div class="status-banner warning">
-          Could not load client notes.
-        </div>
-      `;
-    }
-  }
-}
-
-async function saveClientNote(encodedClientKey) {
-  const clientKey =
-    decodeURIComponent(encodedClientKey);
-
-  const input =
-    document.getElementById("clientNoteText");
-
-  const text =
-    normalizeClientText(input?.value);
-
-  if (!text) return;
-
-  try {
-    await apiRequest(
-      `client-notes/${encodeURIComponent(clientKey)}`,
-      {
-        method: "POST",
-        body: JSON.stringify({ text })
-      }
-    );
-
-    if (input) input.value = "";
-
-    await loadClientNotes(clientKey, true);
-
-    showSWLToast("Client note saved");
-    renderClientDetail();
-  } catch (err) {
-    alert(`Could not save that note. ${err.message}`);
-  }
-}
-
-async function deleteClientNote(
-  encodedClientKey,
-  encodedNoteId
-) {
-  const clientKey =
-    decodeURIComponent(encodedClientKey);
-
-  const noteId =
-    decodeURIComponent(encodedNoteId);
-
-  if (!confirm("Delete this client note?")) {
-    return;
-  }
-
-  try {
-    await apiRequest(
-      `client-notes/${encodeURIComponent(clientKey)}/${encodeURIComponent(noteId)}`,
-      { method: "DELETE" }
-    );
-
-    await loadClientNotes(clientKey, true);
-    renderClientDetail();
-  } catch (err) {
-    alert(`Could not delete that note. ${err.message}`);
-  }
-}
-
-
-/* =========================================================
-   EVENTS
-========================================================= */
-
-function renderEvents() {
-  setHeader("Events");
-
-  const main =
-    document.getElementById(
-      "mainContent"
-    );
-
-  const events =
-    [...state.events]
-      .filter(event => !event.closed)
-      .sort(
-        (a, b) =>
-          new Date(a.date) -
-          new Date(b.date)
-      );
-
-  let html = `
-    <button
-      class="primary-button full-width"
-      onclick="openAddEventWizard()"
-    >
-      + Add Event
-    </button>
-
-    <section class="section">
-  `;
-
-  if (events.length === 0) {
-    html += `
-      <div class="card empty-card">
-        <strong>No events yet.</strong>
-
-        <p>
-          Your confirmed bookings
-          will live here.
-        </p>
-      </div>
-    `;
-  } else {
-    events.forEach(event => {
-      const issues =
-        eventIssues(event);
-
-      html += `
-        <div
-          class="card list-card tap-card"
-          onclick="openEvent('${event.id}')"
-        >
-          <h3>
-            ${escapeHTML(event.name)}
-          </h3>
-
-          <p>
-            ${formatDate(event.date)}
-            ${
-              event.time
-                ? ` · ${formatTime(event.time)}`
-                : ""
-            }
-          </p>
-
-          <div class="meta-row">
-
-            ${
-              event.guestCount
-                ? `
-                  <span class="pill">
-                    ${event.guestCount} guests
-                  </span>
-                `
-                : ""
-            }
-
-            ${
-              event.package
-                ? `
-                  <span class="pill">
-                    ${escapeHTML(event.package)}
-                  </span>
-                `
-                : ""
-            }
-
-            ${
-              issues.length
-                ? `
-                  <span class="pill warning">
-                    ${issues.length}
-                    need attention
-                  </span>
-                `
-                : `
-                  <span class="pill success">
-                    ✓ On track
-                  </span>
-                `
-            }
-
-          </div>
-        </div>
-      `;
-    });
-  }
-
-  html += `
-    </section>
-  `;
-
-  main.innerHTML = html;
-}
-
-
-/* =========================================================
-   EVENT DETAIL
-========================================================= */
-
-function openEvent(id) {
-  currentEventId = id;
-  currentScreen = "event-detail";
-  activeEventTab = "info";
-
-  render();
-   window.scrollTo({
-  top: 0,
-  left: 0,
-  behavior: "instant"
-});
-}
-function setEventTab(tab) {
-  activeEventTab = tab;
-  renderEventDetail();
-}
-
-function renderEventDetail() {
-  const event =
-    state.events.find(
-      e => e.id === currentEventId
-    );
-
-  if (!event) {
-    navigate("events");
-    return;
-  }
-
-  setHeader("Event");
-
-  const main =
-    document.getElementById(
-      "mainContent"
-    );
-
-  const issues =
-    eventIssues(event);
-
-  const reminders =
-    getEventReminders(event.id);
-
-  const days =
-    daysUntil(event.date);
-
-  const nonPlushReservations =
-  (event.reservations || [])
-    .filter(
-      reservation => {
-        const item =
-          getInventoryItem(
-            reservation.itemId
-          );
-
-        return (
-          item &&
-          item.category !== "Plush"
-        );
-      }
-    );
-
-  const mapUrl =
-    event.address
-      ? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(event.address)}`
-      : "";
-
-  const phoneHref =
-    event.hostPhone
-      ? String(event.hostPhone)
-          .replace(/[^\d+]/g, "")
-      : "";
-
-  event.packing ||=
-    masterPackingList.map(
-      item => ({
-        id: makeId("pack"),
-        name: item,
-        done: false
-      })
-    );
-
-  const packingDone =
-    event.packing.filter(
-      item => item.done
-    ).length;
-
-  const packingTotal =
-    event.packing.length;
-
-  const packingComplete =
-    packingTotal > 0 &&
-    packingDone === packingTotal;
-
-  let html = `
-    <button
-      class="back-button"
-      onclick="navigate('events')"
-    >
-      ← Events
-    </button>
-
-    <div class="event-top-card">
-
-      <div class="event-top-copy">
-
-        <div class="card-label">
-          ${
-            event.eventType
-              ? escapeHTML(event.eventType)
-              : "Event"
-          }
-        </div>
-
-        <h2>
-          ${escapeHTML(event.name)}
-        </h2>
-
-        <div class="muted">
-          ${formatDate(event.date)}
-
-          ${
-            event.time
-              ? ` · ${formatTime(event.time)}`
-              : ""
-          }
-        </div>
-
-      </div>
-
-      <div class="meta-row">
-
-        ${
-          days !== null
-            ? `
-                <span class="pill">
-                  ${
-                    days === 0
-                      ? "Today"
-                      : days < 0
-                        ? "Past event"
-                        : `${days} days`
-                  }
-                </span>
-              `
-            : ""
-        }
-
-        ${
-          event.guestCount
-            ? `
-                <span class="pill">
-                  ${event.guestCount} guests
-                </span>
-              `
-            : ""
-        }
-
-        ${
-          event.package
-            ? `
-                <span class="pill">
-                  ${escapeHTML(event.package)}
-                </span>
-              `
-            : ""
-        }
-
-        ${
-          issues.length
-            ? `
-                <span class="pill warning">
-                  ${issues.length}
-                  need attention
-                </span>
-              `
-            : `
-                <span class="pill success">
-                  ✓ On track
-                </span>
-              `
-        }
-
-      </div>
-
-    </div>
-
-
-    <div
-      class="event-tabs"
-      role="tablist"
-      aria-label="Event sections"
-    >
-
-      <button
-        class="
-          event-tab
-          ${
-            activeEventTab === "info"
-              ? "active"
-              : ""
-          }
-        "
-        onclick="setEventTab('info')"
-        role="tab"
-        aria-selected="${
-          activeEventTab === "info"
-        }"
-      >
-
-        <span class="event-tab-icon">
-          ♥
-        </span>
-
-        <span>
-          Info
-        </span>
-
-      </button>
-
-
-      <button
-        class="
-          event-tab
-          ${
-            activeEventTab === "prep"
-              ? "active"
-              : ""
-          }
-        "
-        onclick="setEventTab('prep')"
-        role="tab"
-        aria-selected="${
-          activeEventTab === "prep"
-        }"
-      >
-
-        <span class="event-tab-icon">
-          ✦
-        </span>
-
-        <span>
-          Prep
-        </span>
-
-        ${
-          issues.length
-            ? `
-                <span class="event-tab-badge">
-                  ${issues.length}
-                </span>
-              `
-            : ""
-        }
-
-      </button>
-
-
-      <button
-        class="
-          event-tab
-          ${
-            activeEventTab === "pack"
-              ? "active"
-              : ""
-          }
-        "
-        onclick="setEventTab('pack')"
-        role="tab"
-        aria-selected="${
-          activeEventTab === "pack"
-        }"
-      >
-
-        <span class="event-tab-icon">
-          ✓
-        </span>
-
-        <span>
-          Pack
-        </span>
-
-        <span class="event-tab-count">
-          ${packingDone}/${packingTotal}
-        </span>
-
-      </button>
-
-    </div>
-
-
-    <div class="event-tab-panel">
-  `;
-
-
-  /*
-     INFO TAB
-  */
-
-  if (activeEventTab === "info") {
-
-    html += `
-      <div class="event-section-heading">
-
-        <div>
-
-          <div class="card-label">
-            Event details
-          </div>
-
-          <h3>
-            The basics
-          </h3>
-
-        </div>
-
-        <button
-          class="secondary-button compact-button"
-          onclick="
-            openEditEvent(
-              '${event.id}'
-            )
-          "
-        >
-          Edit
-        </button>
-
-      </div>
-
-
-      <div
-        class="
-          card
-          detail-card
-          event-info-card
-        "
-      >
-
-        <div class="detail-row">
-
-          <span>
-            Location
-          </span>
-
-          <strong>
-            ${escapeHTML(
-              event.address ||
-              "Not added"
-            )}
-          </strong>
-
-        </div>
-
-
-        <div class="detail-row">
-
-          <span>
-            Host
-          </span>
-
-          <strong>
-            ${escapeHTML(
-              event.hostName ||
-              "Not added"
-            )}
-          </strong>
-
-        </div>
-
-
-        <div class="detail-row">
-
-          <span>
-            Guests
-          </span>
-
-          <strong>
-            ${
-              event.guestCount ||
-              "Not added"
-            }
-          </strong>
-
-        </div>
-
-
-        <div class="detail-row">
-
-          <span>
-            Package
-          </span>
-
-          <strong>
-            ${escapeHTML(
-              event.package ||
-              "Not added"
-            )}
-          </strong>
-
-        </div>
-
-      </div>
-    `;
-
-
-    if (
-      mapUrl ||
-      phoneHref ||
-      event.hostEmail
-    ) {
-
-      html += `
-        <div class="event-action-grid">
-      `;
-
-      if (mapUrl) {
-        html += `
-          <a
-            class="event-action-button"
-            href="${escapeHTML(mapUrl)}"
-            target="_blank"
-            rel="noopener"
-          >
-            <span>⌖</span>
-            Maps
-          </a>
-        `;
-      }
-
-      if (phoneHref) {
-        html += `
-          <a
-            class="event-action-button"
-            href="tel:${escapeHTML(phoneHref)}"
-          >
-            <span>☎</span>
-            Call
-          </a>
-
-          <a
-            class="event-action-button"
-            href="sms:${escapeHTML(phoneHref)}"
-          >
-            <span>✉</span>
-            Text
-          </a>
-        `;
-      }
-
-      if (event.hostEmail) {
-        html += `
-          <a
-            class="event-action-button"
-            href="mailto:${escapeHTML(
-              event.hostEmail
-            )}"
-          >
-            <span>＠</span>
-            Email
-          </a>
-        `;
-      }
-
-      html += `
-        </div>
-      `;
-    }
-
-
-    html += `
-      <div class="event-section-heading">
-
-        <div>
-
-          <div class="card-label">
-            Money
-          </div>
-
-          <h3>
-            Payment
-          </h3>
-
-        </div>
-
-      </div>
-
-
-      <div class="card detail-card">
-
-        <div class="detail-row">
-
-          <span>
-            Total
-          </span>
-
-          <strong>
-            ${money(event.total)}
-          </strong>
-
-        </div>
-
-
-        <div class="detail-row">
-
-          <span>
-            Deposit
-          </span>
-
-          <strong>
-
-            ${
-              event.depositPaid
-                ? `
-                    ✓
-                    ${money(
-                      event.depositAmount
-                    )}
-                    received
-                  `
-                : "Not received"
-            }
-
-          </strong>
-
-        </div>
-
-
-        <div class="detail-row">
-
-          <span>
-            Remaining
-          </span>
-
-          <strong>
-            ${money(event.balanceDue)}
-          </strong>
-
-        </div>
-
-      </div>
-
-
-      <div class="event-section-heading">
-
-        <div>
-
-          <div class="card-label">
-            Don't forget
-          </div>
-
-          <h3>
-            Reminders
-          </h3>
-
-        </div>
-
-        <button
-          class="secondary-button compact-button"
-          onclick="
-            addEventReminder(
-              '${event.id}'
-            )
-          "
-        >
-          + Add
-        </button>
-
-      </div>
-
-
-      <div class="card detail-card">
-    `;
-
-
-    if (!reminders.length) {
-
-      html += `
-        <div class="event-empty-mini">
-          Nothing to remember for
-          this event yet.
-        </div>
-      `;
-
-    } else {
-
-      reminders.forEach(
-        reminder => {
-
-          html += `
-            <div class="attention-row">
-
-              <div>
-
-                <strong>
-                  ${escapeHTML(
-                    reminder.title
-                  )}
-                </strong>
-
-                ${
-                  reminder.remindBy
-                    ? `
-                        <div class="muted">
-                          Due
-                          ${escapeHTML(
-                            formatReminderDue(
-                              reminder.remindBy
-                            )
-                          )}
-                        </div>
-                      `
-                    : ""
-                }
-
-              </div>
-
-              <button
-                class="
-                  reminder-done-button
-                "
-                onclick="
-                  completeReminder(
-                    '${reminder.id}'
-                  )
-                "
-                aria-label="
-                  Complete reminder
-                "
-              >
-                ✓
-              </button>
-
-            </div>
-          `;
-        }
-      );
-    }
-
-
-    html += `
-      </div>
-
-
-      <div class="event-section-heading">
-
-        <div>
-
-          <div class="card-label">
-            Reference
-          </div>
-
-          <h3>
-            Notes
-          </h3>
-
-        </div>
-
-      </div>
-
-
-      <div
-        class="
-          card
-          detail-card
-          event-notes-card
-        "
-      >
-
-        ${
-          event.eventNotes
-            ? `
-                <div
-                  style="
-                    white-space:
-                    pre-wrap;
-                  "
-                >
-                  ${escapeHTML(
-                    event.eventNotes
-                  )}
-                </div>
-              `
-            : `
-                <div
-                  class="
-                    event-empty-mini
-                  "
-                >
-                  No notes added.
-                </div>
-              `
-        }
-
-      </div>
-
-
-      <div class="event-section-heading">
-
-        <div>
-
-          <div class="card-label">
-            After the event
-          </div>
-
-          <h3>
-            Closeout
-          </h3>
-
-        </div>
-
-      </div>
-
-
-      <div class="card detail-card">
-
-        ${
-          event.closed
-            ? `
-                <div
-                  class="
-                    event-complete-message
-                  "
-                >
-                  ✓ Event closed out
-                </div>
-              `
-            : `
-                <div
-                  class="
-                    event-empty-mini
-                  "
-                >
-                  Final counts,
-                  inventory reconciliation
-                  and completion will live
-                  here.
-                </div>
-              `
-        }
-
-      </div>
-
-
-      <button
-        class="event-delete-button"
-        onclick="
-          deleteEvent(
-            '${event.id}'
-          )
-        "
-      >
-        Delete Event
-      </button>
-    `;
-  }
-
-
-  /*
-     PREP TAB
-  */
-
-  if (activeEventTab === "prep") {
-
-    if (issues.length) {
-
-      html += `
-        <div class="prep-alert-card">
-
-          <div class="prep-alert-icon">
-            !
-          </div>
-
-          <div>
-
-            <strong>
-              Needs attention
-            </strong>
-
-            <div class="muted">
-              ${issues.length}
-              thing${
-                issues.length === 1
-                  ? ""
-                  : "s"
-              }
-              to fix before this event.
-            </div>
-
-          </div>
-
-        </div>
-
-
-        <div
-          class="
-            card
-            detail-card
-            prep-issues-card
-          "
-        >
-      `;
-
-      issues.forEach(issue => {
-
-        html += `
-          <div class="attention-row">
-
-            <strong>
-              ${escapeHTML(issue)}
-            </strong>
-
-            <span class="warning-text">
-              !
-            </span>
-
-          </div>
-        `;
-      });
-
-      html += `
-        </div>
-      `;
-
-    } else {
-
-      html += `
-        <div class="prep-ready-card">
-
-          <div class="prep-ready-icon">
-            ♥
-          </div>
-
-          <div>
-
-            <strong>
-              Prep is looking good.
-            </strong>
-
-            <div class="muted">
-              Nothing is currently
-              blocking this event.
-            </div>
-
-          </div>
-
-        </div>
-      `;
-    }
-
-
-    html += `
-      <div class="event-section-heading">
-
-        <div>
-
-          <div class="card-label">
-            Get ready
-          </div>
-
-          <h3>
-            Plush
-          </h3>
-
-        </div>
-
-      </div>
-
-
-      <div class="card detail-card">
-    `;
-
-
-    if (event.selectedPlush?.length) {
-
-      event.selectedPlush.forEach(
-        plushId => {
-
-          const plushName =
-  getEventPlushName(plushId);
-
-          const reservation =
-            event.reservations?.find(
-              r =>
-                r.itemId === plushId
-            );
-
-          html += `
-            <div
-              class="
-                requirement-row
-                prep-requirement-row
-              "
-            >
-
-              <div>
-
-                <strong>
-                  ${escapeHTML(plushName)}
-                </strong>
-
-                <div class="muted">
-                  Guest count +
-                  2 backups
-                </div>
-
-              </div>
-
-              <span
-                class="
-                  prep-quantity
-                "
-              >
-                ${
-                  reservation?.quantity ||
-                  0
-                }
-              </span>
-
-            </div>
-          `;
-        }
-      );
-
-    } else {
-
-      html += `
-        <div class="event-empty-mini">
-          No plush selected yet.
-        </div>
-      `;
-    }
-
-
-    html += `
-      </div>
-
-
-      <div class="event-section-heading">
-
-        <div>
-
-          <div class="card-label">
-            Pull from inventory
-          </div>
-
-          <h3>
-            Supplies & extras
-          </h3>
-
-        </div>
-
-      </div>
-
-
-      <div class="card detail-card">
-    `;
-
-
-    if (nonPlushReservations.length) {
-
-      nonPlushReservations.forEach(
-        reservation => {
-
-          const item =
-            getInventoryItem(
-              reservation.itemId
-            );
-
-          if (!item) return;
-
-          html += `
-            <div
-              class="
-                requirement-row
-                prep-requirement-row
-              "
-            >
-
-              <strong>
-                ${escapeHTML(
-                  item.name
-                )}
-              </strong>
-
-              <span
-                class="
-                  prep-quantity
-                "
-              >
-                ${
-                  reservation.quantity
-                }
-              </span>
-
-            </div>
-          `;
-        }
-      );
-
-    } else {
-
-      html += `
-        <div class="event-empty-mini">
-          No extra supplies reserved.
-        </div>
-      `;
-    }
-
-
-    html += `
-      </div>
-
-
-      <div class="event-section-heading">
-
-        <div>
-
-          <div class="card-label">
-            Special stuff
-          </div>
-
-          <h3>
-            Custom requirements
-          </h3>
-
-        </div>
-
-      </div>
-
-
-      <div
-        class="
-          card
-          detail-card
-          event-notes-card
-        "
-      >
-
-        ${
-          event.customRequirements
-            ? `
-                <div
-                  style="
-                    white-space:
-                    pre-wrap;
-                  "
-                >
-                  ${escapeHTML(
-                    event.customRequirements
-                  )}
-                </div>
-              `
-            : `
-                <div
-                  class="
-                    event-empty-mini
-                  "
-                >
-                  Nothing custom added
-                  for this event.
-                </div>
-              `
-        }
-
-      </div>
-
-
-      <button
-        class="
-          secondary-button
-          full-width
-        "
-        onclick="
-          openEditEvent(
-            '${event.id}'
-          )
-        "
-        style="
-          margin-top:16px;
-        "
-      >
-        Edit Event Requirements
-      </button>
-    `;
-  }
-
-
-  /*
-     PACK TAB
-  */
-
-  if (activeEventTab === "pack") {
-
-    const percentPacked =
-      packingTotal
-        ? Math.round(
-            (
-              packingDone /
-              packingTotal
-            ) * 100
-          )
-        : 0;
-
-
-    html += `
-      <div
-        class="
-          pack-progress-card
-          ${
-            packingComplete
-              ? "complete"
-              : ""
-          }
-        "
-      >
-
-        <div>
-
-          <div class="card-label">
-            Packing progress
-          </div>
-
-          <strong>
-            ${packingDone}
-            of
-            ${packingTotal}
-            packed
-          </strong>
-
-        </div>
-
-        <div
-          class="
-            pack-progress-number
-          "
-        >
-          ${percentPacked}%
-        </div>
-
-      </div>
-
-
-      <div class="pack-progress-track">
-
-        <div
-          class="
-            pack-progress-fill
-          "
-          style="
-            width:
-            ${percentPacked}%;
-          "
-        ></div>
-
-      </div>
-
-
-      <div
-        class="
-          event-section-heading
-          pack-heading
-        "
-      >
-
-        <div>
-
-          <div class="card-label">
-            Load up
-          </div>
-
-          <h3>
-            Packing checklist
-          </h3>
-
-        </div>
-
-      </div>
-
-
-      <div
-        class="
-          card
-          detail-card
-          pack-list-card
-        "
-      >
-    `;
-
-
-    event.packing.forEach(
-      item => {
-
-        html += `
-          <label
-  data-packing-id="${item.id}"
-  class="
-    toggle-row
-    pack-row
-              ${
-                item.done
-                  ? "done"
-                  : ""
-              }
-            "
-          >
-
-            <span>
-              ${escapeHTML(
-                item.name
-              )}
-            </span>
-
-            <input
-              type="checkbox"
-              ${
-                item.done
-                  ? "checked"
-                  : ""
-              }
-              onchange="
-                togglePacking(
-                  '${event.id}',
-                  '${item.id}',
-                  this.checked
-                )
-              "
-            />
-
-          </label>
-        `;
-      }
-    );
-
-
-    html += `
-      </div>
-
-      ${
-        packingComplete
-          ? `
-              <div
-                class="
-                  pack-done-message
-                "
-              >
-                <div class="pack-done-icon">
-  ♥
-</div>
-
-<div>
-  <strong>ALL PACKED!</strong>
-  <span>
-    The fluff-mobile is ready to roll.
-  </span>
-</div>
-              </div>
-            `
-          : ""
-      }
-    `;
-  }
-
-
-  html += `
-    </div>
-  `;
-
-  main.innerHTML = html;
-}
-async function togglePacking(
-  eventId,
-  packingId,
-  checked
-) {
-  const event =
-    state.events.find(
-      e => e.id === eventId
-    );
-
-  if (!event) return;
-
-  const item =
-    event.packing.find(
-      item => item.id === packingId
-    );
-
-  if (!item) return;
-
-  const previous = item.done;
-
-  const wasComplete =
-    event.packing.length > 0 &&
-    event.packing.every(item => item.done);
-
-  item.done = checked;
-
-  const isComplete =
-    event.packing.length > 0 &&
-    event.packing.every(item => item.done);
-
-  updateAttentionBadge();
-
-  /*
-     Immediate feedback.
-
-     iOS PWAs don't give us true native haptics,
-     but vibration works where supported.
-  */
-
-  if (checked) {
-
-    if (isComplete && !wasComplete) {
-
-      if ("vibrate" in navigator) {
-        navigator.vibrate([
-          55,
-          45,
-          90,
-          45,
-          150
-        ]);
-      }
-
-    } else {
-
-      if ("vibrate" in navigator) {
-        navigator.vibrate(35);
-      }
-
-    }
-  }
-
-
-  /*
-     Re-render immediately so:
-     0/17 → 1/17
-     percentage changes
-     progress bar moves
-     checked row gets its done styling
-  */
-
-  renderEventDetail();
-
-
-  /*
-     Completion celebration happens only
-     when the LAST unchecked item is checked.
-  */
-
-  if (
-    checked &&
-    isComplete &&
-    !wasComplete
-  ) {
-    requestAnimationFrame(() => {
-      celebratePackingComplete();
-    });
-  } else if (checked) {
-    requestAnimationFrame(() => {
-      animatePackingTap(packingId);
-    });
-  }
-
-
-  try {
-
-    await saveEventToServer(event);
-
-  } catch (err) {
-
-    item.done = previous;
-
-    renderEventDetail();
-
-    alert(
-      `Could not save that packing change. ${err.message}`
-    );
-  }
-}
-function animatePackingTap(packingId) {
-  const row =
-    document.querySelector(
-      `[data-packing-id="${packingId}"]`
-    );
-
-  if (!row) return;
-
-  row.classList.add("just-packed");
-
-  setTimeout(() => {
-    row.classList.remove("just-packed");
-  }, 420);
-}
-
-
-function celebratePackingComplete() {
-  document.querySelectorAll(".swl-pack-finale, .pack-heart-burst").forEach(node => node.remove());
-
-  const card = document.querySelector(".pack-progress-card");
-  const list = document.querySelector(".pack-list-card");
-  const done = document.querySelector(".pack-done-message");
-
-  [card, list, done].forEach(element => {
-    if (!element) return;
-    element.classList.remove("pack-celebration", "pack-list-complete-pop", "pack-done-pop");
-    void element.offsetWidth;
-  });
-
-  if (card) card.classList.add("pack-celebration");
-  if (list) list.classList.add("pack-list-complete-pop");
-  if (done) done.classList.add("pack-done-pop");
-
-  const finale = document.createElement("div");
-  finale.className = "swl-pack-finale";
-  finale.setAttribute("role", "status");
-  finale.setAttribute("aria-live", "polite");
-
-  const symbols = ["♥", "✦", "●", "♥", "✧", "●", "♥", "★"];
-  const particles = Array.from({ length: 58 }, (_, index) => {
-    const angle = (index / 58) * Math.PI * 2 + ((index % 7) * 0.13);
-    const distance = 150 + ((index * 47) % 330);
-    const x = Math.round(Math.cos(angle) * distance);
-    const y = Math.round(Math.sin(angle) * distance - 35);
-    const delay = (index % 11) * 0.025;
-    const spin = -220 + ((index * 83) % 440);
-    const size = 10 + ((index * 7) % 19);
-    const symbol = symbols[index % symbols.length];
-    const fluffClass = symbol === "●" ? " fluff" : "";
-    return `<span class="swl-finale-particle${fluffClass}" style="--x:${x}px;--y:${y}px;--delay:${delay}s;--spin:${spin}deg;--size:${size}px">${symbol}</span>`;
-  }).join("");
-
-  finale.innerHTML = `
-    <div class="swl-finale-glow"></div>
-    <div class="swl-finale-particles" aria-hidden="true">${particles}</div>
-    <div class="swl-finale-card">
-      <div class="swl-finale-kicker">PACKING COMPLETE</div>
-      <div class="swl-finale-title">ALL PACKED!</div>
-      <div class="swl-finale-heart">♥</div>
-      <div class="swl-finale-copy">The fluff-mobile is ready to roll.</div>
-    </div>
-  `;
-
-  document.body.appendChild(finale);
-
-  requestAnimationFrame(() => {
-    finale.classList.add("show");
-  });
-
-  setTimeout(() => {
-    finale.classList.add("leaving");
-  }, 2350);
-
-  setTimeout(() => {
-    finale.remove();
-  }, 2850);
-}
-
-async function deleteEvent(id) {
-  if (
-    !confirm(
-      "Delete this event?"
-    )
-  ) {
-    return;
-  }
-
-  try {
-    await deleteEventFromServer(id);
-  } catch (err) {
-    alert(
-      `Could not delete that event. ${err.message}`
-    );
-
-    return;
-  }
-
-  state.events =
-    state.events.filter(
-      event => event.id !== id
-    );
-
-  state.attention =
-    state.attention.filter(
-      reminder => reminder.eventId !== id
-    );
-
-  navigate("events");
-}
-
-
-/* =========================================================
-   INVENTORY
-========================================================= */
-
-function renderInventory() {
-  setHeader("Inventory");
-
-  const main =
-    document.getElementById("mainContent");
-
-  const categories = [
-    "Plush",
-    "Outfits",
-    "Supplies",
-    "Shirts",
-    "All"
-  ];
-
-  const hasShortage =
-    state.inventory.some(
-      item =>
-        inventoryAvailable(item.id) < 0
-    );
-
-  let html = `
-    ${
-      hasShortage
-        ? `
-          <div class="status-banner warning">
-            Some future events need more stock than you currently have.
-          </div>
-        `
-        : ""
-    }
-
-    <div class="inventory-toolbar">
-
-      <div class="inventory-search-wrap">
-        <span class="inventory-search-icon">⌕</span>
-
-        <input
-          id="inventorySearch"
-          class="inventory-search"
-          type="search"
-          value="${escapeHTML(inventorySearch)}"
-          placeholder="Search inventory..."
-          oninput="
-            inventorySearch = this.value;
-            filterInventoryRows();
-          "
-        />
-      </div>
-
-      <div class="inventory-category-tabs">
-        ${categories
-          .map(
-            category => `
-              <button
-                class="inventory-category-tab ${
-                  activeInventoryCategory === category
-                    ? "active"
-                    : ""
-                }"
-                data-inventory-category="${category}"
-                onclick="setInventoryCategory('${category}')"
-              >
-                ${category}
-              </button>
-            `
-          )
-          .join("")}
-      </div>
-
-    </div>
-  `;
-
-  const actualCategories = [
-    ...new Set(
-      state.inventory.map(
-        item => item.category
-      )
-    )
-  ];
-
-  actualCategories.forEach(category => {
-    const categoryItems =
-      state.inventory.filter(
-        item =>
-          item.category === category
-      );
-
-    html += `
-      <section
-        class="inventory-group"
-        data-inventory-group="${escapeHTML(category)}"
-      >
-
-        <div class="inventory-group-header">
-
-          <div class="inventory-group-title">
-            <h2>
-              ${
-                category === "Plush"
-                  ? "Plush Friends"
-                  : escapeHTML(category)
-              }
-            </h2>
-
-            <span>
-              ${categoryItems.length}
-            </span>
-          </div>
-
-          <button
-            class="inventory-add-item-button"
-            onclick="openAddInventoryItem('${escapeHTML(category)}')"
-          >
-            ＋ Add Item
-          </button>
-
-        </div>
-
-        <div class="inventory-list-card">
-    `;
-
-    categoryItems.forEach(item => {
-      const reserved =
-        calculateReserved(item.id);
-
-      const available =
-        item.onHand - reserved;
-
-      const imageUrl =
-        inventoryImageUrl(item);
-
-      const isPlush =
-        category === "Plush";
-
-      html += `
-        <div
-          class="inventory-item-row ${
-            isPlush
-              ? "inventory-plush-card"
-              : "inventory-standard-row"
-          }"
-
-          data-inventory-item
-          data-inventory-id="${item.id}"
-          data-category="${escapeHTML(category)}"
-
-          data-search="${escapeHTML(
-            `${
-              inventoryDisplayName(item)
-            } ${item.name} ${category}`
-              .toLowerCase()
-          )}"
-
-          onclick="openInventoryItem('${item.id}')"
-        >
-
-          <div class="inventory-item-left">
-
-            ${
-              isPlush
-                ? `
-                  <div
-                    class="inventory-plush-thumb ${
-                      imageUrl
-                        ? ""
-                        : "inventory-plush-thumb-empty"
-                    }"
-                  >
-                    ${
-                      imageUrl
-                        ? `
-                          <img
-                            src="${imageUrl}"
-                            alt="${escapeHTML(
-                              inventoryDisplayName(item)
-                            )}"
-                          />
-                        `
-                        : `
-                          <button
-                            type="button"
-                            class="inventory-add-photo-placeholder"
-                            onclick="
-                              event.stopPropagation();
-                              chooseInventoryPhoto('${item.id}');
-                            "
-                            aria-label="Add photo"
-                          >
-                            <span class="inventory-add-photo-plus">
-                              ＋
-                            </span>
-
-                            <span class="inventory-add-photo-text">
-                              Add photo
-                            </span>
-                          </button>
-                        `
-                    }
-                  </div>
-                `
-                : inventorySupportsPhoto(item)
-                  ? `
-                    <div
-                      class="
-                        inventory-generic-icon
-                        inventory-photo-thumb
-                        ${
-                          imageUrl
-                            ? "has-photo"
-                            : "inventory-photo-thumb-empty"
-                        }
-                      "
-                    >
-                      ${
-                        imageUrl
-                          ? `
-                            <img
-                              src="${imageUrl}"
-                              alt="${escapeHTML(
-                                inventoryDisplayName(item)
-                              )}"
-                            />
-                          `
-                          : `
-                            <button
-                              type="button"
-                              class="
-                                inventory-add-photo-placeholder
-                                inventory-add-photo-small
-                              "
-                              onclick="
-                                event.stopPropagation();
-                                chooseInventoryPhoto('${item.id}');
-                              "
-                              aria-label="Add photo"
-                            >
-                              <span class="inventory-add-photo-plus">
-                                ＋
-                              </span>
-                            </button>
-                          `
-                      }
-                    </div>
-                  `
-                  : `
-                    <div
-                      class="
-                        inventory-generic-icon
-                        inventory-generic-${category
-                          .toLowerCase()
-                          .replaceAll(" ", "-")}
-                      "
-                    >
-                      ${inventoryCategoryIcon(category)}
-                    </div>
-                  `
-            }
-
-            <div class="inventory-item-copy">
-
-              <strong>
-                ${escapeHTML(
-                  inventoryDisplayName(item)
-                )}
-              </strong>
-
-              ${
-                !isPlush
-                  ? `
-                    <div class="inventory-item-meta">
-
-                      <span>
-                        <strong data-inventory-on-hand>
-                          ${item.onHand}
-                        </strong>
-                        on hand
-                      </span>
-
-                      <span>
-                        <strong data-inventory-reserved>
-                          ${reserved}
-                        </strong>
-                        reserved
-                      </span>
-
-                    </div>
-                  `
-                  : ""
-              }
-
-            </div>
-
-          </div>
-
-          ${
-            isPlush
-              ? `
-                <div class="inventory-plush-count-grid">
-
-                  <div class="inventory-plush-count">
-                    <strong data-inventory-on-hand>
-                      ${item.onHand}
-                    </strong>
-
-                    <span>On Hand</span>
-                  </div>
-
-                  <div class="inventory-plush-count">
-                    <strong data-inventory-reserved>
-                      ${reserved}
-                    </strong>
-
-                    <span>Reserved</span>
-                  </div>
-
-                  <div
-                    class="inventory-plush-count ${
-                      available < 0
-                        ? "short"
-                        : ""
-                    }"
-                  >
-                    <strong data-inventory-available>
-                      ${available}
-                    </strong>
-
-                    <span>Available</span>
-                  </div>
-
-                </div>
-              `
-              : ""
-          }
-
-          <div class="inventory-item-right">
-
-            ${
-              !isPlush
-                ? `
-                  <div
-                    class="inventory-available ${
-                      available < 0
-                        ? "short"
-                        : ""
-                    }"
-                  >
-                    <strong data-inventory-available>
-                      ${available}
-                    </strong>
-
-                    <span>available</span>
-                  </div>
-                `
-                : ""
-            }
-
-            ${
-              isPlush
-                ? `
-                  <button
-                    class="inventory-quick-six"
-                    onclick="
-                      event.stopPropagation();
-                      changeInventoryBy(
-                        '${item.id}',
-                        6,
-                        false
-                      );
-                    "
-                    aria-label="Add six ${escapeHTML(
-                      inventoryDisplayName(item)
-                    )}"
-                  >
-                    +6
-                  </button>
-                `
-                : ""
-            }
-
-            <span class="inventory-chevron">
-              ›
-            </span>
-
-          </div>
-
-        </div>
-      `;
-    });
-
-    html += `
-        </div>
-      </section>
-    `;
-  });
-
-  main.innerHTML = html;
-
-  filterInventoryRows();
-}
-
-
-function inventoryCategoryIcon(category) {
-  switch (category) {
-    case "Outfits":
-      return "★";
-
-    case "Shirts":
-      return "T";
-
-    case "Supplies":
-      return "♥";
-
-    default:
-      return "•";
-  }
-}
-
-
-function setInventoryCategory(category) {
-  activeInventoryCategory = category;
-
-  document
-    .querySelectorAll(".inventory-category-tab")
-    .forEach(button => {
-      button.classList.toggle(
-        "active",
-        button.dataset.inventoryCategory === category
-      );
-    });
-
-  filterInventoryRows();
-}
-
-
-function filterInventoryRows() {
-  const search =
-    String(inventorySearch || "")
-      .trim()
-      .toLowerCase();
-
-  document
-    .querySelectorAll("[data-inventory-item]")
-    .forEach(row => {
-      const category =
-        row.dataset.category;
-
-      const searchable =
-        row.dataset.search || "";
-
-      const searchMatch =
-        !search ||
-        searchable.includes(search);
-
-      const categoryMatch =
-        activeInventoryCategory === "All" ||
-        category === activeInventoryCategory;
-
-      /*
-       * If the user is searching,
-       * search ALL inventory.
-       *
-       * If search is empty,
-       * respect the selected tab.
-       */
-      const shouldShow =
-        search
-          ? searchMatch
-          : categoryMatch;
-
-      row.classList.toggle(
-        "hidden",
-        !shouldShow
-      );
-    });
-
-  document
-    .querySelectorAll("[data-inventory-group]")
-    .forEach(group => {
-      const visibleItems =
-        group.querySelectorAll(
-          "[data-inventory-item]:not(.hidden)"
-        );
-
-      group.classList.toggle(
-        "hidden",
-        visibleItems.length === 0
-      );
-    });
-}
-  
-
-function openInventoryItem(itemId) {
-  const item =
-    getInventoryItem(itemId);
-
-  if (!item) return;
-
-  const plush =
-    getPlushMeta(item.id);
-
-  const imageUrl =
-    inventoryImageUrl(item);
-
-  const reserved =
-    calculateReserved(item.id);
-
-  const available =
-    item.onHand - reserved;
-
-  const reservingEvents =
-    state.events
-      .filter(event => !event.closed)
-      .map(event => ({
-        event,
-        reservation:
-          event.reservations?.find(
-            reservation =>
-              reservation.itemId ===
-              item.id
-          )
-      }))
-      .filter(
-        entry =>
-          entry.reservation?.quantity
-      );
-
-  let html = `
-    <div
-      class="modal-backdrop"
-      onclick="closeModalFromBackdrop(event)"
-    >
-
-      <div class="modal-sheet inventory-sheet">
-
-        <div class="modal-title-row">
-
-          <div class="inventory-modal-title">
-
-            ${
-  inventorySupportsPhoto(item)
-    ? `
-                  <button
-                    type="button"
-                    class="
-                      inventory-modal-plush
-                      ${
-                        imageUrl
-                          ? ""
-                          : "inventory-modal-plush-empty"
-                      }
-                    "
-                    onclick="
-                      chooseInventoryPhoto(
-                        '${item.id}'
-                      )
-                    "
-                    aria-label="${
-                      imageUrl
-                        ? "Change photo"
-                        : "Add photo"
-                    }"
-                  >
-
-                    ${
-                      imageUrl
-                        ? `
-                          <img
-                            src="${imageUrl}"
-                            alt="${escapeHTML(
-                              inventoryDisplayName(item)
-                            )}"
-                          />
-                        `
-                        : `
-                          <div
-                            class="
-                              inventory-add-photo-placeholder
-                            "
-                          >
-                            <span
-                              class="
-                                inventory-add-photo-plus
-                              "
-                            >
-                              ＋
-                            </span>
-
-                            <span
-                              class="
-                                inventory-add-photo-text
-                              "
-                            >
-                              Add photo
-                            </span>
-                          </div>
-                        `
-                    }
-
-                  </button>
-                `
-                : ""
-            }
-
-            <div>
-
-              <div class="card-label">
-                ${escapeHTML(item.category)}
-              </div>
-
-              <h2>
-                ${escapeHTML(
-                  inventoryDisplayName(item)
-                )}
-              </h2>
-
-              ${
-                inventorySupportsPhoto(item) &&
-imageUrl
-                  ? `
-                    <button
-                      type="button"
-                      class="inventory-change-photo"
-                      onclick="
-                        chooseInventoryPhoto(
-                          '${item.id}'
-                        )
-                      "
-                    >
-                      Change photo
-                    </button>
-                  `
-                  : ""
-              }
-
-            </div>
-
-          </div>
-
-          <button
-            class="modal-close-button"
-            onclick="closeModal()"
-            aria-label="Close"
-          >
-            ×
-          </button>
-
-        </div>
-
-
-        <div
-          class="inventory-count-summary"
-          data-inventory-id="${item.id}"
-        >
-
-          <div class="inventory-count-stat">
-
-            <strong data-inventory-on-hand>
-              ${item.onHand}
-            </strong>
-
-            <span>On Hand</span>
-
-          </div>
-
-
-          <div class="inventory-count-stat">
-
-            <strong data-inventory-reserved>
-              ${reserved}
-            </strong>
-
-            <span>Reserved</span>
-
-          </div>
-
-
-          <div
-            class="inventory-count-stat ${
-              available < 0
-                ? "short"
-                : "available"
-            }"
-          >
-
-            <strong data-inventory-available>
-              ${available}
-            </strong>
-
-            <span>Available</span>
-
-          </div>
-
-        </div>
-
-
-        <section class="inventory-adjust-section">
-
-          <h3>Adjust Count</h3>
-
-          <div class="inventory-stepper-card">
-
-            <button
-              class="inventory-stepper-button"
-              onclick="
-                changeInventoryBy(
-                  '${item.id}',
-                  -1
-                )
-              "
-            >
-              −
-            </button>
-
-            <div
-              class="inventory-stepper-number"
-              data-inventory-id="${item.id}"
-            >
-
-              <span data-inventory-stepper>
-                ${item.onHand}
-              </span>
-
-            </div>
-
-            <button
-              class="inventory-stepper-button add"
-              onclick="
-                changeInventoryBy(
-                  '${item.id}',
-                  1
-                )
-              "
-            >
-              +
-            </button>
-
-          </div>
-
-
-          ${
-            item.category === "Plush"
-              ? `
-                <button
-                  class="
-                    primary-button
-                    full-width
-                    inventory-add-six
-                  "
-                  onclick="
-                    changeInventoryBy(
-                      '${item.id}',
-                      6
-                    )
-                  "
-                >
-                  + Add 6 Plush
-                </button>
-              `
-              : ""
-          }
-
-
-          <button
-            class="inventory-set-exact"
-            onclick="
-              setInventoryCount(
-                '${item.id}'
-              )
-            "
-          >
-            Set exact count
-          </button>
-
-        </section>
-
-
-        <section class="inventory-reserved-section">
-
-          <div class="section-heading">
-            <h2>Reserved For</h2>
-          </div>
-  `;
-
-
-  if (!reservingEvents.length) {
-
-    html += `
-      <div class="inventory-none-reserved">
-        Nothing currently reserved.
-      </div>
-    `;
-
-  } else {
-
-    reservingEvents.forEach(
-      ({
-        event,
-        reservation
-      }) => {
-
-        html += `
-          <button
-            class="inventory-reservation-card"
-            onclick="
-              closeModal();
-              openEvent('${event.id}');
-            "
-          >
-
-            <div>
-
-              <strong>
-                ${escapeHTML(event.name)}
-              </strong>
-
-              <span>
-                ${reservation.quantity}
-                reserved ·
-                ${formatDate(event.date)}
-              </span>
-
-            </div>
-
-            <span>›</span>
-
-          </button>
-        `;
-      }
-    );
-  }
-
-
-  html += `
-        </section>
-
-        <button
-          class="inventory-delete-button"
-          onclick="
-            confirmDeleteInventoryItem(
-              '${item.id}'
-            )
-          "
-        >
-          Delete Item
-        </button>
-
-      </div>
-    </div>
-  `;
-
-  document
-    .getElementById("modalRoot")
-    .innerHTML = html;
-}
-
-function openAddInventoryItem(category) {
-  const html = `
-    <div
-      class="modal-backdrop"
-      onclick="closeModalFromBackdrop(event)"
-    >
-
-      <div class="modal-sheet inventory-add-sheet">
-
-        <div class="modal-title-row">
-
-          <div>
-            <div class="card-label">
-              ${escapeHTML(category)}
-            </div>
-
-            <h2>Add Inventory Item</h2>
-          </div>
-
-          <button
-            class="modal-close-button"
-            onclick="closeModal()"
-            aria-label="Close"
-          >
-            ×
-          </button>
-
-        </div>
-
-        <form
-          class="inventory-add-form"
-          onsubmit="
-            event.preventDefault();
-            createInventoryItem(
-              '${escapeHTML(category)}',
-              this
-            );
-          "
-        >
-
-          <label class="field-label">
-            Item Name
-
-            <input
-              name="itemName"
-              type="text"
-              placeholder="${
-                category === "Plush"
-                  ? "Example: Pink Axolotl"
-                  : category === "Outfits"
-                  ? "Example: Princess Outfit"
-                  : category === "Shirts"
-                  ? "Example: Black Plush T-Shirts"
-                  : "Example: Wishing Stars"
-              }"
-              required
-              autofocus
-            />
-          </label>
-
-          <label class="field-label">
-            Starting Quantity
-
-            <input
-              name="onHand"
-              type="number"
-              min="0"
-              step="1"
-              value="0"
-              required
-            />
-          </label>
-
-          <button
-            type="submit"
-            class="primary-button full-width"
-          >
-            Add to Inventory
-          </button>
-
-        </form>
-
-      </div>
-    </div>
-  `;
-
-  document.getElementById(
-    "modalRoot"
-  ).innerHTML = html;
-}
-function confirmDeleteInventoryItem(itemId) {
-  const item =
-    state.inventory.find(
-      item => item.id === itemId
-    );
-
-  if (!item) return;
-
-  const confirmed =
-    confirm(
-      `Delete "${inventoryDisplayName(item)}" from inventory?\n\nThis cannot be undone.`
-    );
-
-  if (!confirmed) return;
-
-  deleteInventoryItem(itemId);
-}
-
-
-async function deleteInventoryItem(itemId) {
-  const item =
-    state.inventory.find(
-      item => item.id === itemId
-    );
-
-  if (!item) return;
-
-  try {
-    await apiRequest(
-      `inventory/${encodeURIComponent(itemId)}`,
-      {
-        method: "DELETE"
-      }
-    );
-
-    state.inventory =
-      state.inventory.filter(
-        item => item.id !== itemId
-      );
-
-    closeModal();
-    updateAttentionBadge();
-    renderInventory();
-
-  } catch (err) {
-    alert(
-      `Could not delete that item. ${err.message}`
-    );
-  }
-}
-async function createInventoryItem(
-  category,
-  form
-) {
-  const name =
-    form.itemName.value.trim();
-
-  const onHand =
-    Math.max(
-      0,
-      Number(form.onHand.value || 0)
-    );
-
-  if (!name) return;
-
-  const button =
-    form.querySelector(
-      'button[type="submit"]'
-    );
-
-  button.disabled = true;
-  button.textContent = "Adding...";
-
-  try {
-    const response =
-      await apiRequest(
-        "inventory",
-        {
-          method: "POST",
-          body: JSON.stringify({
-            name,
-            category,
-            onHand
-          })
-        }
-      );
-
-    state.inventory.push(
-      response.item
-    );
-
-    closeModal();
-
-    activeInventoryCategory =
-      category;
-
-    renderInventory();
-
-  } catch (err) {
-    button.disabled = false;
-    button.textContent =
-      "Add to Inventory";
-
-    alert(
-      `Could not add that item. ${err.message}`
-    );
-  }
-}
-async function changeInventoryBy(
-  itemId,
-  delta,
-  reopenModal = true
-) {
-  const item =
-    getInventoryItem(itemId);
-
-  if (!item) return;
-
-  const previousOnHand =
-    item.onHand;
-
-  const nextCount =
-    Math.max(
-      0,
-      Number(item.onHand || 0) +
-      Number(delta || 0)
-    );
-
-  if (nextCount === previousOnHand) {
-    return;
-  }
-
-  item.onHand = nextCount;
-
-  try {
-    await saveInventoryItemToServer(item);
-  } catch (err) {
-    item.onHand = previousOnHand;
-
-    alert(
-      `Could not save that inventory change. ${err.message}`
-    );
-
-    return;
-  }
-
-  updateAttentionBadge();
-  updateInventoryItemNumbers(itemId);
-  animateInventoryCount(itemId, Number(delta || 0));
-}
-function updateInventoryItemNumbers(itemId) {
-  const item =
-    getInventoryItem(itemId);
-
-  if (!item) return;
-
-  const reserved =
-    calculateReserved(item.id);
-
-  const available =
-    item.onHand - reserved;
-
-  document
-    .querySelectorAll(
-      `[data-inventory-id="${itemId}"]`
-    )
-    .forEach(element => {
-
-      const onHand =
-        element.querySelector(
-          "[data-inventory-on-hand]"
-        );
-
-      const reservedElement =
-        element.querySelector(
-          "[data-inventory-reserved]"
-        );
-
-      const availableElement =
-        element.querySelector(
-          "[data-inventory-available]"
-        );
-
-      const stepper =
-        element.querySelector(
-          "[data-inventory-stepper]"
-        );
-
-      if (onHand) {
-        onHand.textContent =
-          item.onHand;
-      }
-
-      if (reservedElement) {
-        reservedElement.textContent =
-          reserved;
-      }
-
-      if (availableElement) {
-        availableElement.textContent =
-          available;
-      }
-
-      if (stepper) {
-        stepper.textContent =
-          item.onHand;
-      }
-    });
-}
-   
-
-   
-async function setInventoryCount(
-  itemId
-) {
-  const item =
-    getInventoryItem(itemId);
-
-  if (!item) return;
-
-  const value =
-    prompt(
-      `What is the actual physical count of ${item.name}?`,
-      item.onHand
-    );
-
-  if (value === null) return;
-
-  const number =
-    Number(value);
-
-  if (
-    !Number.isFinite(number) ||
-    number < 0
-  ) {
-    return;
-  }
-
-  const previousOnHand =
-    item.onHand;
-
-  item.onHand =
-    number;
-
-  try {
-    await saveInventoryItemToServer(item);
-  } catch (err) {
-    item.onHand =
-      previousOnHand;
-
-    alert(
-      `Could not save that inventory change. ${err.message}`
-    );
-
-    return;
-  }
-
-  updateAttentionBadge();
-
-  renderInventory();
-
-  openInventoryItem(itemId);
-  showSWLToast("Inventory count saved");
-}
-/* =========================================================
-   FILES
-========================================================= */
-
-let swlFiles = [];
-let fileCategories = [];
-
-let activeFileCategory = "All";
-let fileSearch = "";
-let filesLoaded = false;
-
-
-/* =========================================================
-   FILE DATA
-========================================================= */
-
-async function loadFilesData(force = false) {
-  if (filesLoaded && !force) {
-    return;
-  }
-
-  const [
-    filesResponse,
-    categoriesResponse
-  ] = await Promise.all([
-    apiRequest("files"),
-    apiRequest("file-categories")
-  ]);
-
-  swlFiles =
-    filesResponse.files || [];
-
-  fileCategories =
-    categoriesResponse.categories || [];
-
-  filesLoaded = true;
-}
-
-
-async function renderFiles() {
-  setHeader("Files");
-
-  const main =
-    document.getElementById(
-      "mainContent"
-    );
-
-  if (!filesLoaded) {
-    main.innerHTML = `
-      <div class="files-loading-card">
-        Loading files…
-      </div>
-    `;
-
-    try {
-      await loadFilesData();
-    } catch (err) {
-      main.innerHTML = `
-        <div class="status-banner warning">
-          Could not load Files.
-        </div>
-
-        <div class="card empty-card">
-          ${escapeHTML(err.message)}
-        </div>
-      `;
-
-      return;
-    }
-
-    if (currentScreen !== "files") {
-      return;
-    }
-  }
-
-  renderFilesContent();
-}
-
-
-function renderFilesContent() {
-  const main =
-    document.getElementById(
-      "mainContent"
-    );
-
-  if (!main) return;
-
-  const search =
-    String(fileSearch || "")
-      .trim()
-      .toLowerCase();
-
-  /*
-    Search intentionally ignores the
-    selected category.
-
-    No search:
-      selected category controls results.
-
-    Search:
-      search ALL files.
-  */
-  const visibleFiles =
-    swlFiles.filter(file => {
-      const searchable = `
-        ${file.name || ""}
-        ${file.originalName || ""}
-        ${file.category || ""}
-      `.toLowerCase();
-
-      if (search) {
-        return searchable.includes(
-          search
-        );
-      }
-
-      if (
-        activeFileCategory === "All"
-      ) {
-        return true;
-      }
-
-      return (
-        file.category ===
-        activeFileCategory
-      );
-    });
-
-  const recentFiles =
-    [...swlFiles]
-      .sort(
-        (a, b) =>
-          new Date(b.createdAt || 0) -
-          new Date(a.createdAt || 0)
-      )
-      .slice(0, 4);
-
-  let html = `
-    <div class="files-toolbar">
-
-      <div class="files-search-wrap">
-        <span class="files-search-icon">
-          ⌕
-        </span>
-
-        <input
-          id="filesSearch"
-          class="files-search"
-          type="search"
-          value="${escapeHTML(fileSearch)}"
-          placeholder="Search files..."
-          oninput="
-            fileSearch = this.value;
-            renderFilesContent();
-          "
-        />
-      </div>
-
-      <div class="files-actions">
-
-        <button
-          class="files-upload-button"
-          onclick="openFileUpload()"
-        >
-          <span>＋</span>
-          Upload File
-        </button>
-
-        <button
-          class="files-category-button"
-          onclick="openAddFileCategory()"
-        >
-          <span>＋</span>
-          Category
-        </button>
-
-      </div>
-
-    </div>
-
-
-    <div class="file-category-tabs">
-
-      <button
-        class="file-category-tab ${
-          activeFileCategory === "All"
-            ? "active"
-            : ""
-        }"
-        onclick="setFileCategory('All')"
-      >
-        All
-      </button>
-
-      ${fileCategories
-        .map(category => `
-          <button
-            class="file-category-tab ${
-              activeFileCategory ===
-              category.name
-                ? "active"
-                : ""
-            }"
-            onclick="setFileCategory(
-  decodeURIComponent(
-    '${encodeURIComponent(
-      category.name
-    )}'
-  )
-)"
-          >
-            ${escapeHTML(category.name)}
-          </button>
-        `)
-        .join("")}
-
-    </div>
-  `;
-
-
-  /*
-    Recently Added only appears on All
-    when we're NOT actively searching.
-  */
-  if (
-    activeFileCategory === "All" &&
-    !search &&
-    recentFiles.length
-  ) {
-    html += `
-      <section class="files-section">
-
-        <div class="files-section-heading">
-          <h2>Recently Added</h2>
-        </div>
-
-        <div class="recent-files-row">
-
-          ${recentFiles
-            .map(file =>
-              recentFileCardHTML(file)
-            )
-            .join("")}
-
-        </div>
-
-      </section>
-    `;
-  }
-
-
-  html += `
-    <section class="files-section">
-
-      <div class="files-section-heading">
-
-        <div>
-          <h2>
-            ${
-              search
-                ? "Search Results"
-                : activeFileCategory ===
-                  "All"
-                  ? "All Files"
-                  : escapeHTML(
-                      activeFileCategory
-                    )
-            }
-          </h2>
-
-          <span>
-            ${visibleFiles.length}
-            ${
-              visibleFiles.length === 1
-                ? "file"
-                : "files"
-            }
-          </span>
-        </div>
-
-        ${
-          !search &&
-          activeFileCategory !== "All"
-            ? `
-              <button
-                class="file-category-menu-button"
-                onclick="openFileCategoryMenu(
-  decodeURIComponent(
-    '${encodeURIComponent(
-      activeFileCategory
-    )}'
-  )
-)"
-                aria-label="Category options"
-              >
-                •••
-              </button>
-            `
-            : ""
-        }
-
-      </div>
-  `;
-
-
-  if (!visibleFiles.length) {
-    html += `
-      <div class="files-empty-state">
-
-        <div class="files-empty-icon">
-          ${
-            search
-              ? "⌕"
-              : "▤"
-          }
-        </div>
-
-        <strong>
-          ${
-            search
-              ? "No files found"
-              : "Nothing here yet"
-          }
-        </strong>
-
-        <p>
-          ${
-            search
-              ? "Try another search."
-              : "Upload a file and it’ll show up here."
-          }
-        </p>
-
-        ${
-          !search
-            ? `
-              <button
-                class="primary-button"
-                onclick="openFileUpload()"
-              >
-                + Upload File
-              </button>
-            `
-            : ""
-        }
-
-      </div>
-    `;
-  } else {
-    html += `
-      <div class="files-list">
-
-        ${visibleFiles
-          .map(file =>
-            fileRowHTML(file)
-          )
-          .join("")}
-
-      </div>
-    `;
-  }
-
-
-  html += `
-    </section>
-  `;
-
-  main.innerHTML = html;
-
-  /*
-    Keep typing pleasant:
-    rerenderFilesContent() replaces
-    main.innerHTML, so restore focus
-    and cursor position.
-  */
-  if (search) {
-    requestAnimationFrame(() => {
-      const input =
-        document.getElementById(
-          "filesSearch"
-        );
-
-      if (!input) return;
-
-      input.focus();
-
-      const length =
-        input.value.length;
-
-      try {
-        input.setSelectionRange(
-          length,
-          length
-        );
-      } catch {}
-    });
-  }
-}
-
-
-/* =========================================================
-   FILE CARDS
-========================================================= */
-
-function fileRowHTML(file) {
-  const type =
-    getFileTypeInfo(file);
-
-  return `
-    <button
-      class="file-row"
-      onclick="openFileDetail(
-  decodeURIComponent(
-    '${encodeURIComponent(file.id)}'
-  )
-)"
-    >
-
-      ${filePreviewHTML(
-        file,
-        "row"
-      )}
-
-      <div class="file-row-copy">
-
-        <strong>
-          ${escapeHTML(file.name)}
-        </strong>
-
-        <div class="file-row-meta">
-
-          <span class="file-type-label">
-            ${escapeHTML(type.label)}
-          </span>
-
-          <span>·</span>
-
-          <span>
-            ${formatFileSize(
-              file.sizeBytes
-            )}
-          </span>
-
-        </div>
-
-        <div class="file-row-bottom">
-
-          <span class="file-category-pill">
-            ${escapeHTML(
-              file.category ||
-              "Other"
-            )}
-          </span>
-
-          <span class="file-date">
-            ${formatFileDate(
-              file.createdAt
-            )}
-          </span>
-
-        </div>
-
-      </div>
-
-      <span class="file-row-chevron">
-        ›
-      </span>
-
-    </button>
-  `;
-}
-
-
-function recentFileCardHTML(file) {
-  const type =
-    getFileTypeInfo(file);
-
-  return `
-    <button
-      class="recent-file-card"
-      onclick="openFileDetail(
-  decodeURIComponent(
-    '${encodeURIComponent(file.id)}'
-  )
-)"
-    >
-
-      ${filePreviewHTML(
-        file,
-        "recent"
-      )}
-
-      <strong>
-        ${escapeHTML(file.name)}
-      </strong>
-
-      <span>
-        ${escapeHTML(type.label)}
-        ·
-        ${formatFileSize(
-          file.sizeBytes
-        )}
-      </span>
-
-    </button>
-  `;
-}
-
-
-function filePreviewHTML(
-  file,
-  context = "row"
-) {
-  const type =
-    getFileTypeInfo(file);
-
-  if (type.isImage) {
-    return `
-      <div
-        class="
-          file-preview
-          file-preview-${context}
-          has-image
-        "
-      >
-        <img
-          src="/admin/api/files/${encodeURIComponent(
-            file.id
-          )}/download"
-          alt=""
-          loading="lazy"
-        />
-      </div>
-    `;
-  }
-
-  return `
-    <div
-      class="
-        file-preview
-        file-preview-${context}
-        file-preview-${type.className}
-      "
-    >
-      <span>
-        ${type.icon}
-      </span>
-
-      ${
-        type.short
-          ? `
-            <small>
-              ${escapeHTML(type.short)}
-            </small>
-          `
-          : ""
-      }
-
-    </div>
-  `;
-}
-
-
-function getFileTypeInfo(file) {
-  const name =
-    String(
-      file.originalName ||
-      file.name ||
-      ""
-    ).toLowerCase();
-
-  const contentType =
-    String(
-      file.contentType || ""
-    ).toLowerCase();
-
-  const extension =
-    name.includes(".")
-      ? name.split(".").pop()
-      : "";
-
-
-  if (
-    contentType.startsWith("image/") ||
-    [
-      "png",
-      "jpg",
-      "jpeg",
-      "gif",
-      "webp",
-      "heic"
-    ].includes(extension)
-  ) {
-    return {
-      label:
-        extension
-          ? extension.toUpperCase()
-          : "Image",
-      short: "",
-      icon: "▧",
-      className: "image",
-      isImage: true
-    };
-  }
-
-
-  if (extension === "svg") {
-    return {
-      label: "SVG",
-      short: "SVG",
-      icon: "✂",
-      className: "svg",
-      isImage: false
-    };
-  }
-
-
-  if (extension === "pdf") {
-    return {
-      label: "PDF",
-      short: "PDF",
-      icon: "▤",
-      className: "pdf",
-      isImage: false
-    };
-  }
-
-
-  if (
-    [
-      "zip",
-      "rar",
-      "7z"
-    ].includes(extension)
-  ) {
-    return {
-      label:
-        extension.toUpperCase(),
-      short:
-        extension.toUpperCase(),
-      icon: "▥",
-      className: "archive",
-      isImage: false
-    };
-  }
-
-
-  if (
-    [
-      "ppt",
-      "pptx"
-    ].includes(extension)
-  ) {
-    return {
-      label: "PowerPoint",
-      short: "PPT",
-      icon: "▤",
-      className: "presentation",
-      isImage: false
-    };
-  }
-
-
-  if (
-    [
-      "doc",
-      "docx"
-    ].includes(extension)
-  ) {
-    return {
-      label: "Word",
-      short: "DOC",
-      icon: "▤",
-      className: "document",
-      isImage: false
-    };
-  }
-
-
-  if (
-    [
-      "xls",
-      "xlsx",
-      "csv"
-    ].includes(extension)
-  ) {
-    return {
-      label: "Spreadsheet",
-      short: "XLS",
-      icon: "▦",
-      className: "sheet",
-      isImage: false
-    };
-  }
-
-
-  return {
-    label:
-      extension
-        ? extension.toUpperCase()
-        : "File",
-    short:
-      extension
-        ? extension
-            .slice(0, 4)
-            .toUpperCase()
-        : "FILE",
-    icon: "▤",
-    className: "generic",
-    isImage: false
-  };
-}
-
-
-/* =========================================================
-   FILE FILTERING
-========================================================= */
-
-function setFileCategory(category) {
-  activeFileCategory =
-    category;
-
-  fileSearch = "";
-
-  renderFilesContent();
-}
-
-
-/* =========================================================
-   FILE FORMATTING
-========================================================= */
-
-function formatFileSize(bytes) {
-  const size =
-    Number(bytes || 0);
-
-  if (size < 1024) {
-    return `${size} B`;
-  }
-
-  if (
-    size <
-    1024 * 1024
-  ) {
-    return `${
-      Math.round(
-        size / 1024
-      )
-    } KB`;
-  }
-
-  return `${
-    (
-      size /
-      (1024 * 1024)
-    ).toFixed(1)
-  } MB`;
-}
-
-
-function formatFileDate(value) {
-  if (!value) return "";
-
-  const date =
-    new Date(value);
-
-  if (
-    Number.isNaN(
-      date.getTime()
-    )
-  ) {
-    return "";
-  }
-
-  return date.toLocaleDateString(
-    "en-US",
-    {
-      month: "short",
-      day: "numeric",
-      year: "numeric"
-    }
-  );
-}
-
-
-/* =========================================================
-   UPLOAD FILE
-========================================================= */
-
-function openFileUpload() {
-  if (!fileCategories.length) {
-    alert(
-      "Create a category first."
-    );
-
-    openAddFileCategory();
-    return;
-  }
-
-  const categoryOptions =
-    fileCategories
-      .map(category => `
-        <option
-          value="${escapeHTML(
-            category.name
-          )}"
-          ${
-            activeFileCategory ===
-            category.name
-              ? "selected"
-              : ""
-          }
-        >
-          ${escapeHTML(category.name)}
-        </option>
-      `)
-      .join("");
-
-  const html = `
-    <div
-      class="modal-backdrop"
-      onclick="closeModalFromBackdrop(event)"
-    >
-
-      <div
-        class="
-          modal-sheet
-          files-modal-sheet
-        "
-      >
-
-        <div class="modal-title-row">
-
-          <div>
-            <div class="card-label">
-              FILES
-            </div>
-
-            <h2>Upload File</h2>
-          </div>
-
-          <button
-            class="modal-close-button"
-            onclick="closeModal()"
-            aria-label="Close"
-          >
-            ×
-          </button>
-
-        </div>
-
-
-        <form
-          class="file-upload-form"
-          onsubmit="
-            event.preventDefault();
-            uploadSWLFile(this);
-          "
-        >
-
-          <label
-            class="file-picker"
-            id="filePickerLabel"
-          >
-
-            <input
-              name="file"
-              type="file"
-              required
-              onchange="
-                fileChosenForUpload(this);
-              "
-            />
-
-            <span class="file-picker-icon">
-              ＋
-            </span>
-
-            <strong id="filePickerTitle">
-              Choose a file
-            </strong>
-
-            <span id="filePickerMeta">
-              Up to 25 MB
-            </span>
-
-          </label>
-
-
-          <label class="field-label">
-            Display Name
-
-            <input
-              name="displayName"
-              type="text"
-              placeholder="File name"
-              required
-            />
-          </label>
-
-
-          <label class="field-label">
-            Category
-
-            <select
-              name="category"
-              required
-            >
-              ${categoryOptions}
-            </select>
-          </label>
-
-
-          <button
-            type="submit"
-            class="
-              primary-button
-              full-width
-              file-save-button
-            "
-          >
-            Save File
-          </button>
-
-        </form>
-
-      </div>
-
-    </div>
-  `;
-
-  document
-    .getElementById(
-      "modalRoot"
-    )
-    .innerHTML = html;
-}
-
-
-function fileChosenForUpload(input) {
-  const file =
-    input.files?.[0];
-
-  if (!file) return;
-
-  const form =
-    input.closest("form");
-
-  const nameInput =
-    form?.elements
-      ?.displayName;
-
-  if (
-    nameInput &&
-    !nameInput.value.trim()
-  ) {
-    nameInput.value =
-      removeFileExtension(
-        file.name
-      );
-  }
-
-  const title =
-    document.getElementById(
-      "filePickerTitle"
-    );
-
-  const meta =
-    document.getElementById(
-      "filePickerMeta"
-    );
-
-  const label =
-    document.getElementById(
-      "filePickerLabel"
-    );
-
-  if (title) {
-    title.textContent =
-      file.name;
-  }
-
-  if (meta) {
-    meta.textContent =
-      formatFileSize(
-        file.size
-      );
-  }
-
-  if (label) {
-    label.classList.add(
-      "has-file"
-    );
-  }
-}
-
-
-function removeFileExtension(name) {
-  const value =
-    String(name || "");
-
-  const lastDot =
-    value.lastIndexOf(".");
-
-  if (lastDot <= 0) {
-    return value;
-  }
-
-  return value.slice(
-    0,
-    lastDot
-  );
-}
-
-
-async function uploadSWLFile(form) {
-  const file =
-    form.elements
-      .file
-      .files?.[0];
-
-  if (!file) return;
-
-  const name =
-    form.elements
-      .displayName
-      .value
-      .trim();
-
-  const category =
-    form.elements
-      .category
-      .value;
-
-  if (!name) return;
-
-  const button =
-    form.querySelector(
-      'button[type="submit"]'
-    );
-
-  button.disabled = true;
-  button.textContent =
-    "Uploading…";
-
-  const formData =
-    new FormData();
-
-  formData.append(
-    "file",
-    file
-  );
-
-  formData.append(
-    "name",
-    name
-  );
-
-  formData.append(
-    "category",
-    category
-  );
-
-  try {
-    const response =
-      await fetch(
-        "/admin/api/files",
-        {
-          method: "POST",
-          credentials:
-            "same-origin",
-          body: formData
-        }
-      );
-
-    let data = null;
-
-    try {
-      data =
-        await response.json();
-    } catch {}
-
-    if (!response.ok) {
-      throw new Error(
-        data?.error ||
-        `Upload failed (${response.status})`
-      );
-    }
-
-    swlFiles.unshift(
-      data.file
-    );
-
-    closeModal();
-
-    /*
-      Keep the user where they were.
-      If they were viewing a category
-      and uploaded there, it'll appear
-      immediately.
-    */
-    renderFilesContent();
-    showSWLToast("File saved");
-
-  } catch (err) {
-    button.disabled = false;
-    button.textContent =
-      "Save File";
-
-    alert(
-      `Could not upload that file. ${err.message}`
-    );
-  }
-}
-
-
-/* =========================================================
-   FILE DETAIL
-========================================================= */
-
-function openFileDetail(fileId) {
-  const file =
-    swlFiles.find(
-      file =>
-        file.id === fileId
-    );
-
-  if (!file) return;
-
-  const type =
-    getFileTypeInfo(file);
-
-  const categoryOptions =
-    fileCategories
-      .map(category => `
-        <option
-          value="${escapeHTML(
-            category.name
-          )}"
-          ${
-            file.category ===
-            category.name
-              ? "selected"
-              : ""
-          }
-        >
-          ${escapeHTML(category.name)}
-        </option>
-      `)
-      .join("");
-
-  const canPreview =
-    type.isImage ||
-    type.label === "SVG" ||
-    type.label === "PDF";
-
-  const html = `
-    <div
-      class="modal-backdrop"
-      onclick="closeModalFromBackdrop(event)"
-    >
-
-      <div
-        class="
-          modal-sheet
-          files-modal-sheet
-          file-detail-sheet
-        "
-      >
-
-        <div class="modal-title-row">
-
-          <div>
-            <div class="card-label">
-              ${escapeHTML(
-                file.category ||
-                "FILE"
-              )}
-            </div>
-
-            <h2>
-              ${escapeHTML(
-                file.name
-              )}
-            </h2>
-          </div>
-
-          <button
-            class="modal-close-button"
-            onclick="closeModal()"
-            aria-label="Close"
-          >
-            ×
-          </button>
-
-        </div>
-
-
-        <div class="file-detail-preview">
-          ${filePreviewHTML(
-            file,
-            "detail"
-          )}
-        </div>
-
-
-        <div class="file-detail-meta">
-
-          <span>
-            ${escapeHTML(type.label)}
-          </span>
-
-          <span>·</span>
-
-          <span>
-            ${formatFileSize(
-              file.sizeBytes
-            )}
-          </span>
-
-          ${
-            file.createdAt
-              ? `
-                <span>·</span>
-
-                <span>
-                  ${formatFileDate(
-                    file.createdAt
-                  )}
-                </span>
-              `
-              : ""
-          }
-
-        </div>
-
-
-        <div class="file-detail-actions">
-
-          ${
-            canPreview
-              ? `
-                <button
-                  type="button"
-                  class="
-                    primary-button
-                    full-width
-                  "
-                  onclick="previewSWLFile(
-                    decodeURIComponent(
-                      '${encodeURIComponent(
-                        file.id
-                      )}'
-                    )
-                  )"
-                >
-                  Preview
-                </button>
-              `
-              : ""
-          }
-
-          <button
-            type="button"
-            class="
-              secondary-button
-              full-width
-            "
-            onclick="saveSWLFile(
-              decodeURIComponent(
-                '${encodeURIComponent(
-                  file.id
-                )}'
-              )
-            )"
-          >
-            Save / Download
-          </button>
-
-        </div>
-
-
-        <form
-          class="file-edit-form"
-          onsubmit="
-            event.preventDefault();
-            saveFileChanges(
-              decodeURIComponent(
-                '${encodeURIComponent(
-                  file.id
-                )}'
-              ),
-              this
-            );
-          "
-        >
-
-          <label class="field-label">
-            Name
-
-            <input
-              name="name"
-              type="text"
-              value="${escapeHTML(
-                file.name
-              )}"
-              required
-            />
-          </label>
-
-
-          <label class="field-label">
-            Category
-
-            <select
-              name="category"
-              required
-            >
-              ${categoryOptions}
-            </select>
-          </label>
-
-
-          <button
-            type="submit"
-            class="
-              secondary-button
-              full-width
-            "
-          >
-            Save Changes
-          </button>
-
-        </form>
+    18px
+    15px;
 
+  background:
+    rgba(255, 250, 241, 0.94);
 
-        <button
-          class="file-delete-button"
-          onclick="confirmDeleteSWLFile(
-            decodeURIComponent(
-              '${encodeURIComponent(
-                file.id
-              )}'
-            )
-          )"
-        >
-          Delete File
-        </button>
+  backdrop-filter:
+    blur(16px);
 
-      </div>
-
-    </div>
-  `;
-
-  document
-    .getElementById(
-      "modalRoot"
-    )
-    .innerHTML = html;
-}
-
-function previewSWLFile(fileId) {
-  const file =
-    swlFiles.find(
-      file =>
-        file.id === fileId
-    );
-
-  if (!file) return;
-
-  const type =
-    getFileTypeInfo(file);
-
-  const url =
-    `/admin/api/files/${
-      encodeURIComponent(file.id)
-    }/download`;
-
-  let previewHTML = "";
-
-  if (
-    type.isImage ||
-    type.label === "SVG"
-  ) {
-    previewHTML = `
-      <div class="swl-file-viewer-body">
-        <img
-          src="${url}"
-          alt="${escapeHTML(
-            file.name
-          )}"
-        />
-      </div>
-    `;
-  } else if (
-    type.label === "PDF"
-  ) {
-    previewHTML = `
-      <div
-        class="
-          swl-file-viewer-body
-          swl-pdf-viewer
-        "
-      >
-        <iframe
-          src="${url}"
-          title="${escapeHTML(
-            file.name
-          )}"
-        ></iframe>
-      </div>
-    `;
-  } else {
-    return;
-  }
-
-  document
-    .getElementById(
-      "modalRoot"
-    )
-    .innerHTML = `
-      <div class="swl-file-viewer">
-
-        <div class="swl-file-viewer-header">
-
-          <button
-            type="button"
-            class="swl-file-viewer-back"
-            onclick="openFileDetail(
-              decodeURIComponent(
-                '${encodeURIComponent(
-                  file.id
-                )}'
-              )
-            )"
-          >
-            ‹ Back
-          </button>
-
-          <strong>
-            ${escapeHTML(
-              file.name
-            )}
-          </strong>
-
-          <button
-            type="button"
-            class="swl-file-viewer-close"
-            onclick="closeModal()"
-            aria-label="Close preview"
-          >
-            ×
-          </button>
-
-        </div>
-
-        ${previewHTML}
-
-      </div>
-    `;
-}
-
-
-async function saveSWLFile(fileId) {
-  const file =
-    swlFiles.find(
-      file =>
-        file.id === fileId
-    );
-
-  if (!file) return;
-
-  const url =
-    `/admin/api/files/${
-      encodeURIComponent(file.id)
-    }/download`;
-
-  try {
-    const response =
-      await fetch(
-        url,
-        {
-          credentials:
-            "same-origin"
-        }
-      );
-
-    if (!response.ok) {
-      throw new Error(
-        `Could not load file (${response.status})`
-      );
-    }
-
-    const blob =
-      await response.blob();
-
-    const downloadName =
-      file.originalName ||
-      file.name ||
-      "file";
-
-    /*
-      iPhone/iPad:
-      Use the native share sheet whenever
-      the browser supports sharing files.
-
-      This gives you Save to Files,
-      AirDrop, Messages, etc.
-    */
-    if (
-      navigator.share &&
-      navigator.canShare
-    ) {
-      try {
-        const shareFile =
-          new File(
-            [blob],
-            downloadName,
-            {
-              type:
-                file.contentType ||
-                blob.type ||
-                "application/octet-stream"
-            }
-          );
-
-        if (
-          navigator.canShare({
-            files: [shareFile]
-          })
-        ) {
-          await navigator.share({
-            files: [shareFile],
-            title: file.name
-          });
-
-          return;
-        }
-      } catch (err) {
-        /*
-          AbortError just means the user
-          closed the share sheet.
-        */
-        if (
-          err?.name ===
-          "AbortError"
-        ) {
-          return;
-        }
-      }
-    }
-
-    /*
-      Desktop / browsers without
-      file sharing:
-      trigger a normal download.
-    */
-    const blobUrl =
-      URL.createObjectURL(blob);
-
-    const anchor =
-      document.createElement("a");
-
-    anchor.href =
-      blobUrl;
-
-    anchor.download =
-      downloadName;
-
-    document.body.appendChild(
-      anchor
-    );
-
-    anchor.click();
-
-    anchor.remove();
-
-    setTimeout(() => {
-      URL.revokeObjectURL(
-        blobUrl
-      );
-    }, 1000);
-
-  } catch (err) {
-    alert(
-      `Could not save that file. ${err.message}`
-    );
-  }
-}
-
-async function saveFileChanges(
-  fileId,
-  form
-) {
-  const file =
-    swlFiles.find(
-      file =>
-        file.id === fileId
-    );
-
-  if (!file) return;
-
-  const name =
-    form.elements
-      .name
-      .value
-      .trim();
-
-  const category =
-    form.elements
-      .category
-      .value;
-
-  if (!name) return;
-
-  const button =
-    form.querySelector(
-      'button[type="submit"]'
-    );
-
-  button.disabled = true;
-  button.textContent =
-    "Saving…";
-
-  try {
-    const response =
-      await apiRequest(
-        `files/${encodeURIComponent(
-          fileId
-        )}`,
-        {
-          method: "PUT",
-          body: JSON.stringify({
-            name,
-            category
-          })
-        }
-      );
-
-    Object.assign(
-      file,
-      response.file || {
-        name,
-        category
-      }
-    );
-
-    closeModal();
-
-    renderFilesContent();
-
-  } catch (err) {
-    button.disabled = false;
-    button.textContent =
-      "Save Changes";
-
-    alert(
-      `Could not save that file. ${err.message}`
-    );
-  }
-}
-
-
-function confirmDeleteSWLFile(fileId) {
-  const file =
-    swlFiles.find(
-      file =>
-        file.id === fileId
-    );
-
-  if (!file) return;
-
-  const confirmed =
-    confirm(
-      `Delete "${file.name}"?\n\nThis cannot be undone.`
-    );
-
-  if (!confirmed) return;
-
-  deleteSWLFile(fileId);
-}
-
-
-async function deleteSWLFile(fileId) {
-  try {
-    await apiRequest(
-      `files/${encodeURIComponent(
-        fileId
-      )}`,
-      {
-        method: "DELETE"
-      }
-    );
-
-    swlFiles =
-      swlFiles.filter(
-        file =>
-          file.id !== fileId
-      );
-
-    closeModal();
-
-    renderFilesContent();
-
-  } catch (err) {
-    alert(
-      `Could not delete that file. ${err.message}`
-    );
-  }
-}
-
-
-/* =========================================================
-   FILE CATEGORIES
-========================================================= */
-
-function openAddFileCategory() {
-  const html = `
-    <div
-      class="modal-backdrop"
-      onclick="closeModalFromBackdrop(event)"
-    >
-
-      <div
-        class="
-          modal-sheet
-          files-modal-sheet
-          file-category-sheet
-        "
-      >
-
-        <div class="modal-title-row">
-
-          <div>
-            <div class="card-label">
-              FILES
-            </div>
-
-            <h2>New Category</h2>
-          </div>
-
-          <button
-            class="modal-close-button"
-            onclick="closeModal()"
-            aria-label="Close"
-          >
-            ×
-          </button>
-
-        </div>
-
-
-        <form
-          onsubmit="
-            event.preventDefault();
-            createFileCategory(this);
-          "
-        >
-
-          <label class="field-label">
-            Category Name
-
-            <input
-              name="name"
-              type="text"
-              placeholder="Example: Logos"
-              required
-              autofocus
-            />
-          </label>
-
-          <button
-            type="submit"
-            class="
-              primary-button
-              full-width
-            "
-          >
-            Add Category
-          </button>
-
-        </form>
-
-      </div>
-
-    </div>
-  `;
-
-  document
-    .getElementById(
-      "modalRoot"
-    )
-    .innerHTML = html;
-}
-
-
-async function createFileCategory(form) {
-  const name =
-    form.elements
-      .name
-      .value
-      .trim();
-
-  if (!name) return;
-
-  const button =
-    form.querySelector(
-      'button[type="submit"]'
-    );
-
-  button.disabled = true;
-  button.textContent =
-    "Adding…";
-
-  try {
-    const response =
-      await apiRequest(
-        "file-categories",
-        {
-          method: "POST",
-          body: JSON.stringify({
-            name
-          })
-        }
-      );
-
-    fileCategories.push(
-      response.category
-    );
-
-    fileCategories.sort(
-      (a, b) =>
-        Number(
-          a.sortOrder || 0
-        ) -
-        Number(
-          b.sortOrder || 0
-        )
-    );
-
-    activeFileCategory =
-      response.category.name;
-
-    fileSearch = "";
-
-    closeModal();
-
-    renderFilesContent();
-
-  } catch (err) {
-    button.disabled = false;
-    button.textContent =
-      "Add Category";
-
-    alert(
-      `Could not create that category. ${err.message}`
-    );
-  }
-}
-
-
-function openFileCategoryMenu(
-  categoryName
-) {
-  const category =
-    fileCategories.find(
-      category =>
-        category.name ===
-        categoryName
-    );
-
-  if (!category) return;
-
-  const html = `
-    <div
-      class="modal-backdrop"
-      onclick="closeModalFromBackdrop(event)"
-    >
-
-      <div
-        class="
-          modal-sheet
-          files-modal-sheet
-          file-category-menu-sheet
-        "
-      >
-
-        <div class="modal-title-row">
-
-          <div>
-            <div class="card-label">
-              CATEGORY
-            </div>
-
-            <h2>
-              ${escapeHTML(
-                category.name
-              )}
-            </h2>
-          </div>
-
-          <button
-            class="modal-close-button"
-            onclick="closeModal()"
-            aria-label="Close"
-          >
-            ×
-          </button>
-
-        </div>
-
-
-        <button
-          class="
-            file-category-action
-          "
-          onclick="openRenameFileCategory(
-  decodeURIComponent(
-    '${encodeURIComponent(
-      category.id
-    )}'
-  )
-)"
-        >
-          <span>✎</span>
-
-          <div>
-            <strong>
-              Rename Category
-            </strong>
-
-            <small>
-              Change this category’s name
-            </small>
-          </div>
-
-          <span>›</span>
-        </button>
-
-
-        <button
-          class="
-            file-category-action
-            danger
-          "
-          onclick="openDeleteFileCategory(
-  decodeURIComponent(
-    '${encodeURIComponent(
-      category.id
-    )}'
-  )
-)"
-        >
-          <span>×</span>
-
-          <div>
-            <strong>
-              Delete Category
-            </strong>
-
-            <small>
-              Files will be moved first
-            </small>
-          </div>
-
-          <span>›</span>
-        </button>
-
-      </div>
-
-    </div>
-  `;
-
-  document
-    .getElementById(
-      "modalRoot"
-    )
-    .innerHTML = html;
-}
-
-
-function openRenameFileCategory(
-  categoryId
-) {
-  const category =
-    fileCategories.find(
-      category =>
-        category.id ===
-        categoryId
-    );
-
-  if (!category) return;
-
-  const html = `
-    <div
-      class="modal-backdrop"
-      onclick="closeModalFromBackdrop(event)"
-    >
-
-      <div
-        class="
-          modal-sheet
-          files-modal-sheet
-        "
-      >
-
-        <div class="modal-title-row">
-
-          <div>
-            <div class="card-label">
-              CATEGORY
-            </div>
-
-            <h2>Rename</h2>
-          </div>
-
-          <button
-            class="modal-close-button"
-            onclick="closeModal()"
-          >
-            ×
-          </button>
-
-        </div>
-
-
-        <form
-          onsubmit="
-            event.preventDefault();
-            renameFileCategory(
-              decodeURIComponent(
-  '${encodeURIComponent(
-    category.id
-  )}'
-),
-              this
-            );
-          "
-        >
-
-          <label class="field-label">
-            Category Name
-
-            <input
-              name="name"
-              type="text"
-              value="${escapeHTML(
-                category.name
-              )}"
-              required
-              autofocus
-            />
-          </label>
-
-          <button
-            type="submit"
-            class="
-              primary-button
-              full-width
-            "
-          >
-            Save Name
-          </button>
-
-        </form>
-
-      </div>
-
-    </div>
-  `;
-
-  document
-    .getElementById(
-      "modalRoot"
-    )
-    .innerHTML = html;
-}
-
-
-async function renameFileCategory(
-  categoryId,
-  form
-) {
-  const category =
-    fileCategories.find(
-      category =>
-        category.id ===
-        categoryId
-    );
-
-  if (!category) return;
-
-  const oldName =
-    category.name;
-
-  const name =
-    form.elements
-      .name
-      .value
-      .trim();
-
-  if (!name) return;
-
-  try {
-    await apiRequest(
-      `file-categories/${encodeURIComponent(
-        categoryId
-      )}`,
-      {
-        method: "PUT",
-        body: JSON.stringify({
-          name
-        })
-      }
-    );
-
-    category.name =
-      name;
-
-    swlFiles.forEach(file => {
-      if (
-        file.category === oldName
-      ) {
-        file.category = name;
-      }
-    });
-
-    if (
-      activeFileCategory ===
-      oldName
-    ) {
-      activeFileCategory =
-        name;
-    }
-
-    closeModal();
-
-    renderFilesContent();
-
-  } catch (err) {
-    alert(
-      `Could not rename that category. ${err.message}`
-    );
-  }
-}
-
-
-function openDeleteFileCategory(
-  categoryId
-) {
-  const category =
-    fileCategories.find(
-      category =>
-        category.id ===
-        categoryId
-    );
-
-  if (!category) return;
-
-  const destinations =
-    fileCategories.filter(
-      item =>
-        item.id !== categoryId
-    );
-
-  if (!destinations.length) {
-    alert(
-      "You need another category before deleting this one."
-    );
-
-    return;
-  }
-
-  const html = `
-    <div
-      class="modal-backdrop"
-      onclick="closeModalFromBackdrop(event)"
-    >
-
-      <div
-        class="
-          modal-sheet
-          files-modal-sheet
-        "
-      >
-
-        <div class="modal-title-row">
-
-          <div>
-            <div class="card-label">
-              DELETE CATEGORY
-            </div>
-
-            <h2>
-              ${escapeHTML(
-                category.name
-              )}
-            </h2>
-          </div>
-
-          <button
-            class="modal-close-button"
-            onclick="closeModal()"
-          >
-            ×
-          </button>
-
-        </div>
-
-
-        <p class="file-delete-category-copy">
-          Choose where anything in this
-          category should go.
-        </p>
-
-
-        <form
-          onsubmit="
-            event.preventDefault();
-            deleteFileCategory(
-              decodeURIComponent(
-  '${encodeURIComponent(
-    category.id
-  )}'
-),
-              this
-            );
-          "
-        >
-
-          <label class="field-label">
-            Move Files To
-
-            <select
-              name="destination"
-              required
-            >
-              ${destinations
-                .map(destination => `
-                  <option
-                    value="${escapeHTML(
-                      destination.id
-                    )}"
-                  >
-                    ${escapeHTML(
-                      destination.name
-                    )}
-                  </option>
-                `)
-                .join("")}
-            </select>
-          </label>
-
-
-          <button
-            type="submit"
-            class="
-              file-delete-category-button
-              full-width
-            "
-          >
-            Move Files & Delete Category
-          </button>
-
-        </form>
-
-      </div>
-
-    </div>
-  `;
-
-  document
-    .getElementById(
-      "modalRoot"
-    )
-    .innerHTML = html;
-}
-
-
-async function deleteFileCategory(
-  categoryId,
-  form
-) {
-  const category =
-    fileCategories.find(
-      category =>
-        category.id ===
-        categoryId
-    );
-
-  const destinationId =
-    form.elements
-      .destination
-      .value;
-
-  const destination =
-    fileCategories.find(
-      category =>
-        category.id ===
-        destinationId
-    );
-
-  if (
-    !category ||
-    !destination
-  ) {
-    return;
-  }
-
-  const confirmed =
-    confirm(
-      `Delete "${category.name}" and move its files to "${destination.name}"?`
-    );
-
-  if (!confirmed) return;
-
-  try {
-    await apiRequest(
-      `file-categories/${encodeURIComponent(
-        categoryId
-      )}?moveTo=${encodeURIComponent(
-        destinationId
-      )}`,
-      {
-        method: "DELETE"
-      }
-    );
-
-    swlFiles.forEach(file => {
-      if (
-        file.category ===
-        category.name
-      ) {
-        file.category =
-          destination.name;
-      }
-    });
-
-    fileCategories =
-      fileCategories.filter(
-        item =>
-          item.id !== categoryId
-      );
-
-    if (
-      activeFileCategory ===
-      category.name
-    ) {
-      activeFileCategory =
-        destination.name;
-    }
-
-    closeModal();
-
-    renderFilesContent();
-
-  } catch (err) {
-    alert(
-      `Could not delete that category. ${err.message}`
-    );
-  }
+  border-bottom:
+    1px solid var(--line);
 }
-/* =========================================================
-   ATTENTION
-========================================================= */
-
-function renderAttention() {
-  setHeader("Attention");
-
-  const main =
-    document.getElementById(
-      "mainContent"
-    );
-
-  const issues =
-    allCurrentIssues()
-      .sort((a, b) => {
-        if (
-          a.type === "manual" &&
-          b.type === "manual"
-        ) {
-          return (
-            reminderSortValue(a) -
-            reminderSortValue(b)
-          );
-        }
-
-        if (a.type === "manual") {
-          return -1;
-        }
-
-        if (b.type === "manual") {
-          return 1;
-        }
-
-        return 0;
-      });
-
-  let html = `
-    <button
-      class="primary-button full-width"
-      onclick="addReminder()"
-    >
-      + Add Reminder
-    </button>
-
-    <section class="section">
-
-      <div class="section-heading">
-        <h2>
-          Needs Attention
-        </h2>
-      </div>
-  `;
-
-  if (!issues.length) {
-    const nextEvent =
-      [...state.events]
-        .filter(
-          event => !event.closed
-        )
-        .sort(
-          (a, b) =>
-            new Date(a.date) -
-            new Date(b.date)
-        )[0];
-
-    html += `
-      <div class="card empty-card">
-
-        <strong>
-          ✓ You’re all caught up.
-        </strong>
-
-        <p>
-          Nothing needs you right now.
-
-          ${
-            nextEvent
-              ? `
-                  Your next event is
-                  ${escapeHTML(nextEvent.name)}
-                  on
-                  ${formatDate(nextEvent.date)}.
-                `
-              : ""
-          }
-        </p>
-
-      </div>
-    `;
-  } else {
-    html += `
-      <div class="card detail-card">
-    `;
-
-    issues.forEach(issue => {
-      const attachedEvent =
-        issue.eventId
-          ? state.events.find(
-              event =>
-                event.id ===
-                issue.eventId
-            )
-          : null;
-
-      html += `
-        <div class="attention-row">
-
-          <div>
-
-            <strong>
-              ${escapeHTML(issue.title)}
-            </strong>
-
-            ${
-              attachedEvent
-                ? `
-                    <div class="muted">
-                      ${escapeHTML(attachedEvent.name)}
-                    </div>
-                  `
-                : issue.type === "manual"
-                  ? `
-                      <div class="muted">
-                        General SWL reminder
-                      </div>
-                    `
-                  : ""
-            }
-
-            ${
-              issue.type === "manual" &&
-              issue.remindBy
-                ? `
-                    <div class="muted">
-                      Due ${escapeHTML(
-                        formatReminderDue(
-                          issue.remindBy
-                        )
-                      )}
-                    </div>
-                  `
-                : ""
-            }
-
-          </div>
-
-          ${
-            issue.type === "generated"
-              ? `
-                  <button
-                    class="text-button"
-                    onclick="
-                      openEvent(
-                        '${issue.eventId}'
-                      )
-                    "
-                  >
-                    Open
-                  </button>
-                `
-              : `
-                  <button
-                    class="text-button"
-                    onclick="
-                      completeReminder(
-                        '${issue.id}'
-                      )
-                    "
-                    aria-label="Complete reminder"
-                  >
-                    ✓
-                  </button>
-                `
-          }
-
-        </div>
-      `;
-    });
 
-    html += `
-      </div>
-    `;
-  }
+.eyebrow {
+  font-size: 0.66rem;
+  line-height: 1;
 
-  html += `
-    </section>
-  `;
+  font-weight: 850;
 
-  main.innerHTML = html;
-}
-
-function addReminder() {
-  openReminderModal();
-}
+  letter-spacing: 0.17em;
+  text-transform: uppercase;
 
-function addEventReminder(eventId) {
-  openReminderModal(eventId);
+  color: var(--brown-2);
 }
-
-function openReminderModal(
-  eventId = null
-) {
-  const attachedEvent =
-    eventId
-      ? state.events.find(
-          event =>
-            event.id === eventId
-        )
-      : null;
-
-  const eventOptions =
-    [...state.events]
-      .filter(event => !event.closed)
-      .sort(
-        (a, b) =>
-          new Date(a.date) -
-          new Date(b.date)
-      )
-      .map(
-        event => `
-          <option
-            value="${escapeHTML(event.id)}"
-            ${
-              event.id === eventId
-                ? "selected"
-                : ""
-            }
-          >
-            ${escapeHTML(event.name)}
-          </option>
-        `
-      )
-      .join("");
-
-  const html = `
-    <div
-      class="modal-backdrop"
-      onclick="closeModalFromBackdrop(event)"
-    >
-
-      <div class="modal-sheet">
-
-        <h2>Add Reminder</h2>
-
-        <div class="card form-card">
-
-          <div class="field">
-
-            <label>
-              What do you need to remember?
-            </label>
-
-            <input
-              id="reminderTitle"
-              placeholder="Order hiking outfits"
-              autofocus
-            />
-
-          </div>
-
-          ${
-            attachedEvent
-              ? `
-                  <div class="field">
-
-                    <label>
-                      Event
-                    </label>
-
-                    <div class="card detail-card">
-                      <strong>
-                        ${escapeHTML(attachedEvent.name)}
-                      </strong>
-                    </div>
-
-                    <input
-                      id="reminderEventId"
-                      type="hidden"
-                      value="${escapeHTML(attachedEvent.id)}"
-                    />
-
-                  </div>
-                `
-              : `
-                  <div class="field">
-
-                    <label>
-                      Event
-                    </label>
-
-                    <select id="reminderEventId">
-                      <option value="">
-                        No event — general reminder
-                      </option>
-                      ${eventOptions}
-                    </select>
-
-                  </div>
-                `
-          }
-
-          <div class="field">
-
-            <label>
-              Due date & time
-            </label>
-
-            <input
-              id="reminderDue"
-              type="datetime-local"
-            />
-
-            <div class="muted">
-              Optional
-            </div>
-
-          </div>
-
-        </div>
-
-        <div class="inline-fields">
-
-          <button
-            class="secondary-button"
-            onclick="closeModal()"
-          >
-            Cancel
-          </button>
-
-          <button
-            class="primary-button"
-            onclick="saveReminderFromModal()"
-          >
-            Save Reminder
-          </button>
-
-        </div>
-
-      </div>
-    </div>
-  `;
-
-  document.getElementById(
-    "modalRoot"
-  ).innerHTML = html;
 
-  setTimeout(
-    () =>
-      document
-        .getElementById(
-          "reminderTitle"
-        )
-        ?.focus(),
+.topbar h1 {
+  margin:
+    4px
     0
-  );
+    0;
+
+  font-size: 1.55rem;
+  line-height: 1.05;
+
+  letter-spacing: -0.03em;
+
+  color: var(--brown);
 }
 
-async function saveReminderFromModal() {
-  const title =
-    document
-      .getElementById(
-        "reminderTitle"
-      )
-      ?.value
-      .trim();
+.icon-button {
+  width: 46px;
+  height: 46px;
 
-  if (!title) {
-    alert(
-      "Add a reminder first."
-    );
-    return;
-  }
+  display: grid;
+  place-items: center;
 
-  const eventId =
-    document
-      .getElementById(
-        "reminderEventId"
-      )
-      ?.value || null;
+  padding: 0;
 
-  const dueValue =
-    document
-      .getElementById(
-        "reminderDue"
-      )
-      ?.value || "";
+  border: 0;
+  border-radius: 50%;
 
-  const reminder = {
-    id: makeId("reminder"),
-    title,
-    eventId,
-    remindBy:
-      dueValue
-        ? new Date(
-            dueValue
-          ).toISOString()
-        : null,
-    type: "manual",
-    done: false,
-    createdAt:
-      new Date().toISOString()
-  };
+  background: var(--yellow);
 
-  try {
-    await createReminderOnServer(
-      reminder
-    );
-  } catch (err) {
-    alert(
-      `Could not save that reminder. ${err.message}`
-    );
+  color: var(--brown);
 
-    return;
-  }
+  font-size: 1.75rem;
+  font-weight: 700;
+  line-height: 1;
 
-  state.attention.push(
-    reminder
-  );
-
-  closeModal();
-
-  updateAttentionBadge();
-
-  render();
+  box-shadow: var(--shadow-soft);
 }
 
-async function completeReminder(id) {
-  const reminder =
-    state.attention.find(
-      item => item.id === id
-    );
-
-  if (!reminder) return;
-
-  const previous =
-    reminder.done;
-
-  reminder.done = true;
-
-  try {
-    await saveReminderToServer(
-      reminder
-    );
-  } catch (err) {
-    reminder.done = previous;
-
-    alert(
-      `Could not save that reminder. ${err.message}`
-    );
-
-    return;
-  }
-
-  updateAttentionBadge();
-
-  render();
+.icon-button:active {
+  transform: scale(0.94);
 }
 
 
 /* =========================================================
-   ADD / EDIT EVENT
-========================================================= */
+   MAIN LAYOUT
+   ========================================================= */
 
-function createBlankEventDraft() {
-  return {
-    id: makeId("event"),
+.main-content {
+  width: min(100%, 720px);
 
-    name: "",
+  margin: 0 auto;
 
-    eventType:
-      "Birthday Party",
-
-    date: "",
-    time: "",
-
-    hostName: "",
-    hostPhone: "",
-    hostEmail: "",
-
-    address: "",
-
-    guestCount: "",
-
-    package: "",
-
-    specialGuestName: "",
-    specialGuestAge: "",
-
-    selectedPlush: [],
-
-    extraOutfits: 0,
-    voiceChips: 0,
-    extraShirts: 0,
-    extraVinyl: 0,
-
-    customRequirements: "",
-
-    eventNotes: "",
-
-    customTotal: "",
-
-    depositAmount: 100,
-    depositPaid: false,
-
-    total: 0,
-    balanceDue: 0,
-
-    reservations: [],
-
-    packing:
-      masterPackingList.map(
-        name => ({
-          id: makeId("pack"),
-          name,
-          done: false
-        })
-      ),
-
-    closed: false,
-
-    createdAt:
-      new Date().toISOString()
-  };
+  padding:
+    24px
+    18px
+    34px;
 }
 
-function normalizeEventDraft(event) {
-  const blank =
-    createBlankEventDraft();
-
-  const merged = {
-    ...blank,
-    ...structuredClone(event)
-  };
-
-  merged.selectedPlush ||=
-    [];
-
-  merged.reservations ||=
-    [];
-
-  merged.eventNotes ||=
-    merged.arrivalNotes || "";
-
-  merged.extraOutfits ||=
+.section {
+  margin:
+    34px
     0;
-
-  merged.voiceChips ||=
-    0;
-
-  merged.extraShirts ||=
-    0;
-
-  merged.extraVinyl ||=
-    0;
-
-  merged.depositAmount =
-    merged.depositAmount ?? 100;
-
-  merged.depositPaid =
-    Boolean(merged.depositPaid);
-
-  merged.packing =
-    event.packing?.length
-      ? structuredClone(event.packing)
-      : blank.packing;
-
-  return merged;
 }
 
-function openAddEventWizard() {
-  wizardMode = "add";
-  editingEventId = null;
+.section-heading {
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
 
-  wizard =
-    createBlankEventDraft();
+  gap: 16px;
 
-  wizardStep = 0;
+  margin-bottom: 14px;
 
-  renderWizard();
+  padding:
+    0
+    2px;
 }
 
-function openEditEvent(eventId) {
-  const event =
-    state.events.find(
-      event => event.id === eventId
-    );
+.section-heading h2 {
+  margin: 0;
 
-  if (!event) return;
+  font-size: 1.08rem;
+  line-height: 1.2;
 
-  wizardMode = "edit";
-  editingEventId = eventId;
+  letter-spacing: -0.015em;
 
-  wizard =
-    normalizeEventDraft(event);
-
-  wizardStep = 0;
-
-  renderWizard();
+  color: var(--brown);
 }
 
-function closeWizard() {
-  wizard = null;
-  wizardStep = 0;
+.section-heading button {
+  border: 0;
 
-  wizardMode = "add";
-  editingEventId = null;
+  background: none;
 
-  document.getElementById(
-    "modalRoot"
-  ).innerHTML = "";
+  padding:
+    6px
+    3px;
+
+  color: var(--brown-2);
+
+  font-weight: 800;
 }
 
 
 /* =========================================================
-   PRICING
-========================================================= */
+   CARDS
+   ========================================================= */
 
-function calculateEventTotal(
-  event = wizard
-) {
-  if (!event) return 0;
+.card {
+  background:
+    rgba(255, 255, 255, 0.82);
 
-  if (event.package === "Custom") {
-    return Number(
-      event.customTotal || 0
-    );
-  }
+  border:
+    1px solid var(--line);
 
-  const packageInfo =
-    PACKAGE_DATA[
-      event.package
-    ];
+  border-radius: var(--radius);
 
-  if (
-    !packageInfo ||
-    packageInfo.pricePerGuest === null
-  ) {
-    return 0;
-  }
-
-  const guestCount =
-    Number(
-      event.guestCount || 0
-    );
-
-  const base =
-    guestCount *
-    packageInfo.pricePerGuest;
-
-  const outfitAddOns =
-    Number(
-      event.extraOutfits || 0
-    ) *
-    ADD_ON_PRICING.outfit;
-
-  const voiceAddOns =
-    Number(
-      event.voiceChips || 0
-    ) *
-    ADD_ON_PRICING.voiceChip;
-     const shirtAddOns =
-    Number(
-      event.extraShirts || 0
-    ) *
-    ADD_ON_PRICING.extraShirt;
-
-  const vinylAddOns =
-    Number(
-      event.extraVinyl || 0
-    ) *
-    ADD_ON_PRICING.vinyl;
-
-  return (
-    base +
-    outfitAddOns +
-    voiceAddOns +
-    shirtAddOns +
-    vinylAddOns
-  );
+  box-shadow: var(--shadow);
 }
 
-function recalculatePayment() {
-  if (!wizard) return;
+.card + .card {
+  margin-top: 14px;
+}
 
-  wizard.total =
-    calculateEventTotal(wizard);
+.list-card {
+  padding: 18px;
+}
 
-  const paidDeposit =
-    wizard.depositPaid
-      ? Number(
-          wizard.depositAmount || 0
-        )
-      : 0;
+.list-card h3 {
+  margin:
+    0
+    0
+    6px;
 
-  wizard.balanceDue =
-    Math.max(
-      0,
-      wizard.total -
-      paidDeposit
-    );
+  color: var(--brown);
+
+  font-size: 1rem;
+  line-height: 1.25;
+}
+
+.list-card p {
+  margin: 0;
+
+  color: var(--muted);
+
+  line-height: 1.45;
+}
+
+.tap-card {
+  transition:
+    transform 0.14s ease,
+    box-shadow 0.14s ease;
+}
+
+.tap-card:active {
+  transform: scale(0.985);
+
+  box-shadow:
+    0 3px 10px
+    rgba(76, 51, 37, 0.05);
 }
 
 
 /* =========================================================
-   RESERVATIONS
-========================================================= */
+   HOME HERO
+   ========================================================= */
 
-function buildReservationsForWizard() {
-  if (!wizard) return;
+.hero-card {
+  position: relative;
 
-  const reservations = [];
+  overflow: hidden;
 
-  const guestCount =
-    Number(
-      wizard.guestCount || 0
+  padding: 24px;
+
+  background:
+    radial-gradient(
+      circle at 100% 0%,
+      rgba(242, 204, 88, 0.38),
+      transparent 46%
+    ),
+    rgba(255, 255, 255, 0.88);
+}
+
+.hero-card::after {
+  content: "♥";
+
+  position: absolute;
+
+  right: 18px;
+  bottom: -25px;
+
+  font-size: 6rem;
+  line-height: 1;
+
+  color:
+    rgba(242, 204, 88, 0.12);
+
+  transform:
+    rotate(-12deg);
+
+  pointer-events: none;
+}
+
+.hero-card h2 {
+  position: relative;
+  z-index: 1;
+
+  margin:
+    8px
+    0
+    6px;
+
+  font-size: 1.5rem;
+
+  letter-spacing: -0.03em;
+
+  color: var(--brown);
+}
+
+.card-label {
+  color: var(--brown-2);
+
+  font-size: 0.69rem;
+  line-height: 1;
+
+  font-weight: 850;
+
+  letter-spacing: 0.11em;
+  text-transform: uppercase;
+}
+
+
+/* =========================================================
+   STATUS
+   ========================================================= */
+
+.status-banner {
+  padding:
+    16px
+    18px;
+
+  margin-bottom: 24px;
+
+  border-radius: 18px;
+
+  background:
+    var(--yellow-pale);
+
+  color: var(--brown);
+
+  border:
+    1px solid
+    rgba(196, 150, 35, 0.14);
+
+  font-weight: 750;
+  line-height: 1.45;
+}
+
+.status-banner.warning {
+  background: var(--danger-soft);
+
+  color: var(--danger);
+
+  border-color:
+    rgba(180, 87, 76, 0.13);
+}
+
+
+/* =========================================================
+   PILLS
+   ========================================================= */
+
+.meta-row {
+  display: flex;
+  flex-wrap: wrap;
+
+  gap: 8px;
+
+  margin-top: 14px;
+}
+
+.pill {
+  display: inline-flex;
+  align-items: center;
+
+  min-height: 30px;
+
+  padding:
+    6px
+    10px;
+
+  border-radius: 999px;
+
+  background:
+    rgba(76, 51, 37, 0.06);
+
+  color: var(--brown-2);
+
+  font-size: 0.76rem;
+  line-height: 1;
+
+  font-weight: 750;
+}
+
+.pill.warning {
+  background:
+    var(--danger-soft);
+
+  color: var(--danger);
+}
+
+.pill.success {
+  background:
+    rgba(242, 204, 88, 0.22);
+
+  color: var(--brown);
+}
+
+
+/* =========================================================
+   EMPTY STATES
+   ========================================================= */
+
+.empty-card {
+  padding:
+    28px
+    22px;
+
+  text-align: center;
+}
+
+.empty-card strong {
+  display: block;
+
+  margin-bottom: 7px;
+
+  color: var(--brown);
+}
+
+.empty-card p {
+  max-width: 430px;
+
+  margin:
+    0
+    auto;
+
+  color: var(--muted);
+
+  line-height: 1.5;
+}
+
+
+/* =========================================================
+   BUTTONS
+   ========================================================= */
+
+.primary-button,
+.secondary-button,
+.danger-button {
+  min-height: 50px;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  padding:
+    0
+    18px;
+
+  border-radius: 15px;
+
+  font-weight: 800;
+
+  text-decoration: none;
+
+  transition:
+    transform 0.12s ease,
+    background-color 0.12s ease;
+}
+
+.primary-button {
+  border: 0;
+
+  background: var(--yellow);
+
+  color: var(--brown);
+}
+
+.secondary-button {
+  background:
+    rgba(255, 255, 255, 0.88);
+
+  color: var(--brown);
+
+  border:
+    1px solid var(--line-strong);
+}
+
+.danger-button {
+  border: 0;
+
+  background: var(--danger-soft);
+
+  color: var(--danger);
+}
+
+.primary-button:active,
+.secondary-button:active,
+.danger-button:active {
+  transform: scale(0.975);
+}
+
+.full-width {
+  width: 100%;
+}
+
+.text-button {
+  min-height: 38px;
+
+  padding:
+    5px
+    8px;
+
+  border: 0;
+  border-radius: 11px;
+
+  background: none;
+
+  color: var(--brown-2);
+
+  font-weight: 800;
+}
+
+
+/* =========================================================
+   BOTTOM NAV
+   ========================================================= */
+
+.bottom-nav {
+  position: fixed;
+
+  left: 50%;
+  bottom: 0;
+
+  z-index: 40;
+
+  transform:
+    translateX(-50%);
+
+  width: min(100%, 720px);
+
+  display: grid;
+  grid-template-columns:
+    repeat(4, 1fr);
+
+  gap: 4px;
+
+  padding:
+    8px
+    8px
+    calc(
+      8px +
+      env(safe-area-inset-bottom)
     );
 
-  /*
-    EACH OFFERED PLUSH:
-    guest count + 2 backups.
-  */
+  background:
+    rgba(255, 250, 241, 0.97);
 
-  wizard.selectedPlush.forEach(
-    plushId => {
-      reservations.push({
-        itemId: plushId,
-        quantity:
-          guestCount + 2
-      });
-    }
-  );
+  backdrop-filter:
+    blur(18px);
 
-  /*
-    HEARTS + TRAVEL BAGS
-  */
+  border-top:
+    1px solid var(--line);
+}
 
-  if (guestCount > 0) {
-    reservations.push({
-      itemId: "hearts",
-      quantity: guestCount
-    });
+.nav-item {
+  position: relative;
 
-    reservations.push({
-      itemId: "travel-bags",
-      quantity: guestCount
-    });
-  }
+  min-height: 60px;
 
-  /*
-    SHIRTS
+  border: 0;
+  border-radius: 15px;
 
-    $35 DOES NOT INCLUDE SHIRTS.
+  background: none;
 
-    $40 DOES.
-  */
+  color: var(--muted);
 
-  if (
-    wizard.package === "$40 Package"
-  ) {
-    reservations.push({
-      itemId: "white-shirt",
-      quantity:
-        guestCount +
-        Number(
-          wizard.extraShirts || 0
-        )
-    });
-  } else if (
-    Number(
-      wizard.extraShirts || 0
-    ) > 0
-  ) {
-    reservations.push({
-      itemId: "white-shirt",
-      quantity:
-        Number(
-          wizard.extraShirts
-        )
-    });
-  }
+  font-size: 0.72rem;
 
-  /*
-    VOICE CHIPS
-  */
+  font-weight: 750;
+}
 
-  if (
-    Number(
-      wizard.voiceChips || 0
-    ) > 0
-  ) {
-    reservations.push({
-      itemId: "sound",
-      quantity:
-        Number(
-          wizard.voiceChips
-        )
-    });
-  }
+.nav-item.active {
+  background:
+    rgba(242, 204, 88, 0.21);
 
-  wizard.reservations =
-    reservations;
+  color: var(--brown);
+}
+
+.nav-icon {
+  display: block;
+
+  margin-bottom: 3px;
+
+  font-size: 1.26rem;
+}
+
+.nav-badge {
+  position: absolute;
+
+  top: 5px;
+  right: 20%;
+
+  min-width: 19px;
+  height: 19px;
+
+  padding:
+    0
+    5px;
+
+  border-radius: 999px;
+
+  background: var(--danger);
+
+  color: white;
+
+  font-size: 0.68rem;
+  line-height: 19px;
+}
+
+
+/* =========================================================
+   FORMS
+   ========================================================= */
+
+.form-card {
+  padding: 20px;
+}
+
+.field {
+  margin-bottom: 20px;
+}
+
+.field:last-child {
+  margin-bottom: 0;
+}
+
+.field label {
+  display: block;
+
+  margin-bottom: 8px;
+
+  color: var(--brown);
+
+  font-size: 0.82rem;
+
+  font-weight: 800;
+}
+
+.field small {
+  display: block;
+
+  margin-top: 7px;
+
+  color: var(--muted);
+
+  line-height: 1.4;
+}
+
+.field input,
+.field select,
+.field textarea {
+  width: 100%;
+
+  min-height: 50px;
+
+  padding:
+    12px
+    14px;
+
+  border:
+    1px solid var(--line-strong);
+
+  border-radius: 14px;
+
+  background:
+    rgba(255, 255, 255, 0.9);
+
+  color: var(--text);
+
+  outline: none;
+}
+
+.field textarea {
+  min-height: 110px;
+
+  resize: vertical;
+}
+
+.field input:focus,
+.field select:focus,
+.field textarea:focus {
+  border-color:
+    rgba(198, 151, 38, 0.72);
+
+  box-shadow:
+    0 0 0 4px
+    rgba(242, 204, 88, 0.15);
+}
+
+.inline-fields {
+  display: grid;
+
+  grid-template-columns:
+    1fr
+    1fr;
+
+  gap: 12px;
+}
+
+.choice-grid {
+  display: grid;
+
+  gap: 11px;
+}
+
+.choice-card {
+  display: block;
+
+  width: 100%;
+
+  padding: 16px;
+
+  text-align: left;
+
+  border:
+    1px solid var(--line);
+
+  border-radius: 16px;
+
+  background: var(--white);
+
+  color: var(--text);
+}
+
+.choice-card.selected {
+  border-color:
+    rgba(195, 147, 29, 0.65);
+
+  background:
+    var(--yellow-pale);
+}
+
+.choice-card strong {
+  display: block;
+
+  color: var(--brown);
+}
+
+.choice-card span {
+  color: var(--muted);
+
+  font-size: 0.84rem;
+}
+
+.toggle-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  gap: 16px;
+
+  min-height: 58px;
+
+  padding:
+    5px
+    0;
+
+  border-bottom:
+    1px solid var(--line);
+}
+
+.toggle-row:last-child {
+  border-bottom: 0;
+}
+
+.toggle-row input[type="checkbox"] {
+  appearance: none;
+  -webkit-appearance: none;
+
+  flex:
+    0
+    0 auto;
+
+  width: 26px;
+  height: 26px;
+
+  display: grid;
+  place-items: center;
+
+  border-radius: 8px;
+
+  border:
+    2px solid
+    rgba(76, 51, 37, 0.20);
+
+  background: white;
+}
+
+.toggle-row input[type="checkbox"]::before {
+  content: "✓";
+
+  font-size: 0.85rem;
+  font-weight: 900;
+
+  color: var(--brown);
+
+  transform: scale(0);
+}
+
+.toggle-row input[type="checkbox"]:checked {
+  background: var(--yellow);
+
+  border-color: var(--yellow);
+}
+
+.toggle-row input[type="checkbox"]:checked::before {
+  transform: scale(1);
 }
 
 
 /* =========================================================
    WIZARD
-========================================================= */
+   ========================================================= */
 
-function renderWizard() {
-  recalculatePayment();
+.wizard-shell {
+  position: fixed;
 
-  let html = `
-    <div class="wizard-shell">
+  inset: 0;
 
-      <div class="wizard-header">
+  z-index: 100;
 
-        <div class="wizard-title-row">
+  display: flex;
+  flex-direction: column;
 
-          <h2>
-            ${
-              wizardMode === "edit"
-                ? "Edit Event"
-                : "Add Event"
-            }
-          </h2>
-
-          <button
-            class="text-button"
-            onclick="closeWizard()"
-          >
-            Cancel
-          </button>
-
-        </div>
-
-        <div class="wizard-steps">
-  `;
-
-  wizardSteps.forEach(
-    (step, index) => {
-      html += `
-        <button
-          class="
-            wizard-step
-            ${
-              index === wizardStep
-                ? "active"
-                : ""
-            }
-            ${
-              index < wizardStep
-                ? "done"
-                : ""
-            }
-          "
-          onclick="
-            goToWizardStep(
-              ${index}
-            )
-          "
-        >
-          ${
-            index < wizardStep
-              ? "✓ "
-              : ""
-          }
-
-          ${step}
-        </button>
-      `;
-    }
-  );
-
-  html += `
-        </div>
-      </div>
-
-      <div
-        id="wizardContent"
-        class="wizard-content"
-      >
-        ${wizardStepHTML()}
-      </div>
-
-      <div class="wizard-footer">
-
-        <button
-          class="secondary-button"
-          onclick="wizardBack()"
-          ${
-            wizardStep === 0
-              ? "disabled"
-              : ""
-          }
-        >
-          Back
-        </button>
-
-        ${
-          wizardStep ===
-          wizardSteps.length - 1
-
-            ? `
-              <button
-                class="primary-button"
-                onclick="saveEventFromWizard()"
-              >
-                ${
-                  wizardMode === "edit"
-                    ? "Save Changes"
-                    : "Confirm Event"
-                }
-              </button>
-            `
-
-            : `
-              <button
-                class="primary-button"
-                onclick="wizardNext()"
-              >
-                Next
-              </button>
-            `
-        }
-
-      </div>
-
-    </div>
-  `;
-
-  document.getElementById(
-    "modalRoot"
-  ).innerHTML = html;
+  background:
+    var(--cream-soft);
 }
 
-function wizardStepHTML() {
-  switch (wizardStep) {
-    case 0:
-      return basicsStepHTML();
-
-    case 1:
-      return partyStepHTML();
-
-    case 2:
-      return extrasStepHTML();
-
-    case 3:
-      return paymentStepHTML();
-
-    default:
-      return reviewStepHTML();
-  }
-}
-
-
-/* =========================================================
-   BASICS
-========================================================= */
-
-function basicsStepHTML() {
-  return `
-    <div class="card form-card">
-
-      <div class="field">
-
-        <label>
-          Event name
-        </label>
-
-        <input
-          id="eventName"
-          value="${escapeHTML(wizard.name)}"
-          placeholder="Mason’s Birthday"
-        />
-
-      </div>
-
-      <div class="field">
-
-        <label>
-          Event type
-        </label>
-
-        <select id="eventType">
-
-          ${[
-            "Birthday Party",
-            "Private Experience",
-            "Corporate / Partner",
-            "Community Event",
-            "Custom"
-          ].map(
-            type => `
-              <option
-                value="${type}"
-                ${
-                  wizard.eventType === type
-                    ? "selected"
-                    : ""
-                }
-              >
-                ${type}
-              </option>
-            `
-          ).join("")}
-
-        </select>
-
-      </div>
-
-      <div class="inline-fields">
-
-        <div class="field">
-
-          <label>
-            Date
-          </label>
-
-          <input
-            id="eventDate"
-            type="date"
-            value="${wizard.date}"
-          />
-
-        </div>
-
-        <div class="field">
-
-          <label>
-            Start time
-          </label>
-
-          <input
-            id="eventTime"
-            type="time"
-            value="${wizard.time}"
-          />
-
-        </div>
-
-      </div>
-
-      <div class="field">
-
-        <label>
-          Address
-        </label>
-
-        <input
-          id="eventAddress"
-          value="${escapeHTML(wizard.address)}"
-          placeholder="123 Main St, Green Bay"
-        />
-
-      </div>
-
-      <div class="field">
-
-        <label>
-          Host name
-        </label>
-
-        <input
-          id="hostName"
-          value="${escapeHTML(wizard.hostName)}"
-        />
-
-      </div>
-
-      <div class="field">
-
-        <label>
-          Phone
-        </label>
-
-        <input
-          id="hostPhone"
-          type="tel"
-          value="${escapeHTML(wizard.hostPhone)}"
-        />
-
-      </div>
-
-      <div class="field">
-
-        <label>
-          Email
-        </label>
-
-        <input
-          id="hostEmail"
-          type="email"
-          value="${escapeHTML(wizard.hostEmail)}"
-        />
-
-      </div>
-
-    </div>
-  `;
-}
-
-
-/* =========================================================
-   PARTY
-========================================================= */
-
-function partyStepHTML() {
-  return `
-    <div class="card form-card">
-
-      <div class="field">
-
-        <label>
-          Guest count
-        </label>
-
-        <input
-          id="guestCount"
-          type="number"
-          min="1"
-          value="${wizard.guestCount}"
-          placeholder="15"
-          oninput="updatePlushReservationLabels()"
-        />
-
-      </div>
-
-      <div class="field">
-
-        <label>
-          Package
-        </label>
-
-        <div class="choice-grid">
-
-          ${packageChoice("$30 Package")}
-          ${packageChoice("$35 Package")}
-          ${packageChoice("$40 Package")}
-          ${packageChoice("Custom")}
-
-        </div>
-
-      </div>
-
-      ${
-        wizard.eventType ===
-        "Birthday Party"
-
-          ? `
-            <div class="inline-fields">
-
-              <div class="field">
-
-                <label>
-                  Birthday child
-                </label>
-
-                <input
-                  id="specialGuestName"
-                  value="${escapeHTML(wizard.specialGuestName)}"
-                  placeholder="Name"
-                />
-
-              </div>
-
-              <div class="field">
-
-                <label>
-                  Age
-                </label>
-
-                <input
-                  id="specialGuestAge"
-                  type="number"
-                  min="1"
-                  value="${escapeHTML(wizard.specialGuestAge)}"
-                />
-
-              </div>
-
-            </div>
-          `
-
-          : `
-            <div class="field">
-
-              <label>
-                Guest of honor
-              </label>
-
-              <input
-                id="specialGuestName"
-                value="${escapeHTML(wizard.specialGuestName)}"
-                placeholder="Optional"
-              />
-
-            </div>
-          `
-      }
-
-      <div class="field">
-
-        <label>
-          Plush options being offered
-        </label>
-
-        <small>
-          Select every plush guests can choose from.
-          We reserve guest count + 2 of each one.
-        </small>
-
-        <div
-          class="plush-choice-grid"
-          style="margin-top:12px;"
-        >
-          ${getEventPlushOptions()
-  .map(
-    plush =>
-      plushChoice(plush)
-  )
-  .join("")}
-        </div>
-
-      </div>
-
-    </div>
-  `;
-}
-
-function packageChoice(
-  packageName
-) {
-  const packageData =
-    PACKAGE_DATA[
-      packageName
-    ];
-
-  return `
-    <button
-      type="button"
-      data-package="${packageName}"
-      class="
-        choice-card
-        package-choice
-        ${
-          wizard.package === packageName
-            ? "selected"
-            : ""
-        }
-      "
-      onclick="
-        selectPackageWithoutJump(
-          this,
-          '${packageName}'
-        )
-      "
-    >
-
-      <strong>
-        ${packageName}
-      </strong>
-
-      <span>
-        ${packageData.description}
-      </span>
-
-    </button>
-  `;
-}
-
-function plushChoice(plush) {
-  const selected =
-    wizard.selectedPlush.includes(
-      plush.id
-    );
-
-  const guestCount =
-    Number(
-      wizard.guestCount || 0
-    );
-
-  const bringCount =
-    guestCount > 0
-      ? guestCount + 2
-      : 0;
-
-  return `
-    <button
-      type="button"
-      data-plush="${plush.id}"
-      class="plush-choice-card ${
-        selected ? "selected" : ""
-      }"
-      onclick="
-        togglePlushWithoutJump(
-          this,
-          '${plush.id}'
-        )
-      "
-    >
-
-      <div class="plush-choice-image">
-
-        ${
-          plush.image
-            ? `
-              <img
-                src="${plush.image}"
-                alt="${escapeHTML(
-                  plush.name
-                )}"
-              />
-            `
-            : `
-              <div class="plush-choice-no-photo">
-                <span>♥</span>
-                <small>No photo</small>
-              </div>
-            `
-        }
-
-        <span class="plush-choice-check">
-          ✓
-        </span>
-
-      </div>
-
-      <div class="plush-choice-copy">
-
-        <strong>
-          ${escapeHTML(plush.name)}
-        </strong>
-
-        <span class="plush-reservation-label">
-          ${
-            bringCount
-              ? `${bringCount} reserved`
-              : "Set guest count"
-          }
-        </span>
-
-      </div>
-
-    </button>
-  `;
-}
-
-/* =========================================================
-   EXTRAS
-========================================================= */
-
-function extrasStepHTML() {
-  if (
-    wizard.package === "Custom"
-  ) {
-    return `
-      <div class="card form-card">
-
-        <div class="field">
-
-          <label>
-            Custom requirements
-          </label>
-
-          <textarea
-            id="customRequirements"
-            placeholder="Example: 2 plush, hiking outfits, retirement embroidery..."
-          >${escapeHTML(wizard.customRequirements)}</textarea>
-
-        </div>
-
-        <div class="field">
-
-          <label>
-            Voice chips
-          </label>
-
-          <input
-            id="voiceChips"
-            type="number"
-            min="0"
-            value="${wizard.voiceChips}"
-          />
-
-        </div>
-
-      </div>
-    `;
-  }
-
-  return `
-    <div class="card form-card">
-
-      ${
-        wizard.package === "$35 Package" ||
-        wizard.package === "$40 Package"
-          ? `
-            <div class="status-banner">
-              ✓ Birthday plush outfit is included in this package.
-            </div>
-          `
-          : ""
-      }
-
-      <div class="field">
-
-        <label>
-          Extra outfits
-        </label>
-
-        <input
-          id="extraOutfits"
-          type="number"
-          min="0"
-          value="${wizard.extraOutfits}"
-        />
-
-        <small>
-          ${money(ADD_ON_PRICING.outfit)} each
-        </small>
-
-      </div>
-
-      <div class="field">
-
-        <label>
-          Voice chips
-        </label>
-
-        <input
-          id="voiceChips"
-          type="number"
-          min="0"
-          value="${wizard.voiceChips}"
-        />
-
-        <small>
-          ${money(ADD_ON_PRICING.voiceChip)} each
-        </small>
-
-      </div>
-
-      <div class="field">
-
-        <label>
-          Extra T-shirts
-        </label>
-
-        <input
-          id="extraShirts"
-          type="number"
-          min="0"
-          value="${wizard.extraShirts}"
-        />
-
-        <small>
-          ${money(ADD_ON_PRICING.extraShirt)} each
-        </small>
-
-      </div>
-
-      <div class="field">
-
-        <label>
-          Extra vinyl designs
-        </label>
-
-        <input
-          id="extraVinyl"
-          type="number"
-          min="0"
-          value="${wizard.extraVinyl}"
-        />
-
-        <small>
-          ${money(ADD_ON_PRICING.vinyl)} each
-        </small>
-
-      </div>
-
-    </div>
-  `;
-}
-
-
-/* =========================================================
-   PAYMENT
-========================================================= */
-
-function paymentStepHTML() {
-  recalculatePayment();
-
-  const packageData =
-    PACKAGE_DATA[
-      wizard.package
-    ];
-
-  const guestCount =
-    Number(
-      wizard.guestCount || 0
-    );
-
-  const packageBase =
-    packageData?.pricePerGuest
-      ? guestCount *
-        packageData.pricePerGuest
-      : 0;
-
-  return `
-    <div class="card form-card">
-
-      ${
-        wizard.package === "Custom"
-          ? `
-            <div class="field">
-
-              <label>
-                Custom event total
-              </label>
-
-              <input
-                id="customTotal"
-                type="number"
-                min="0"
-                step="0.01"
-                value="${wizard.customTotal}"
-                placeholder="Enter agreed total"
-                oninput="updateCustomTotalLive(this.value)"
-              />
-
-            </div>
-          `
-          : `
-            <div class="detail-row">
-
-              <span>
-                ${escapeHTML(wizard.package)}
-              </span>
-
-              <strong>
-                ${guestCount}
-                ×
-                ${money(packageData?.pricePerGuest || 0)}
-              </strong>
-
-            </div>
-
-            <div class="detail-row">
-
-              <span>
-                Package subtotal
-              </span>
-
-              <strong>
-                ${money(packageBase)}
-              </strong>
-
-            </div>
-          `
-      }
-
-      ${
-        Number(wizard.extraOutfits || 0)
-          ? `
-            <div class="detail-row">
-              <span>Extra outfits</span>
-
-              <strong>
-                ${wizard.extraOutfits}
-                ×
-                ${money(ADD_ON_PRICING.outfit)}
-              </strong>
-            </div>
-          `
-          : ""
-      }
-
-      ${
-        Number(wizard.voiceChips || 0)
-          ? `
-            <div class="detail-row">
-              <span>Voice chips</span>
-
-              <strong>
-                ${wizard.voiceChips}
-                ×
-                ${money(ADD_ON_PRICING.voiceChip)}
-              </strong>
-            </div>
-          `
-          : ""
-      }
-
-      ${
-        Number(wizard.extraShirts || 0)
-          ? `
-            <div class="detail-row">
-              <span>Extra shirts</span>
-
-              <strong>
-                ${wizard.extraShirts}
-                ×
-                ${money(ADD_ON_PRICING.extraShirt)}
-              </strong>
-            </div>
-          `
-          : ""
-      }
-
-      ${
-        Number(wizard.extraVinyl || 0)
-          ? `
-            <div class="detail-row">
-              <span>Extra vinyl</span>
-
-              <strong>
-                ${wizard.extraVinyl}
-                ×
-                ${money(ADD_ON_PRICING.vinyl)}
-              </strong>
-            </div>
-          `
-          : ""
-      }
-
-      <div
-        class="detail-row"
-        style="
-          margin-top:8px;
-          font-size:1.1rem;
-        "
-      >
-        <span>Event total</span>
-
-        <strong id="paymentTotal">
-          ${money(wizard.total)}
-        </strong>
-      </div>
-
-      <div style="margin-top:24px;">
-
-        <label class="toggle-row">
-
-          <span>
-
-            <strong>
-              Deposit received
-            </strong>
-
-            <br>
-
-            <span class="muted">
-              Normal reservation deposit is $100
-            </span>
-
-          </span>
-
-          <input
-            id="depositPaid"
-            type="checkbox"
-            ${
-              wizard.depositPaid
-                ? "checked"
-                : ""
-            }
-            onchange="
-              updateDepositLive(
-                this.checked
-              )
-            "
-          />
-
-        </label>
-
-      </div>
-
-      <div class="field">
-
-        <label>
-          Deposit amount
-        </label>
-
-        <input
-          id="depositAmount"
-          type="number"
-          min="0"
-          step="0.01"
-          value="${wizard.depositAmount}"
-          oninput="
-            updateDepositAmountLive(
-              this.value
-            )
-          "
-        />
-
-      </div>
-
-      <div class="detail-row">
-
-        <span>
-          Amount received
-        </span>
-
-        <strong id="depositReceivedDisplay">
-          ${
-            wizard.depositPaid
-              ? money(wizard.depositAmount)
-              : money(0)
-          }
-        </strong>
-
-      </div>
-
-      <div
-        class="detail-row"
-        style="font-size:1.1rem;"
-      >
-
-        <span>
-          Remaining balance
-        </span>
-
-        <strong id="balanceDueDisplay">
-          ${money(wizard.balanceDue)}
-        </strong>
-
-      </div>
-
-    </div>
-  `;
-}
-
-
-/* =========================================================
-   REVIEW
-========================================================= */
-
-function reviewStepHTML() {
-  recalculatePayment();
-
-  buildReservationsForWizard();
-
-  return `
-    <div class="card detail-card">
-
-      <div class="card-label">
-        ${
-          wizardMode === "edit"
-            ? "Review changes"
-            : "Ready to create"
-        }
-      </div>
-
-      <h2 style="margin-top:6px;">
-        ${escapeHTML(
-          wizard.name ||
-          "Untitled Event"
-        )}
-      </h2>
-
-      <div class="detail-row">
-
-        <span>Date</span>
-
-        <strong>
-          ${formatDate(wizard.date)}
-        </strong>
-
-      </div>
-
-      <div class="detail-row">
-
-        <span>Time</span>
-
-        <strong>
-          ${
-            wizard.time
-              ? formatTime(wizard.time)
-              : "—"
-          }
-        </strong>
-
-      </div>
-
-      <div class="detail-row">
-
-        <span>Address</span>
-
-        <strong>
-          ${escapeHTML(
-            wizard.address || "—"
-          )}
-        </strong>
-
-      </div>
-
-      <div class="detail-row">
-
-        <span>Host</span>
-
-        <strong>
-          ${escapeHTML(
-            wizard.hostName || "—"
-          )}
-        </strong>
-
-      </div>
-
-      <div class="detail-row">
-
-        <span>Guests</span>
-
-        <strong>
-          ${wizard.guestCount || "—"}
-        </strong>
-
-      </div>
-
-      <div class="detail-row">
-
-        <span>Package</span>
-
-        <strong>
-          ${escapeHTML(
-            wizard.package || "—"
-          )}
-        </strong>
-
-      </div>
-
-      <div class="detail-row">
-
-        <span>Event total</span>
-
-        <strong>
-          ${money(wizard.total)}
-        </strong>
-
-      </div>
-
-      <div class="detail-row">
-
-        <span>Deposit</span>
-
-        <strong>
-          ${
-            wizard.depositPaid
-              ? `✓ ${money(wizard.depositAmount)} received`
-              : "Not received"
-          }
-        </strong>
-
-      </div>
-
-      <div class="detail-row">
-
-        <span>Remaining</span>
-
-        <strong>
-          ${money(wizard.balanceDue)}
-        </strong>
-
-      </div>
-
-    </div>
-
-    <section class="section">
-
-      <div class="section-heading">
-        <h2>Plush</h2>
-      </div>
-
-      <div class="card detail-card">
-
-        ${
-          wizard.selectedPlush.length
-
-            ? wizard.selectedPlush
-                .map(plushId => {
-                  const plushName =
-  getEventPlushName(plushId);
-
-                  return `
-                    <div class="requirement-row">
-
-                      <span>
-${escapeHTML(plushName)}                      </span>
-
-                      <strong>
-                        ${
-                          Number(
-                            wizard.guestCount || 0
-                          ) + 2
-                        }
-                      </strong>
-
-                    </div>
-                  `;
-                })
-                .join("")
-
-            : `
-              <div class="warning-text">
-                No plush options selected.
-              </div>
-            `
-        }
-
-      </div>
-
-    </section>
-
-    <section class="section">
-
-      <div class="section-heading">
-        <h2>Inventory Reservations</h2>
-      </div>
-
-      <div class="card detail-card">
-
-        ${
-          wizard.reservations.length
-
-            ? wizard.reservations
-                .map(
-                  reservation => {
-                    const item =
-                      getInventoryItem(
-                        reservation.itemId
-                      );
-
-                    return `
-                      <div class="requirement-row">
-
-                        <span>
-                          ${escapeHTML(
-                            item?.name ||
-                            reservation.itemId
-                          )}
-                        </span>
-
-                        <strong>
-                          ${reservation.quantity}
-                        </strong>
-
-                      </div>
-                    `;
-                  }
-                )
-                .join("")
-
-            : `
-              <div class="muted">
-                No inventory reservations generated.
-              </div>
-            `
-        }
-
-      </div>
-
-    </section>
-
-    <section class="section">
-
-      <div class="section-heading">
-        <h2>Notes</h2>
-      </div>
-
-      <div class="card form-card">
-
-        <div class="field">
-
-          <label>
-            Event notes
-          </label>
-
-          <textarea
-            id="eventNotes"
-            placeholder="Setup details, special requests, things to remember..."
-          >${escapeHTML(wizard.eventNotes || "")}</textarea>
-
-        </div>
-
-      </div>
-
-    </section>
-
-    <div class="status-banner">
-
-      ${
-        wizardMode === "edit"
-          ? `
-            Saving will automatically update the
-            event total and inventory reservations.
-          `
-          : `
-            Confirming this event will add it
-            to Home and Events and immediately
-            reserve the inventory shown above.
-          `
-      }
-
-    </div>
-  `;
-}
-/* =========================================================
-   FORM SYNC
-========================================================= */
-
-function syncWizardFromCurrentStep() {
-  if (!wizard) return;
-
-  const get =
-    id =>
-      document.getElementById(id);
-
-  if (wizardStep === 0) {
-    if (get("eventName")) {
-      wizard.name =
-        get("eventName").value;
-    }
-
-    if (get("eventType")) {
-      wizard.eventType =
-        get("eventType").value;
-    }
-
-    if (get("eventDate")) {
-      wizard.date =
-        get("eventDate").value;
-    }
-
-    if (get("eventTime")) {
-      wizard.time =
-        get("eventTime").value;
-    }
-
-    if (get("eventAddress")) {
-      wizard.address =
-        get("eventAddress").value;
-    }
-
-    if (get("hostName")) {
-      wizard.hostName =
-        get("hostName").value;
-    }
-
-    if (get("hostPhone")) {
-      wizard.hostPhone =
-        get("hostPhone").value;
-    }
-
-    if (get("hostEmail")) {
-      wizard.hostEmail =
-        get("hostEmail").value;
-    }
-  }
-
-  if (wizardStep === 1) {
-    syncPartyFields();
-  }
-
-  if (wizardStep === 2) {
-    if (get("extraOutfits")) {
-      wizard.extraOutfits =
-        Number(
-          get("extraOutfits").value || 0
-        );
-    }
-
-    if (get("voiceChips")) {
-      wizard.voiceChips =
-        Number(
-          get("voiceChips").value || 0
-        );
-    }
-
-    if (get("extraShirts")) {
-      wizard.extraShirts =
-        Number(
-          get("extraShirts").value || 0
-        );
-    }
-
-    if (get("extraVinyl")) {
-      wizard.extraVinyl =
-        Number(
-          get("extraVinyl").value || 0
-        );
-    }
-
-    if (get("customRequirements")) {
-      wizard.customRequirements =
-        get("customRequirements").value;
-    }
-  }
-
-  if (wizardStep === 3) {
-    if (get("customTotal")) {
-      wizard.customTotal =
-        Number(
-          get("customTotal").value || 0
-        );
-    }
-
-    if (get("depositAmount")) {
-      wizard.depositAmount =
-        Number(
-          get("depositAmount").value || 0
-        );
-    }
-
-    if (get("depositPaid")) {
-      wizard.depositPaid =
-        get("depositPaid").checked;
-    }
-  }
-
-  if (wizardStep === 4) {
-    if (get("eventNotes")) {
-      wizard.eventNotes =
-        get("eventNotes").value;
-    }
-  }
-
-  recalculatePayment();
-}
-
-function syncPartyFields() {
-  const guestCount =
-    document.getElementById(
-      "guestCount"
-    );
-
-  const specialGuestName =
-    document.getElementById(
-      "specialGuestName"
-    );
-
-  const specialGuestAge =
-    document.getElementById(
-      "specialGuestAge"
-    );
-
-  if (guestCount) {
-    wizard.guestCount =
-      Number(
-        guestCount.value || 0
-      );
-  }
-
-  if (specialGuestName) {
-    wizard.specialGuestName =
-      specialGuestName.value;
-  }
-
-  if (specialGuestAge) {
-    wizard.specialGuestAge =
-      specialGuestAge.value;
-  }
-}
-
-
-/* =========================================================
-   NO-JUMP PACKAGE + PLUSH CONTROLS
-========================================================= */
-
-function selectPackageWithoutJump(
-  button,
-  packageName
-) {
-  syncPartyFields();
-
-  wizard.package =
-    packageName;
-
-  document
-    .querySelectorAll(
-      ".package-choice"
+.wizard-header {
+  flex-shrink: 0;
+
+  padding:
+    calc(
+      15px +
+      env(safe-area-inset-top)
     )
-    .forEach(packageButton => {
-      packageButton.classList.remove(
-        "selected"
-      );
-    });
+    16px
+    12px;
 
-  button.classList.add(
-    "selected"
-  );
+  background:
+    rgba(255, 250, 241, 0.97);
 
-  /*
-    $40 defaults to all 6 plush.
-    Do this without rerendering the page.
-  */
-
-  if (
-    packageName === "$40 Package"
-  ) {
-    wizard.selectedPlush =
-  getEventPlushOptions().map(
-    plush => plush.id
-  );
-
-    document
-      .querySelectorAll(
-        ".plush-choice"
-      )
-      .forEach(plushButton => {
-        plushButton.classList.add(
-          "selected"
-        );
-
-        const check =
-          plushButton.querySelector(
-            ".plush-check"
-          );
-
-        if (check) {
-          check.textContent = "✓ ";
-        }
-      });
-
-    updatePlushReservationLabels();
-  }
+  border-bottom:
+    1px solid var(--line);
 }
 
-function togglePlushWithoutJump(
-  button,
-  plushId
-) {
-  syncPartyFields();
-
-  const currentlySelected =
-    wizard.selectedPlush.includes(
-      plushId
-    );
-
-  if (currentlySelected) {
-    wizard.selectedPlush =
-      wizard.selectedPlush.filter(
-        id => id !== plushId
-      );
-
-    button.classList.remove(
-      "selected"
-    );
-  } else {
-    wizard.selectedPlush.push(
-      plushId
-    );
-
-    button.classList.add(
-      "selected"
-    );
-  }
-
-  const check =
-    button.querySelector(
-      ".plush-check"
-    );
-
-  if (check) {
-    check.textContent =
-      currentlySelected
-        ? ""
-        : "✓ ";
-  }
-
-  updatePlushReservationLabels();
+.wizard-title-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
 }
 
-function updatePlushReservationLabels() {
-  const guestField =
-    document.getElementById(
-      "guestCount"
-    );
+.wizard-title-row h2 {
+  margin: 0;
 
-  const guestCount =
-    Number(
-      guestField?.value || 0
-    );
-
-  wizard.guestCount =
-    guestCount;
-
-  document
-    .querySelectorAll(
-      ".plush-reservation-label"
-    )
-    .forEach(label => {
-      label.textContent =
-        guestCount > 0
-          ? `${guestCount + 2} will be reserved`
-          : "Enter guest count above";
-    });
+  color: var(--brown);
 }
 
+.wizard-steps {
+  display: flex;
 
-/* =========================================================
-   WIZARD NAVIGATION
-========================================================= */
+  gap: 8px;
 
-function goToWizardStep(index) {
-  syncWizardFromCurrentStep();
+  overflow-x: auto;
 
-  wizardStep = index;
+  padding-top: 14px;
 
-  renderWizard();
+  scrollbar-width: none;
 }
 
-function wizardNext() {
-  syncWizardFromCurrentStep();
-
-  if (
-    wizardStep === 0 &&
-    !wizard.name.trim()
-  ) {
-    alert(
-      "Give the event a name first."
-    );
-
-    return;
-  }
-
-  if (wizardStep === 1) {
-    if (
-      !wizard.guestCount ||
-      wizard.guestCount < 1
-    ) {
-      alert(
-        "Enter the guest count."
-      );
-
-      return;
-    }
-
-    if (!wizard.package) {
-      alert(
-        "Choose a package or Custom."
-      );
-
-      return;
-    }
-  }
-
-  wizardStep =
-    Math.min(
-      wizardSteps.length - 1,
-      wizardStep + 1
-    );
-
-  renderWizard();
+.wizard-steps::-webkit-scrollbar {
+  display: none;
 }
 
-function wizardBack() {
-  syncWizardFromCurrentStep();
+.wizard-step {
+  flex:
+    0
+    0 auto;
 
-  wizardStep =
-    Math.max(
-      0,
-      wizardStep - 1
+  padding:
+    8px
+    12px;
+
+  border: 0;
+  border-radius: 999px;
+
+  background:
+    rgba(76, 51, 37, 0.06);
+
+  color: var(--muted);
+
+  font-size: 0.75rem;
+
+  font-weight: 800;
+}
+
+.wizard-step.active {
+  background: var(--yellow);
+
+  color: var(--brown);
+}
+
+.wizard-step.done {
+  background:
+    rgba(242, 204, 88, 0.16);
+
+  color: var(--brown-2);
+}
+
+.wizard-content {
+  flex: 1;
+
+  overflow-y: auto;
+
+  width: min(100%, 720px);
+
+  margin: 0 auto;
+
+  padding:
+    22px
+    18px
+    115px;
+}
+
+.wizard-footer {
+  position: fixed;
+
+  left: 0;
+  right: 0;
+  bottom: 0;
+
+  z-index: 105;
+
+  display: grid;
+
+  grid-template-columns:
+    0.8fr
+    1.2fr;
+
+  gap: 10px;
+
+  padding:
+    12px
+    16px
+    calc(
+      12px +
+      env(safe-area-inset-bottom)
     );
 
-  renderWizard();
+  background:
+    rgba(255, 250, 241, 0.98);
+
+  border-top:
+    1px solid var(--line);
 }
 
 
 /* =========================================================
-   PAYMENT LIVE UPDATES
-========================================================= */
+   EVENT DETAIL HEADER
+   ========================================================= */
 
-function updateCustomTotalLive(
-  value
-) {
-  wizard.customTotal =
-    Number(value || 0);
+.back-button {
+  min-height: 40px;
 
-  recalculatePayment();
+  padding:
+    0
+    3px;
 
-  updatePaymentDisplay();
+  margin-bottom: 15px;
+
+  border: 0;
+
+  background: none;
+
+  color: var(--brown-2);
+
+  font-weight: 800;
 }
 
-function updateDepositLive(
-  checked
-) {
-  wizard.depositPaid =
-    checked;
+.event-top-card {
+  position: relative;
 
-  recalculatePayment();
+  overflow: hidden;
 
-  updatePaymentDisplay();
+  padding:
+    23px
+    22px;
+
+  margin-bottom: 24px;
+
+  border-radius: 24px;
+
+  background:
+    linear-gradient(
+      145deg,
+      rgba(255, 255, 255, 0.94),
+      rgba(255, 248, 229, 0.95)
+    );
+
+  border:
+    1px solid var(--line);
+
+  box-shadow: var(--shadow);
 }
 
-function updateDepositAmountLive(
-  value
-) {
-  wizard.depositAmount =
-    Number(value || 0);
+.event-top-card::after {
+  content: "♥";
 
-  recalculatePayment();
+  position: absolute;
 
-  updatePaymentDisplay();
+  right: 16px;
+  bottom: -28px;
+
+  font-size: 6.5rem;
+
+  color:
+    rgba(242, 204, 88, 0.11);
+
+  transform:
+    rotate(-12deg);
+
+  pointer-events: none;
 }
 
-function updatePaymentDisplay() {
-  const total =
-    document.getElementById(
-      "paymentTotal"
-    );
+.event-top-copy {
+  position: relative;
 
-  const deposit =
-    document.getElementById(
-      "depositReceivedDisplay"
-    );
+  z-index: 1;
+}
 
-  const balance =
-    document.getElementById(
-      "balanceDueDisplay"
-    );
+.event-top-card h2 {
+  margin:
+    7px
+    0
+    6px;
 
-  if (total) {
-    total.textContent =
-      money(wizard.total);
-  }
+  color: var(--brown);
 
-  if (deposit) {
-    deposit.textContent =
-      wizard.depositPaid
-        ? money(
-            wizard.depositAmount
-          )
-        : money(0);
-  }
+  font-size: 1.75rem;
+  line-height: 1.1;
 
-  if (balance) {
-    balance.textContent =
-      money(
-        wizard.balanceDue
-      );
-  }
+  letter-spacing: -0.035em;
 }
 
 
 /* =========================================================
-   SAVE EVENT
-========================================================= */
+   EVENT TABS
+   ========================================================= */
 
-async function saveEventFromWizard() {
-  syncWizardFromCurrentStep();
+.event-tabs {
+  display: grid;
 
-  recalculatePayment();
+  grid-template-columns:
+    repeat(3, 1fr);
 
-  buildReservationsForWizard();
+  gap: 0;
 
-  if (!wizard.name.trim()) {
-    alert(
-      "Event name is required."
-    );
+  margin:
+    0
+    0
+    34px;
 
-    return;
-  }
+  border-bottom:
+    1px solid var(--line);
+}
 
-  if (!wizard.selectedPlush.length) {
-    const continueWithoutPlush =
-      confirm(
-        "No plush options are selected. Save the event anyway?"
-      );
+.event-tab {
+  position: relative;
 
-    if (!continueWithoutPlush) {
-      return;
-    }
-  }
+  min-height: 54px;
 
-  const savedEvent =
-    structuredClone(wizard);
+  display: flex;
+  align-items: center;
+  justify-content: center;
 
-  const isEdit =
-    wizardMode === "edit" &&
-    editingEventId;
+  gap: 6px;
 
-  let existingIndex = -1;
+  padding:
+    0
+    6px;
 
-  if (isEdit) {
-    existingIndex =
-      state.events.findIndex(
-        event =>
-          event.id ===
-          editingEventId
-      );
+  border: 0;
 
-    if (existingIndex === -1) {
-      alert(
-        "That event could not be found."
-      );
+  background: transparent;
 
-      return;
-    }
-  }
+  color: var(--muted);
 
-  try {
-    await saveEventToServer(
-      savedEvent,
-      !isEdit
-    );
-  } catch (err) {
-    alert(
-      `Could not save that event. ${err.message}`
-    );
-    return;
-  }
+  font-size: 0.9rem;
 
-  if (isEdit) {
-    /*
-      Replace the event with the newly
-      calculated version.
+  font-weight: 800;
+}
 
-      Existing packing checkmarks stay
-      because the wizard was created
-      from the existing event.
-    */
+.event-tab::after {
+  content: "";
 
-    state.events[existingIndex] =
-      savedEvent;
-  } else {
-    state.events.push(
-      savedEvent
-    );
-  }
+  position: absolute;
 
-  updateAttentionBadge();
+  left: 22%;
+  right: 22%;
+  bottom: -1px;
 
-  const savedId =
-    savedEvent.id;
+  height: 3px;
 
-  closeWizard();
+  border-radius:
+    999px
+    999px
+    0
+    0;
 
-  currentEventId =
-    savedId;
+  background: transparent;
+}
 
-  currentScreen =
-    "event-detail";
+.event-tab.active {
+  color: var(--brown);
+}
 
-  render();
-  showSWLToast(isEdit ? "Event updated" : "Event booked ♥");
+.event-tab.active::after {
+  background: var(--yellow);
+}
+
+.event-tab-icon {
+  display: none;
+}
+
+.event-tab-badge {
+  min-width: 18px;
+  height: 18px;
+
+  display: grid;
+  place-items: center;
+
+  padding:
+    0
+    5px;
+
+  border-radius: 999px;
+
+  background: var(--danger);
+
+  color: white;
+
+  font-size: 0.64rem;
+}
+
+.event-tab-count {
+  color: var(--muted);
+
+  font-size: 0.67rem;
+
+  font-weight: 750;
+}
+
+.event-tab.active
+.event-tab-count {
+  color: var(--brown-2);
+}
+
+
+/* =========================================================
+   EVENT TAB CONTENT
+   ========================================================= */
+
+.event-tab-panel {
+  padding-bottom: 10px;
+}
+
+.event-section-heading {
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+
+  gap: 18px;
+
+  margin:
+    40px
+    2px
+    13px;
+}
+
+.event-section-heading:first-child {
+  margin-top: 0;
+}
+
+.event-section-heading h3 {
+  margin:
+    5px
+    0
+    0;
+
+  color: var(--brown);
+
+  font-size: 1.16rem;
+
+  line-height: 1.2;
+
+  letter-spacing: -0.02em;
+}
+
+.compact-button {
+  min-height: 40px;
+
+  padding:
+    0
+    15px;
+
+  border-radius: 13px;
+}
+
+.detail-card {
+  padding:
+    20px;
+}
+
+.detail-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+
+  gap: 22px;
+
+  padding:
+    15px
+    0;
+
+  border-bottom:
+    1px solid var(--line);
+}
+
+.detail-row:first-child {
+  padding-top: 2px;
+}
+
+.detail-row:last-child {
+  padding-bottom: 2px;
+
+  border-bottom: 0;
+}
+
+.detail-row span:first-child {
+  flex:
+    0
+    0 34%;
+
+  color: var(--muted);
+
+  font-size: 0.86rem;
+}
+
+.detail-row strong {
+  text-align: right;
+
+  color: var(--brown);
+
+  line-height: 1.35;
+}
+
+.event-info-card {
+  padding:
+    22px
+    20px;
+}
+
+
+/* =========================================================
+   COMMUNICATION ACTIONS
+   ========================================================= */
+
+.event-action-grid {
+  display: grid;
+
+  grid-template-columns:
+    repeat(2, 1fr);
+
+  gap: 10px;
+
+  margin-top: 14px;
+}
+
+.event-action-button {
+  min-height: 50px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  gap: 7px;
+
+  padding:
+    0
+    14px;
+
+  border-radius: 14px;
+
+  background:
+    rgba(255, 255, 255, 0.72);
+
+  border:
+    1px solid var(--line);
+
+  color: var(--brown);
+
+  text-decoration: none;
+
+  font-size: 0.82rem;
+  font-weight: 800;
+}
+
+.event-action-button span {
+  font-size: 0.9rem;
+
+  color: var(--brown-2);
+}
+
+.event-action-button:active {
+  background: var(--yellow-pale);
+}
+
+
+/* =========================================================
+   REMINDERS / ATTENTION
+   ========================================================= */
+
+.attention-row {
+  display: grid;
+
+  grid-template-columns:
+    1fr
+    auto;
+
+  gap: 16px;
+
+  align-items: center;
+
+  min-height: 60px;
+
+  padding:
+    14px
+    0;
+
+  border-bottom:
+    1px solid var(--line);
+}
+
+.attention-row:first-child {
+  padding-top: 2px;
+}
+
+.attention-row:last-child {
+  padding-bottom: 2px;
+
+  border-bottom: 0;
+}
+
+.attention-row strong {
+  color: var(--brown);
+
+  line-height: 1.35;
+}
+
+.attention-row .muted {
+  margin-top: 4px;
+
+  font-size: 0.79rem;
+}
+
+.reminder-done-button {
+  width: 42px;
+  height: 42px;
+
+  display: grid;
+  place-items: center;
+
+  border: 0;
+  border-radius: 50%;
+
+  background:
+    rgba(242, 204, 88, 0.19);
+
+  color: var(--brown);
+
+  font-weight: 900;
+}
+
+.event-empty-mini {
+  padding:
+    6px
+    0;
+
+  color: var(--muted);
+
+  line-height: 1.55;
+}
+
+.event-notes-card {
+  line-height: 1.6;
+}
+
+
+/* =========================================================
+   PREP
+   ========================================================= */
+
+.prep-alert-card,
+.prep-ready-card {
+  display: grid;
+
+  grid-template-columns:
+    auto
+    1fr;
+
+  align-items: center;
+
+  gap: 15px;
+
+  padding:
+    18px;
+
+  margin-bottom: 34px;
+
+  border-radius: 19px;
+}
+
+.prep-alert-card {
+  background: var(--danger-soft);
+
+  border:
+    1px solid
+    rgba(180, 87, 76, 0.13);
+}
+
+.prep-ready-card {
+  background: var(--yellow-pale);
+
+  border:
+    1px solid
+    rgba(197, 149, 30, 0.14);
+}
+
+.prep-alert-icon,
+.prep-ready-icon {
+  width: 40px;
+  height: 40px;
+
+  display: grid;
+  place-items: center;
+
+  border-radius: 50%;
+
+  font-weight: 900;
+}
+
+.prep-alert-icon {
+  background:
+    rgba(180, 87, 76, 0.11);
+
+  color: var(--danger);
+}
+
+.prep-ready-icon {
+  background:
+    rgba(242, 204, 88, 0.30);
+
+  color: var(--brown);
+}
+
+.requirement-row,
+.inventory-row {
+  display: grid;
+
+  grid-template-columns:
+    1fr
+    auto;
+
+  align-items: center;
+
+  gap: 18px;
+
+  padding:
+    15px
+    0;
+
+  border-bottom:
+    1px solid var(--line);
+}
+
+.requirement-row:first-child,
+.inventory-row:first-child {
+  padding-top: 2px;
+}
+
+.requirement-row:last-child,
+.inventory-row:last-child {
+  padding-bottom: 2px;
+
+  border-bottom: 0;
+}
+
+.prep-requirement-row {
+  min-height: 62px;
+}
+
+.prep-requirement-row strong {
+  color: var(--brown);
+}
+
+.prep-requirement-row .muted {
+  margin-top: 4px;
+
+  font-size: 0.75rem;
+}
+
+.prep-quantity {
+  min-width: 34px;
+
+  text-align: right;
+
+  color: var(--brown);
+
+  font-size: 1rem;
+
+  font-weight: 900;
+}
+
+
+/* =========================================================
+   PACK
+   ========================================================= */
+
+.pack-progress-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  gap: 18px;
+
+  padding:
+    20px;
+
+  border-radius: 20px;
+
+  background:
+    rgba(255, 255, 255, 0.80);
+
+  border:
+    1px solid var(--line);
+
+  box-shadow: var(--shadow-soft);
+}
+
+.pack-progress-card strong {
+  display: block;
+
+  margin-top: 5px;
+
+  color: var(--brown);
+
+  font-size: 1.05rem;
+}
+
+.pack-progress-number {
+  color: var(--brown);
+
+  font-size: 1.4rem;
+
+  font-weight: 900;
+}
+
+.pack-progress-track {
+  height: 8px;
+
+  overflow: hidden;
+
+  margin:
+    12px
+    5px
+    0;
+
+  border-radius: 999px;
+
+  background:
+    rgba(76, 51, 37, 0.09);
+}
+
+.pack-progress-fill {
+  height: 100%;
+
+  border-radius: 999px;
+
+  background: var(--yellow);
+
+  transition:
+    width 0.2s ease;
+}
+
+.pack-heading {
+  margin-top: 38px;
+}
+
+.pack-list-card {
+  padding:
+    12px
+    20px;
+}
+
+.pack-row {
+  min-height: 62px;
+}
+
+.pack-row.done > span {
+  color: var(--muted);
+
+  opacity: 0.65;
+
+  text-decoration:
+    line-through;
+}
+
+.pack-done-message {
+  margin-top: 18px;
+
+  padding:
+    17px;
+
+  border-radius: 17px;
+
+  background: var(--yellow-pale);
+
+  color: var(--brown);
+
+  text-align: center;
+
+  font-weight: 850;
+}
+
+
+/* =========================================================
+   DELETE EVENT
+   ========================================================= */
+
+.event-delete-button {
+  display: block;
+
+  width: auto;
+
+  min-height: 40px;
+
+  margin:
+    48px
+    auto
+    10px;
+
+  padding:
+    8px
+    12px;
+
+  border: 0;
+
+  background: none;
+
+  color:
+    rgba(180, 87, 76, 0.78);
+
+  font-size: 0.76rem;
+
+  font-weight: 750;
+
+  text-decoration: underline;
+
+  text-underline-offset: 3px;
+}
+
+
+/* =========================================================
+   INVENTORY LIST
+   ========================================================= */
+
+.inventory-row {
+  min-height: 72px;
+
+  padding:
+    15px
+    2px;
+
+  cursor: pointer;
+}
+
+.inventory-row strong {
+  color: var(--brown);
+
+  line-height: 1.35;
+}
+
+.counts {
+  min-width: 115px;
+
+  text-align: right;
+}
+
+.available-count {
+  color: var(--brown);
+
+  font-size: 1.25rem;
+  line-height: 1;
+
+  font-weight: 900;
 }
 
 
 /* =========================================================
    MODALS
-========================================================= */
+   ========================================================= */
 
-function closeModal() {
-  document.getElementById(
-    "modalRoot"
-  ).innerHTML = "";
+.modal-backdrop {
+  position: fixed;
+
+  inset: 0;
+
+  z-index: 200;
+
+  display: flex;
+  align-items: end;
+  justify-content: center;
+
+  background:
+    rgba(42, 29, 21, 0.43);
+
+  backdrop-filter:
+    blur(2px);
 }
 
-function closeModalFromBackdrop(
-  event
-) {
-  if (
-    event.target.classList.contains(
-      "modal-backdrop"
-    )
-  ) {
-    closeModal();
-  }
+.modal-sheet {
+  width: min(100%, 720px);
+
+  max-height: 88vh;
+
+  overflow-y: auto;
+
+  padding:
+    22px
+    18px
+    calc(
+      24px +
+      env(safe-area-inset-bottom)
+    );
+
+  border-radius:
+    28px
+    28px
+    0
+    0;
+
+  background:
+    var(--cream-soft);
+
+  box-shadow:
+    0 -14px 40px
+    rgba(44, 29, 21, 0.17);
+}
+
+.modal-sheet::before {
+  content: "";
+
+  display: block;
+
+  width: 42px;
+  height: 5px;
+
+  margin:
+    -7px
+    auto
+    20px;
+
+  border-radius: 999px;
+
+  background:
+    rgba(76, 51, 37, 0.16);
+}
+
+.modal-sheet h2 {
+  color: var(--brown);
 }
 
 
 /* =========================================================
-   GLOBAL EVENTS
-========================================================= */
+   MODAL TITLE / CLOSE
+   ========================================================= */
 
-document
-  .querySelectorAll(".nav-item")
-  .forEach(button => {
-    button.addEventListener(
-      "click",
-      () => {
-        navigate(
-          button.dataset.screen
-        );
-      }
+.modal-title-row {
+  position: sticky;
+
+  top: -22px;
+
+  z-index: 3;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  gap: 16px;
+
+  margin:
+    -2px
+    -2px
+    24px;
+
+  padding:
+    14px
+    2px
+    14px;
+
+  background:
+    rgba(255, 250, 241, 0.97);
+
+  backdrop-filter:
+    blur(14px);
+}
+
+.modal-title-row h2 {
+  margin:
+    4px
+    0
+    0;
+}
+
+.modal-close-button {
+  flex:
+    0
+    0 auto;
+
+  width: 44px;
+  height: 44px;
+
+  display: grid;
+  place-items: center;
+
+  padding: 0;
+
+  border: 0;
+  border-radius: 50%;
+
+  background:
+    rgba(76, 51, 37, 0.07);
+
+  color: var(--brown);
+
+  font-size: 1.7rem;
+  line-height: 1;
+}
+
+
+/* =========================================================
+   INVENTORY MODAL
+   ========================================================= */
+
+.inventory-count-summary {
+  display: grid;
+
+  grid-template-columns:
+    repeat(3, 1fr);
+
+  gap: 10px;
+
+  margin-bottom: 34px;
+}
+
+.inventory-count-stat {
+  padding:
+    15px
+    8px;
+
+  border-radius: 16px;
+
+  text-align: center;
+
+  background:
+    rgba(255, 255, 255, 0.76);
+
+  border:
+    1px solid var(--line);
+}
+
+.inventory-count-stat span {
+  display: block;
+
+  color: var(--muted);
+
+  font-size: 0.67rem;
+
+  font-weight: 750;
+}
+
+.inventory-count-stat strong {
+  display: block;
+
+  margin-top: 5px;
+
+  color: var(--brown);
+
+  font-size: 1.45rem;
+
+  font-weight: 900;
+}
+
+.inventory-count-stat.short strong {
+  color: var(--danger);
+}
+
+.inventory-adjust-section {
+  margin-top: 0;
+}
+
+.inventory-stepper-card {
+  display: grid;
+
+  grid-template-columns:
+    62px
+    1fr
+    62px;
+
+  align-items: center;
+
+  gap: 14px;
+
+  padding: 13px;
+
+  border-radius: 20px;
+
+  background:
+    rgba(255, 255, 255, 0.8);
+
+  border:
+    1px solid var(--line);
+}
+
+.inventory-stepper-button {
+  width: 62px;
+  height: 62px;
+
+  padding: 0;
+
+  border:
+    1px solid var(--line);
+
+  border-radius: 17px;
+
+  background: white;
+
+  color: var(--brown);
+
+  font-size: 1.85rem;
+  line-height: 1;
+
+  font-weight: 700;
+}
+
+.inventory-stepper-button.add {
+  background: var(--yellow);
+
+  border-color: var(--yellow);
+}
+
+.inventory-stepper-number {
+  color: var(--brown);
+
+  text-align: center;
+
+  font-size: 2rem;
+
+  font-weight: 900;
+}
+
+.inventory-add-six {
+  margin-top: 14px;
+}
+
+.inventory-set-exact {
+  display: block;
+
+  margin:
+    12px
+    auto
+    0;
+}
+
+
+/* =========================================================
+   SMALL SCREEN TUNING
+   ========================================================= */
+
+@media (max-width: 430px) {
+
+  .main-content {
+    padding:
+      20px
+      15px
+      30px;
+  }
+
+  .section {
+    margin:
+      30px
+      0;
+  }
+
+  .event-top-card {
+    padding:
+      20px
+      18px;
+
+    margin-bottom: 22px;
+  }
+
+  .event-top-card h2 {
+    font-size: 1.55rem;
+  }
+
+  .event-tabs {
+    margin-bottom: 30px;
+  }
+
+  .event-section-heading {
+    margin-top: 36px;
+  }
+
+  .event-action-grid {
+    gap: 9px;
+  }
+
+  .event-action-button {
+    min-height: 48px;
+  }
+
+  .detail-card {
+    padding:
+      18px;
+  }
+
+  .detail-row {
+    gap: 16px;
+  }
+
+  .detail-row span:first-child {
+    flex-basis: 31%;
+  }
+
+  .inventory-count-summary {
+    gap: 7px;
+  }
+
+  .inventory-count-stat {
+    padding:
+      13px
+      5px;
+  }
+
+  .inventory-stepper-card {
+    grid-template-columns:
+      58px
+      1fr
+      58px;
+
+    gap: 10px;
+  }
+
+  .inventory-stepper-button {
+    width: 58px;
+    height: 58px;
+  }
+
+}
+
+
+/* =========================================================
+   DESKTOP
+   ========================================================= */
+
+@media (min-width: 700px) {
+
+  .main-content {
+    padding-top: 30px;
+  }
+
+  .bottom-nav {
+    bottom: 16px;
+
+    border:
+      1px solid var(--line);
+
+    border-radius: 22px;
+
+    box-shadow: var(--shadow);
+  }
+
+  #app {
+    padding-bottom: 110px;
+  }
+
+  .tap-card:hover {
+    transform:
+      translateY(-2px);
+
+    box-shadow:
+      0 12px 30px
+      rgba(76, 51, 37, 0.09);
+  }
+
+  .modal-sheet {
+    margin-bottom: 18px;
+
+    border-radius: 28px;
+  }
+
+}
+
+
+/* =========================================================
+   REDUCED MOTION
+   ========================================================= */
+
+@media (
+  prefers-reduced-motion: reduce
+) {
+
+  *,
+  *::before,
+  *::after {
+    transition-duration:
+      0.01ms !important;
+
+    animation-duration:
+      0.01ms !important;
+
+    animation-iteration-count:
+      1 !important;
+  }
+
+}
+/* =========================================================
+   SWL PLUSH + INVENTORY VISUALS
+   ========================================================= */
+
+.inventory-plush-thumb,
+.inventory-modal-plush,
+.plush-choice-image {
+  overflow: hidden;
+  background: var(--yellow-pale);
+  border: 1px solid rgba(76, 51, 37, 0.08);
+}
+
+.inventory-plush-thumb img,
+.inventory-modal-plush img,
+.plush-choice-image img {
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: contain;
+}
+
+
+/* INVENTORY TOOLBAR */
+
+.inventory-toolbar {
+  margin-bottom: 28px;
+}
+
+.inventory-search-wrap {
+  position: relative;
+  margin-bottom: 13px;
+}
+
+.inventory-search-icon {
+  position: absolute;
+  left: 15px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--muted);
+  font-size: 1.1rem;
+  pointer-events: none;
+}
+
+.inventory-search {
+  width: 100%;
+  height: 50px;
+  padding: 0 16px 0 42px;
+  border: 1px solid var(--line);
+  border-radius: 15px;
+  background: rgba(255, 255, 255, 0.72);
+  outline: none;
+  color: var(--text);
+}
+
+.inventory-search:focus {
+  border-color: rgba(194, 146, 27, 0.5);
+  box-shadow: 0 0 0 3px rgba(242, 204, 88, 0.12);
+}
+
+
+/* INVENTORY TABS */
+
+.inventory-category-tabs {
+  display: flex;
+  gap: 7px;
+  overflow-x: auto;
+  padding: 1px 0 5px;
+  scrollbar-width: none;
+}
+
+.inventory-category-tabs::-webkit-scrollbar {
+  display: none;
+}
+
+.inventory-category-tab {
+  flex: 0 0 auto;
+  min-height: 36px;
+  padding: 0 15px;
+  border: 1px solid transparent;
+  border-radius: 999px;
+  background: rgba(76, 51, 37, 0.05);
+  color: var(--muted);
+  font-size: 0.76rem;
+  font-weight: 800;
+}
+
+.inventory-category-tab.active {
+  background: var(--yellow);
+  color: var(--brown);
+  box-shadow: 0 3px 8px rgba(121, 87, 18, 0.11);
+}
+
+
+/* INVENTORY GROUPS */
+
+.inventory-group {
+  margin-bottom: 30px;
+}
+
+.inventory-group-header {
+  margin-bottom: 9px;
+  padding: 0 4px;
+}
+
+.inventory-group-header > div {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.inventory-group-header h2 {
+  margin: 0;
+  color: var(--brown);
+  font-size: 1rem;
+  letter-spacing: -0.015em;
+}
+
+.inventory-group-header span {
+  min-width: 24px;
+  height: 24px;
+  display: grid;
+  place-items: center;
+  padding: 0 6px;
+  border-radius: 999px;
+  background: rgba(242, 204, 88, 0.20);
+  color: var(--brown-2);
+  font-size: 0.68rem;
+  font-weight: 850;
+}
+
+.inventory-list-card {
+  overflow: hidden;
+  border-radius: 19px;
+  background: rgba(255, 255, 255, 0.79);
+  border: 1px solid var(--line);
+  box-shadow: var(--shadow-soft);
+}
+
+
+/* INVENTORY ROW */
+
+.inventory-item-row {
+  min-height: 76px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--line);
+  cursor: pointer;
+}
+
+.inventory-item-row:last-child {
+  border-bottom: 0;
+}
+
+.inventory-item-row:active {
+  background: rgba(242, 204, 88, 0.07);
+}
+
+.inventory-item-left {
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.inventory-plush-thumb,
+.inventory-generic-icon {
+  flex: 0 0 auto;
+  width: 54px;
+  height: 54px;
+  border-radius: 14px;
+}
+
+.inventory-plush-thumb img {
+  object-position: center 43%;
+}
+
+.inventory-generic-icon {
+  display: grid;
+  place-items: center;
+  background: var(--yellow-pale);
+  color: var(--brown);
+  font-size: 1.15rem;
+  font-weight: 900;
+  border: 1px solid rgba(76, 51, 37, 0.07);
+}
+
+.inventory-item-copy {
+  min-width: 0;
+}
+
+.inventory-item-copy strong {
+  display: block;
+  overflow: hidden;
+  color: var(--brown);
+  font-size: 0.91rem;
+  line-height: 1.25;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.inventory-item-meta {
+  display: flex;
+  gap: 8px;
+  margin-top: 4px;
+  color: var(--muted);
+  font-size: 0.69rem;
+}
+
+.inventory-item-meta span + span::before {
+  content: "·";
+  margin-right: 8px;
+}
+
+.inventory-item-right {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.inventory-available {
+  text-align: right;
+}
+
+.inventory-available strong {
+  color: var(--brown);
+  font-size: 0.96rem;
+}
+
+.inventory-available span {
+  display: block;
+  margin-top: 1px;
+  color: var(--muted);
+  font-size: 0.63rem;
+}
+
+.inventory-available.short strong,
+.inventory-available.short span {
+  color: var(--danger);
+}
+
+.inventory-quick-six {
+  min-width: 39px;
+  height: 35px;
+  padding: 0 8px;
+  border: 0;
+  border-radius: 11px;
+  background: var(--yellow);
+  color: var(--brown);
+  font-size: 0.76rem;
+  font-weight: 900;
+}
+
+.inventory-chevron {
+  color: rgba(76, 51, 37, 0.45);
+  font-size: 1.35rem;
+  line-height: 1;
+}
+
+
+/* INVENTORY MODAL */
+
+.inventory-modal-title {
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.inventory-modal-plush {
+  flex: 0 0 auto;
+  width: 68px;
+  height: 68px;
+  border-radius: 17px;
+}
+
+.inventory-modal-plush img {
+  object-position: center 42%;
+}
+
+.inventory-modal-title h2 {
+  margin: 4px 0 0;
+  line-height: 1.1;
+}
+
+.inventory-count-summary {
+  margin-top: 4px;
+}
+
+.inventory-count-stat.available {
+  background: var(--yellow-pale);
+}
+
+.inventory-count-stat.available strong {
+  color: var(--brown);
+}
+
+.inventory-adjust-section {
+  margin-top: 30px;
+}
+
+.inventory-adjust-section h3 {
+  margin: 0 0 12px;
+  color: var(--brown);
+  font-size: 1rem;
+}
+
+.inventory-add-six {
+  min-height: 49px;
+}
+
+.inventory-set-exact {
+  display: block;
+  margin: 12px auto 0;
+  padding: 5px 8px;
+  border: 0;
+  background: none;
+  color: var(--brown-2);
+  font-size: 0.78rem;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.inventory-reserved-section {
+  margin-top: 36px;
+}
+
+.inventory-reservation-card {
+  width: 100%;
+  min-height: 65px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 15px;
+  padding: 13px 15px;
+  border: 1px solid var(--line);
+  border-radius: 15px;
+  background: rgba(255, 255, 255, 0.72);
+  text-align: left;
+}
+
+.inventory-reservation-card + .inventory-reservation-card {
+  margin-top: 8px;
+}
+
+.inventory-reservation-card strong {
+  display: block;
+  color: var(--brown);
+}
+
+.inventory-reservation-card div span {
+  display: block;
+  margin-top: 3px;
+  color: var(--muted);
+  font-size: 0.73rem;
+}
+
+.inventory-reservation-card > span {
+  color: var(--muted);
+  font-size: 1.3rem;
+}
+
+.inventory-none-reserved {
+  padding: 18px;
+  border: 1px dashed var(--line-strong);
+  border-radius: 15px;
+  color: var(--muted);
+  text-align: center;
+}
+
+
+/* ADD EVENT PLUSH CARDS */
+
+.plush-choice-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 11px;
+  margin-top: 14px;
+}
+
+.plush-choice-card {
+  overflow: hidden;
+  padding: 0;
+  border: 2px solid transparent;
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.80);
+  text-align: left;
+  box-shadow: 0 4px 14px rgba(76, 51, 37, 0.05);
+}
+
+.plush-choice-card.selected {
+  border-color: var(--yellow);
+  background: var(--yellow-pale);
+}
+
+.plush-choice-image {
+  position: relative;
+  width: 100%;
+  height: 125px;
+  border: 0;
+  border-radius: 0;
+  background: var(--cream-deep);
+}
+
+.plush-choice-image img {
+  object-position: center 42%;
+}
+
+.plush-choice-check {
+  position: absolute;
+  top: 9px;
+  right: 9px;
+  width: 26px;
+  height: 26px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.91);
+  color: rgba(76, 51, 37, 0.18);
+  font-size: 0.74rem;
+  font-weight: 900;
+  box-shadow: 0 2px 7px rgba(76, 51, 37, 0.09);
+}
+
+.plush-choice-card.selected .plush-choice-check {
+  background: var(--yellow);
+  color: var(--brown);
+}
+
+.plush-choice-copy {
+  padding: 11px 12px 13px;
+}
+
+.plush-choice-copy strong {
+  display: block;
+  color: var(--brown);
+  font-size: 0.86rem;
+}
+
+.plush-choice-copy span {
+  display: block;
+  margin-top: 3px;
+  color: var(--muted);
+  font-size: 0.67rem;
+}
+
+
+/* MOBILE */
+
+@media (max-width: 430px) {
+
+  .inventory-item-row {
+    padding: 10px;
+  }
+
+  .inventory-plush-thumb,
+  .inventory-generic-icon {
+    width: 50px;
+    height: 50px;
+  }
+
+  .inventory-item-right {
+    gap: 6px;
+  }
+
+  .inventory-available span {
+    display: none;
+  }
+
+  .inventory-quick-six {
+    min-width: 37px;
+    padding: 0 7px;
+  }
+
+  .plush-choice-image {
+    height: 112px;
+  }
+}
+/* =========================================================
+   SWL HOME — STUDIO DASHBOARD
+   ========================================================= */
+
+.swl-home-welcome {
+  position: relative;
+  overflow: hidden;
+
+  min-height: 190px;
+
+  display: flex;
+  align-items: center;
+
+  padding: 27px 25px;
+
+  border: 1px solid
+    rgba(76, 51, 37, 0.08);
+
+  border-radius: 26px;
+
+  background:
+    linear-gradient(
+      135deg,
+      #f7cf58 0%,
+      #f4d46e 58%,
+      #fae7a4 100%
     );
-  });
 
-document
-  .getElementById(
-    "headerAction"
-  )
-  .addEventListener(
-    "click",
-    () => {
-      if (
-  currentScreen === "events"
-) {
-  openAddEventWizard();
-  return;
+  box-shadow:
+    0 8px 24px
+    rgba(76, 51, 37, 0.07);
 }
 
-if (
-  currentScreen === "files"
-) {
-  openFileUpload();
+.swl-home-welcome::before {
+  content: "";
+
+  position: absolute;
+
+  width: 230px;
+  height: 230px;
+
+  right: -70px;
+  top: -85px;
+
+  border-radius: 50%;
+
+  background:
+    rgba(255, 255, 255, 0.18);
 }
-    }
+
+.swl-home-welcome-copy {
+  position: relative;
+  z-index: 2;
+
+  width: 78%;
+}
+
+.swl-home-greeting {
+  margin-bottom: 7px;
+
+  color:
+    rgba(76, 51, 37, 0.73);
+
+  font-size: 0.78rem;
+  font-weight: 850;
+}
+
+.swl-home-welcome h2 {
+  max-width: 400px;
+
+  margin: 0;
+
+  color: var(--brown);
+
+  font-size: clamp(
+    1.7rem,
+    6vw,
+    2.2rem
   );
 
-document.addEventListener("pointerdown", event => {
-  const target = event.target.closest("button, .tap-card, .file-row, .recent-file-card");
-  if (!target || target.disabled) return;
-  target.classList.add("swl-pressed");
-});
+  line-height: 1.04;
 
-document.addEventListener("pointerup", event => {
-  const target = event.target.closest("button, .tap-card, .file-row, .recent-file-card");
-  if (!target) return;
-  setTimeout(() => target.classList.remove("swl-pressed"), 90);
-});
+  letter-spacing: -0.045em;
+}
 
-document.addEventListener("pointercancel", () => {
-  document.querySelectorAll(".swl-pressed").forEach(node => node.classList.remove("swl-pressed"));
-});
+.swl-home-welcome h2 span {
+  display: inline;
+  font-style: italic;
+}
 
-async function initializeApp() {
-  const main =
-    document.getElementById(
-      "mainContent"
-    );
+.swl-home-welcome p {
+  max-width: 310px;
 
-  if (main) {
-    main.innerHTML = `
-      <div class="card empty-card">
-        <strong>Loading SWL Ops…</strong>
-      </div>
-    `;
+  margin:
+    12px
+    0
+    0;
+
+  color:
+    rgba(76, 51, 37, 0.67);
+
+  font-size: 0.78rem;
+  line-height: 1.45;
+}
+
+.swl-home-heart {
+  position: absolute;
+
+  right: 17px;
+  bottom: -23px;
+
+  color:
+    rgba(255, 255, 255, 0.29);
+
+  font-size: 8.5rem;
+  line-height: 1;
+
+  transform:
+    rotate(-12deg);
+}
+
+
+/* GLANCE CARDS */
+
+.swl-home-glance {
+  display: grid;
+
+  grid-template-columns:
+    repeat(3, 1fr);
+
+  gap: 9px;
+
+  margin-top: 12px;
+}
+
+.swl-glance-card {
+  min-width: 0;
+
+  padding:
+    14px
+    8px
+    13px;
+
+  border:
+    1px solid var(--line);
+
+  border-radius: 17px;
+
+  background:
+    rgba(255, 255, 255, 0.79);
+
+  color: var(--brown);
+
+  box-shadow:
+    0 3px 11px
+    rgba(76, 51, 37, 0.035);
+}
+
+.swl-glance-card strong {
+  display: block;
+
+  font-size: 1.32rem;
+  line-height: 1;
+}
+
+.swl-glance-card span {
+  display: block;
+
+  margin-top: 5px;
+
+  overflow: hidden;
+
+  color: var(--muted);
+
+  font-size: 0.66rem;
+  font-weight: 750;
+
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.swl-glance-card.needs-attention {
+  background: #fff8ec;
+
+  border-color:
+    rgba(196, 150, 35, 0.20);
+}
+
+
+/* HOME SECTIONS */
+
+.swl-home-section {
+  margin-top: 32px;
+}
+
+.swl-home-section-title {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  gap: 15px;
+
+  margin:
+    0
+    3px
+    12px;
+}
+
+.swl-home-section-title h2 {
+  margin: 0;
+
+  color: var(--brown);
+
+  font-size: 1.06rem;
+
+  letter-spacing:
+    -0.018em;
+}
+
+.swl-home-section-title button {
+  padding: 5px;
+
+  border: 0;
+
+  background: none;
+
+  color: var(--brown-2);
+
+  font-size: 0.73rem;
+  font-weight: 800;
+}
+
+
+/* QUICK ACTIONS */
+
+.swl-quick-grid {
+  display: grid;
+
+  grid-template-columns:
+    repeat(2, 1fr);
+
+  gap: 9px;
+}
+
+.swl-quick-action {
+  min-height: 78px;
+
+  display: flex;
+  align-items: center;
+
+  gap: 11px;
+
+  padding:
+    12px
+    13px;
+
+  border:
+    1px solid var(--line);
+
+  border-radius: 18px;
+
+  background:
+    rgba(255, 255, 255, 0.78);
+
+  color: var(--brown);
+
+  text-align: left;
+
+  box-shadow:
+    0 3px 10px
+    rgba(76, 51, 37, 0.035);
+}
+
+.swl-quick-action.primary {
+  background:
+    var(--yellow-pale);
+
+  border-color:
+    rgba(196, 150, 35, 0.16);
+}
+
+.swl-quick-icon {
+  flex:
+    0
+    0 auto;
+
+  width: 38px;
+  height: 38px;
+
+  display: grid;
+  place-items: center;
+
+  border-radius: 12px;
+
+  background:
+    rgba(242, 204, 88, 0.22);
+
+  color: var(--brown);
+
+  font-size: 1rem;
+  font-weight: 900;
+}
+
+.swl-quick-action.primary
+.swl-quick-icon {
+  background: var(--yellow);
+}
+
+.swl-quick-action > span:last-child {
+  min-width: 0;
+}
+
+.swl-quick-action strong {
+  display: block;
+
+  color: var(--brown);
+
+  font-size: 0.81rem;
+}
+
+.swl-quick-action small {
+  display: block;
+
+  margin-top: 3px;
+
+  overflow: hidden;
+
+  color: var(--muted);
+
+  font-size: 0.62rem;
+  line-height: 1.25;
+
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+
+/* NEXT EVENT */
+
+.swl-next-event-card {
+  width: 100%;
+
+  display: grid;
+
+  grid-template-columns:
+    57px
+    minmax(0, 1fr)
+    auto;
+
+  align-items: center;
+
+  gap: 13px;
+
+  padding: 13px;
+
+  border:
+    1px solid var(--line);
+
+  border-radius: 20px;
+
+  background:
+    rgba(255, 255, 255, 0.82);
+
+  color: var(--text);
+
+  text-align: left;
+
+  box-shadow: var(--shadow-soft);
+}
+
+.swl-next-date {
+  width: 57px;
+  height: 62px;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 15px;
+
+  background:
+    var(--yellow-pale);
+}
+
+.swl-next-date span {
+  color: var(--brown-2);
+
+  font-size: 0.59rem;
+  font-weight: 900;
+
+  letter-spacing: 0.07em;
+}
+
+.swl-next-date strong {
+  margin-top: 2px;
+
+  color: var(--brown);
+
+  font-size: 1.45rem;
+  line-height: 1;
+}
+
+.swl-next-copy {
+  min-width: 0;
+}
+
+.swl-next-topline {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+
+  gap: 5px;
+
+  margin-bottom: 4px;
+
+  color: var(--muted);
+
+  font-size: 0.62rem;
+  font-weight: 750;
+}
+
+.swl-next-ready,
+.swl-next-warning {
+  padding:
+    3px
+    6px;
+
+  border-radius: 999px;
+}
+
+.swl-next-ready {
+  background:
+    rgba(242, 204, 88, 0.18);
+
+  color: var(--brown-2);
+}
+
+.swl-next-warning {
+  background: var(--danger-soft);
+
+  color: var(--danger);
+}
+
+.swl-next-name {
+  display: block;
+
+  overflow: hidden;
+
+  color: var(--brown);
+
+  font-size: 0.94rem;
+
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.swl-next-meta {
+  margin-top: 4px;
+
+  color: var(--muted);
+
+  font-size: 0.7rem;
+}
+
+.swl-next-arrow {
+  padding-right: 2px;
+
+  color:
+    rgba(76, 51, 37, 0.37);
+
+  font-size: 1.4rem;
+}
+
+
+/* ATTENTION */
+
+.swl-attention-list,
+.swl-coming-list {
+  overflow: hidden;
+
+  border:
+    1px solid var(--line);
+
+  border-radius: 19px;
+
+  background:
+    rgba(255, 255, 255, 0.79);
+
+  box-shadow: var(--shadow-soft);
+}
+
+.swl-attention-item,
+.swl-coming-event {
+  width: 100%;
+
+  min-height: 66px;
+
+  display: flex;
+  align-items: center;
+
+  gap: 11px;
+
+  padding:
+    11px
+    13px;
+
+  border: 0;
+  border-bottom:
+    1px solid var(--line);
+
+  background: transparent;
+
+  color: var(--text);
+
+  text-align: left;
+}
+
+.swl-attention-item:last-child,
+.swl-coming-event:last-child {
+  border-bottom: 0;
+}
+
+.swl-attention-mark {
+  flex:
+    0
+    0 auto;
+
+  width: 31px;
+  height: 31px;
+
+  display: grid;
+  place-items: center;
+
+  border-radius: 10px;
+
+  background: var(--danger-soft);
+
+  color: var(--danger);
+
+  font-size: 0.78rem;
+  font-weight: 900;
+}
+
+.swl-attention-copy {
+  flex: 1;
+  min-width: 0;
+}
+
+.swl-attention-copy strong {
+  display: block;
+
+  overflow: hidden;
+
+  color: var(--brown);
+
+  font-size: 0.79rem;
+
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.swl-attention-copy small {
+  display: block;
+
+  margin-top: 3px;
+
+  color: var(--muted);
+
+  font-size: 0.66rem;
+}
+
+.swl-attention-arrow {
+  color:
+    rgba(76, 51, 37, 0.35);
+
+  font-size: 1.25rem;
+}
+
+
+/* ALL GOOD */
+
+.swl-all-good {
+  display: flex;
+  align-items: center;
+
+  gap: 12px;
+
+  padding:
+    15px
+    16px;
+
+  border:
+    1px solid
+    rgba(196, 150, 35, 0.13);
+
+  border-radius: 18px;
+
+  background:
+    var(--yellow-pale);
+}
+
+.swl-all-good > span {
+  width: 32px;
+  height: 32px;
+
+  flex:
+    0
+    0 auto;
+
+  display: grid;
+  place-items: center;
+
+  border-radius: 50%;
+
+  background: var(--yellow);
+
+  color: var(--brown);
+
+  font-weight: 900;
+}
+
+.swl-all-good strong {
+  color: var(--brown);
+
+  font-size: 0.81rem;
+}
+
+.swl-all-good p {
+  margin:
+    3px
+    0
+    0;
+
+  color: var(--muted);
+
+  font-size: 0.68rem;
+}
+
+
+/* COMING UP */
+
+.swl-coming-event {
+  justify-content: space-between;
+}
+
+.swl-coming-event > div {
+  min-width: 0;
+}
+
+.swl-coming-event strong {
+  display: block;
+
+  overflow: hidden;
+
+  color: var(--brown);
+
+  font-size: 0.81rem;
+
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.swl-coming-event div span {
+  display: block;
+
+  margin-top: 4px;
+
+  color: var(--muted);
+
+  font-size: 0.67rem;
+}
+
+.swl-coming-status {
+  flex:
+    0
+    0 auto;
+
+  min-width: 28px;
+  height: 28px;
+
+  display: grid;
+  place-items: center;
+
+  padding:
+    0
+    6px;
+
+  border-radius: 999px;
+
+  background:
+    rgba(242, 204, 88, 0.20);
+
+  color: var(--brown);
+
+  font-size: 0.68rem;
+  font-weight: 900;
+}
+
+.swl-coming-status.warning {
+  background: var(--danger-soft);
+  color: var(--danger);
+}
+
+
+/* SMALL PHONE */
+
+@media (max-width: 390px) {
+
+  .swl-home-welcome {
+    min-height: 178px;
+
+    padding:
+      23px
+      20px;
   }
 
-  try {
-    await loadStateFromServer();
-    render();
-  } catch (err) {
-    console.error(err);
+  .swl-home-welcome-copy {
+    width: 84%;
+  }
 
-    if (main) {
-      main.innerHTML = `
-        <div class="status-banner warning">
-          SWL Ops couldn’t load its data.
-        </div>
+  .swl-home-welcome h2 {
+    font-size: 1.65rem;
+  }
 
-        <div class="card empty-card">
-          <strong>${escapeHTML(err.message)}</strong>
-          <p>
-            Refresh the page and try again.
-          </p>
-        </div>
-      `;
-    }
+  .swl-home-glance {
+    gap: 7px;
+  }
+
+  .swl-glance-card {
+    padding:
+      13px
+      5px;
+  }
+
+  .swl-quick-grid {
+    gap: 8px;
+  }
+
+  .swl-quick-action {
+    min-height: 73px;
+
+    padding:
+      10px;
+  }
+
+  .swl-quick-icon {
+    width: 34px;
+    height: 34px;
+  }
+
+}
+/* =========================================================
+   PACKING DELIGHT
+   ========================================================= */
+
+
+/* Individual packed-item pop */
+
+.pack-row {
+  position: relative;
+
+  transition:
+    background 0.18s ease,
+    transform 0.18s ease;
+}
+
+.pack-row.just-packed {
+  animation:
+    swl-pack-pop
+    0.38s
+    cubic-bezier(
+      0.2,
+      1.35,
+      0.45,
+      1
+    );
+}
+
+.pack-row.just-packed::before {
+  content: "♥";
+
+  position: absolute;
+
+  right: 39px;
+  top: 5px;
+
+  z-index: 3;
+
+  color: var(--yellow);
+
+  font-size: 0.85rem;
+
+  pointer-events: none;
+
+  animation:
+    swl-mini-heart
+    0.48s
+    ease-out
+    forwards;
+}
+
+@keyframes swl-pack-pop {
+
+  0% {
+    transform: scale(1);
+  }
+
+  45% {
+    transform: scale(1.018);
+  }
+
+  100% {
+    transform: scale(1);
+  }
+
+}
+
+@keyframes swl-mini-heart {
+
+  0% {
+    opacity: 0;
+    transform:
+      translateY(5px)
+      scale(0.4)
+      rotate(-12deg);
+  }
+
+  35% {
+    opacity: 1;
+  }
+
+  100% {
+    opacity: 0;
+    transform:
+      translateY(-16px)
+      scale(1.15)
+      rotate(10deg);
+  }
+
+}
+
+
+/* Progress card completed state */
+
+.pack-progress-card.complete {
+  background:
+    linear-gradient(
+      135deg,
+      #fff7d9,
+      #f8d76d
+    );
+
+  border-color:
+    rgba(196, 150, 35, 0.23);
+}
+
+.pack-progress-card.complete
+.card-label {
+  color:
+    rgba(76, 51, 37, 0.65);
+}
+
+.pack-progress-card.complete
+.pack-progress-number {
+  transform: scale(1.04);
+}
+
+
+/* Big final-item pop */
+
+.pack-progress-card.pack-celebration {
+  animation:
+    swl-pack-complete
+    0.72s
+    cubic-bezier(
+      0.16,
+      1.35,
+      0.3,
+      1
+    );
+}
+
+@keyframes swl-pack-complete {
+
+  0% {
+    transform: scale(1);
+  }
+
+  32% {
+    transform:
+      scale(1.035)
+      rotate(-0.6deg);
+  }
+
+  58% {
+    transform:
+      scale(0.992)
+      rotate(0.3deg);
+  }
+
+  100% {
+    transform:
+      scale(1)
+      rotate(0);
+  }
+
+}
+
+
+/* Progress bar has a little life */
+
+.pack-progress-fill {
+  position: relative;
+
+  transition:
+    width
+    0.35s
+    cubic-bezier(
+      0.2,
+      0.8,
+      0.3,
+      1
+    );
+}
+
+.pack-progress-card.complete
++ .pack-progress-track
+.pack-progress-fill {
+  box-shadow:
+    0 0 0 3px
+    rgba(242, 204, 88, 0.10);
+}
+
+
+/* Finished checklist */
+
+.pack-list-complete-pop {
+  animation:
+    swl-list-finish
+    0.65s
+    ease-out;
+}
+
+@keyframes swl-list-finish {
+
+  0% {
+    transform: scale(1);
+  }
+
+  45% {
+    transform: scale(1.008);
+  }
+
+  100% {
+    transform: scale(1);
+  }
+
+}
+
+
+/* ALL PACKED message */
+
+.pack-done-message {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  gap: 12px;
+
+  padding:
+    18px
+    16px;
+
+  background:
+    linear-gradient(
+      135deg,
+      #fff6d5,
+      #f9df86
+    );
+
+  border:
+    1px solid
+    rgba(196, 150, 35, 0.16);
+
+  box-shadow:
+    0 4px 14px
+    rgba(76, 51, 37, 0.045);
+}
+
+.pack-done-icon {
+  flex:
+    0
+    0 auto;
+
+  width: 38px;
+  height: 38px;
+
+  display: grid;
+  place-items: center;
+
+  border-radius: 50%;
+
+  background: var(--yellow);
+
+  color: var(--brown);
+
+  font-size: 1rem;
+
+  animation:
+    swl-done-heart
+    0.7s
+    cubic-bezier(
+      0.16,
+      1.45,
+      0.3,
+      1
+    );
+}
+
+.pack-done-message strong {
+  display: block;
+
+  color: var(--brown);
+
+  font-size: 0.84rem;
+
+  letter-spacing: 0.025em;
+}
+
+.pack-done-message span {
+  display: block;
+
+  margin-top: 3px;
+
+  color: var(--brown-2);
+
+  font-size: 0.7rem;
+  font-weight: 650;
+}
+
+@keyframes swl-done-heart {
+
+  0% {
+    transform:
+      scale(0.25)
+      rotate(-20deg);
+  }
+
+  55% {
+    transform:
+      scale(1.2)
+      rotate(8deg);
+  }
+
+  100% {
+    transform:
+      scale(1)
+      rotate(0);
+  }
+
+}
+
+
+/* =========================================================
+   FINAL HEART BURST
+   ========================================================= */
+
+.pack-heart-burst {
+  position: fixed;
+
+  left: 50%;
+  top: 47%;
+
+  z-index: 9999;
+
+  width: 1px;
+  height: 1px;
+
+  pointer-events: none;
+}
+
+.pack-heart-burst span {
+  position: absolute;
+
+  color: var(--yellow);
+
+  font-size: 1.45rem;
+
+  text-shadow:
+    0 2px 5px
+    rgba(76, 51, 37, 0.10);
+
+  opacity: 0;
+
+  animation:
+    swl-heart-fly
+    1.05s
+    ease-out
+    forwards;
+}
+
+.pack-heart-burst span:nth-child(1) {
+  --x: -72px;
+  --y: -95px;
+  animation-delay: 0s;
+}
+
+.pack-heart-burst span:nth-child(2) {
+  --x: -34px;
+  --y: -125px;
+  animation-delay: 0.06s;
+}
+
+.pack-heart-burst span:nth-child(3) {
+  --x: 5px;
+  --y: -105px;
+  animation-delay: 0.02s;
+}
+
+.pack-heart-burst span:nth-child(4) {
+  --x: 46px;
+  --y: -122px;
+  animation-delay: 0.08s;
+}
+
+.pack-heart-burst span:nth-child(5) {
+  --x: 77px;
+  --y: -88px;
+  animation-delay: 0.03s;
+}
+
+@keyframes swl-heart-fly {
+
+  0% {
+    opacity: 0;
+
+    transform:
+      translate(-50%, -50%)
+      scale(0.25)
+      rotate(-15deg);
+  }
+
+  20% {
+    opacity: 1;
+  }
+
+  100% {
+    opacity: 0;
+
+    transform:
+      translate(
+        calc(-50% + var(--x)),
+        calc(-50% + var(--y))
+      )
+      scale(1.25)
+      rotate(15deg);
+  }
+/* =========================================================
+   SWL INVENTORY — BOUTIQUE PASS
+   ========================================================= */
+
+.inventory-toolbar {
+  margin-bottom: 30px;
+}
+
+
+/* SEARCH */
+
+.inventory-search-wrap {
+  margin-bottom: 14px;
+}
+
+.inventory-search {
+  height: 52px;
+
+  padding:
+    0
+    17px
+    0
+    44px;
+
+  border:
+    1px solid
+    rgba(76, 51, 37, 0.09);
+
+  border-radius: 17px;
+
+  background:
+    rgba(255, 255, 255, 0.82);
+
+  box-shadow:
+    0 3px 12px
+    rgba(76, 51, 37, 0.035);
+
+  font-size: 0.83rem;
+}
+
+.inventory-search-icon {
+  left: 16px;
+
+  color:
+    rgba(76, 51, 37, 0.45);
+}
+
+
+/* CATEGORY PILLS */
+
+.inventory-category-tabs {
+  gap: 8px;
+
+  padding:
+    1px
+    1px
+    6px;
+}
+
+.inventory-category-tab {
+  min-height: 37px;
+
+  padding:
+    0
+    16px;
+
+  border:
+    1px solid
+    rgba(76, 51, 37, 0.055);
+
+  background:
+    rgba(255, 255, 255, 0.62);
+
+  color: var(--brown-2);
+
+  font-size: 0.73rem;
+
+  box-shadow:
+    0 2px 7px
+    rgba(76, 51, 37, 0.025);
+
+  transition:
+    transform 0.15s ease,
+    background 0.15s ease;
+}
+
+.inventory-category-tab.active {
+  background: var(--yellow);
+
+  border-color:
+    rgba(196, 150, 35, 0.16);
+
+  color: var(--brown);
+
+  box-shadow:
+    0 4px 10px
+    rgba(121, 87, 18, 0.10);
+}
+
+.inventory-category-tab:active {
+  transform: scale(0.96);
+}
+
+
+/* GROUP */
+
+.inventory-group {
+  margin-bottom: 34px;
+}
+
+.inventory-group-header {
+  margin-bottom: 11px;
+
+  padding:
+    0
+    3px;
+}
+
+.inventory-group-header > div {
+  gap: 8px;
+}
+
+.inventory-group-header h2 {
+  font-size: 1.05rem;
+
+  letter-spacing:
+    -0.025em;
+}
+
+.inventory-group-header span {
+  min-width: 23px;
+  height: 23px;
+
+  background:
+    rgba(242, 204, 88, 0.18);
+
+  font-size: 0.65rem;
+}
+
+
+/*
+   Instead of one giant connected white list,
+   give every item its own little card.
+*/
+
+.inventory-list-card {
+  display: flex;
+  flex-direction: column;
+
+  gap: 9px;
+
+  overflow: visible;
+
+  border: 0;
+  border-radius: 0;
+
+  background: transparent;
+
+  box-shadow: none;
+}
+
+
+/* ITEM CARD */
+
+.inventory-item-row {
+  position: relative;
+
+  min-height: 84px;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  gap: 12px;
+
+  padding:
+    11px
+    12px;
+
+  border:
+    1px solid
+    rgba(76, 51, 37, 0.075) !important;
+
+  border-radius: 19px;
+
+  background:
+    rgba(255, 255, 255, 0.80);
+
+  box-shadow:
+    0 4px 14px
+    rgba(76, 51, 37, 0.04);
+
+  transition:
+    transform 0.14s ease,
+    background 0.14s ease,
+    box-shadow 0.14s ease;
+}
+
+.inventory-item-row:last-child {
+  border-bottom:
+    1px solid
+    rgba(76, 51, 37, 0.075);
+}
+
+.inventory-item-row:active {
+  transform: scale(0.985);
+
+  background:
+    rgba(255, 248, 224, 0.92);
+
+  box-shadow:
+    0 2px 8px
+    rgba(76, 51, 37, 0.035);
+}
+
+
+/* LEFT SIDE */
+
+.inventory-item-left {
+  flex: 1;
+
+  gap: 13px;
+}
+
+
+/* PLUSH PORTRAIT */
+
+.inventory-plush-thumb,
+.inventory-generic-icon {
+  width: 62px;
+  height: 62px;
+
+  border-radius: 17px;
+}
+
+.inventory-plush-thumb {
+  padding: 3px;
+
+  background:
+    linear-gradient(
+      145deg,
+      #fff8dd,
+      #f8e7aa
+    );
+
+  border:
+    1px solid
+    rgba(196, 150, 35, 0.10);
+
+  box-shadow:
+    inset 0 0 0 1px
+    rgba(255, 255, 255, 0.35);
+}
+
+.inventory-plush-thumb img {
+  width: 100%;
+  height: 100%;
+
+  object-fit: contain;
+
+  object-position: center;
+}
+
+
+/* NON-PLUSH ICON */
+
+.inventory-generic-icon {
+  background:
+    linear-gradient(
+      145deg,
+      #fff9e7,
+      #f9edc4
+    );
+
+  border:
+    1px solid
+    rgba(196, 150, 35, 0.10);
+
+  font-size: 1.2rem;
+}
+
+
+/* ITEM NAME */
+
+.inventory-item-copy strong {
+  max-width: 170px;
+
+  color: var(--brown);
+
+  font-size: 0.9rem;
+
+  letter-spacing:
+    -0.01em;
+}
+
+
+/* ON HAND / RESERVED */
+
+.inventory-item-meta {
+  display: flex;
+  flex-wrap: wrap;
+
+  gap: 5px;
+
+  margin-top: 6px;
+
+  color: var(--muted);
+
+  font-size: 0.65rem;
+}
+
+.inventory-item-meta span {
+  padding:
+    3px
+    6px;
+
+  border-radius: 999px;
+
+  background:
+    rgba(76, 51, 37, 0.045);
+}
+
+.inventory-item-meta span + span::before {
+  display: none;
+}
+
+
+/* RIGHT SIDE */
+
+.inventory-item-right {
+  gap: 7px;
+}
+
+
+/* AVAILABLE NUMBER */
+
+.inventory-available {
+  min-width: 42px;
+
+  text-align: center;
+}
+
+.inventory-available strong {
+  display: block;
+
+  color: var(--brown);
+
+  font-size: 1.15rem;
+
+  line-height: 1;
+
+  font-weight: 900;
+}
+
+.inventory-available span {
+  display: block;
+
+  margin-top: 4px;
+
+  color: var(--muted);
+
+  font-size: 0.56rem;
+
+  font-weight: 700;
+
+  text-transform: uppercase;
+
+  letter-spacing:
+    0.035em;
+}
+
+.inventory-available.short {
+  padding:
+    7px
+    5px;
+
+  border-radius: 11px;
+
+  background: var(--danger-soft);
+}
+
+
+/* +6 BUTTON */
+
+.inventory-quick-six {
+  min-width: 40px;
+  height: 38px;
+
+  padding:
+    0
+    8px;
+
+  border:
+    1px solid
+    rgba(196, 150, 35, 0.16);
+
+  border-radius: 12px;
+
+  background: var(--yellow);
+
+  color: var(--brown);
+
+  box-shadow:
+    0 3px 8px
+    rgba(121, 87, 18, 0.10);
+
+  font-size: 0.74rem;
+
+  transition:
+    transform 0.12s ease;
+}
+
+.inventory-quick-six:active {
+  transform: scale(0.91);
+}
+
+.inventory-chevron {
+  margin-left: -1px;
+
+  color:
+    rgba(76, 51, 37, 0.28);
+
+  font-size: 1.25rem;
+}
+
+
+/* =========================================================
+   INVENTORY ITEM SHEET
+   ========================================================= */
+
+.inventory-sheet {
+  background:
+    linear-gradient(
+      180deg,
+      #fffaf1,
+      #fff7e8
+    );
+}
+
+.inventory-modal-title {
+  gap: 14px;
+}
+
+.inventory-modal-plush {
+  width: 76px;
+  height: 76px;
+
+  padding: 4px;
+
+  border-radius: 20px;
+
+  background:
+    linear-gradient(
+      145deg,
+      #fff8dd,
+      #f7e3a0
+    );
+
+  border:
+    1px solid
+    rgba(196, 150, 35, 0.11);
+}
+
+.inventory-modal-plush img {
+  object-fit: contain;
+  object-position: center;
+}
+
+.inventory-modal-title h2 {
+  margin-top: 5px;
+
+  font-size: 1.3rem;
+
+  letter-spacing:
+    -0.03em;
+}
+
+
+/* THREE COUNTS */
+
+.inventory-count-summary {
+  gap: 8px;
+
+  margin-top: 8px;
+  margin-bottom: 32px;
+}
+
+.inventory-count-stat {
+  padding:
+    14px
+    6px;
+
+  border:
+    1px solid
+    rgba(76, 51, 37, 0.07);
+
+  border-radius: 16px;
+
+  background:
+    rgba(255, 255, 255, 0.72);
+}
+
+.inventory-count-stat strong {
+  margin-top: 3px;
+
+  font-size: 1.55rem;
+}
+
+.inventory-count-stat span {
+  font-size: 0.62rem;
+}
+
+.inventory-count-stat.available {
+  background:
+    var(--yellow-pale);
+
+  border-color:
+    rgba(196, 150, 35, 0.13);
+}
+
+
+/* ADJUST COUNT */
+
+.inventory-adjust-section h3 {
+  margin-bottom: 13px;
+
+  font-size: 0.92rem;
+}
+
+.inventory-stepper-card {
+  grid-template-columns:
+    60px
+    1fr
+    60px;
+
+  gap: 12px;
+
+  padding: 10px;
+
+  border:
+    1px solid
+    rgba(76, 51, 37, 0.07);
+
+  border-radius: 20px;
+
+  background:
+    rgba(255, 255, 255, 0.68);
+}
+
+.inventory-stepper-button {
+  width: 60px;
+  height: 60px;
+
+  border:
+    1px solid
+    rgba(76, 51, 37, 0.08);
+
+  border-radius: 16px;
+
+  background:
+    rgba(255, 255, 255, 0.90);
+
+  font-size: 1.7rem;
+
+  box-shadow:
+    0 2px 7px
+    rgba(76, 51, 37, 0.035);
+
+  transition:
+    transform 0.11s ease;
+}
+
+.inventory-stepper-button.add {
+  background: var(--yellow);
+
+  border-color:
+    rgba(196, 150, 35, 0.18);
+}
+
+.inventory-stepper-button:active {
+  transform: scale(0.91);
+}
+
+.inventory-stepper-number {
+  font-size: 2.05rem;
+}
+
+
+/* ADD SIX */
+
+.inventory-add-six {
+  min-height: 51px;
+
+  margin-top: 12px;
+
+  border-radius: 16px;
+
+  box-shadow:
+    0 4px 11px
+    rgba(121, 87, 18, 0.10);
+}
+
+
+/* RESERVED */
+
+.inventory-reserved-section {
+  margin-top: 38px;
+}
+
+.inventory-reservation-card {
+  border:
+    1px solid
+    rgba(76, 51, 37, 0.07);
+
+  border-radius: 16px;
+
+  background:
+    rgba(255, 255, 255, 0.72);
+}
+
+
+/* =========================================================
+   PHONE TUNING
+   ========================================================= */
+
+@media (max-width: 430px) {
+
+  .inventory-item-row {
+    min-height: 80px;
+
+    padding:
+      10px
+      9px;
+  }
+
+  .inventory-plush-thumb,
+  .inventory-generic-icon {
+    width: 56px;
+    height: 56px;
+
+    border-radius: 15px;
+  }
+
+  .inventory-item-left {
+    gap: 10px;
+  }
+
+  .inventory-item-copy strong {
+    max-width: 145px;
+
+    font-size: 0.84rem;
+  }
+
+  .inventory-item-meta {
+    gap: 3px;
+
+    font-size: 0.59rem;
+  }
+
+  .inventory-item-meta span {
+    padding:
+      2px
+      4px;
+  }
+
+  /*
+     Keep "available" visible now.
+     The previous CSS hid this on phones.
+  */
+
+  .inventory-available span {
+    display: block;
+  }
+
+  .inventory-available strong {
+    font-size: 1.05rem;
+  }
+
+  .inventory-available span {
+    font-size: 0.49rem;
+  }
+
+  .inventory-item-right {
+    gap: 5px;
+  }
+
+  .inventory-quick-six {
+    min-width: 37px;
+    height: 36px;
+
+    padding:
+      0
+      6px;
+  }
+
+  .inventory-chevron {
+    display: none;
+  }
+
+}
+
+
+/* =========================================================
+   +6 LITTLE BOOP
+   ========================================================= */
+
+.inventory-quick-six.inventory-boop,
+.inventory-add-six.inventory-boop {
+  animation:
+    swl-inventory-boop
+    0.38s
+    cubic-bezier(
+      0.16,
+      1.4,
+      0.3,
+      1
+    );
+}
+
+@keyframes swl-inventory-boop {
+
+  0% {
+    transform: scale(1);
+  }
+
+  45% {
+    transform:
+      scale(1.12)
+      rotate(-2deg);
+  }
+
+  100% {
+    transform:
+      scale(1)
+      rotate(0);
+  }
+
+}
+}
+/* =========================================================
+   INVENTORY V2 — ACTUALLY DIFFERENT 😂
+   ========================================================= */
+
+
+/* Plush Friends become a card grid */
+
+.inventory-group[data-inventory-group="Plush"]
+.inventory-list-card {
+  display: grid;
+
+  grid-template-columns:
+    repeat(2, minmax(0, 1fr));
+
+  gap: 10px;
+}
+
+
+/* Individual plush card */
+
+.inventory-plush-card {
+  min-width: 0;
+  min-height: 220px;
+
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+
+  gap: 0;
+
+  padding: 0;
+
+  overflow: hidden;
+
+  border:
+    1px solid
+    rgba(76, 51, 37, 0.08) !important;
+
+  border-radius: 21px;
+
+  background:
+    rgba(255, 255, 255, 0.82);
+
+  box-shadow:
+    0 5px 16px
+    rgba(76, 51, 37, 0.045);
+}
+
+
+/* Top half */
+
+.inventory-plush-card
+.inventory-item-left {
+  width: 100%;
+
+  display: block;
+}
+
+
+/* Big plush image */
+
+.inventory-plush-card
+.inventory-plush-thumb {
+  width: 100%;
+  height: 122px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 8px;
+
+  border: 0;
+  border-bottom:
+    1px solid
+    rgba(76, 51, 37, 0.055);
+
+  border-radius: 0;
+
+  background:
+    linear-gradient(
+      145deg,
+      #fff9e8,
+      #faedbf
+    );
+
+  box-shadow: none;
+}
+
+.inventory-plush-card
+.inventory-plush-thumb img {
+  width: 100%;
+  height: 100%;
+
+  object-fit: contain;
+
+  object-position: center;
+}
+
+
+/* Name and counts */
+
+.inventory-plush-card
+.inventory-item-copy {
+  padding:
+    11px
+    11px
+    5px;
+}
+
+.inventory-plush-card
+.inventory-item-copy strong {
+  max-width: none;
+
+  overflow: visible;
+
+  color: var(--brown);
+
+  font-size: 0.86rem;
+
+  line-height: 1.2;
+
+  white-space: normal;
+}
+
+.inventory-plush-card
+.inventory-item-meta {
+  display: flex;
+
+  gap: 5px;
+
+  margin-top: 6px;
+
+  font-size: 0.58rem;
+}
+
+.inventory-plush-card
+.inventory-item-meta span {
+  padding: 0;
+
+  background: none;
+
+  white-space: nowrap;
+}
+
+.inventory-plush-card
+.inventory-item-meta span + span::before {
+  content: "·";
+
+  display: inline;
+
+  margin-right: 5px;
+}
+
+
+/* Bottom count/action area */
+
+.inventory-plush-card
+.inventory-item-right {
+  width: 100%;
+
+  display: grid;
+
+  grid-template-columns:
+    1fr
+    auto;
+
+  align-items: center;
+
+  gap: 8px;
+
+  margin-top: auto;
+
+  padding:
+    8px
+    10px
+    11px;
+}
+
+
+/* Available becomes the star */
+
+.inventory-plush-card
+.inventory-available {
+  min-width: 0;
+
+  text-align: left;
+}
+
+.inventory-plush-card
+.inventory-available strong {
+  display: inline;
+
+  color: var(--brown);
+
+  font-size: 1.25rem;
+
+  line-height: 1;
+
+  font-weight: 950;
+}
+
+.inventory-plush-card
+.inventory-available span {
+  display: inline;
+
+  margin:
+    0
+    0
+    0
+    4px;
+
+  color: var(--muted);
+
+  font-size: 0.55rem;
+
+  font-weight: 750;
+
+  letter-spacing: 0;
+
+  text-transform: none;
+}
+
+
+/* +6 is a real action */
+
+.inventory-plush-card
+.inventory-quick-six {
+  min-width: 43px;
+  height: 37px;
+
+  padding:
+    0
+    8px;
+
+  border-radius: 12px;
+
+  background: var(--yellow);
+
+  font-size: 0.72rem;
+
+  box-shadow:
+    0 3px 8px
+    rgba(121, 87, 18, 0.10);
+}
+
+
+/* Don't need a chevron on a card */
+
+.inventory-plush-card
+.inventory-chevron {
+  display: none;
+}
+
+
+/* Shortage still screams appropriately */
+
+.inventory-plush-card
+.inventory-available.short {
+  padding: 0;
+
+  background: transparent;
+}
+
+.inventory-plush-card
+.inventory-available.short strong,
+.inventory-plush-card
+.inventory-available.short span {
+  color: var(--danger);
+}
+
+
+/* =========================================================
+   NON-PLUSH — KEEP THESE COMPACT
+   ========================================================= */
+
+.inventory-standard-row {
+  min-height: 68px;
+
+  padding:
+    9px
+    11px;
+
+  border-radius: 17px;
+}
+
+.inventory-standard-row
+.inventory-generic-icon {
+  width: 46px;
+  height: 46px;
+
+  border-radius: 13px;
+}
+
+.inventory-standard-row
+.inventory-item-copy strong {
+  font-size: 0.83rem;
+}
+
+
+/* =========================================================
+   PLUSH SECTION HEADER — LITTLE MORE PERSONALITY
+   ========================================================= */
+
+.inventory-group[data-inventory-group="Plush"]
+.inventory-group-header {
+  margin-bottom: 12px;
+}
+
+.inventory-group[data-inventory-group="Plush"]
+.inventory-group-header h2 {
+  font-size: 1.12rem;
+}
+
+.inventory-group[data-inventory-group="Plush"]
+.inventory-group-header h2::after {
+  content: " ♥";
+
+  color: var(--yellow);
+
+  font-size: 0.85rem;
+}
+
+
+/* =========================================================
+   MOBILE
+   ========================================================= */
+
+@media (max-width: 390px) {
+
+  .inventory-group[data-inventory-group="Plush"]
+  .inventory-list-card {
+    gap: 8px;
+  }
+
+  .inventory-plush-card {
+    min-height: 208px;
+  }
+
+  .inventory-plush-card
+  .inventory-plush-thumb {
+    height: 112px;
+  }
+
+  .inventory-plush-card
+  .inventory-item-copy {
+    padding:
+      9px
+      9px
+      4px;
+  }
+
+  .inventory-plush-card
+  .inventory-item-copy strong {
+    font-size: 0.79rem;
+  }
+
+  .inventory-plush-card
+  .inventory-item-meta {
+    font-size: 0.53rem;
+  }
+
+  .inventory-plush-card
+  .inventory-item-right {
+    padding:
+      7px
+      9px
+      9px;
+  }
+
+}
+.inventory-delete-button {
+  width: 100%;
+  margin-top: 28px;
+  padding: 14px 18px;
+
+  border: 1px solid rgba(180, 87, 76, 0.28);
+  border-radius: 14px;
+
+  background: transparent;
+  color: var(--danger);
+
+  font: inherit;
+  font-weight: 700;
+
+  cursor: pointer;
+}
+
+.inventory-delete-button:active {
+  transform: scale(0.98);
+}
+.inventory-add-item-button {
+  appearance: none;
+  border: none;
+
+  background: var(--yellow);
+  color: var(--brown);
+
+  padding: 11px 16px;
+  border-radius: 14px;
+
+  font: inherit;
+  font-size: 14px;
+  font-weight: 800;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+
+  min-height: 42px;
+
+  box-shadow:
+    0 3px 0 rgba(76, 51, 37, 0.12),
+    0 5px 14px rgba(76, 51, 37, 0.10);
+
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.inventory-add-item-button:hover {
+  filter: brightness(1.02);
+  transform: translateY(-1px);
+}
+
+.inventory-add-item-button:active {
+  transform: translateY(1px) scale(0.98);
+  box-shadow:
+    0 1px 0 rgba(76, 51, 37, 0.12),
+    0 2px 7px rgba(76, 51, 37, 0.08);
+}
+/* =========================================
+   ADD INVENTORY ITEM SHEET
+========================================= */
+
+.inventory-add-sheet {
+  padding: 24px 22px 28px;
+}
+
+.inventory-add-sheet .modal-title-row {
+  margin-bottom: 26px;
+}
+
+.inventory-add-sheet .modal-title-row h2 {
+  margin-top: 4px;
+  font-size: 25px;
+  line-height: 1.15;
+}
+
+.inventory-add-form {
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+}
+
+.inventory-add-form .field-label {
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+
+  color: var(--brown);
+  font-size: 14px;
+  font-weight: 800;
+  line-height: 1.2;
+}
+
+.inventory-add-form input {
+  width: 100%;
+  box-sizing: border-box;
+
+  min-height: 54px;
+  padding: 14px 16px;
+
+  border: 1.5px solid var(--cream-deep);
+  border-radius: 15px;
+
+  background: var(--cream-soft);
+  color: var(--text);
+
+  font: inherit;
+  font-size: 16px;
+  font-weight: 600;
+
+  outline: none;
+}
+
+.inventory-add-form input:focus {
+  border-color: var(--yellow);
+  background: #fff;
+  box-shadow: 0 0 0 3px var(--yellow-pale);
+}
+
+.inventory-add-form input::placeholder {
+  color: var(--muted);
+  font-weight: 500;
+}
+
+.inventory-add-form .primary-button {
+  min-height: 54px;
+  margin-top: 6px;
+
+  border-radius: 15px;
+
+  font-size: 16px;
+  font-weight: 800;
+}
+.inventory-group-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+
+  margin-bottom: 22px;
+}
+
+.inventory-group-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+
+  min-width: 0;
+}
+
+.inventory-group-title h2 {
+  margin: 0;
+}
+
+.inventory-group-title span {
+  flex-shrink: 0;
+}
+
+.inventory-add-item-button {
+  flex-shrink: 0;
+  margin: 0;
+}
+/* =========================================================
+   NEW PLUSH PHOTO PLACEHOLDER
+========================================================= */
+
+.inventory-plush-thumb-empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  background:
+    linear-gradient(
+      145deg,
+      var(--cream-soft),
+      var(--yellow-pale)
+    );
+  border: 1.5px dashed rgba(76, 51, 37, 0.22);
+}
+
+.inventory-add-photo-placeholder {
+  width: 100%;
+  height: 100%;
+  min-width: 0;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  gap: 2px;
+
+  color: var(--brown);
+  text-align: center;
+  line-height: 1;
+}
+
+.inventory-add-photo-plus {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 22px;
+  height: 22px;
+
+  border-radius: 50%;
+
+  background: var(--yellow);
+  color: var(--brown);
+
+  font-size: 16px;
+  font-weight: 900;
+  line-height: 1;
+
+  box-shadow:
+    0 2px 5px rgba(76, 51, 37, 0.12);
+}
+
+.inventory-add-photo-text {
+  margin-top: 2px;
+
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: -0.1px;
+
+  white-space: nowrap;
+}
+/* =========================================================
+   INVENTORY PHOTO UPLOAD
+========================================================= */
+
+button.inventory-add-photo-placeholder {
+  appearance: none;
+  border: 0;
+  padding: 0;
+  margin: 0;
+  background: transparent;
+  font: inherit;
+  cursor: pointer;
+}
+
+.inventory-modal-plush {
+  appearance: none;
+  border: 0;
+  padding: 0;
+  margin: 0;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  overflow: hidden;
+  cursor: pointer;
+}
+
+.inventory-modal-plush img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.inventory-modal-plush-empty {
+  background:
+    linear-gradient(
+      145deg,
+      var(--cream-soft),
+      var(--yellow-pale)
+    );
+
+  border:
+    1.5px dashed
+    rgba(76, 51, 37, 0.22);
+}
+
+.inventory-change-photo {
+  appearance: none;
+  border: 0;
+  background: transparent;
+
+  padding: 3px 0 0;
+  margin: 0;
+
+  color: var(--muted);
+  font: inherit;
+  font-size: 12px;
+  font-weight: 700;
+
+  cursor: pointer;
+}
+/* =========================================================
+   FIX NEW PLUSH PHOTO SIZE
+========================================================= */
+
+.inventory-plush-thumb-empty {
+  flex: 0 0 54px;
+  width: 54px;
+  min-width: 54px;
+  height: 54px;
+  min-height: 54px;
+}
+
+.inventory-plush-thumb-empty
+.inventory-add-photo-placeholder {
+  width: 54px;
+  min-width: 54px;
+  max-width: 54px;
+
+  height: 54px;
+  min-height: 54px;
+  max-height: 54px;
+
+  flex: 0 0 54px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+
+  padding: 0;
+  margin: 0;
+}
+
+@media (max-width: 430px) {
+  .inventory-plush-thumb-empty {
+    flex-basis: 50px;
+    width: 50px;
+    min-width: 50px;
+    height: 50px;
+    min-height: 50px;
+  }
+
+  .inventory-plush-thumb-empty
+  .inventory-add-photo-placeholder {
+    width: 50px;
+    min-width: 50px;
+    max-width: 50px;
+
+    height: 50px;
+    min-height: 50px;
+    max-height: 50px;
+
+    flex-basis: 50px;
+  }
+}
+/* =========================================================
+   OUTFIT + SHIRT INVENTORY PHOTOS
+========================================================= */
+
+.inventory-standard-row
+.inventory-photo-thumb {
+  flex: 0 0 46px;
+
+  width: 46px;
+  min-width: 46px;
+  max-width: 46px;
+
+  height: 46px;
+  min-height: 46px;
+  max-height: 46px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 3px;
+
+  overflow: hidden;
+
+  border-radius: 13px;
+
+  background:
+    linear-gradient(
+      145deg,
+      var(--cream-soft),
+      var(--yellow-pale)
+    );
+}
+
+.inventory-standard-row
+.inventory-photo-thumb img {
+  display: block;
+
+  width: 100%;
+  height: 100%;
+
+  max-width: 100%;
+  max-height: 100%;
+
+  object-fit: contain;
+  object-position: center;
+}
+
+.inventory-standard-row
+.inventory-photo-thumb-empty {
+  border:
+    1.5px dashed
+    rgba(76, 51, 37, 0.18);
+}
+
+.inventory-standard-row
+.inventory-photo-thumb
+.inventory-add-photo-placeholder {
+  width: 100%;
+  height: 100%;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 0;
+}
+/* =========================================================
+   PLUSH INVENTORY COUNT GRID
+========================================================= */
+
+.inventory-plush-count-grid {
+  width:
+    calc(100% - 20px);
+
+  display: grid;
+
+  grid-template-columns:
+    repeat(3, minmax(0, 1fr));
+
+  gap: 2px;
+
+  margin:
+    4px
+    10px
+    0;
+
+  padding:
+    9px
+    0;
+
+  border-top:
+    1px solid
+    rgba(76, 51, 37, 0.07);
+
+  border-bottom:
+    1px solid
+    rgba(76, 51, 37, 0.07);
+}
+
+.inventory-plush-count {
+  min-width: 0;
+
+  text-align: center;
+}
+
+.inventory-plush-count strong {
+  display: block;
+
+  color: var(--brown);
+
+  font-size: 1.02rem;
+  font-weight: 950;
+  line-height: 1;
+}
+
+.inventory-plush-count span {
+  display: block;
+
+  margin-top: 4px;
+
+  color: var(--muted);
+
+  font-size: 0.48rem;
+  font-weight: 800;
+
+  letter-spacing: 0.01em;
+  text-transform: uppercase;
+
+  white-space: nowrap;
+}
+
+.inventory-plush-count.short strong,
+.inventory-plush-count.short span {
+  color: var(--danger);
+}
+
+
+/* The +6 area can now sit by itself */
+
+.inventory-plush-card
+.inventory-item-right {
+  grid-template-columns: 1fr auto;
+}
+
+
+/* Small iPhones */
+
+@media (max-width: 390px) {
+
+  .inventory-plush-count-grid {
+    width:
+      calc(100% - 16px);
+
+    margin-left: 8px;
+    margin-right: 8px;
+
+    padding:
+      8px
+      0;
+  }
+
+  .inventory-plush-count strong {
+    font-size: 0.95rem;
+  }
+
+  .inventory-plush-count span {
+    font-size: 0.43rem;
+  }
+
+}
+/* =========================================================
+   🚨 FINAL INVENTORY OVERRIDE — DO NOT PUT CSS BELOW THIS
+========================================================= */
+
+/* ALL plush photo areas must be identical */
+.inventory-group[data-inventory-group="Plush"]
+.inventory-plush-card
+.inventory-plush-thumb,
+.inventory-group[data-inventory-group="Plush"]
+.inventory-plush-card
+.inventory-plush-thumb.inventory-plush-thumb-empty {
+  flex: 0 0 122px !important;
+
+  width: 100% !important;
+  min-width: 100% !important;
+  max-width: 100% !important;
+
+  height: 122px !important;
+  min-height: 122px !important;
+  max-height: 122px !important;
+
+  padding: 8px !important;
+
+  border-radius: 0 !important;
+}
+
+/* New plush "Add Photo" area fills the same 122px photo box */
+.inventory-group[data-inventory-group="Plush"]
+.inventory-plush-card
+.inventory-plush-thumb-empty
+.inventory-add-photo-placeholder {
+  flex: 1 1 auto !important;
+
+  width: 100% !important;
+  min-width: 100% !important;
+  max-width: 100% !important;
+
+  height: 100% !important;
+  min-height: 100% !important;
+  max-height: 100% !important;
+
+  padding: 0 !important;
+  margin: 0 !important;
+}
+
+/* Keep actual plush photos contained */
+.inventory-group[data-inventory-group="Plush"]
+.inventory-plush-card
+.inventory-plush-thumb img {
+  display: block !important;
+
+  width: 100% !important;
+  height: 100% !important;
+
+  object-fit: contain !important;
+  object-position: center !important;
+}
+
+/* Keep plush cards consistent */
+.inventory-group[data-inventory-group="Plush"]
+.inventory-plush-card {
+  min-height: 272px !important;
+}
+
+/* Consistent name area */
+.inventory-group[data-inventory-group="Plush"]
+.inventory-plush-card
+.inventory-item-copy {
+  min-height: 48px !important;
+
+  padding: 11px 11px 5px !important;
+}
+
+/* Three-count row */
+.inventory-group[data-inventory-group="Plush"]
+.inventory-plush-card
+.inventory-plush-count-grid {
+  flex: 0 0 auto !important;
+
+  width: calc(100% - 20px) !important;
+
+  margin:
+    4px
+    10px
+    0 !important;
+}
+
+/* Bottom area only holds the +6 */
+.inventory-group[data-inventory-group="Plush"]
+.inventory-plush-card
+.inventory-item-right {
+  width: 100% !important;
+
+  display: flex !important;
+  align-items: center !important;
+  justify-content: flex-end !important;
+
+  gap: 0 !important;
+
+  margin-top: auto !important;
+
+  padding:
+    7px
+    10px
+    10px !important;
+}
+
+/* +6 stays LITTLE */
+.inventory-group[data-inventory-group="Plush"]
+.inventory-plush-card
+.inventory-quick-six {
+  flex: 0 0 43px !important;
+
+  width: 43px !important;
+  min-width: 43px !important;
+  max-width: 43px !important;
+
+  height: 37px !important;
+  min-height: 37px !important;
+  max-height: 37px !important;
+
+  padding: 0 !important;
+
+  border-radius: 12px !important;
+
+  font-size: 0.72rem !important;
+  line-height: 1 !important;
+
+  white-space: nowrap !important;
+}
+
+/* Kill old plush metadata layout */
+.inventory-group[data-inventory-group="Plush"]
+.inventory-plush-card
+.inventory-item-meta {
+  display: none !important;
+}
+/* =========================================================
+   🚨 NON-PLUSH INVENTORY — FINAL LAYOUT
+========================================================= */
+
+/* Keep left side compact */
+.inventory-standard-row
+.inventory-item-left {
+  min-width: 0 !important;
+  flex: 1 1 auto !important;
+}
+
+/* On hand + reserved stay beneath the item name */
+.inventory-standard-row
+.inventory-item-meta {
+  display: flex !important;
+  align-items: center !important;
+  gap: 5px !important;
+
+  margin-top: 4px !important;
+
+  color: var(--muted) !important;
+  font-size: 0.62rem !important;
+  line-height: 1.2 !important;
+}
+
+.inventory-standard-row
+.inventory-item-meta span {
+  display: inline !important;
+  white-space: nowrap !important;
+}
+
+/* Right side */
+.inventory-standard-row
+.inventory-item-right {
+  flex: 0 0 auto !important;
+
+  display: flex !important;
+  align-items: center !important;
+  gap: 7px !important;
+
+  margin-left: auto !important;
+}
+
+/* Make Available look intentional instead of a random number */
+.inventory-standard-row
+.inventory-available {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: flex-end !important;
+  justify-content: center !important;
+
+  min-width: 45px !important;
+
+  padding: 0 !important;
+  margin: 0 !important;
+
+  background: transparent !important;
+
+  text-align: right !important;
+}
+
+.inventory-standard-row
+.inventory-available strong {
+  display: block !important;
+
+  color: var(--brown) !important;
+
+  font-size: 1rem !important;
+  font-weight: 900 !important;
+  line-height: 1 !important;
+}
+
+.inventory-standard-row
+.inventory-available span {
+  display: block !important;
+
+  margin-top: 3px !important;
+
+  color: var(--muted) !important;
+
+  font-size: 0.48rem !important;
+  font-weight: 750 !important;
+  line-height: 1 !important;
+
+  text-transform: uppercase !important;
+}
+
+/* Shortages */
+.inventory-standard-row
+.inventory-available.short strong,
+.inventory-standard-row
+.inventory-available.short span {
+  color: var(--danger) !important;
+}
+
+/* Non-plush never gets +6 */
+.inventory-standard-row
+.inventory-quick-six {
+  display: none !important;
+}
+/* =========================================================
+   FILES
+========================================================= */
+
+.files-toolbar {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+
+  margin-bottom: 12px;
+}
+
+
+/* SEARCH */
+
+.files-search-wrap {
+  position: relative;
+
+  width: 100%;
+}
+
+.files-search-icon {
+  position: absolute;
+
+  left: 15px;
+  top: 50%;
+
+  transform: translateY(-50%);
+
+  font-size: 1.15rem;
+
+  color: var(--muted);
+
+  pointer-events: none;
+}
+
+.files-search {
+  width: 100%;
+  height: 48px;
+
+  padding:
+    0
+    16px
+    0
+    42px;
+
+  border:
+    1px solid
+    rgba(76, 51, 37, 0.12);
+
+  border-radius: 16px;
+
+  outline: none;
+
+  background: #fffdf8;
+
+  color: var(--brown);
+
+  font: inherit;
+  font-size: 0.9rem;
+
+  box-shadow:
+    0 4px 14px
+    rgba(76, 51, 37, 0.04);
+}
+
+.files-search:focus {
+  border-color:
+    rgba(211, 166, 49, 0.55);
+
+  box-shadow:
+    0 0 0 3px
+    rgba(246, 205, 86, 0.14);
+}
+
+
+/* MAIN ACTIONS */
+
+.files-actions {
+  display: grid;
+
+  grid-template-columns:
+    minmax(0, 1.55fr)
+    minmax(0, 1fr);
+
+  gap: 9px;
+}
+
+.files-upload-button,
+.files-category-button {
+  min-height: 48px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  gap: 7px;
+
+  border: 0;
+  border-radius: 15px;
+
+  font: inherit;
+  font-size: 0.78rem;
+  font-weight: 850;
+
+  cursor: pointer;
+}
+
+.files-upload-button {
+  background:
+    var(--yellow);
+
+  color:
+    var(--brown);
+
+  box-shadow:
+    0 5px 14px
+    rgba(211, 166, 49, 0.17);
+}
+
+.files-category-button {
+  background:
+    rgba(255, 255, 255, 0.72);
+
+  color:
+    var(--brown);
+
+  border:
+    1px solid
+    rgba(76, 51, 37, 0.11);
+}
+
+.files-upload-button span,
+.files-category-button span {
+  font-size: 1rem;
+  line-height: 1;
+}
+
+
+/* CATEGORY CHIPS */
+
+.file-category-tabs {
+  display: flex;
+
+  gap: 7px;
+
+  overflow-x: auto;
+
+  margin:
+    0
+    calc(var(--page-padding, 16px) * -1)
+    18px;
+
+  padding:
+    2px
+    var(--page-padding, 16px)
+    5px;
+
+  scrollbar-width: none;
+
+  -webkit-overflow-scrolling:
+    touch;
+}
+
+.file-category-tabs::-webkit-scrollbar {
+  display: none;
+}
+
+.file-category-tab {
+  flex: 0 0 auto;
+
+  min-height: 36px;
+
+  padding:
+    0
+    14px;
+
+  border:
+    1px solid
+    rgba(76, 51, 37, 0.11);
+
+  border-radius: 999px;
+
+  background:
+    rgba(255, 255, 255, 0.66);
+
+  color:
+    var(--muted);
+
+  font: inherit;
+  font-size: 0.68rem;
+  font-weight: 800;
+
+  white-space: nowrap;
+
+  cursor: pointer;
+}
+
+.file-category-tab.active {
+  background:
+    var(--brown);
+
+  border-color:
+    var(--brown);
+
+  color:
+    var(--cream);
+}
+
+
+/* SECTIONS */
+
+.files-section {
+  margin-top: 20px;
+}
+
+.files-section-heading {
+  min-height: 34px;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  gap: 12px;
+
+  margin-bottom: 9px;
+}
+
+.files-section-heading > div {
+  display: flex;
+  align-items: baseline;
+
+  gap: 7px;
+}
+
+.files-section-heading h2 {
+  margin: 0;
+
+  color:
+    var(--brown);
+
+  font-size: 1rem;
+  line-height: 1.2;
+}
+
+.files-section-heading span {
+  color:
+    var(--muted);
+
+  font-size: 0.62rem;
+  font-weight: 700;
+}
+
+.file-category-menu-button {
+  width: 38px;
+  height: 34px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border: 0;
+
+  border-radius: 12px;
+
+  background:
+    rgba(255, 255, 255, 0.72);
+
+  color:
+    var(--brown);
+
+  font-size: 0.85rem;
+  font-weight: 900;
+
+  cursor: pointer;
+}
+
+
+/* RECENT FILES */
+
+.recent-files-row {
+  display: grid;
+
+  grid-template-columns:
+    repeat(2, minmax(0, 1fr));
+
+  gap: 9px;
+}
+
+.recent-file-card {
+  min-width: 0;
+
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+
+  padding: 0;
+
+  overflow: hidden;
+
+  border:
+    1px solid
+    rgba(76, 51, 37, 0.09);
+
+  border-radius: 17px;
+
+  background:
+    #fffdf8;
+
+  text-align: left;
+
+  box-shadow:
+    0 5px 16px
+    rgba(76, 51, 37, 0.045);
+
+  cursor: pointer;
+}
+
+.recent-file-card > strong {
+  display: block;
+
+  overflow: hidden;
+
+  padding:
+    9px
+    10px
+    2px;
+
+  color:
+    var(--brown);
+
+  font-size: 0.73rem;
+  line-height: 1.2;
+
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.recent-file-card > span {
+  display: block;
+
+  padding:
+    0
+    10px
+    10px;
+
+  color:
+    var(--muted);
+
+  font-size: 0.56rem;
+  font-weight: 700;
+}
+
+
+/* FILE LIST */
+
+.files-list {
+  display: flex;
+  flex-direction: column;
+
+  gap: 8px;
+}
+
+.file-row {
+  width: 100%;
+  min-width: 0;
+
+  display: grid;
+
+  grid-template-columns:
+    54px
+    minmax(0, 1fr)
+    18px;
+
+  align-items: center;
+
+  gap: 11px;
+
+  padding:
+    9px
+    11px
+    9px
+    9px;
+
+  border:
+    1px solid
+    rgba(76, 51, 37, 0.09);
+
+  border-radius: 17px;
+
+  background:
+    #fffdf8;
+
+  text-align: left;
+
+  box-shadow:
+    0 4px 14px
+    rgba(76, 51, 37, 0.035);
+
+  cursor: pointer;
+}
+
+.file-row-copy {
+  min-width: 0;
+}
+
+.file-row-copy > strong {
+  display: block;
+
+  overflow: hidden;
+
+  margin-bottom: 4px;
+
+  color:
+    var(--brown);
+
+  font-size: 0.79rem;
+  line-height: 1.2;
+
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.file-row-meta {
+  display: flex;
+  align-items: center;
+
+  gap: 4px;
+
+  color:
+    var(--muted);
+
+  font-size: 0.56rem;
+  font-weight: 700;
+}
+
+.file-type-label {
+  font-weight: 850;
+}
+
+.file-row-bottom {
+  display: flex;
+  align-items: center;
+
+  gap: 7px;
+
+  margin-top: 6px;
+}
+
+.file-category-pill {
+  max-width: 140px;
+
+  overflow: hidden;
+
+  padding:
+    3px
+    7px;
+
+  border-radius: 999px;
+
+  background:
+    var(--yellow-pale);
+
+  color:
+    var(--brown);
+
+  font-size: 0.48rem;
+  font-weight: 850;
+
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.file-date {
+  overflow: hidden;
+
+  color:
+    var(--muted);
+
+  font-size: 0.5rem;
+
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.file-row-chevron {
+  color:
+    rgba(76, 51, 37, 0.35);
+
+  font-size: 1.3rem;
+  line-height: 1;
+}
+
+
+/* FILE PREVIEWS */
+
+.file-preview {
+  position: relative;
+
+  overflow: hidden;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  background:
+    linear-gradient(
+      145deg,
+      var(--cream-soft),
+      var(--yellow-pale)
+    );
+
+  color:
+    var(--brown);
+}
+
+.file-preview-row {
+  width: 54px;
+  height: 54px;
+
+  border-radius: 13px;
+}
+
+.file-preview-recent {
+  width: 100%;
+  height: 92px;
+
+  border-radius:
+    16px
+    16px
+    0
+    0;
+}
+
+.file-preview-detail {
+  width: 100%;
+  height: 190px;
+
+  border-radius: 18px;
+}
+
+.file-preview.has-image img {
+  width: 100%;
+  height: 100%;
+
+  display: block;
+
+  object-fit: contain;
+
+  background:
+    #fff;
+}
+
+.file-preview > span {
+  font-size: 1.25rem;
+  font-weight: 900;
+  line-height: 1;
+}
+
+.file-preview > small {
+  margin-top: 5px;
+
+  font-size: 0.46rem;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+}
+
+.file-preview-pdf {
+  background:
+    linear-gradient(
+      145deg,
+      #fff5ee,
+      #f8e7da
+    );
+}
+
+.file-preview-svg {
+  background:
+    linear-gradient(
+      145deg,
+      var(--yellow-pale),
+      var(--cream-soft)
+    );
+}
+
+.file-preview-archive {
+  background:
+    linear-gradient(
+      145deg,
+      #f1eee8,
+      #fbf7ef
+    );
+}
+
+.file-preview-document,
+.file-preview-presentation,
+.file-preview-sheet {
+  background:
+    linear-gradient(
+      145deg,
+      #f8f3e9,
+      #fffdf8
+    );
+}
+
+
+/* EMPTY / LOADING */
+
+.files-loading-card,
+.files-empty-state {
+  border:
+    1px solid
+    rgba(76, 51, 37, 0.08);
+
+  border-radius: 18px;
+
+  background:
+    rgba(255, 255, 255, 0.62);
+
+  color:
+    var(--muted);
+
+  text-align: center;
+}
+
+.files-loading-card {
+  padding: 28px;
+
+  font-size: 0.8rem;
+  font-weight: 750;
+}
+
+.files-empty-state {
+  padding:
+    30px
+    20px;
+}
+
+.files-empty-icon {
+  width: 48px;
+  height: 48px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  margin:
+    0
+    auto
+    10px;
+
+  border-radius: 15px;
+
+  background:
+    var(--yellow-pale);
+
+  color:
+    var(--brown);
+
+  font-size: 1.25rem;
+  font-weight: 900;
+}
+
+.files-empty-state strong {
+  display: block;
+
+  color:
+    var(--brown);
+
+  font-size: 0.9rem;
+}
+
+.files-empty-state p {
+  margin:
+    5px
+    0
+    15px;
+
+  color:
+    var(--muted);
+
+  font-size: 0.68rem;
+}
+
+
+/* =========================================================
+   FILE MODALS
+========================================================= */
+
+.files-modal-sheet {
+  max-height:
+    min(
+      88vh,
+      720px
+    );
+
+  overflow-y: auto;
+}
+
+.file-upload-form,
+.file-edit-form {
+  display: flex;
+  flex-direction: column;
+
+  gap: 14px;
+}
+
+.file-picker {
+  position: relative;
+
+  min-height: 128px;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  gap: 5px;
+
+  padding: 18px;
+
+  border:
+    1.5px dashed
+    rgba(76, 51, 37, 0.2);
+
+  border-radius: 18px;
+
+  background:
+    linear-gradient(
+      145deg,
+      var(--cream-soft),
+      rgba(246, 233, 205, 0.52)
+    );
+
+  text-align: center;
+
+  cursor: pointer;
+}
+
+.file-picker.has-file {
+  border-style: solid;
+
+  border-color:
+    rgba(211, 166, 49, 0.42);
+
+  background:
+    var(--yellow-pale);
+}
+
+.file-picker input {
+  position: absolute;
+
+  width: 1px;
+  height: 1px;
+
+  opacity: 0;
+
+  pointer-events: none;
+}
+
+.file-picker-icon {
+  width: 38px;
+  height: 38px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  margin-bottom: 3px;
+
+  border-radius: 13px;
+
+  background:
+    var(--yellow);
+
+  color:
+    var(--brown);
+
+  font-size: 1.2rem;
+  font-weight: 900;
+}
+
+.file-picker strong {
+  max-width: 100%;
+
+  overflow: hidden;
+
+  color:
+    var(--brown);
+
+  font-size: 0.8rem;
+
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.file-picker > span:last-child {
+  color:
+    var(--muted);
+
+  font-size: 0.58rem;
+  font-weight: 700;
+}
+
+.file-upload-form select,
+.file-edit-form select,
+.file-category-sheet select,
+.files-modal-sheet select {
+  width: 100%;
+  min-height: 48px;
+
+  padding:
+    0
+    13px;
+
+  border:
+    1px solid
+    rgba(76, 51, 37, 0.14);
+
+  border-radius: 13px;
+
+  background:
+    #fffdf8;
+
+  color:
+    var(--brown);
+
+  font: inherit;
+}
+
+.file-save-button {
+  margin-top: 2px;
+}
+
+
+/* DETAIL */
+
+.file-detail-preview {
+  margin-bottom: 9px;
+}
+
+.file-detail-meta {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  gap: 5px;
+
+  margin-bottom: 15px;
+
+  color:
+    var(--muted);
+
+  font-size: 0.6rem;
+  font-weight: 750;
+}
+
+.file-open-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  margin-bottom: 18px;
+
+  text-decoration: none;
+}
+
+.file-edit-form {
+  padding-top: 16px;
+
+  border-top:
+    1px solid
+    rgba(76, 51, 37, 0.08);
+}
+
+.file-delete-button,
+.file-delete-category-button {
+  width: 100%;
+
+  min-height: 45px;
+
+  margin-top: 15px;
+
+  border: 0;
+  border-radius: 13px;
+
+  background:
+    rgba(181, 64, 51, 0.09);
+
+  color:
+    var(--danger);
+
+  font: inherit;
+  font-size: 0.7rem;
+  font-weight: 850;
+
+  cursor: pointer;
+}
+
+
+/* CATEGORY MENU */
+
+.file-category-action {
+  width: 100%;
+
+  display: grid;
+
+  grid-template-columns:
+    38px
+    minmax(0, 1fr)
+    18px;
+
+  align-items: center;
+
+  gap: 10px;
+
+  padding:
+    12px
+    4px;
+
+  border: 0;
+  border-bottom:
+    1px solid
+    rgba(76, 51, 37, 0.08);
+
+  background:
+    transparent;
+
+  color:
+    var(--brown);
+
+  text-align: left;
+
+  cursor: pointer;
+}
+
+.file-category-action > span:first-child {
+  width: 36px;
+  height: 36px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 12px;
+
+  background:
+    var(--yellow-pale);
+
+  font-size: 1rem;
+  font-weight: 900;
+}
+
+.file-category-action div {
+  min-width: 0;
+}
+
+.file-category-action strong,
+.file-category-action small {
+  display: block;
+}
+
+.file-category-action strong {
+  font-size: 0.76rem;
+}
+
+.file-category-action small {
+  margin-top: 3px;
+
+  color:
+    var(--muted);
+
+  font-size: 0.56rem;
+}
+
+.file-category-action > span:last-child {
+  color:
+    var(--muted);
+
+  font-size: 1.1rem;
+}
+
+.file-category-action.danger {
+  color:
+    var(--danger);
+}
+
+.file-category-action.danger
+> span:first-child {
+  background:
+    rgba(181, 64, 51, 0.09);
+}
+
+.file-delete-category-copy {
+  margin:
+    0
+    0
+    15px;
+
+  color:
+    var(--muted);
+
+  font-size: 0.7rem;
+  line-height: 1.45;
+}
+
+
+/* =========================================================
+   FILES — SMALL IPHONE
+========================================================= */
+
+@media (max-width: 390px) {
+
+  .files-actions {
+    grid-template-columns:
+      minmax(0, 1.4fr)
+      minmax(0, 1fr);
+  }
+
+  .files-upload-button,
+  .files-category-button {
+    font-size: 0.7rem;
+  }
+
+  .file-row {
+    grid-template-columns:
+      50px
+      minmax(0, 1fr)
+      14px;
+
+    gap: 9px;
+  }
+
+  .file-preview-row {
+    width: 50px;
+    height: 50px;
+  }
+
+  .file-category-pill {
+    max-width: 100px;
+  }
+
+}
+/* =========================================================
+   🚨 FIVE-TAB BOTTOM NAV — FINAL OVERRIDE
+========================================================= */
+
+.bottom-nav {
+  display: grid !important;
+  grid-template-columns: repeat(5, minmax(0, 1fr)) !important;
+  align-items: stretch !important;
+  gap: 0 !important;
+}
+
+.bottom-nav .nav-item {
+  width: 100% !important;
+  min-width: 0 !important;
+  max-width: none !important;
+
+  padding-left: 2px !important;
+  padding-right: 2px !important;
+
+  flex: none !important;
+}
+
+.bottom-nav .nav-item .nav-icon {
+  font-size: 1.05rem !important;
+}
+
+.bottom-nav .nav-item > span:last-child:not(.nav-badge) {
+  font-size: 0.58rem !important;
+  white-space: nowrap !important;
+}
+
+.bottom-nav .nav-badge {
+  position: absolute !important;
+}
+/* =========================================================
+   🚨 FILE VIEWER — IN-APP PREVIEW
+========================================================= */
+
+.file-detail-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+
+  margin-bottom: 18px;
+}
+
+.swl-file-viewer {
+  position: fixed;
+  inset: 0;
+
+  z-index: 99999;
+
+  display: flex;
+  flex-direction: column;
+
+  background: var(--cream);
+}
+
+.swl-file-viewer-header {
+  flex: 0 0 auto;
+
+  min-height: 58px;
+
+  display: grid;
+  grid-template-columns:
+    70px
+    minmax(0, 1fr)
+    44px;
+
+  align-items: center;
+
+  gap: 6px;
+
+  padding:
+    max(
+      8px,
+      env(safe-area-inset-top)
+    )
+    10px
+    8px;
+
+  border-bottom:
+    1px solid
+    rgba(76, 51, 37, 0.1);
+
+  background:
+    #fffdf8;
+}
+
+.swl-file-viewer-header strong {
+  min-width: 0;
+
+  overflow: hidden;
+
+  color: var(--brown);
+
+  font-size: 0.75rem;
+  text-align: center;
+
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.swl-file-viewer-back,
+.swl-file-viewer-close {
+  border: 0;
+
+  background: transparent;
+
+  color: var(--brown);
+
+  font: inherit;
+  font-weight: 850;
+
+  cursor: pointer;
+}
+
+.swl-file-viewer-back {
+  text-align: left;
+
+  font-size: 0.72rem;
+}
+
+.swl-file-viewer-close {
+  width: 40px;
+  height: 40px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  justify-self: end;
+
+  border-radius: 13px;
+
+  background:
+    rgba(76, 51, 37, 0.07);
+
+  font-size: 1.45rem;
+  line-height: 1;
+}
+
+.swl-file-viewer-body {
+  flex: 1 1 auto;
+
+  min-height: 0;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  overflow: auto;
+
+  padding: 14px;
+
+  background:
+    var(--cream-soft);
+}
+
+.swl-file-viewer-body img {
+  display: block;
+
+  max-width: 100%;
+  max-height: 100%;
+
+  object-fit: contain;
+
+  border-radius: 8px;
+}
+
+.swl-pdf-viewer {
+  padding: 0;
+}
+
+.swl-pdf-viewer iframe {
+  width: 100%;
+  height: 100%;
+
+  border: 0;
+
+  background: #fff;
+}
+
+/* =========================================================
+   SWL DELIGHT PASS — FINAL OVERRIDES
+========================================================= */
+
+.bottom-nav {
+  grid-template-columns: repeat(5, 1fr);
+}
+
+.swl-daily-message {
+  max-width: 520px;
+  margin-bottom: 0 !important;
+}
+
+.swl-pressed {
+  transform: scale(0.975) !important;
+  transition: transform 90ms ease !important;
+}
+
+.swl-toast {
+  position: fixed;
+  left: 50%;
+  bottom: calc(88px + env(safe-area-inset-bottom));
+  z-index: 250;
+  max-width: calc(100vw - 36px);
+  padding: 11px 15px;
+  border: 1px solid rgba(76, 51, 37, 0.12);
+  border-radius: 999px;
+  background: rgba(76, 51, 37, 0.94);
+  color: #fffaf1;
+  box-shadow: 0 10px 28px rgba(76, 51, 37, 0.18);
+  font-size: 0.78rem;
+  font-weight: 800;
+  line-height: 1.2;
+  text-align: center;
+  pointer-events: none;
+  opacity: 0;
+  transform: translate(-50%, 12px) scale(0.96);
+  transition: opacity 180ms ease, transform 180ms ease;
+}
+
+.swl-toast.show {
+  opacity: 1;
+  transform: translate(-50%, 0) scale(1);
+}
+
+.swl-number-pop {
+  animation: swlNumberPop 260ms ease;
+}
+
+@keyframes swlNumberPop {
+  0% { transform: scale(1); }
+  45% { transform: scale(1.18); }
+  100% { transform: scale(1); }
+}
+
+.pack-done-message.pack-done-pop {
+  animation: swlDonePop 560ms cubic-bezier(.2,.9,.25,1.2);
+}
+
+@keyframes swlDonePop {
+  0% { transform: translateY(8px) scale(0.96); opacity: 0; }
+  60% { transform: translateY(-2px) scale(1.025); opacity: 1; }
+  100% { transform: translateY(0) scale(1); opacity: 1; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .swl-pressed,
+  .swl-toast,
+  .swl-number-pop,
+  .pack-done-message.pack-done-pop {
+    animation: none !important;
+    transition: none !important;
   }
 }
 
-initializeApp();
+/* =========================================================
+   SWL HEADER + BIG PACK FINALE — FINAL OVERRIDES
+========================================================= */
+
+.topbar {
+  min-height: calc(48px + env(safe-area-inset-top));
+  padding: calc(4px + env(safe-area-inset-top)) 12px 4px !important;
+  gap: 10px;
+}
+
+.swl-topbar-brand-copy {
+  min-width: 0;
+  flex: 1 1 auto;
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+}
+
+.swl-topbar-brand-copy .eyebrow {
+  flex: 0 1 auto;
+  font-size: 0.57rem;
+  letter-spacing: 0.10em;
+  white-space: nowrap;
+}
+
+.swl-topbar-brand-copy h1 {
+  flex: 0 0 auto;
+  margin: 0 !important;
+  padding-left: 6px;
+  border-left: 1px solid rgba(76, 51, 37, 0.18);
+  font-size: 0.72rem !important;
+  line-height: 1 !important;
+  letter-spacing: -0.015em !important;
+}
+
+.swl-topbar-logo {
+  flex: 0 0 auto;
+  width: 40px;
+  height: 40px;
+  object-fit: contain;
+  display: block;
+  filter: drop-shadow(0 2px 4px rgba(76, 51, 37, 0.08));
+}
+
+.topbar .icon-button:not(.hidden) {
+  flex: 0 0 32px;
+  width: 32px;
+  height: 32px;
+}
+
+.swl-pack-finale {
+  position: fixed;
+  inset: 0;
+  z-index: 10000;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  padding: 24px;
+  pointer-events: none;
+  opacity: 0;
+  background: rgba(255, 248, 230, 0);
+  backdrop-filter: blur(0);
+  transition: opacity 140ms ease, background 260ms ease, backdrop-filter 260ms ease;
+}
+
+.swl-pack-finale.show {
+  opacity: 1;
+  background: rgba(255, 248, 230, 0.74);
+  backdrop-filter: blur(3px);
+}
+
+.swl-pack-finale.leaving {
+  opacity: 0;
+  transition-duration: 420ms;
+}
+
+.swl-finale-glow {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: min(92vw, 520px);
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(242,204,88,.72) 0%, rgba(249,230,163,.34) 38%, rgba(255,250,241,0) 70%);
+  transform: translate(-50%, -50%) scale(.35);
+  opacity: 0;
+}
+
+.swl-pack-finale.show .swl-finale-glow {
+  animation: swlFinaleGlow 1.55s cubic-bezier(.16,1,.3,1) forwards;
+}
+
+.swl-finale-card {
+  position: relative;
+  z-index: 3;
+  width: min(90vw, 480px);
+  padding: 34px 24px 30px;
+  border: 2px solid rgba(76, 51, 37, 0.14);
+  border-radius: 32px;
+  background: linear-gradient(145deg, #fffaf1 0%, #fff1b9 58%, #f2cc58 145%);
+  box-shadow: 0 28px 80px rgba(76,51,37,.22), 0 8px 22px rgba(76,51,37,.12);
+  text-align: center;
+  transform: scale(.35) rotate(-5deg);
+  opacity: 0;
+}
+
+.swl-pack-finale.show .swl-finale-card {
+  animation: swlFinaleCard 720ms cubic-bezier(.14,1.35,.3,1) 80ms forwards;
+}
+
+.swl-finale-kicker {
+  margin-bottom: 9px;
+  color: var(--brown-2);
+  font-size: .7rem;
+  font-weight: 900;
+  letter-spacing: .18em;
+}
+
+.swl-finale-title {
+  color: var(--brown);
+  font-size: clamp(2.35rem, 11vw, 4.25rem);
+  font-weight: 1000;
+  line-height: .92;
+  letter-spacing: -.055em;
+}
+
+.swl-finale-heart {
+  width: 62px;
+  height: 62px;
+  margin: 17px auto 12px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: var(--yellow);
+  color: var(--brown);
+  font-size: 1.8rem;
+  box-shadow: 0 8px 22px rgba(196,150,35,.25);
+  animation: swlFinaleHeart 900ms cubic-bezier(.16,1.45,.3,1) 540ms both;
+}
+
+.swl-finale-copy {
+  color: var(--brown-2);
+  font-size: 1rem;
+  font-weight: 800;
+}
+
+.swl-finale-particles {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  z-index: 4;
+  width: 1px;
+  height: 1px;
+}
+
+.swl-finale-particle {
+  position: absolute;
+  left: 0;
+  top: 0;
+  color: #e7b92f;
+  font-size: var(--size);
+  line-height: 1;
+  opacity: 0;
+  text-shadow: 0 2px 5px rgba(76,51,37,.1);
+  transform: translate(-50%, -50%) scale(.15);
+}
+
+.swl-finale-particle:nth-child(3n) { color: #4c3325; }
+.swl-finale-particle:nth-child(4n) { color: #f2cc58; }
+.swl-finale-particle:nth-child(5n) { color: #fffaf1; text-shadow: 0 1px 6px rgba(76,51,37,.22); }
+
+.swl-finale-particle.fluff {
+  width: calc(var(--size) * 1.45);
+  height: calc(var(--size) * 1.05);
+  border-radius: 55% 45% 58% 42%;
+  background: #fffdf8;
+  box-shadow: -7px 3px 0 -2px #fffdf8, 7px 4px 0 -3px #fffdf8, 0 3px 8px rgba(76,51,37,.12);
+  color: transparent;
+}
+
+.swl-pack-finale.show .swl-finale-particle {
+  animation: swlFinaleParticle 1.45s cubic-bezier(.12,.72,.28,1) var(--delay) forwards;
+}
+
+@keyframes swlFinaleCard {
+  0% { opacity: 0; transform: scale(.35) rotate(-5deg); }
+  58% { opacity: 1; transform: scale(1.08) rotate(1.5deg); }
+  78% { transform: scale(.975) rotate(-.4deg); }
+  100% { opacity: 1; transform: scale(1) rotate(0); }
+}
+
+@keyframes swlFinaleGlow {
+  0% { opacity: 0; transform: translate(-50%,-50%) scale(.25); }
+  45% { opacity: 1; transform: translate(-50%,-50%) scale(1.08); }
+  100% { opacity: .45; transform: translate(-50%,-50%) scale(1.35); }
+}
+
+@keyframes swlFinaleHeart {
+  0% { transform: scale(0) rotate(-25deg); }
+  60% { transform: scale(1.28) rotate(8deg); }
+  100% { transform: scale(1) rotate(0); }
+}
+
+@keyframes swlFinaleParticle {
+  0% { opacity: 0; transform: translate(-50%,-50%) scale(.1) rotate(0); }
+  12% { opacity: 1; }
+  72% { opacity: 1; }
+  100% { opacity: 0; transform: translate(calc(-50% + var(--x)), calc(-50% + var(--y))) scale(1.12) rotate(var(--spin)); }
+}
+
+@media (max-width: 390px) {
+  .swl-topbar-brand-copy { gap: 5px; }
+  .swl-topbar-brand-copy .eyebrow { font-size: .53rem; letter-spacing: .085em; }
+  .swl-topbar-brand-copy h1 { font-size: .68rem !important; padding-left: 5px; }
+  .swl-topbar-logo { width: 40px; height: 40px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .swl-pack-finale, .swl-finale-card, .swl-finale-glow, .swl-finale-heart, .swl-finale-particle {
+    animation: none !important;
+    transition: none !important;
+  }
+  .swl-pack-finale.show { opacity: 1; }
+  .swl-pack-finale.show .swl-finale-card { opacity: 1; transform: none; }
+}
+
+/* =========================================================
+   CLIENTS — DIRECTORY + PROFILE
+========================================================= */
+
+.swl-client-search-wrap {
+  position: sticky;
+  top: calc(48px + env(safe-area-inset-top));
+  z-index: 18;
+  margin: -4px -2px 20px;
+  padding: 8px 2px 10px;
+  background: linear-gradient(
+    180deg,
+    rgba(251,243,229,.98) 0%,
+    rgba(251,243,229,.94) 78%,
+    rgba(251,243,229,0) 100%
+  );
+}
+
+.swl-client-search {
+  width: 100%;
+  min-height: 48px;
+  padding: 0 16px;
+  border: 1px solid var(--line-strong);
+  border-radius: 16px;
+  outline: none;
+  background: rgba(255,255,255,.9);
+  color: var(--text);
+  box-shadow: var(--shadow-soft);
+}
+
+.swl-client-search:focus {
+  border-color: rgba(198,151,38,.72);
+  box-shadow: 0 0 0 4px rgba(242,204,88,.15);
+}
+
+.swl-client-section {
+  margin: 26px 0 32px;
+}
+
+.swl-client-section-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin: 0 2px 12px;
+}
+
+.swl-client-section-heading h2 {
+  margin: 0;
+  color: var(--brown);
+  font-size: 1.05rem;
+  letter-spacing: -.015em;
+}
+
+.swl-client-section-heading > span {
+  min-width: 27px;
+  height: 27px;
+  display: grid;
+  place-items: center;
+  padding: 0 8px;
+  border-radius: 999px;
+  background: rgba(242,204,88,.22);
+  color: var(--brown-2);
+  font-size: .7rem;
+  font-weight: 900;
+}
+
+.swl-client-list {
+  display: grid;
+  gap: 10px;
+}
+
+.swl-client-card,
+.swl-client-event-card {
+  width: 100%;
+  margin: 0 !important;
+  border: 1px solid var(--line);
+  text-align: left;
+  color: var(--text);
+}
+
+.swl-client-card {
+  min-height: 82px;
+  display: grid;
+  grid-template-columns: 48px minmax(0,1fr) 20px;
+  align-items: center;
+  gap: 12px;
+  padding: 13px 14px;
+}
+
+.swl-client-avatar {
+  width: 48px;
+  height: 48px;
+  display: grid;
+  place-items: center;
+  border-radius: 17px;
+  background:
+    linear-gradient(
+      145deg,
+      var(--yellow-pale),
+      var(--yellow)
+    );
+  color: var(--brown);
+  font-size: 1.05rem;
+  font-weight: 950;
+  box-shadow: inset 0 0 0 1px rgba(76,51,37,.06);
+}
+
+.swl-client-avatar.large {
+  width: 62px;
+  height: 62px;
+  border-radius: 21px;
+  font-size: 1.35rem;
+}
+
+.swl-client-card-copy {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.swl-client-card-copy strong {
+  overflow: hidden;
+  color: var(--brown);
+  font-size: .96rem;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.swl-client-card-copy > span {
+  overflow: hidden;
+  margin-top: 3px;
+  color: var(--muted);
+  font-size: .76rem;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.swl-client-card-copy small {
+  margin-top: 5px;
+  color: var(--brown-soft);
+  font-size: .66rem;
+  font-weight: 750;
+}
+
+.swl-client-chevron {
+  color: var(--brown-soft);
+  font-size: 1.45rem;
+  font-weight: 500;
+  line-height: 1;
+}
+
+.swl-client-back {
+  min-height: 38px;
+  margin: -8px 0 10px;
+  padding: 4px 2px;
+  border: 0;
+  background: transparent;
+  color: var(--brown-2);
+  font-weight: 850;
+}
+
+.swl-client-profile {
+  padding: 18px;
+}
+
+.swl-client-profile-top {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.swl-client-profile-top h2 {
+  margin: 0;
+  color: var(--brown);
+  font-size: 1.28rem;
+  letter-spacing: -.025em;
+}
+
+.swl-client-profile-top p {
+  margin: 5px 0 0;
+  color: var(--muted);
+  font-size: .78rem;
+}
+
+.swl-client-contact-lines {
+  margin-top: 18px;
+  border-top: 1px solid var(--line);
+}
+
+.swl-client-contact-lines > div {
+  display: grid;
+  grid-template-columns: 72px minmax(0,1fr);
+  gap: 12px;
+  padding: 13px 0;
+  border-bottom: 1px solid var(--line);
+}
+
+.swl-client-contact-lines span {
+  color: var(--muted);
+  font-size: .73rem;
+  font-weight: 750;
+}
+
+.swl-client-contact-lines strong {
+  min-width: 0;
+  overflow-wrap: anywhere;
+  color: var(--brown);
+  font-size: .84rem;
+}
+
+.swl-client-actions {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0,1fr));
+  gap: 8px;
+  margin-top: 16px;
+}
+
+.swl-client-actions a {
+  min-height: 42px;
+  display: grid;
+  place-items: center;
+  padding: 0 10px;
+  border: 1px solid rgba(196,150,35,.18);
+  border-radius: 13px;
+  background: var(--yellow-pale);
+  color: var(--brown);
+  font-size: .78rem;
+  font-weight: 850;
+  text-decoration: none;
+}
+
+.swl-client-event-card {
+  min-height: 66px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 14px 16px;
+}
+
+.swl-client-event-card > span:first-child {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.swl-client-event-card strong {
+  overflow: hidden;
+  color: var(--brown);
+  font-size: .9rem;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.swl-client-event-card small {
+  margin-top: 5px;
+  color: var(--muted);
+  font-size: .72rem;
+}
+
+.swl-client-note-compose {
+  padding: 14px;
+}
+
+.swl-client-note-compose textarea {
+  width: 100%;
+  min-height: 88px;
+  padding: 12px 13px;
+  border: 1px solid var(--line-strong);
+  border-radius: 14px;
+  outline: none;
+  resize: vertical;
+  background: rgba(255,255,255,.92);
+  color: var(--text);
+}
+
+.swl-client-note-compose textarea:focus {
+  border-color: rgba(198,151,38,.72);
+  box-shadow: 0 0 0 4px rgba(242,204,88,.15);
+}
+
+.swl-client-note-compose .primary-button {
+  width: 100%;
+  min-height: 44px;
+  margin-top: 9px;
+}
+
+.swl-client-notes-list {
+  display: grid;
+  gap: 9px;
+  margin-top: 10px;
+}
+
+.swl-client-notes-empty {
+  padding: 18px 4px;
+  color: var(--muted);
+  font-size: .8rem;
+  text-align: center;
+}
+
+.swl-client-note {
+  padding: 14px 15px;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  background: rgba(255,255,255,.76);
+  color: var(--brown);
+  font-size: .84rem;
+  line-height: 1.45;
+}
+
+.swl-client-note-bottom {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 10px;
+}
+
+.swl-client-note-bottom small {
+  color: var(--muted);
+  font-size: .66rem;
+}
+
+.swl-client-note-bottom button {
+  min-height: 32px;
+  padding: 0 6px;
+  border: 0;
+  background: transparent;
+  color: var(--danger);
+  font-size: .7rem;
+  font-weight: 850;
+}
+
+@media (max-width: 390px) {
+  .swl-client-actions {
+    grid-template-columns: repeat(3, minmax(0,1fr));
+  }
+}
+
+/* =========================================================
+   CLIENT CRM — MULTI-CONTACT + MANUAL CLIENTS
+   ========================================================= */
+
+.swl-clients-toolbar {
+  display: grid;
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+.swl-clients-toolbar .swl-client-search-wrap {
+  margin: 0;
+}
+
+.swl-add-client-button {
+  width: 100%;
+}
+
+.swl-section-action {
+  min-height: 38px;
+  padding: 6px 10px;
+  border: 0;
+  border-radius: 12px;
+  background: var(--yellow-pale);
+  color: var(--brown);
+  font-weight: 850;
+}
+
+.swl-client-form-sheet {
+  max-height: min(88vh, 760px);
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.swl-contact-form-heading {
+  margin: 24px 0 14px;
+  color: var(--brown);
+  font-weight: 900;
+  font-size: 0.92rem;
+}
+
+.swl-contact-form-heading small {
+  display: block;
+  margin-top: 4px;
+  color: var(--muted);
+  font-size: 0.76rem;
+  font-weight: 650;
+}
+
+.swl-primary-contact-toggle {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 48px;
+  margin: 4px 0 18px;
+  color: var(--brown);
+  font-weight: 800;
+}
+
+.swl-primary-contact-toggle input {
+  width: 22px;
+  height: 22px;
+  accent-color: var(--yellow);
+}
+
+.swl-contact-card {
+  padding: 16px;
+}
+
+.swl-contact-card-top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.swl-contact-card-top strong {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 7px;
+  color: var(--brown);
+}
+
+.swl-contact-card-top small {
+  display: block;
+  margin-top: 4px;
+  color: var(--muted);
+  font-weight: 700;
+}
+
+.swl-primary-pill {
+  display: inline-flex;
+  align-items: center;
+  min-height: 22px;
+  padding: 3px 8px;
+  border-radius: 999px;
+  background: var(--yellow-pale);
+  color: var(--brown-2);
+  font-size: 0.65rem;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.swl-contact-details {
+  display: grid;
+  gap: 4px;
+  margin-top: 12px;
+  color: var(--muted);
+  font-size: 0.86rem;
+  line-height: 1.4;
+}
+
+.swl-client-actions.compact {
+  margin-top: 14px;
+}
+
+.swl-small-empty {
+  padding: 20px;
+}
+
+@media (min-width: 560px) {
+  .swl-clients-toolbar {
+    grid-template-columns: 1fr auto;
+    align-items: center;
+  }
+
+  .swl-add-client-button {
+    width: auto;
+    min-width: 150px;
+  }
+}
