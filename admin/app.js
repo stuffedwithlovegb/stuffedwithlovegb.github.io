@@ -3404,8 +3404,8 @@ async function deleteInventoryItem(itemId) {
   if (!item) return;
 
   try {
-    await apiFetch(
-      `/admin/api/inventory/${itemId}`,
+    await apiRequest(
+      `inventory/${encodeURIComponent(itemId)}`,
       {
         method: "DELETE"
       }
@@ -3417,6 +3417,7 @@ async function deleteInventoryItem(itemId) {
       );
 
     closeModal();
+    updateAttentionBadge();
     renderInventory();
 
   } catch (err) {
@@ -3449,13 +3450,11 @@ async function createInventoryItem(
   button.textContent = "Adding...";
 
   try {
-
     const response =
-      await apiFetch(
-        "/admin/api/inventory",
+      await apiRequest(
+        "inventory",
         {
           method: "POST",
-
           body: JSON.stringify({
             name,
             category,
@@ -3464,12 +3463,9 @@ async function createInventoryItem(
         }
       );
 
-    /*
-      Add returned item to local state
-      without needing a full reload.
-    */
-
-   state.inventory.push(response.item);
+    state.inventory.push(
+      response.item
+    );
 
     closeModal();
 
@@ -3479,7 +3475,6 @@ async function createInventoryItem(
     renderInventory();
 
   } catch (err) {
-
     button.disabled = false;
     button.textContent =
       "Add to Inventory";
