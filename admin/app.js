@@ -376,6 +376,9 @@ let state = createInitialState();
 
 let currentScreen = "home";
 let currentEventId = null;
+let currentClientKey = null;
+let clientSearch = "";
+const clientNotesCache = new Map();
 let activeEventTab = "info";
 let activeInventoryCategory = "Plush";
 let inventorySearch = "";
@@ -962,30 +965,27 @@ function ensureSWLHeaderBrand() {
   }
 }
 
-function setHeader(
-  title,
-  showAdd = false
-) {
+function setHeader(title) {
   ensureSWLHeaderBrand();
 
   document.getElementById(
     "pageTitle"
   ).textContent = title;
 
+  // The page-level actions already live inside each screen.
+  // Keep the top bar clean: no mystery + button.
   const action =
     document.getElementById(
       "headerAction"
     );
 
-  action.classList.toggle(
-    "hidden",
-    !showAdd
-  );
+  action.classList.add("hidden");
 }
 
 function navigate(screen) {
   currentScreen = screen;
   currentEventId = null;
+  currentClientKey = null;
 
   document
     .querySelectorAll(".nav-item")
@@ -1018,6 +1018,14 @@ function render() {
 
 case "files":
   renderFiles();
+  break;
+
+case "clients":
+  renderClients();
+  break;
+
+case "client-detail":
+  renderClientDetail();
   break;
 
 case "attention":
@@ -1194,13 +1202,13 @@ function renderHome() {
 
         <button
           class="swl-quick-action"
-          onclick="navigate('attention')"
+          onclick="navigate('clients')"
         >
-          <span class="swl-quick-icon">!</span>
+          <span class="swl-quick-icon">☺</span>
 
           <span>
-            <strong>Attention</strong>
-            <small>See what needs you</small>
+            <strong>Clients</strong>
+            <small>Contacts & event history</small>
           </span>
         </button>
 
@@ -1527,15 +1535,824 @@ function renderHome() {
 
   main.innerHTML = html;
 }
+
+/* =========================================================
+   CLIENTS
+========================================================= */
+
+function normalizeClientText(value = "") {
+  return String(value || "").trim();
+}
+
+function normalizedClientPhone(value = "") {
+  return normalizeClientText(value)
+    .replace(/[^\d+]/g, "");
+}
+
+function clientKeyForEvent(event) {
+  const email =
+    normalizeClientText(
+      event.hostEmail
+    ).toLowerCase();
+
+  const phone =
+    normalizedClientPhone(
+      event.hostPhone
+    );
+
+  /*
+    Never merge people by name alone.
+    Email is strongest, then phone.
+    If neither exists, that event gets
+    its own client record in the directory.
+  */
+  if (email) return `email:${email}`;
+  if (phone) return `phone:${phone}`;
+
+  return `event:${event.id}`;
+}
+
+function getClientsFromEvents() {
+  const clients = new Map();
+
+  state.events.forEach(event => {
+    const name =
+      normalizeClientText(
+        event.hostName
+      );
+
+    const email =
+      normalizeClientText(
+        event.hostEmail
+      );
+
+    const phone =
+      normalizeClientText(
+        event.hostPhone
+      );
+
+    if (!name && !email && !phone) {
+      return;
+    }
+
+    const key =
+      clientKeyForEvent(event);
+
+    if (!clients.has(key)) {
+      clients.set(key, {
+        key,
+        name:
+          name ||
+          email ||
+          phone ||
+          "Unnamed client",
+        email,
+        phone,
+        events: []
+      });
+    }
+
+    const client =
+      clients.get(key);
+
+    // Keep the newest non-empty contact info.
+    if (name) client.name = name;
+    if (email) client.email = email;
+    if (phone) client.phone = phone;
+
+    client.events.push(event);
+  });
+
+  return [...clients.values()];
+}
+
+function clientEventDateValue(event) {
+  if (!event?.date) {
+    return Number.POSITIVE_INFINITY;
+  }
+
+  return new Date(
+    `${event.date}T12:00:00`
+  ).getTime();
+}
+
+function isClientEventUpcoming(event) {
+  if (event.closed) return false;
+  if (!event.date) return true;
+
+  const eventDate =
+    new Date(
+      `${event.date}T12:00:00`
+    );
+
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+
+  return eventDate >= today;
+}
+
+function clientUpcomingEvents(client) {
+  return [...client.events]
+    .filter(isClientEventUpcoming)
+    .sort(
+      (a, b) =>
+        clientEventDateValue(a) -
+        clientEventDateValue(b)
+    );
+}
+
+function clientPastEvents(client) {
+  return [...client.events]
+    .filter(
+      event =>
+        !isClientEventUpcoming(event)
+    )
+    .sort(
+      (a, b) =>
+        clientEventDateValue(b) -
+        clientEventDateValue(a)
+    );
+}
+
+function findClientByKey(key) {
+  return getClientsFromEvents()
+    .find(
+      client =>
+        client.key === key
+    ) || null;
+}
+
+function setClientSearch(value) {
+  clientSearch = value || "";
+  renderClients();
+}
+
+function openClient(encodedKey) {
+  currentClientKey =
+    decodeURIComponent(encodedKey);
+
+  currentScreen =
+    "client-detail";
+
+  render();
+
+  window.scrollTo({
+    top: 0,
+    left: 0,
+    behavior: "instant"
+  });
+}
+
+function clientCardHTML(
+  client,
+  showNext = false
+) {
+  const upcoming =
+    clientUpcomingEvents(client);
+
+  const nextEvent =
+    upcoming[0];
+
+  const initial =
+    (client.name || "?")
+      .charAt(0)
+      .toUpperCase();
+
+  let subline =
+    client.email ||
+    client.phone ||
+    "Contact info not added";
+
+  if (showNext && nextEvent) {
+    subline =
+      `${formatDate(nextEvent.date)} · ${nextEvent.name || "Event"}`;
+  }
+
+  return `
+    <button
+      class="card swl-client-card tap-card"
+      onclick="openClient('${encodeURIComponent(client.key)}')"
+    >
+      <span class="swl-client-avatar">
+        ${escapeHTML(initial)}
+      </span>
+
+      <span class="swl-client-card-copy">
+        <strong>
+          ${escapeHTML(client.name)}
+        </strong>
+
+        <span>
+          ${escapeHTML(subline)}
+        </span>
+
+        <small>
+          ${client.events.length}
+          ${client.events.length === 1 ? "event" : "events"}
+        </small>
+      </span>
+
+      <span class="swl-client-chevron">
+        ›
+      </span>
+    </button>
+  `;
+}
+
+function renderClients() {
+  setHeader("Clients");
+
+  const main =
+    document.getElementById(
+      "mainContent"
+    );
+
+  const search =
+    normalizeClientText(
+      clientSearch
+    ).toLowerCase();
+
+  const allClients =
+    getClientsFromEvents()
+      .filter(client => {
+        if (!search) return true;
+
+        return [
+          client.name,
+          client.email,
+          client.phone
+        ]
+          .join(" ")
+          .toLowerCase()
+          .includes(search);
+      });
+
+  const upcomingClients =
+    allClients
+      .filter(
+        client =>
+          clientUpcomingEvents(client)
+            .length > 0
+      )
+      .sort((a, b) => {
+        const aEvent =
+          clientUpcomingEvents(a)[0];
+
+        const bEvent =
+          clientUpcomingEvents(b)[0];
+
+        return (
+          clientEventDateValue(aEvent) -
+          clientEventDateValue(bEvent)
+        );
+      });
+
+  const alphabeticClients =
+    [...allClients].sort(
+      (a, b) =>
+        a.name.localeCompare(
+          b.name,
+          undefined,
+          { sensitivity: "base" }
+        )
+    );
+
+  let html = `
+    <div class="swl-client-search-wrap">
+      <input
+        class="swl-client-search"
+        type="search"
+        placeholder="Search clients"
+        value="${escapeHTML(clientSearch)}"
+        oninput="setClientSearch(this.value)"
+        autocomplete="off"
+      />
+    </div>
+  `;
+
+  if (!getClientsFromEvents().length) {
+    html += `
+      <div class="card empty-card">
+        <strong>No clients yet.</strong>
+        <p>
+          Clients appear automatically
+          from the contact info on your events.
+        </p>
+      </div>
+    `;
+
+    main.innerHTML = html;
+    return;
+  }
+
+  if (
+    !upcomingClients.length &&
+    !alphabeticClients.length
+  ) {
+    html += `
+      <div class="card empty-card">
+        <strong>No matches.</strong>
+        <p>
+          Try a name, phone number,
+          or email address.
+        </p>
+      </div>
+    `;
+
+    main.innerHTML = html;
+    return;
+  }
+
+  if (upcomingClients.length) {
+    html += `
+      <section class="swl-client-section">
+        <div class="swl-client-section-heading">
+          <h2>Upcoming Clients</h2>
+          <span>${upcomingClients.length}</span>
+        </div>
+
+        <div class="swl-client-list">
+          ${upcomingClients
+            .map(
+              client =>
+                clientCardHTML(
+                  client,
+                  true
+                )
+            )
+            .join("")}
+        </div>
+      </section>
+    `;
+  }
+
+  html += `
+    <section class="swl-client-section">
+      <div class="swl-client-section-heading">
+        <h2>All Clients</h2>
+        <span>${alphabeticClients.length}</span>
+      </div>
+
+      <div class="swl-client-list">
+        ${alphabeticClients
+          .map(
+            client =>
+              clientCardHTML(client)
+          )
+          .join("")}
+      </div>
+    </section>
+  `;
+
+  main.innerHTML = html;
+}
+
+function clientEventCardHTML(event) {
+  return `
+    <button
+      class="card swl-client-event-card tap-card"
+      onclick="openEvent('${event.id}')"
+    >
+      <span>
+        <strong>
+          ${escapeHTML(
+            event.name || "Event"
+          )}
+        </strong>
+
+        <small>
+          ${escapeHTML(
+            formatDate(event.date)
+          )}
+          ${
+            event.package
+              ? ` · ${escapeHTML(event.package)}`
+              : ""
+          }
+        </small>
+      </span>
+
+      <span class="swl-client-chevron">
+        ›
+      </span>
+    </button>
+  `;
+}
+
+async function loadClientNotes(
+  clientKey,
+  force = false
+) {
+  if (
+    !force &&
+    clientNotesCache.has(clientKey)
+  ) {
+    return clientNotesCache.get(
+      clientKey
+    );
+  }
+
+  const response =
+    await apiRequest(
+      `client-notes/${encodeURIComponent(clientKey)}`
+    );
+
+  const notes =
+    response.notes || [];
+
+  clientNotesCache.set(
+    clientKey,
+    notes
+  );
+
+  return notes;
+}
+
+function clientNotesHTML(notes) {
+  if (!notes.length) {
+    return `
+      <div class="swl-client-notes-empty">
+        No client notes yet.
+      </div>
+    `;
+  }
+
+  return notes
+    .map(note => `
+      <div class="swl-client-note">
+        <div>
+          ${escapeHTML(note.text)}
+        </div>
+
+        <div class="swl-client-note-bottom">
+          <small>
+            ${new Date(
+              note.createdAt
+            ).toLocaleDateString(
+              "en-US",
+              {
+                month: "short",
+                day: "numeric",
+                year: "numeric"
+              }
+            )}
+          </small>
+
+          <button
+            type="button"
+            onclick="deleteClientNote(
+              '${encodeURIComponent(note.clientKey)}',
+              '${encodeURIComponent(note.id)}'
+            )"
+          >
+            Delete
+          </button>
+        </div>
+      </div>
+    `)
+    .join("");
+}
+
+async function renderClientDetail() {
+  const client =
+    findClientByKey(
+      currentClientKey
+    );
+
+  if (!client) {
+    navigate("clients");
+    return;
+  }
+
+  setHeader("Client");
+
+  const main =
+    document.getElementById(
+      "mainContent"
+    );
+
+  const phoneHref =
+    normalizedClientPhone(
+      client.phone
+    );
+
+  const upcoming =
+    clientUpcomingEvents(client);
+
+  const past =
+    clientPastEvents(client);
+
+  main.innerHTML = `
+    <button
+      class="swl-client-back"
+      type="button"
+      onclick="navigate('clients')"
+    >
+      ‹ Clients
+    </button>
+
+    <section class="card swl-client-profile">
+      <div class="swl-client-profile-top">
+        <span class="swl-client-avatar large">
+          ${escapeHTML(
+            client.name
+              .charAt(0)
+              .toUpperCase()
+          )}
+        </span>
+
+        <div>
+          <h2>
+            ${escapeHTML(client.name)}
+          </h2>
+
+          <p>
+            ${client.events.length}
+            ${client.events.length === 1 ? "event" : "events"}
+          </p>
+        </div>
+      </div>
+
+      <div class="swl-client-contact-lines">
+        ${
+          client.phone
+            ? `
+              <div>
+                <span>Phone</span>
+                <strong>${escapeHTML(client.phone)}</strong>
+              </div>
+            `
+            : ""
+        }
+
+        ${
+          client.email
+            ? `
+              <div>
+                <span>Email</span>
+                <strong>${escapeHTML(client.email)}</strong>
+              </div>
+            `
+            : ""
+        }
+
+        ${
+          !client.phone &&
+          !client.email
+            ? `
+              <div>
+                <span>Contact</span>
+                <strong>Not added yet</strong>
+              </div>
+            `
+            : ""
+        }
+      </div>
+
+      ${
+        phoneHref ||
+        client.email
+          ? `
+            <div class="swl-client-actions">
+              ${
+                phoneHref
+                  ? `
+                    <a href="sms:${escapeHTML(phoneHref)}">
+                      Text
+                    </a>
+                    <a href="tel:${escapeHTML(phoneHref)}">
+                      Call
+                    </a>
+                  `
+                  : ""
+              }
+
+              ${
+                client.email
+                  ? `
+                    <a href="mailto:${escapeHTML(client.email)}">
+                      Email
+                    </a>
+                  `
+                  : ""
+              }
+            </div>
+          `
+          : ""
+      }
+    </section>
+
+    ${
+      upcoming.length
+        ? `
+          <section class="swl-client-section">
+            <div class="swl-client-section-heading">
+              <h2>Upcoming Events</h2>
+              <span>${upcoming.length}</span>
+            </div>
+
+            <div class="swl-client-list">
+              ${upcoming
+                .map(clientEventCardHTML)
+                .join("")}
+            </div>
+          </section>
+        `
+        : ""
+    }
+
+    ${
+      past.length
+        ? `
+          <section class="swl-client-section">
+            <div class="swl-client-section-heading">
+              <h2>Past Events</h2>
+              <span>${past.length}</span>
+            </div>
+
+            <div class="swl-client-list">
+              ${past
+                .map(clientEventCardHTML)
+                .join("")}
+            </div>
+          </section>
+        `
+        : ""
+    }
+
+    <section class="swl-client-section">
+      <div class="swl-client-section-heading">
+        <h2>Client Notes</h2>
+      </div>
+
+      <div class="card swl-client-note-compose">
+        <textarea
+          id="clientNoteText"
+          placeholder="Anything worth remembering about this client?"
+        ></textarea>
+
+        <button
+          class="primary-button"
+          type="button"
+          onclick="saveClientNote('${encodeURIComponent(client.key)}')"
+        >
+          Add Note
+        </button>
+      </div>
+
+      <div
+        id="clientNotesList"
+        class="swl-client-notes-list"
+      >
+        <div class="swl-client-notes-empty">
+          Loading notes…
+        </div>
+      </div>
+    </section>
+  `;
+
+  try {
+    const notes =
+      await loadClientNotes(
+        client.key
+      );
+
+    if (
+      currentScreen !==
+        "client-detail" ||
+      currentClientKey !==
+        client.key
+    ) {
+      return;
+    }
+
+    const list =
+      document.getElementById(
+        "clientNotesList"
+      );
+
+    if (list) {
+      list.innerHTML =
+        clientNotesHTML(notes);
+    }
+  } catch (err) {
+    const list =
+      document.getElementById(
+        "clientNotesList"
+      );
+
+    if (list) {
+      list.innerHTML = `
+        <div class="status-banner warning">
+          Could not load client notes.
+        </div>
+      `;
+    }
+  }
+}
+
+async function saveClientNote(
+  encodedClientKey
+) {
+  const clientKey =
+    decodeURIComponent(
+      encodedClientKey
+    );
+
+  const input =
+    document.getElementById(
+      "clientNoteText"
+    );
+
+  const text =
+    normalizeClientText(
+      input?.value
+    );
+
+  if (!text) return;
+
+  try {
+    await apiRequest(
+      `client-notes/${encodeURIComponent(clientKey)}`,
+      {
+        method: "POST",
+        body: JSON.stringify({
+          text
+        })
+      }
+    );
+
+    if (input) {
+      input.value = "";
+    }
+
+    await loadClientNotes(
+      clientKey,
+      true
+    );
+
+    showSWLToast(
+      "Client note saved"
+    );
+
+    renderClientDetail();
+  } catch (err) {
+    alert(
+      `Could not save that note. ${err.message}`
+    );
+  }
+}
+
+async function deleteClientNote(
+  encodedClientKey,
+  encodedNoteId
+) {
+  const clientKey =
+    decodeURIComponent(
+      encodedClientKey
+    );
+
+  const noteId =
+    decodeURIComponent(
+      encodedNoteId
+    );
+
+  if (
+    !confirm(
+      "Delete this client note?"
+    )
+  ) {
+    return;
+  }
+
+  try {
+    await apiRequest(
+      `client-notes/${encodeURIComponent(clientKey)}/${encodeURIComponent(noteId)}`,
+      {
+        method: "DELETE"
+      }
+    );
+
+    await loadClientNotes(
+      clientKey,
+      true
+    );
+
+    renderClientDetail();
+  } catch (err) {
+    alert(
+      `Could not delete that note. ${err.message}`
+    );
+  }
+}
+
+
 /* =========================================================
    EVENTS
 ========================================================= */
 
 function renderEvents() {
-  setHeader(
-    "Events",
-    true
-  );
+  setHeader("Events");
 
   const main =
     document.getElementById(
@@ -4392,7 +5209,7 @@ async function loadFilesData(force = false) {
 
 
 async function renderFiles() {
-  setHeader("Files", true);
+  setHeader("Files");
 
   const main =
     document.getElementById(
