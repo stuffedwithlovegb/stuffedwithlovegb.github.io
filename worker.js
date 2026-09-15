@@ -2617,6 +2617,49 @@ async function handlePush(request, env, action) {
     return json({ ok: true });
   }
 
+  if (request.method === "POST" && action === "test") {
+    if (!env.VAPID_PRIVATE_JWK) return error("VAPID private key is not configured.", 500);
+
+    const body = await request.json();
+    const endpoint = String(body?.endpoint || "").trim();
+    if (!endpoint) return error("Push endpoint required.");
+
+    const subscription = await env.DB.prepare(`
+      SELECT endpoint FROM push_subscriptions WHERE endpoint = ?
+    `).bind(endpoint).first();
+    if (!subscription) return error("This device is not registered for SWL notifications.", 404);
+
+    const notificationKey = `test:${crypto.randomUUID()}`;
+    const pendingId = crypto.randomUUID();
+    const now = new Date().toISOString();
+
+    await env.DB.prepare(`
+      INSERT INTO push_pending (id, endpoint, notification_key, title, body, url, created_at)
+      VALUES (?, ?, ?, ?, ?, ?, ?)
+    `).bind(
+      pendingId,
+      endpoint,
+      notificationKey,
+      "🧸 SWL Ops is officially on fluff duty!",
+      "Notifications are working. We’ll nudge you when something needs your attention.",
+      "/admin/",
+      now
+    ).run();
+
+    const response = await sendEmptyWebPush(env, endpoint);
+    if (response.status === 404 || response.status === 410) {
+      await env.DB.prepare(`DELETE FROM push_subscriptions WHERE endpoint = ?`).bind(endpoint).run();
+      await env.DB.prepare(`DELETE FROM push_pending WHERE endpoint = ?`).bind(endpoint).run();
+      return error("This device's push subscription expired. Turn notifications off and back on, then try again.", 410);
+    }
+    if (!response.ok) {
+      await env.DB.prepare(`DELETE FROM push_pending WHERE id = ?`).bind(pendingId).run();
+      return error(`Push service returned ${response.status}.`, 502);
+    }
+
+    return json({ ok: true });
+  }
+
   if (request.method === "POST" && action === "pending") {
     const body = await request.json();
     const endpoint = String(body?.endpoint || "").trim();
