@@ -519,7 +519,29 @@ async function handleInventory(
       onHand
     });
   }
+if (
+  request.method === "DELETE" &&
+  id
+) {
+  const result = await env.DB
+    .prepare(`
+      DELETE FROM inventory
+      WHERE id = ?
+    `)
+    .bind(id)
+    .run();
 
+  if (!result.meta.changes) {
+    return error(
+      "Inventory item not found.",
+      404
+    );
+  }
+
+  return json({
+    ok: true
+  });
+}
   return error(
     "Unsupported inventory request.",
     405
