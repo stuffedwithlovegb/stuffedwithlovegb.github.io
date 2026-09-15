@@ -2816,19 +2816,22 @@ async function deleteEvent(id) {
 function renderInventory() {
   setHeader("Inventory");
 
-  const main = document.getElementById("mainContent");
+  const main =
+    document.getElementById("mainContent");
 
- const categories = [
-  "Plush",
-  "Outfits",
-  "Supplies",
-  "Shirts",
-  "All"
-];
+  const categories = [
+    "Plush",
+    "Outfits",
+    "Supplies",
+    "Shirts",
+    "All"
+  ];
 
-  const hasShortage = state.inventory.some(
-    item => inventoryAvailable(item.id) < 0
-  );
+  const hasShortage =
+    state.inventory.some(
+      item =>
+        inventoryAvailable(item.id) < 0
+    );
 
   let html = `
     ${
@@ -2865,7 +2868,9 @@ function renderInventory() {
             category => `
               <button
                 class="inventory-category-tab ${
-                  activeInventoryCategory === category ? "active" : ""
+                  activeInventoryCategory === category
+                    ? "active"
+                    : ""
                 }"
                 data-inventory-category="${category}"
                 onclick="setInventoryCategory('${category}')"
@@ -2881,135 +2886,203 @@ function renderInventory() {
   `;
 
   const actualCategories = [
-    ...new Set(state.inventory.map(item => item.category))
+    ...new Set(
+      state.inventory.map(
+        item => item.category
+      )
+    )
   ];
 
-  actualCategories.forEach(category => {
-    const categoryItems = state.inventory.filter(
-      item => item.category === category
-    );
+  actualCategories.forEach(
+    category => {
 
-    html += `
-      <section
-        class="inventory-group"
-        data-inventory-group="${escapeHTML(category)}"
-      >
-        <div class="inventory-group-header">
+      const categoryItems =
+        state.inventory.filter(
+          item =>
+            item.category === category
+        );
 
-  <div class="inventory-group-title">
-    <h2>
-      ${category === "Plush" ? "Plush Friends" : escapeHTML(category)}
-    </h2>
-
-    <span>${categoryItems.length}</span>
-  </div>
-
-  <button
-    class="inventory-add-item-button"
-    onclick="openAddInventoryItem('${escapeHTML(category)}')"
-  >
-    + Add Item
-  </button>
-
-</div>
-
-        <div class="inventory-list-card">
-    `;
-
-    categoryItems.forEach(item => {
-      const plush = getPlushMeta(item.id);
-      const reserved = calculateReserved(item.id);
-      const available = item.onHand - reserved;
-
-     html += `
-  <div
-    class="inventory-item-row ${plush ? "inventory-plush-card" : "inventory-standard-row"}"
-          data-inventory-item
-          data-category="${escapeHTML(category)}"
-          data-search="${escapeHTML(
-            `${inventoryDisplayName(item)} ${item.name} ${category}`.toLowerCase()
-          )}"
-          onclick="openInventoryItem('${item.id}')"
+      html += `
+        <section
+          class="inventory-group"
+          data-inventory-group="${escapeHTML(category)}"
         >
 
-          <div class="inventory-item-left">
+          <div class="inventory-group-header">
 
-            ${
-              plush
-                ? `
-                  <div class="inventory-plush-thumb">
-                    <img
-                      src="${plush.image}"
-                      alt="${escapeHTML(plush.name)}"
-                    />
-                  </div>
-                `
-                : `
-                  <div
-                    class="inventory-generic-icon inventory-generic-${category
-                      .toLowerCase()
-                      .replaceAll(" ", "-")}"
-                  >
-                    ${inventoryCategoryIcon(category)}
-                  </div>
-                `
-            }
+            <div class="inventory-group-title">
+              <h2>
+                ${
+                  category === "Plush"
+                    ? "Plush Friends"
+                    : escapeHTML(category)
+                }
+              </h2>
 
-            <div class="inventory-item-copy">
-              <strong>
-                ${escapeHTML(inventoryDisplayName(item))}
-              </strong>
-
-              <div class="inventory-item-meta">
-                <span>${item.onHand} on hand</span>
-                <span>${reserved} reserved</span>
-              </div>
+              <span>
+                ${categoryItems.length}
+              </span>
             </div>
+
+            <button
+              class="inventory-add-item-button"
+              onclick="openAddInventoryItem('${escapeHTML(category)}')"
+            >
+              ＋ Add Item
+            </button>
 
           </div>
 
-          <div class="inventory-item-right">
-
-            <div class="inventory-available ${available < 0 ? "short" : ""}">
-              <strong>${available}</strong>
-              <span>available</span>
-            </div>
-
-            ${
-              plush
-                ? `
-                  <button
-                    class="inventory-quick-six"
-                    onclick="
-                      event.stopPropagation();
-                      changeInventoryBy('${item.id}', 6, false);
-                    "
-                    aria-label="Add six ${escapeHTML(plush.name)}"
-                  >
-                    +6
-                  </button>
-                `
-                : ""
-            }
-
-            <span class="inventory-chevron">›</span>
-
-          </div>
-        </div>
+          <div class="inventory-list-card">
       `;
-    });
 
-    html += `
-        </div>
-      </section>
-    `;
-  });
+      categoryItems.forEach(
+        item => {
+
+          const plush =
+            getPlushMeta(item.id);
+
+          const reserved =
+            calculateReserved(item.id);
+
+          const available =
+            item.onHand - reserved;
+
+          html += `
+            <div
+              class="inventory-item-row ${
+                plush
+                  ? "inventory-plush-card"
+                  : "inventory-standard-row"
+              }"
+
+              data-inventory-item
+              data-inventory-id="${item.id}"
+
+              data-category="${escapeHTML(category)}"
+
+              data-search="${escapeHTML(
+                `${
+                  inventoryDisplayName(item)
+                } ${item.name} ${category}`
+                  .toLowerCase()
+              )}"
+
+              onclick="openInventoryItem('${item.id}')"
+            >
+
+              <div class="inventory-item-left">
+
+                ${
+                  plush
+                    ? `
+                      <div class="inventory-plush-thumb">
+                        <img
+                          src="${plush.image}"
+                          alt="${escapeHTML(plush.name)}"
+                        />
+                      </div>
+                    `
+                    : `
+                      <div
+                        class="inventory-generic-icon inventory-generic-${category
+                          .toLowerCase()
+                          .replaceAll(" ", "-")}"
+                      >
+                        ${inventoryCategoryIcon(category)}
+                      </div>
+                    `
+                }
+
+                <div class="inventory-item-copy">
+
+                  <strong>
+                    ${escapeHTML(
+                      inventoryDisplayName(item)
+                    )}
+                  </strong>
+
+                  <div class="inventory-item-meta">
+
+                    <span>
+                      <strong data-inventory-on-hand>
+                        ${item.onHand}
+                      </strong>
+                      on hand
+                    </span>
+
+                    <span>
+                      <strong data-inventory-reserved>
+                        ${reserved}
+                      </strong>
+                      reserved
+                    </span>
+
+                  </div>
+
+                </div>
+
+              </div>
+
+              <div class="inventory-item-right">
+
+                <div
+                  class="inventory-available ${
+                    available < 0
+                      ? "short"
+                      : ""
+                  }"
+                >
+                  <strong data-inventory-available>
+                    ${available}
+                  </strong>
+
+                  <span>available</span>
+                </div>
+
+                ${
+                  plush
+                    ? `
+                      <button
+                        class="inventory-quick-six"
+                        onclick="
+                          event.stopPropagation();
+                          changeInventoryBy(
+                            '${item.id}',
+                            6,
+                            false
+                          );
+                        "
+                        aria-label="Add six ${escapeHTML(plush.name)}"
+                      >
+                        +6
+                      </button>
+                    `
+                    : ""
+                }
+
+                <span class="inventory-chevron">
+                  ›
+                </span>
+
+              </div>
+
+            </div>
+          `;
+        }
+      );
+
+      html += `
+          </div>
+        </section>
+      `;
+    }
+  );
 
   main.innerHTML = html;
 
   filterInventoryRows();
 }
-
 
 function inventoryCategoryIcon(category) {
   switch (category) {
@@ -3155,15 +3228,22 @@ function openInventoryItem(itemId) {
 
         </div>
 
-        <div class="inventory-count-summary">
+        <div
+  class="inventory-count-summary"
+  data-inventory-id="${item.id}"
+>
 
           <div class="inventory-count-stat">
-            <strong>${item.onHand}</strong>
+            <strong data-inventory-on-hand>
+  ${item.onHand}
+</strong>
             <span>On Hand</span>
           </div>
 
           <div class="inventory-count-stat">
-            <strong>${reserved}</strong>
+            <strong data-inventory-reserved>
+  ${reserved}
+</strong>
             <span>Reserved</span>
           </div>
 
@@ -3172,7 +3252,9 @@ function openInventoryItem(itemId) {
               available < 0 ? "short" : "available"
             }"
           >
-            <strong>${available}</strong>
+            <strong data-inventory-available>
+  ${available}
+</strong>
             <span>Available</span>
           </div>
 
@@ -3191,9 +3273,14 @@ function openInventoryItem(itemId) {
               −
             </button>
 
-            <div class="inventory-stepper-number">
-              ${item.onHand}
-            </div>
+            <div
+  class="inventory-stepper-number"
+  data-inventory-id="${item.id}"
+>
+  <span data-inventory-stepper>
+    ${item.onHand}
+  </span>
+</div>
 
             <button
               class="inventory-stepper-button add"
@@ -3508,14 +3595,12 @@ async function changeInventoryBy(
     return;
   }
 
-  item.onHand =
-    nextCount;
+  item.onHand = nextCount;
 
   try {
     await saveInventoryItemToServer(item);
   } catch (err) {
-    item.onHand =
-      previousOnHand;
+    item.onHand = previousOnHand;
 
     alert(
       `Could not save that inventory change. ${err.message}`
@@ -3525,12 +3610,66 @@ async function changeInventoryBy(
   }
 
   updateAttentionBadge();
+  updateInventoryItemNumbers(itemId);
+}
+function updateInventoryItemNumbers(itemId) {
+  const item =
+    getInventoryItem(itemId);
 
-  renderInventory();
+  if (!item) return;
 
-if (reopenModal) {
-  openInventoryItem(itemId);
+  const reserved =
+    calculateReserved(item.id);
 
+  const available =
+    item.onHand - reserved;
+
+  document
+    .querySelectorAll(
+      `[data-inventory-id="${itemId}"]`
+    )
+    .forEach(element => {
+
+      const onHand =
+        element.querySelector(
+          "[data-inventory-on-hand]"
+        );
+
+      const reservedElement =
+        element.querySelector(
+          "[data-inventory-reserved]"
+        );
+
+      const availableElement =
+        element.querySelector(
+          "[data-inventory-available]"
+        );
+
+      const stepper =
+        element.querySelector(
+          "[data-inventory-stepper]"
+        );
+
+      if (onHand) {
+        onHand.textContent =
+          item.onHand;
+      }
+
+      if (reservedElement) {
+        reservedElement.textContent =
+          reserved;
+      }
+
+      if (availableElement) {
+        availableElement.textContent =
+          available;
+      }
+
+      if (stepper) {
+        stepper.textContent =
+          item.onHand;
+      }
+    });
 }
    
 }
