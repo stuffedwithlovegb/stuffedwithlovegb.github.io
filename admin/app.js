@@ -3672,7 +3672,7 @@ function updateInventoryItemNumbers(itemId) {
     });
 }
    
-}
+
    
 async function setInventoryCount(
   itemId
