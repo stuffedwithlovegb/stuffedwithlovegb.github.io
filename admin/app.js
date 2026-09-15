@@ -941,10 +941,33 @@ function updateAttentionBadge() {
   );
 }
 
+function ensureSWLHeaderBrand() {
+  const topbar = document.querySelector(".topbar");
+  if (!topbar) return;
+
+  const brandCopy = topbar.querySelector(":scope > div");
+  if (brandCopy) {
+    brandCopy.classList.add("swl-topbar-brand-copy");
+  }
+
+  if (!topbar.querySelector(".swl-topbar-logo")) {
+    const logo = document.createElement("img");
+    logo.className = "swl-topbar-logo";
+    logo.src = "swl-logo.png";
+    logo.alt = "Stuffed With Love";
+    logo.decoding = "async";
+
+    const action = document.getElementById("headerAction");
+    topbar.insertBefore(logo, action || null);
+  }
+}
+
 function setHeader(
   title,
   showAdd = false
 ) {
+  ensureSWLHeaderBrand();
+
   document.getElementById(
     "pageTitle"
   ).textContent = title;
@@ -3022,7 +3045,7 @@ function animatePackingTap(packingId) {
 
 
 function celebratePackingComplete() {
-  document.querySelectorAll(".pack-heart-burst").forEach(node => node.remove());
+  document.querySelectorAll(".swl-pack-finale, .pack-heart-burst").forEach(node => node.remove());
 
   const card = document.querySelector(".pack-progress-card");
   const list = document.querySelector(".pack-list-card");
@@ -3038,15 +3061,49 @@ function celebratePackingComplete() {
   if (list) list.classList.add("pack-list-complete-pop");
   if (done) done.classList.add("pack-done-pop");
 
-  const celebration = document.createElement("div");
-  celebration.className = "pack-heart-burst";
-  celebration.setAttribute("aria-hidden", "true");
-  celebration.innerHTML = `<span>♥</span><span>♥</span><span>♥</span><span>♥</span><span>♥</span><span>♥</span><span>♥</span>`;
-  document.body.appendChild(celebration);
+  const finale = document.createElement("div");
+  finale.className = "swl-pack-finale";
+  finale.setAttribute("role", "status");
+  finale.setAttribute("aria-live", "polite");
 
-  showSWLToast("All packed. Fluff-mobile ready. ♥", { duration: 1900 });
+  const symbols = ["♥", "✦", "●", "♥", "✧", "●", "♥", "★"];
+  const particles = Array.from({ length: 58 }, (_, index) => {
+    const angle = (index / 58) * Math.PI * 2 + ((index % 7) * 0.13);
+    const distance = 150 + ((index * 47) % 330);
+    const x = Math.round(Math.cos(angle) * distance);
+    const y = Math.round(Math.sin(angle) * distance - 35);
+    const delay = (index % 11) * 0.025;
+    const spin = -220 + ((index * 83) % 440);
+    const size = 10 + ((index * 7) % 19);
+    const symbol = symbols[index % symbols.length];
+    const fluffClass = symbol === "●" ? " fluff" : "";
+    return `<span class="swl-finale-particle${fluffClass}" style="--x:${x}px;--y:${y}px;--delay:${delay}s;--spin:${spin}deg;--size:${size}px">${symbol}</span>`;
+  }).join("");
 
-  setTimeout(() => celebration.remove(), 1500);
+  finale.innerHTML = `
+    <div class="swl-finale-glow"></div>
+    <div class="swl-finale-particles" aria-hidden="true">${particles}</div>
+    <div class="swl-finale-card">
+      <div class="swl-finale-kicker">PACKING COMPLETE</div>
+      <div class="swl-finale-title">ALL PACKED!</div>
+      <div class="swl-finale-heart">♥</div>
+      <div class="swl-finale-copy">The fluff-mobile is ready to roll.</div>
+    </div>
+  `;
+
+  document.body.appendChild(finale);
+
+  requestAnimationFrame(() => {
+    finale.classList.add("show");
+  });
+
+  setTimeout(() => {
+    finale.classList.add("leaving");
+  }, 2350);
+
+  setTimeout(() => {
+    finale.remove();
+  }, 2850);
 }
 
 async function deleteEvent(id) {
