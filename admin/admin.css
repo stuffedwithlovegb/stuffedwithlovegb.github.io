@@ -3450,3 +3450,411 @@ a {
   }
 
 }
+/* =========================================================
+   PACKING DELIGHT
+   ========================================================= */
+
+
+/* Individual packed-item pop */
+
+.pack-row {
+  position: relative;
+
+  transition:
+    background 0.18s ease,
+    transform 0.18s ease;
+}
+
+.pack-row.just-packed {
+  animation:
+    swl-pack-pop
+    0.38s
+    cubic-bezier(
+      0.2,
+      1.35,
+      0.45,
+      1
+    );
+}
+
+.pack-row.just-packed::before {
+  content: "♥";
+
+  position: absolute;
+
+  right: 39px;
+  top: 5px;
+
+  z-index: 3;
+
+  color: var(--yellow);
+
+  font-size: 0.85rem;
+
+  pointer-events: none;
+
+  animation:
+    swl-mini-heart
+    0.48s
+    ease-out
+    forwards;
+}
+
+@keyframes swl-pack-pop {
+
+  0% {
+    transform: scale(1);
+  }
+
+  45% {
+    transform: scale(1.018);
+  }
+
+  100% {
+    transform: scale(1);
+  }
+
+}
+
+@keyframes swl-mini-heart {
+
+  0% {
+    opacity: 0;
+    transform:
+      translateY(5px)
+      scale(0.4)
+      rotate(-12deg);
+  }
+
+  35% {
+    opacity: 1;
+  }
+
+  100% {
+    opacity: 0;
+    transform:
+      translateY(-16px)
+      scale(1.15)
+      rotate(10deg);
+  }
+
+}
+
+
+/* Progress card completed state */
+
+.pack-progress-card.complete {
+  background:
+    linear-gradient(
+      135deg,
+      #fff7d9,
+      #f8d76d
+    );
+
+  border-color:
+    rgba(196, 150, 35, 0.23);
+}
+
+.pack-progress-card.complete
+.card-label {
+  color:
+    rgba(76, 51, 37, 0.65);
+}
+
+.pack-progress-card.complete
+.pack-progress-number {
+  transform: scale(1.04);
+}
+
+
+/* Big final-item pop */
+
+.pack-progress-card.pack-celebration {
+  animation:
+    swl-pack-complete
+    0.72s
+    cubic-bezier(
+      0.16,
+      1.35,
+      0.3,
+      1
+    );
+}
+
+@keyframes swl-pack-complete {
+
+  0% {
+    transform: scale(1);
+  }
+
+  32% {
+    transform:
+      scale(1.035)
+      rotate(-0.6deg);
+  }
+
+  58% {
+    transform:
+      scale(0.992)
+      rotate(0.3deg);
+  }
+
+  100% {
+    transform:
+      scale(1)
+      rotate(0);
+  }
+
+}
+
+
+/* Progress bar has a little life */
+
+.pack-progress-fill {
+  position: relative;
+
+  transition:
+    width
+    0.35s
+    cubic-bezier(
+      0.2,
+      0.8,
+      0.3,
+      1
+    );
+}
+
+.pack-progress-card.complete
++ .pack-progress-track
+.pack-progress-fill {
+  box-shadow:
+    0 0 0 3px
+    rgba(242, 204, 88, 0.10);
+}
+
+
+/* Finished checklist */
+
+.pack-list-complete-pop {
+  animation:
+    swl-list-finish
+    0.65s
+    ease-out;
+}
+
+@keyframes swl-list-finish {
+
+  0% {
+    transform: scale(1);
+  }
+
+  45% {
+    transform: scale(1.008);
+  }
+
+  100% {
+    transform: scale(1);
+  }
+
+}
+
+
+/* ALL PACKED message */
+
+.pack-done-message {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  gap: 12px;
+
+  padding:
+    18px
+    16px;
+
+  background:
+    linear-gradient(
+      135deg,
+      #fff6d5,
+      #f9df86
+    );
+
+  border:
+    1px solid
+    rgba(196, 150, 35, 0.16);
+
+  box-shadow:
+    0 4px 14px
+    rgba(76, 51, 37, 0.045);
+}
+
+.pack-done-icon {
+  flex:
+    0
+    0 auto;
+
+  width: 38px;
+  height: 38px;
+
+  display: grid;
+  place-items: center;
+
+  border-radius: 50%;
+
+  background: var(--yellow);
+
+  color: var(--brown);
+
+  font-size: 1rem;
+
+  animation:
+    swl-done-heart
+    0.7s
+    cubic-bezier(
+      0.16,
+      1.45,
+      0.3,
+      1
+    );
+}
+
+.pack-done-message strong {
+  display: block;
+
+  color: var(--brown);
+
+  font-size: 0.84rem;
+
+  letter-spacing: 0.025em;
+}
+
+.pack-done-message span {
+  display: block;
+
+  margin-top: 3px;
+
+  color: var(--brown-2);
+
+  font-size: 0.7rem;
+  font-weight: 650;
+}
+
+@keyframes swl-done-heart {
+
+  0% {
+    transform:
+      scale(0.25)
+      rotate(-20deg);
+  }
+
+  55% {
+    transform:
+      scale(1.2)
+      rotate(8deg);
+  }
+
+  100% {
+    transform:
+      scale(1)
+      rotate(0);
+  }
+
+}
+
+
+/* =========================================================
+   FINAL HEART BURST
+   ========================================================= */
+
+.pack-heart-burst {
+  position: fixed;
+
+  left: 50%;
+  top: 47%;
+
+  z-index: 9999;
+
+  width: 1px;
+  height: 1px;
+
+  pointer-events: none;
+}
+
+.pack-heart-burst span {
+  position: absolute;
+
+  color: var(--yellow);
+
+  font-size: 1.45rem;
+
+  text-shadow:
+    0 2px 5px
+    rgba(76, 51, 37, 0.10);
+
+  opacity: 0;
+
+  animation:
+    swl-heart-fly
+    1.05s
+    ease-out
+    forwards;
+}
+
+.pack-heart-burst span:nth-child(1) {
+  --x: -72px;
+  --y: -95px;
+  animation-delay: 0s;
+}
+
+.pack-heart-burst span:nth-child(2) {
+  --x: -34px;
+  --y: -125px;
+  animation-delay: 0.06s;
+}
+
+.pack-heart-burst span:nth-child(3) {
+  --x: 5px;
+  --y: -105px;
+  animation-delay: 0.02s;
+}
+
+.pack-heart-burst span:nth-child(4) {
+  --x: 46px;
+  --y: -122px;
+  animation-delay: 0.08s;
+}
+
+.pack-heart-burst span:nth-child(5) {
+  --x: 77px;
+  --y: -88px;
+  animation-delay: 0.03s;
+}
+
+@keyframes swl-heart-fly {
+
+  0% {
+    opacity: 0;
+
+    transform:
+      translate(-50%, -50%)
+      scale(0.25)
+      rotate(-15deg);
+  }
+
+  20% {
+    opacity: 1;
+  }
+
+  100% {
+    opacity: 0;
+
+    transform:
+      translate(
+        calc(-50% + var(--x)),
+        calc(-50% + var(--y))
+      )
+      scale(1.25)
+      rotate(15deg);
+  }
+
+}
