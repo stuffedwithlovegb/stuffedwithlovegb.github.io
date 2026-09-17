@@ -1,137 +1,22 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-
-  <meta
-    name="viewport"
-    content="width=device-width, initial-scale=1.0, viewport-fit=cover"
-  />
-
-  <meta name="theme-color" content="#F6E9CD" />
-
-  <meta
-    name="apple-mobile-web-app-capable"
-    content="yes"
-  />
-
-  <meta
-    name="apple-mobile-web-app-status-bar-style"
-    content="default"
-  />
-
-  <meta
-    name="apple-mobile-web-app-title"
-    content="SWL Ops"
-  />
-
-  <title>Stuffed With Love Ops</title>
-
-  <link
-    rel="manifest"
-    href="manifest.webmanifest"
-  />
-
-  <link
-    rel="apple-touch-icon"
-    href="icon-192.png"
-  />
-
-  <link
-    rel="stylesheet"
-    href="admin.css"
-  />
-</head>
-
-<body>
-
-  <div id="app">
-
-    <header class="topbar">
-
-      <div>
-        <div class="eyebrow">STUFFED WITH LOVE</div>
-        <h1 id="pageTitle">Ops</h1>
-      </div>
-
-      <button
-        id="headerAction"
-        class="icon-button hidden"
-        type="button"
-      >
-        +
-      </button>
-
-    </header>
-
-    <main
-      id="mainContent"
-      class="main-content"
-    ></main>
-
-    <nav class="bottom-nav">
-
-      <button
-        class="nav-item active"
-        data-screen="home"
-      >
-        <span class="nav-icon">⌂</span>
-        <span>Home</span>
-      </button>
-
-      <button
-        class="nav-item"
-        data-screen="events"
-      >
-        <span class="nav-icon">◫</span>
-        <span>Events</span>
-      </button>
-
-            <button
-        class="nav-item"
-        data-screen="inventory"
-      >
-        <span class="nav-icon">▦</span>
-        <span>Inventory</span>
-      </button>
-
-      <button
-        class="nav-item"
-        data-screen="files"
-      >
-        <span class="nav-icon">▤</span>
-        <span>Files</span>
-      </button>
-
-      <button
-        class="nav-item"
-        data-screen="attention"
-      >
-        <span class="nav-icon">!</span>
-        <span>Attention</span>
-
-        <span
-          id="attentionBadge"
-          class="nav-badge hidden"
-        >
-          0
-        </span>
-      </button>
-    </nav>
-
-  </div>
-
-  <div id="modalRoot"></div>
-
-  <script src="app.js"></script>
-
-  <script>
-    if ("serviceWorker" in navigator) {
-      window.addEventListener("load", () => {
-        navigator.serviceWorker.register("sw.js");
-      });
-    }
-  </script>
-
-</body>
-</html>
+<html lang="en"><head><meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<meta name="theme-color" content="#F6E9CD" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="default" />
+<meta name="apple-mobile-web-app-title" content="SWL Ops" />
+<title>Stuffed With Love Ops</title>
+<link rel="manifest" href="manifest.webmanifest" />
+<link rel="apple-touch-icon" href="icon-192.png" />
+<link rel="stylesheet" href="admin.css" /></head><body>
+<div id="app"><header class="topbar"><div><div class="eyebrow">STUFFED WITH LOVE</div><h1 id="pageTitle">Ops</h1></div><button id="headerAction" class="icon-button hidden" type="button">+</button></header>
+<main id="mainContent" class="main-content"></main><nav class="bottom-nav">
+<button class="nav-item active" data-screen="home"><span class="nav-icon">⌂</span><span>Home</span></button>
+<button class="nav-item" data-screen="calendar"><span class="nav-icon">▦</span><span>Calendar</span></button>
+<button class="nav-item" data-screen="events"><span class="nav-icon">◫</span><span>Events</span></button>
+<button class="nav-item" data-screen="inventory"><span class="nav-icon">▦</span><span>Inventory</span></button>
+<button class="nav-item" data-screen="files"><span class="nav-icon">▤</span><span>Files</span></button>
+<button class="nav-item" data-screen="attention"><span class="nav-icon">!</span><span>Attention</span><span id="attentionBadge" class="nav-badge hidden">0</span></button>
+</nav></div><div id="modalRoot"></div><script src="app.js"></script>
+<script>if ("serviceWorker" in navigator) {window.addEventListener("load", () => {navigator.serviceWorker.register("sw.js");});}</script>
+</body></html>
