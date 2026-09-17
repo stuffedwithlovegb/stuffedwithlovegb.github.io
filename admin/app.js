@@ -395,6 +395,8 @@ const SWL_LOADOUT_FINALE_LINES = [
 let state = createInitialState();
 
 let currentScreen = "home";
+let calendarMonth = new Date(new Date().getFullYear(),new Date().getMonth(),1);
+let calendarSelected = swlDateKey();
 let currentEventId = null;
 let currentClientKey = null;
 let clientSearch = "";
@@ -425,6 +427,7 @@ const wizardSteps = [
 function createInitialState() {
   return {
     events: [],
+    appointments: [],
     inventory: structuredClone(inventorySeed),
     attention: [],
     notes: [],
@@ -492,6 +495,7 @@ async function loadStateFromServer() {
     await apiRequest("bootstrap");
 
   state = {
+    appointments: data.appointments || [],
     events: (data.events || []).map(
       normalizeLoadedEvent
     ),
@@ -1534,6 +1538,10 @@ function render() {
   updateAttentionBadge();
 
   switch (currentScreen) {
+    case "calendar":
+      renderCalendar();
+      break;
+
     case "events":
       renderEvents();
       break;
@@ -1567,6 +1575,112 @@ case "attention":
   }
 }
 
+
+
+/* =========================================================
+   CALENDAR — events + lightweight appointments
+========================================================= */
+function calendarLocalKey(iso) {
+  if (!iso) return '';
+  const date=new Date(iso);
+  return Number.isNaN(date.getTime())?'':swlDateKey(date);
+}
+function calendarEventDate(event) {
+  // Event dates are date-only strings in the existing event wizard.
+  const value=String(event.date||'');
+  const match=value.match(/^(\d{4}-\d{2}-\d{2})/);
+  if (match) return match[1];
+  const date=new Date(value);
+  return Number.isNaN(date.getTime())?'':swlDateKey(date);
+}
+function calendarEntries(date) {
+  return [
+    ...state.events.filter(e=>!e.closed&&calendarEventDate(e)===date)
+      .map(e=>({type:'event',id:e.id,title:e.name||e.eventName||e.clientName||'SWL Event',
+        time:e.startTime||e.time||'',raw:e})),
+    ...(state.appointments||[]).filter(a=>calendarLocalKey(a.startAt)===date)
+      .map(a=>({type:'appointment',id:a.id,title:a.title,time:new Date(a.startAt).toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit'}),raw:a}))
+  ].sort((a,b)=>a.time.localeCompare(b.time));
+}
+function calendarShiftMonth(delta) {
+  calendarMonth=new Date(calendarMonth.getFullYear(),calendarMonth.getMonth()+delta,1);
+  calendarSelected=swlDateKey(calendarMonth);
+  renderCalendar();
+}
+function calendarSelect(date) {calendarSelected=date;renderCalendar();}
+function renderCalendar() {
+  setHeader('Calendar');
+  const year=calendarMonth.getFullYear(),month=calendarMonth.getMonth();
+  const days=new Date(year,month+1,0).getDate();
+  const offset=(new Date(year,month,1).getDay()+6)%7;
+  const monthLabel=calendarMonth.toLocaleDateString('en-US',{month:'long',year:'numeric'});
+  const cells=Array.from({length:offset+days},(_,i)=>{
+    if(i<offset)return '<div class="swl-cal-empty"></div>';
+    const day=i-offset+1,date=`${year}-${String(month+1).padStart(2,'0')}-${String(day).padStart(2,'0')}`;
+    const entries=calendarEntries(date);
+    return `<button type="button" class="swl-cal-day ${date===calendarSelected?'selected':''} ${date===swlDateKey()?'today':''}"
+      onclick="calendarSelect('${date}')" aria-label="${date}, ${entries.length} items" aria-pressed="${date===calendarSelected}">
+      <span>${day}</span><span class="swl-cal-dots">${entries.some(e=>e.type==='event')?'<i class="event"></i>':''}${entries.some(e=>e.type==='appointment')?'<i class="appointment"></i>':''}</span></button>`;
+  }).join('');
+  const entries=calendarEntries(calendarSelected);
+  document.getElementById('mainContent').innerHTML=`
+    <section class="swl-calendar card">
+      <div class="swl-cal-toolbar"><button type="button" onclick="calendarShiftMonth(-1)" aria-label="Previous month">‹</button>
+      <h2>${escapeHTML(monthLabel)}</h2><button type="button" onclick="calendarShiftMonth(1)" aria-label="Next month">›</button></div>
+      <div class="swl-cal-weekdays">${['M','T','W','T','F','S','S'].map(d=>`<span>${d}</span>`).join('')}</div>
+      <div class="swl-cal-grid">${cells}</div>
+      <div class="swl-cal-legend"><span><i class="event"></i> SWL event</span><span><i class="appointment"></i> Appointment</span></div>
+    </section>
+    <div class="swl-cal-agenda-head"><h2>${escapeHTML(new Date(calendarSelected+'T12:00:00').toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric'}))}</h2>
+      <button class="primary-button" type="button" onclick="openAppointmentForm()">+ Appointment</button></div>
+    ${entries.length?entries.map(e=>`<button type="button" class="card swl-cal-entry" onclick="${e.type==='event'?`calendarOpenEvent('${escapeHTML(e.id)}')`:`openAppointmentForm('${escapeHTML(e.id)}')`}">
+      <span class="swl-cal-entry-icon ${e.type}">${e.type==='event'?'♥':'◷'}</span><span><strong>${escapeHTML(e.title)}</strong><small>${e.type==='event'?'SWL event':'Appointment'}${e.time?' · '+escapeHTML(e.time):''}</small></span><span>›</span></button>`).join(''):
+      '<div class="card empty-card"><strong>Nothing on the calendar yet</strong><p>Enjoy the breathing room, or add an appointment.</p></div>'}`;
+}
+function calendarOpenEvent(id) {
+  currentEventId=id;currentScreen='event-detail';render();
+}
+function openAppointmentForm(id='') {
+  const a=(state.appointments||[]).find(item=>item.id===id);
+  const start=a?new Date(a.startAt):new Date(calendarSelected+'T09:00:00');
+  const end=a?new Date(a.endAt):new Date(start.getTime()+30*60000);
+  const localInput=d=>`${swlDateKey(d)}T${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`;
+  document.getElementById('modalRoot').innerHTML=`<div class="swl-cal-overlay" onclick="if(event.target===this)closeModal()">
+    <form class="swl-cal-form card" onsubmit="saveAppointmentForm(event,'${escapeHTML(id)}')">
+      <div class="swl-cal-form-head"><h2>${a?'Edit':'New'} appointment</h2><button type="button" onclick="closeModal()" aria-label="Close">×</button></div>
+      <div class="field"><label for="apptTitle">Title</label><input id="apptTitle" name="title" required maxlength="180" value="${escapeHTML(a?.title||'')}" placeholder="Partner meeting"></div>
+      <div class="field"><label for="apptKind">Type</label><select id="apptKind" name="kind">${[['meeting','Meeting'],['call','Phone call'],['other','Other']].map(([v,t])=>`<option value="${v}" ${a?.kind===v?'selected':''}>${t}</option>`).join('')}</select></div>
+      <div class="field"><label for="apptStart">Starts</label><input id="apptStart" name="start" type="datetime-local" required value="${localInput(start)}"></div>
+      <div class="field"><label for="apptEnd">Ends</label><input id="apptEnd" name="end" type="datetime-local" required value="${localInput(end)}"></div>
+      <div class="field"><label for="apptLocation">Location / call link</label><input id="apptLocation" name="location" maxlength="500" value="${escapeHTML(a?.location||'')}"></div>
+      <div class="field"><label for="apptNotes">Notes</label><textarea id="apptNotes" name="notes" maxlength="4000">${escapeHTML(a?.notes||'')}</textarea></div>
+      <div class="field"><label for="apptReminder">Push reminder</label><select id="apptReminder" name="reminder">${[[-1,'Off'],[0,'At start'],[5,'5 minutes before'],[10,'10 minutes before'],[15,'15 minutes before'],[30,'30 minutes before'],[60,'1 hour before'],[120,'2 hours before'],[1440,'1 day before']].map(([v,t])=>`<option value="${v}" ${(a?.remindMinutes??30)===v?'selected':''}>${t}</option>`).join('')}</select></div>
+      <div class="swl-cal-form-actions"><button class="primary-button" type="submit">Save appointment</button>${a?`<button class="danger-button" type="button" onclick="deleteAppointment('${escapeHTML(id)}')">Delete</button>`:''}</div>
+    </form></div>`;
+}
+async function saveAppointmentForm(event,id) {
+  event.preventDefault();
+  const form=event.currentTarget,submit=form.querySelector('[type="submit"]');
+  const start=new Date(form.elements.start.value),end=new Date(form.elements.end.value);
+  if (!Number.isFinite(start.getTime())||!Number.isFinite(end.getTime())||end<=start) {alert('End time must be after start time.');return;}
+  submit.disabled=true;
+  try {
+    const result=await apiRequest(id?`appointments/${encodeURIComponent(id)}`:'appointments',{
+      method:id?'PUT':'POST',body:JSON.stringify({title:form.elements.title.value,kind:form.elements.kind.value,
+        startAt:start.toISOString(),endAt:end.toISOString(),location:form.elements.location.value,
+        notes:form.elements.notes.value,remindMinutes:Number(form.elements.reminder.value)})});
+    const a=result.appointment;
+    state.appointments=(state.appointments||[]).filter(item=>item.id!==a.id).concat(a);
+    calendarMonth=new Date(start.getFullYear(),start.getMonth(),1);
+    calendarSelected=swlDateKey(start);closeModal();renderCalendar();showSWLToast('Appointment saved');
+  } catch(err) {alert(err.message);submit.disabled=false;}
+}
+async function deleteAppointment(id) {
+  if (!confirm('Delete this appointment?'))return;
+  try {await apiRequest(`appointments/${encodeURIComponent(id)}`,{method:'DELETE'});
+    state.appointments=state.appointments.filter(a=>a.id!==id);closeModal();renderCalendar();showSWLToast('Appointment deleted');
+  } catch(err) {alert(err.message);}
+}
 
 /* =========================================================
    HOME
@@ -11170,7 +11284,8 @@ async function initializeApp() {
 
   try {
     await loadStateFromServer();
-    render();
+    if (new URLSearchParams(location.search).get("screen")==="calendar") navigate("calendar");
+    else render();
   } catch (err) {
     console.error(err);
 
