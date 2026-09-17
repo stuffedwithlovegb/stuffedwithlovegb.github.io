@@ -114,6 +114,8 @@ async function handleApi(request, env, url) {
       );
     }
 
+    if (resource === "appointments") return handleAppointments(request, env, id);
+
     if (resource === "inventory") {
       return handleInventory(
         request,
@@ -214,9 +216,12 @@ if (resource === "file-categories") {
 ========================================================= */
 
 async function handleBootstrap(env) {
+  await ensureAppointmentsTable(env);
   await ensureClientsTables(env);
   await ensurePushTables(env);
   await ensureFileFolders(env);
+  const appointmentRows = await env.DB.prepare("SELECT * FROM appointments ORDER BY starts_at ASC").all();
+  const appointments = appointmentRows.results.map(mapAppointment);
   const eventsResult = await env.DB
     .prepare(`
       SELECT data
@@ -353,6 +358,7 @@ async function handleBootstrap(env) {
   return json({
     ok: true,
     events,
+    appointments,
     inventory,
     attention: reminders,
     clients
@@ -505,6 +511,69 @@ async function handleEvents(
   );
 }
 
+
+
+/* CALENDAR APPOINTMENTS — separate from inventory-bearing events */
+async function ensureAppointmentsTable(env) {
+  await env.DB.prepare(`CREATE TABLE IF NOT EXISTS appointments (
+    id TEXT PRIMARY KEY, title TEXT NOT NULL, kind TEXT NOT NULL,
+    starts_at TEXT NOT NULL, ends_at TEXT NOT NULL,
+    location TEXT NOT NULL DEFAULT '', notes TEXT NOT NULL DEFAULT '',
+    remind_minutes INTEGER NOT NULL DEFAULT 30,
+    created_at TEXT NOT NULL, updated_at TEXT NOT NULL
+  )`).run();
+}
+function mapAppointment(row) {
+  return {id:row.id,title:row.title,kind:row.kind,startAt:row.starts_at,
+    endAt:row.ends_at,location:row.location,notes:row.notes,
+    remindMinutes:row.remind_minutes,createdAt:row.created_at,updatedAt:row.updated_at};
+}
+function appointmentInput(body) {
+  const title=String(body.title||'').trim().slice(0,180);
+  const kind=['meeting','call','other'].includes(body.kind)?body.kind:'meeting';
+  const start=new Date(body.startAt), end=new Date(body.endAt);
+  const minutes=Number(body.remindMinutes);
+  if (!title) throw new Error('Appointment title is required.');
+  if (!Number.isFinite(start.getTime()) || !Number.isFinite(end.getTime()) || end<=start)
+    throw new Error('Choose a valid start and end time.');
+  if (end-start>7*86400000) throw new Error('Appointment is too long.');
+  if (![-1,0,5,10,15,30,60,120,1440].includes(minutes)) throw new Error('Invalid reminder setting.');
+  return {title,kind,startAt:start.toISOString(),endAt:end.toISOString(),
+    location:String(body.location||'').trim().slice(0,500),
+    notes:String(body.notes||'').trim().slice(0,4000),remindMinutes:minutes};
+}
+async function handleAppointments(request,env,id) {
+  await ensureAppointmentsTable(env);
+  if (request.method==='GET'&&!id) {
+    const rows=await env.DB.prepare('SELECT * FROM appointments ORDER BY starts_at ASC').all();
+    return json({ok:true,appointments:rows.results.map(mapAppointment)});
+  }
+  if (request.method==='POST'&&!id || request.method==='PUT'&&id) {
+    let item;
+    try {item=appointmentInput(await request.json());} catch(e) {return error(e.message);}
+    const now=new Date().toISOString();
+    if (!id) {
+      id='appt_'+crypto.randomUUID();
+      await env.DB.prepare(`INSERT INTO appointments
+        (id,title,kind,starts_at,ends_at,location,notes,remind_minutes,created_at,updated_at)
+        VALUES (?,?,?,?,?,?,?,?,?,?)`).bind(id,item.title,item.kind,item.startAt,item.endAt,
+          item.location,item.notes,item.remindMinutes,now,now).run();
+    } else {
+      const result=await env.DB.prepare(`UPDATE appointments SET title=?,kind=?,starts_at=?,ends_at=?,
+        location=?,notes=?,remind_minutes=?,updated_at=? WHERE id=?`).bind(item.title,item.kind,
+        item.startAt,item.endAt,item.location,item.notes,item.remindMinutes,now,id).run();
+      if (!result.meta.changes) return error('Appointment not found.',404);
+    }
+    const row=await env.DB.prepare('SELECT * FROM appointments WHERE id=?').bind(id).first();
+    return json({ok:true,appointment:mapAppointment(row)});
+  }
+  if (request.method==='DELETE'&&id) {
+    const result=await env.DB.prepare('DELETE FROM appointments WHERE id=?').bind(id).run();
+    if (!result.meta.changes) return error('Appointment not found.',404);
+    return json({ok:true});
+  }
+  return error('Unsupported appointment request.',405);
+}
 
 /* =========================================================
    INVENTORY
@@ -3011,6 +3080,24 @@ async function processPushNotifications(env) {
     if (Number.isNaN(due.getTime()) || due > now) continue;
     const copy = reminderPushCopy(reminder, now);
     candidates.push({ key:`reminder:${reminder.id}`, ...copy, url:"/admin/" });
+  }
+
+  // Appointment notifications use the existing push queue and delivery tracking.
+  // A five-minute grace period avoids sending stale reminders after downtime.
+  await ensureAppointmentsTable(env);
+  const appointmentRows=(await env.DB.prepare(`SELECT * FROM appointments
+    WHERE starts_at >= ? AND starts_at <= ? AND remind_minutes >= 0`)
+    .bind(new Date(now.getTime()-86400000).toISOString(),
+      new Date(now.getTime()+86400000).toISOString()).all()).results || [];
+  for (const appointment of appointmentRows) {
+    const reminderAt=new Date(appointment.starts_at).getTime()-appointment.remind_minutes*60000;
+    if (reminderAt>now.getTime() || now.getTime()-reminderAt>5*60000) continue;
+    const when=new Intl.DateTimeFormat('en-US',{timeZone:'America/Chicago',
+      hour:'numeric',minute:'2-digit'}).format(new Date(appointment.starts_at));
+    candidates.push({key:`appointment:${appointment.id}:${appointment.starts_at}:${appointment.remind_minutes}`,
+      title:`${appointment.title} ${appointment.remind_minutes===0?'starts now':'coming up'}`,
+      body:`${appointment.kind==='call'?'Phone call':'Appointment'} at ${when}${appointment.location?' · '+appointment.location:''}`,
+      url:'/admin/?screen=calendar'});
   }
 
   for (const sub of subscriptions) {
