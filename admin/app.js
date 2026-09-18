@@ -11527,7 +11527,20 @@ function fsDraw(){if(!fs)return;let c=document.getElementById('fs-board');if(!c)
 }
 function fsKey(e){if(!document.getElementById('fs-overlay')||!fs?.running)return;let keys=['ArrowLeft','ArrowRight','ArrowDown','ArrowUp',' ','Space','z','Z','x','X','c','C','Shift','p','P'];if(keys.includes(e.key))e.preventDefault();if(e.repeat&&['ArrowUp',' ','Space','c','C','Shift'].includes(e.key))return;switch(e.key){case'ArrowLeft':fsMove(-1,0);break;case'ArrowRight':fsMove(1,0);break;case'ArrowDown':if(fs&&!fs.paused){fs.score++;fsMove(0,1);}break;case'ArrowUp':case'x':case'X':fsRotate();break;case'z':case'Z':fsRotate();break;case' ':case'Space':fsHard();break;case'c':case'C':case'Shift':fsHold();break;case'p':case'P':fsPause();}}
 function fsTouch(action){switch(action){case'left':fsMove(-1,0);break;case'right':fsMove(1,0);break;case'down':fsMove(0,1);if(fs?.running&&!fs.paused)fs.score++;break;case'rotate':fsRotate();break;case'drop':fsHard();break;case'hold':fsHold();break;}}
-function fsClose(){if(fs){clearInterval(fs.timer);clearInterval(fs.clock);clearTimeout(fs.bearTimer);fs=null;}document.removeEventListener('keydown',fsKey);document.getElementById('fs-overlay')?.remove();}
+let fsRepeatDelay=null,fsRepeatInterval=null,fsActivePointer=null;
+function fsStopControl(){clearTimeout(fsRepeatDelay);clearInterval(fsRepeatInterval);fsRepeatDelay=null;fsRepeatInterval=null;fsActivePointer=null;}
+function fsControlDown(event){
+  if(event.button!==undefined&&event.button!==0)return;
+  const button=event.currentTarget,action=button.dataset.fsAction;
+  fsStopControl();fsActivePointer=event.pointerId;
+  event.preventDefault();button.setPointerCapture?.(event.pointerId);
+  fsTouch(action);
+  if(['left','right','down'].includes(action)){
+    fsRepeatDelay=setTimeout(()=>{fsRepeatInterval=setInterval(()=>fsTouch(action),action==='down'?55:85);},240);
+  }
+}
+function fsControlClick(event){if(event.detail===0)fsTouch(event.currentTarget.dataset.fsAction);}
+function fsClose(){fsStopControl();if(fs){clearInterval(fs.timer);clearInterval(fs.clock);clearTimeout(fs.bearTimer);fs=null;}document.removeEventListener('keydown',fsKey);document.getElementById('fs-overlay')?.remove();}
 function openFluffStack(){if(document.getElementById('fs-overlay'))return;let layer=document.createElement('div');layer.id='fs-overlay';layer.innerHTML=`
   <section class="fs-shell" role="dialog" aria-modal="true" aria-label="Fluff Stack game">
     <header class="fs-header"><div><span class="fs-eyebrow">STUFFED WITH LOVE • MINI GAME</span><h2>♥ Fluff Stack ♥</h2></div><button type="button" class="fs-close" onclick="fsClose()" aria-label="Close game">×</button></header>
@@ -11536,7 +11549,22 @@ function openFluffStack(){if(document.getElementById('fs-overlay'))return;let la
       <div class="fs-stage"><div class="fs-board-frame"><div class="fs-frame-hearts" aria-hidden="true">♥ ✦ ♥ ✦ ♥ ✦ ♥</div><div class="fs-board-wrap"><canvas id="fs-board" width="280" height="560" aria-label="Falling blocks playfield"></canvas><div id="fs-effects" aria-hidden="true"></div></div><div class="fs-frame-bottom" aria-hidden="true">✦ STUFF • FLUFF • LOVE ✦</div></div>
         <aside class="fs-side"><div class="fs-panel"><span>NEXT</span><canvas id="fs-next" width="88" height="64"></canvas></div><div class="fs-panel"><span>HOLD</span><canvas id="fs-hold" width="88" height="64"></canvas></div><div class="fs-panel fs-level"><span>LEVEL</span><strong id="fs-level">1</strong><span>LINES</span><strong id="fs-lines">0</strong></div>
           <div class="fs-bear-box"><div id="fs-bear" class="fs-bear fs-idle" aria-label="Animated teddy bear"><svg viewBox="0 0 120 145" role="img" aria-label="Cheering teddy bear"><g class="fs-bear-body"><ellipse cx="60" cy="103" rx="38" ry="37" fill="#b88c64" stroke="#715544" stroke-width="3"/><ellipse cx="60" cy="112" rx="23" ry="23" fill="#f2e2c7"/><g class="fs-arm fs-arm-left"><ellipse cx="28" cy="94" rx="13" ry="24" transform="rotate(25 28 94)" fill="#b88c64" stroke="#715544" stroke-width="3"/></g><g class="fs-arm fs-arm-right"><ellipse cx="92" cy="94" rx="13" ry="24" transform="rotate(-25 92 94)" fill="#b88c64" stroke="#715544" stroke-width="3"/></g><ellipse cx="43" cy="130" rx="17" ry="11" fill="#b88c64" stroke="#715544" stroke-width="3"/><ellipse cx="78" cy="130" rx="17" ry="11" fill="#b88c64" stroke="#715544" stroke-width="3"/><circle cx="27" cy="31" r="17" fill="#b88c64" stroke="#715544" stroke-width="3"/><circle cx="93" cy="31" r="17" fill="#b88c64" stroke="#715544" stroke-width="3"/><circle cx="27" cy="31" r="8" fill="#e9c9a5"/><circle cx="93" cy="31" r="8" fill="#e9c9a5"/><circle cx="60" cy="58" r="45" fill="#b88c64" stroke="#715544" stroke-width="3"/><ellipse cx="60" cy="75" rx="23" ry="19" fill="#f2e2c7"/><g class="fs-eyes"><ellipse cx="44" cy="54" rx="4" ry="5" fill="#37271f"/><ellipse cx="76" cy="54" rx="4" ry="5" fill="#37271f"/></g><path d="M54 69 Q60 64 66 69 L60 76 Z" fill="#4c3325"/><path class="fs-mouth" d="M60 76 Q52 86 45 78 M60 76 Q68 86 75 78" fill="none" stroke="#4c3325" stroke-width="2.5" stroke-linecap="round"/><ellipse cx="31" cy="69" rx="7" ry="4" fill="#d99183" opacity=".65"/><ellipse cx="89" cy="69" rx="7" ry="4" fill="#d99183" opacity=".65"/><path d="M60 107 C48 96 44 110 60 122 C76 110 72 96 60 107" fill="#f2cc58"/></g></svg></div><div id="fs-bear-speech" class="fs-speech">You got this! ♥</div><img class="fs-logo" src="/admin/swl-logo.png" alt="Stuffed With Love logo" onerror="this.style.display='none'" /></div>
-        </aside></div><div id="fs-status" class="fs-status" role="status"></div><div class="fs-controls"><button type="button" onclick="fsTouch('left')" aria-label="Move left">◀</button><button type="button" onclick="fsTouch('rotate')" aria-label="Rotate">↻</button><button type="button" onclick="fsTouch('right')" aria-label="Move right">▶</button><button type="button" onclick="fsTouch('down')" aria-label="Soft drop">▼</button><button type="button" class="fs-drop" onclick="fsTouch('drop')">DROP ↓</button><button type="button" onclick="fsTouch('hold')">HOLD</button></div><div class="fs-actions"><button id="fs-pause" type="button" onclick="fsPause()">Pause</button><button type="button" onclick="fsClose();openFluffStack()">New game</button></div><p class="fs-help">Keyboard: ← → move · ↑ rotate · ↓ soft drop · Space hard drop · C hold · P pause</p>
+        </aside></div><div id="fs-status" class="fs-status" role="status"></div><div class="fs-controls" aria-label="Touch game controls">
+      <button type="button" class="fs-control fs-left" data-fs-action="left" aria-label="Move left; hold to repeat"><span class="fs-control-icon">◀</span><span class="fs-control-label">LEFT</span></button>
+      <button type="button" class="fs-control fs-rotate" data-fs-action="rotate" aria-label="Rotate piece clockwise"><span class="fs-control-icon">↻</span><span class="fs-control-label">ROTATE</span></button>
+      <button type="button" class="fs-control fs-right" data-fs-action="right" aria-label="Move right; hold to repeat"><span class="fs-control-icon">▶</span><span class="fs-control-label">RIGHT</span></button>
+      <button type="button" class="fs-control fs-hold" data-fs-action="hold" aria-label="Hold or swap piece"><span class="fs-control-icon">▣</span><span class="fs-control-label">HOLD</span></button>
+      <button type="button" class="fs-control fs-down" data-fs-action="down" aria-label="Soft drop; hold to repeat"><span class="fs-control-icon">▼</span><span class="fs-control-label">DOWN</span></button>
+      <button type="button" class="fs-control fs-drop" data-fs-action="drop" aria-label="Drop piece instantly"><span class="fs-control-icon">⇣</span><span class="fs-control-label">DROP</span></button>
+    </div><div class="fs-actions"><button id="fs-pause" type="button" onclick="fsPause()">Pause</button><button type="button" onclick="fsClose();openFluffStack()">New game</button></div><p class="fs-help">Keyboard: ← → move · ↑ rotate · ↓ soft drop · Space hard drop · C hold · P pause</p>
     </div>
-  </section>`;document.body.appendChild(layer);document.addEventListener('keydown',fsKey);
+  </section>`;document.body.appendChild(layer);
+  layer.querySelectorAll('[data-fs-action]').forEach(button=>{
+    button.addEventListener('pointerdown',fsControlDown);
+    button.addEventListener('pointerup',fsStopControl);
+    button.addEventListener('pointercancel',fsStopControl);
+    button.addEventListener('lostpointercapture',fsStopControl);
+    button.addEventListener('click',fsControlClick);
+  });
+  document.addEventListener('keydown',fsKey);
 }
