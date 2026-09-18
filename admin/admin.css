@@ -8947,3 +8947,109 @@ button.inventory-add-photo-placeholder {
 
 /* Make it rain lives below notification settings on the Home screen. */
 .swl-home-utility-row .swl-rain-button{display:block;width:100%;min-height:46px;margin-top:12px;font-size:.9rem}
+
+/* FLUFF STACK: isolated game styles */
+.swl-fluff-launch{display:block;width:100%;margin-top:10px;min-height:48px;border:2px solid var(--brown);border-radius:18px;background:var(--cream-soft);color:var(--brown);font-size:1rem;font-weight:900;box-shadow:0 4px 0 var(--brown)}
+#fs-overlay{position:fixed;inset:0;z-index:12000;background:#4c3325bb;overflow:auto;overscroll-behavior:contain;padding:calc(8px + env(safe-area-inset-top)) 8px calc(14px + env(safe-area-inset-bottom));color:#4c3325}
+.fs-shell{max-width:650px;min-height:90vh;margin:auto;border:5px solid #4c3325;border-radius:28px;background:#fffaf1;box-shadow:0 0 0 5px #f2cc58 inset,0 12px 40px #24150d77;padding:13px;position:relative}
+.fs-header{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:3px 7px 12px}.fs-header h2{font-size:clamp(1.4rem,5vw,2rem);margin:2px 0 0;color:#4c3325}.fs-eyebrow{font-size:.59rem;font-weight:900;letter-spacing:.13em}.fs-close{border:0;background:#f2cc58;border-radius:50%;width:40px;height:40px;font-size:1.7rem;color:#4c3325}
+.fs-menu{text-align:center;padding:40px 14px}.fs-menu-bear{font-size:5rem}.fs-menu h3{font-size:1.4rem}.fs-menu p{max-width:350px;margin:12px auto 26px;line-height:1.5}.fs-menu button{display:block;width:min(100%,330px);margin:12px auto;border:2px solid #4c3325;border-radius:16px;background:#f2cc58;padding:16px;font-weight:900;color:#4c3325}.fs-menu button+button{background:#f2e2c7}.fs-menu small{display:block;margin-top:25px}
+.fs-scoreline{display:flex;flex-wrap:wrap;justify-content:space-between;gap:6px;font-size:.73rem;font-weight:800;padding:6px 2px 12px}.fs-scoreline strong{font-size:1rem}.fs-stage{display:grid;grid-template-columns:minmax(0,280px) minmax(88px,1fr);gap:9px;justify-content:center;align-items:start}.fs-board-frame{border:4px solid #715544;border-radius:20px;background:#f2cc58;padding:6px;box-shadow:inset 0 0 0 2px #fffaf1,0 5px 0 #4c3325;min-width:0}.fs-frame-hearts,.fs-frame-bottom{text-align:center;color:#4c3325;font-weight:900;font-size:.65rem;letter-spacing:.1em;padding:3px 0}.fs-board-wrap{position:relative;line-height:0;border:3px solid #4c3325;border-radius:9px;overflow:hidden;background:#fffaf1}.fs-board-wrap canvas{display:block;width:100%;height:auto;touch-action:none}#fs-effects{position:absolute;inset:0;pointer-events:none;overflow:hidden}#fs-effects span{position:absolute;color:#f2cc58;font-size:1.3rem;animation:fs-particle .85s ease-out forwards}@keyframes fs-particle{to{transform:translate(var(--fx),var(--fy)) rotate(80deg);opacity:0}}
+.fs-side{display:flex;flex-direction:column;gap:8px;min-width:0}.fs-panel{border:2px solid #715544;border-radius:13px;background:#fff6d8;padding:5px;text-align:center;box-shadow:0 3px 0 #e6c895}.fs-panel span{display:block;font-size:.65rem;font-weight:900;letter-spacing:.09em}.fs-panel canvas{display:block;max-width:100%;height:auto;margin:auto}.fs-level{display:grid;grid-template-columns:1fr 1fr;align-items:center;gap:4px}.fs-level strong{font-size:1rem}.fs-bear-box{background:#f9e6a3;border:2px solid #715544;border-radius:16px;padding:6px 3px;text-align:center;overflow:hidden}.fs-bear{width:100%;max-width:135px;margin:auto;transform-origin:50% 85%;animation:fs-breathe 2s ease-in-out infinite}.fs-bear svg{display:block;width:100%;overflow:visible}.fs-bear .fs-arm{transform-origin:60px 95px}.fs-bear.fs-clear,.fs-bear.fs-combo,.fs-bear.fs-tetris,.fs-bear.fs-record{animation:fs-hop .42s ease-in-out 3}.fs-bear.fs-clear .fs-arm,.fs-bear.fs-combo .fs-arm,.fs-bear.fs-tetris .fs-arm,.fs-bear.fs-record .fs-arm{animation:fs-clap .25s ease-in-out 5}.fs-bear.fs-danger{animation:fs-shake .25s ease-in-out infinite}.fs-bear.fs-over{filter:saturate(.6);transform:rotate(-8deg)}.fs-bear.fs-record{filter:drop-shadow(0 0 9px #f2cc58)}.fs-speech{font-size:.68rem;font-weight:900;min-height:2.4em;margin:4px 0;background:#fffaf1;border-radius:10px;padding:5px 2px}.fs-logo{display:block;width:min(100%,115px);max-height:78px;object-fit:contain;margin:8px auto 2px}@keyframes fs-breathe{50%{transform:scale(1.025)}}@keyframes fs-hop{50%{transform:translateY(-9px) rotate(5deg)}}@keyframes fs-clap{50%{transform:rotate(16deg)}}@keyframes fs-shake{25%{transform:rotate(5deg)}75%{transform:rotate(-5deg)}}
+.fs-status{text-align:center;font-weight:900;min-height:1.4em;margin-top:8px}.fs-controls{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:5px;margin-top:7px;touch-action:manipulation}.fs-controls button{min-width:0;min-height:50px;border:2px solid #715544;border-radius:12px;background:#f2cc58;color:#4c3325;font-size:1.05rem;font-weight:900;touch-action:manipulation;user-select:none}.fs-controls .fs-drop{grid-column:span 2;background:#4c3325;color:#fffaf1;font-size:.82rem}.fs-actions{display:flex;justify-content:center;gap:14px;margin:13px 0}.fs-actions button{background:#f2e2c7;border:1px solid #715544;border-radius:10px;padding:8px 16px;font-weight:800;color:#4c3325}.fs-help{text-align:center;font-size:.65rem;color:#715544;line-height:1.5}
+@media(max-width:390px){.fs-shell{padding:8px}.fs-stage{grid-template-columns:minmax(0,1fr) 88px;gap:5px}.fs-panel{padding:2px}.fs-bear-box{padding:3px 1px}.fs-speech{font-size:.6rem}.fs-controls button{min-height:46px;font-size:.9rem}}
+@media(prefers-reduced-motion:reduce){.fs-bear,.fs-bear .fs-arm,#fs-effects span{animation:none!important}}
+
+/* =========================================================
+   FLUFF STACK RELEASE — INVENTORY VIEW FIX
+   List: horizontal item rows; Grid: original 2-column cards;
+   Large grid: three cards across with compact images.
+   Scoped after legacy !important plush overrides.
+   ========================================================= */
+.inventory-group .inventory-list-card.swl-inventory-list {
+  display:flex !important;flex-direction:column !important;gap:9px !important;
+  grid-template-columns:none !important;
+}
+.inventory-group .inventory-list-card.swl-inventory-grid {
+  display:grid !important;grid-template-columns:repeat(2,minmax(0,1fr)) !important;gap:10px !important;
+}
+.inventory-group .inventory-list-card.swl-inventory-compact {
+  display:grid !important;grid-template-columns:repeat(3,minmax(0,1fr)) !important;gap:7px !important;
+}
+/* Preserve the original two-across card layout in Grid mode. */
+.swl-inventory-grid .inventory-plush-card {
+  display:flex !important;flex-direction:column !important;align-items:stretch !important;
+  padding:0 !important;min-width:0 !important;
+}
+.swl-inventory-grid .inventory-plush-card .inventory-item-left {display:block !important;width:100% !important;}
+.swl-inventory-grid .inventory-plush-card .inventory-plush-thumb {width:100% !important;}
+/* A true horizontal list: image | name | three stock counts | adjust. */
+.swl-inventory-list .inventory-item-row {
+  display:flex !important;flex-direction:row !important;align-items:center !important;
+  justify-content:space-between !important;gap:8px !important;min-height:78px !important;
+  padding:9px !important;text-align:left !important;overflow:visible !important;
+}
+.swl-inventory-list .inventory-item-left {
+  display:flex !important;flex-direction:row !important;align-items:center !important;
+  gap:9px !important;min-width:0 !important;width:auto !important;flex:1 1 40% !important;
+}
+.swl-inventory-list .inventory-item-copy {
+  min-width:0 !important;width:auto !important;flex:1 1 auto !important;
+  padding:0 !important;margin:0 !important;text-align:left !important;min-height:0 !important;
+}
+.swl-inventory-list .inventory-item-copy strong {font-size:.82rem !important;line-height:1.2 !important;overflow-wrap:anywhere;}
+.inventory-group[data-inventory-group="Plush"] .swl-inventory-list .inventory-plush-card {min-height:78px !important;}
+.inventory-group[data-inventory-group="Plush"] .swl-inventory-list .inventory-plush-card .inventory-plush-thumb,
+.inventory-group[data-inventory-group="Plush"] .swl-inventory-list .inventory-plush-card .inventory-plush-thumb.inventory-plush-thumb-empty {
+  flex:0 0 49px !important;width:49px !important;min-width:49px !important;max-width:49px !important;
+  height:55px !important;min-height:55px !important;max-height:55px !important;
+  padding:3px !important;border-radius:10px !important;border:0 !important;
+}
+.swl-inventory-list .inventory-plush-count-grid {
+  flex:0 1 43% !important;width:auto !important;min-width:0 !important;
+  display:grid !important;grid-template-columns:repeat(3,minmax(0,1fr)) !important;
+  gap:2px !important;margin:0 !important;padding:0 !important;border:0 !important;
+}
+.swl-inventory-list .inventory-plush-count {min-width:0 !important;padding:0 !important;}
+.swl-inventory-list .inventory-plush-count strong {font-size:.88rem !important;}
+.swl-inventory-list .inventory-plush-count span {font-size:.53rem !important;white-space:normal !important;}
+.inventory-group[data-inventory-group="Plush"] .swl-inventory-list .inventory-plush-card .inventory-item-right {
+  width:auto !important;flex:0 0 auto !important;margin:0 !important;padding:0 !important;
+  align-self:center !important;justify-content:center !important;
+}
+/* Non-plush list rows also keep their image, name, stock and actions side-by-side. */
+.swl-inventory-list .inventory-standard-row .inventory-item-right {flex:0 0 auto !important;}
+.swl-inventory-list .inventory-standard-row .inventory-item-meta {display:flex !important;flex-wrap:wrap !important;gap:4px !important;}
+/* Large grid: 3 across; images stay visible but smaller. */
+.swl-inventory-compact .inventory-item-row {
+  display:flex !important;flex-direction:column !important;align-items:stretch !important;
+  min-width:0 !important;padding:0 !important;overflow:hidden !important;text-align:center !important;
+}
+.swl-inventory-compact .inventory-item-left {display:block !important;width:100% !important;min-width:0 !important;}
+.inventory-group[data-inventory-group="Plush"] .swl-inventory-compact .inventory-plush-card {min-height:190px !important;}
+.inventory-group[data-inventory-group="Plush"] .swl-inventory-compact .inventory-plush-card .inventory-plush-thumb,
+.inventory-group[data-inventory-group="Plush"] .swl-inventory-compact .inventory-plush-card .inventory-plush-thumb.inventory-plush-thumb-empty {
+  display:flex !important;flex:0 0 72px !important;width:100% !important;min-width:0 !important;max-width:100% !important;
+  height:72px !important;min-height:72px !important;max-height:72px !important;padding:4px !important;
+}
+.swl-inventory-compact .inventory-photo-thumb {display:flex !important;width:100% !important;height:65px !important;}
+.swl-inventory-compact .inventory-item-copy {width:100% !important;min-width:0 !important;text-align:center !important;padding:6px 3px 3px !important;min-height:38px !important;}
+.swl-inventory-compact .inventory-item-copy strong {font-size:.71rem !important;overflow-wrap:anywhere;}
+.inventory-group[data-inventory-group="Plush"] .swl-inventory-compact .inventory-plush-count-grid {
+  width:100% !important;margin:2px 0 0 !important;padding:5px 1px !important;gap:1px !important;
+}
+.swl-inventory-compact .inventory-plush-count strong {font-size:.84rem !important;}
+.swl-inventory-compact .inventory-plush-count span {font-size:.48rem !important;}
+.inventory-group[data-inventory-group="Plush"] .swl-inventory-compact .inventory-plush-card .inventory-item-right {padding:3px 5px 6px !important;}
+/* Keep names centered in both card grids. */
+.swl-inventory-grid .inventory-item-copy,.swl-inventory-compact .inventory-item-copy {text-align:center !important;}
+@media(max-width:390px) {
+  .swl-inventory-list .inventory-item-row {gap:4px !important;padding:6px !important;}
+  .swl-inventory-list .inventory-item-left {gap:4px !important;}
+  .inventory-group[data-inventory-group="Plush"] .swl-inventory-list .inventory-plush-card .inventory-plush-thumb {
+    flex-basis:39px !important;width:39px !important;min-width:39px !important;max-width:39px !important;
+  }
+  .swl-inventory-list .inventory-item-copy strong {font-size:.7rem !important;}
+  .swl-inventory-list .inventory-plush-count strong {font-size:.74rem !important;}
+  .swl-inventory-list .inventory-plush-count span {font-size:.45rem !important;}
+}
