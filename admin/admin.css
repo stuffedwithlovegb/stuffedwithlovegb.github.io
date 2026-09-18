@@ -8914,3 +8914,11 @@ button.inventory-add-photo-placeholder {
     padding-bottom: calc(150px + env(safe-area-inset-bottom)) !important;
   }
 }
+/* Event-only packing inventory picker */
+.event-pack-add { margin: 14px 0 16px; }
+.event-pack-add label { display:block; margin-bottom:8px; font-size:.84rem; font-weight:750; color:var(--brown-2); }
+.event-pack-add-controls { display:flex; flex-wrap:wrap; gap:8px; }
+.event-pack-add-controls select { flex:1 1 180px; min-width:0; }
+.event-pack-add-controls input { width:70px; }
+.event-pack-add-controls select, .event-pack-add-controls input { border:1px solid var(--line-strong); border-radius:12px; padding:10px; background:var(--white); color:var(--text); }
+.event-pack-add-controls button { border:0; border-radius:12px; padding:10px 17px; background:var(--yellow); color:var(--brown); font-weight:800; }
