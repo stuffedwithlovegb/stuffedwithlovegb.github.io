@@ -2958,18 +2958,29 @@ async function handlePush(request, env, action) {
     const body = await request.json();
     const endpoint = String(body?.endpoint || "").trim();
     if (!endpoint) return error("Push endpoint required.");
-
     const row = await env.DB.prepare(`
-      SELECT id, title, body, url
-      FROM push_pending
-      WHERE endpoint = ?
-      ORDER BY created_at ASC
-      LIMIT 1
+      SELECT id, notification_key, title, body, url FROM push_pending
+      WHERE endpoint = ? ORDER BY created_at ASC LIMIT 1
     `).bind(endpoint).first();
+    return json({ ok: true, notification: row || null });
+  }
 
-    if (!row) return json({ ok: true, notification: null });
-    await env.DB.prepare(`DELETE FROM push_pending WHERE id = ?`).bind(row.id).run();
-    return json({ ok: true, notification: { title: row.title, body: row.body, url: row.url } });
+  if (request.method === "POST" && action === "ack") {
+    const body = await request.json();
+    const endpoint = String(body?.endpoint || "").trim();
+    const id = String(body?.id || "").trim();
+    if (!endpoint || !id) return error("Push endpoint and notification ID required.");
+    const row = await env.DB.prepare(`
+      SELECT notification_key FROM push_pending WHERE id = ? AND endpoint = ?
+    `).bind(id, endpoint).first();
+    if (!row) return json({ ok: true }); // Already acknowledged.
+    await env.DB.prepare(`
+      INSERT OR IGNORE INTO push_deliveries (endpoint, notification_key, sent_at)
+      VALUES (?, ?, ?)
+    `).bind(endpoint, row.notification_key, new Date().toISOString()).run();
+    await env.DB.prepare(`DELETE FROM push_pending WHERE id = ? AND endpoint = ?`)
+      .bind(id, endpoint).run();
+    return json({ ok: true });
   }
 
   return error("Unsupported push request.", 405);
@@ -3207,10 +3218,9 @@ async function processPushNotifications(env) {
           console.warn("SWL scheduled push rejected", {key:candidate.key, status:response.status});
           continue;
         }
-        console.log("SWL scheduled push accepted", {key:candidate.key, status:response.status});
-        await env.DB.prepare(`
-          INSERT OR IGNORE INTO push_deliveries (endpoint, notification_key, sent_at) VALUES (?, ?, ?)
-        `).bind(sub.endpoint, candidate.key, now.toISOString()).run();
+        // Acceptance by a push service is NOT proof that the device displayed it.
+        // The service worker records delivery through /push/ack after showNotification.
+        console.log("SWL scheduled push accepted; awaiting device acknowledgment", {key:candidate.key, status:response.status});
       } catch (err) {
         console.error("Push send failed", {key:candidate.key, error:String(err)});
       }
