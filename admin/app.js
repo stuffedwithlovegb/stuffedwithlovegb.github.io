@@ -228,18 +228,18 @@ function swlMakeItRain() {
   const layer=document.createElement('div');
   layer.className='swl-cat-rain';
   layer.setAttribute('aria-hidden','true');
-  for(let i=0;i<28;i++) {
+  for(let i=0;i<140;i++) {
     const cat=document.createElement('img');
     cat.src='/admin/orange-kitty.png';
     cat.alt='';
     cat.style.left=`${Math.random()*96}%`;
-    cat.style.animationDelay=`${Math.random()*1.6}s`;
-    cat.style.animationDuration=`${2.8+Math.random()*2}s`;
+    cat.style.animationDelay=`${Math.random()*3.2}s`;
+    cat.style.animationDuration=`${3.8+Math.random()*2.4}s`;
     cat.style.setProperty('--cat-turn',`${Math.random()*220-110}deg`);
     layer.appendChild(cat);
   }
   document.body.appendChild(layer);
-  setTimeout(()=>layer.remove(),5700);
+  setTimeout(()=>layer.remove(),10500);
 }
 function showSWLToast(message, options = {}) {
   const existing = document.querySelector(".swl-toast");
@@ -1583,9 +1583,6 @@ function navigate(screen) {
 }
 
 function render() {
-  let rainButton=document.getElementById('swlRainButton');
-  if(!rainButton){rainButton=document.createElement('button');rainButton.id='swlRainButton';rainButton.type='button';rainButton.className='swl-rain-button';rainButton.textContent='🐈 Make it rain';rainButton.onclick=swlMakeItRain;document.querySelector('.topbar > div')?.appendChild(rainButton);}
-
   updateAttentionBadge();
 
   switch (currentScreen) {
@@ -2282,6 +2279,7 @@ function renderHome() {
         <span aria-hidden="true">⚙</span>
         <span>${pushNotificationSettingsLabel()}</span>
       </button>
+      <button id="swlRainButton" type="button" class="swl-rain-button" onclick="swlMakeItRain()">🐈 Make it rain</button>
     </div>
   `;
 
