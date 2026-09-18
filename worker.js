@@ -3083,7 +3083,8 @@ async function processPushNotifications(env) {
   }
 
   // Appointment notifications use the existing push queue and delivery tracking.
-  // A five-minute grace period avoids sending stale reminders after downtime.
+  // Cron runs every 15 minutes. Keep appointment reminders eligible for 30 minutes
+  // after their target time so normal cron timing does not silently skip them.
   await ensureAppointmentsTable(env);
   const appointmentRows=(await env.DB.prepare(`SELECT * FROM appointments
     WHERE starts_at >= ? AND starts_at <= ? AND remind_minutes >= 0`)
@@ -3091,7 +3092,7 @@ async function processPushNotifications(env) {
       new Date(now.getTime()+86400000).toISOString()).all()).results || [];
   for (const appointment of appointmentRows) {
     const reminderAt=new Date(appointment.starts_at).getTime()-appointment.remind_minutes*60000;
-    if (reminderAt>now.getTime() || now.getTime()-reminderAt>5*60000) continue;
+    if (reminderAt>now.getTime() || now.getTime()-reminderAt>30*60000) continue;
     const when=new Intl.DateTimeFormat('en-US',{timeZone:'America/Chicago',
       hour:'numeric',minute:'2-digit'}).format(new Date(appointment.starts_at));
     candidates.push({key:`appointment:${appointment.id}:${appointment.starts_at}:${appointment.remind_minutes}`,
@@ -3100,6 +3101,7 @@ async function processPushNotifications(env) {
       url:'/admin/?screen=calendar'});
   }
 
+  console.log("SWL scheduled push candidates", { subscriptions: subscriptions.length, candidates: candidates.map(c => c.key) });
   for (const sub of subscriptions) {
     for (const candidate of candidates) {
       const already = await env.DB.prepare(`
@@ -3121,9 +3123,10 @@ async function processPushNotifications(env) {
           break;
         }
         if (!response.ok) {
-          console.warn("Push service returned", response.status);
+          console.warn("SWL scheduled push rejected", { key: candidate.key, status: response.status });
           continue;
         }
+        console.log("SWL scheduled push accepted", { key: candidate.key, status: response.status });
 
         await env.DB.prepare(`
           INSERT OR IGNORE INTO push_deliveries (endpoint, notification_key, sent_at) VALUES (?, ?, ?)
