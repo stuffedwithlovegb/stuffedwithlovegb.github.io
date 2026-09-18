@@ -423,7 +423,13 @@ const clientNotesCache = new Map();
 let activeEventTab = "info";
 let activeInventoryCategory = "Plush";
 let inventorySearch = "";
-let inventoryView = localStorage.getItem('swl-inventory-view') || 'list';
+let inventoryView = localStorage.getItem('swl-inventory-view') || 'grid';
+// Existing 'list' preference previously displayed the plush grid; migrate it once.
+if (inventoryView === 'list' && !localStorage.getItem('swl-inventory-layout-v2')) {
+  inventoryView = 'grid';
+  localStorage.setItem('swl-inventory-view', 'grid');
+}
+localStorage.setItem('swl-inventory-layout-v2', '1');
 function setInventoryView(view) {
   if(!['list','grid','compact'].includes(view))return;
   inventoryView=view;
@@ -2280,6 +2286,7 @@ function renderHome() {
         <span>${pushNotificationSettingsLabel()}</span>
       </button>
       <button id="swlRainButton" type="button" class="swl-rain-button" onclick="swlMakeItRain()">🐈 Make it rain</button>
+      <button type="button" class="swl-fluff-launch" onclick="openFluffStack()">🧸 Fluff Stack</button>
     </div>
   `;
 
@@ -4936,7 +4943,7 @@ function renderInventory() {
 
           <div class="swl-inventory-heading-actions">
             <div class="swl-inventory-view-switch" role="group" aria-label="Inventory layout">
-              ${[['list','List'],['grid','Grid'],['compact','Small grid']].map(([value,label])=>`<button type="button" class="${inventoryView===value?'active':''}" aria-pressed="${inventoryView===value}" onclick="setInventoryView('${value}')">${label}</button>`).join('')}
+              ${[['list','List'],['grid','Grid'],['compact','Large grid']].map(([value,label])=>`<button type="button" class="${inventoryView===value?'active':''}" aria-pressed="${inventoryView===value}" onclick="setInventoryView('${value}')">${label}</button>`).join('')}
             </div>
           <button
             class="inventory-add-item-button"
@@ -11456,3 +11463,80 @@ async function initializeApp() {
 }
 
 initializeApp();
+
+/* =========================================================
+   FLUFF STACK — self-contained, local-only falling-block game
+========================================================= */
+const FS_SHAPES = [
+  [[0,0],[1,0],[2,0],[3,0]], [[0,0],[0,1],[1,1],[2,1]],
+  [[2,0],[0,1],[1,1],[2,1]], [[1,0],[2,0],[0,1],[1,1]],
+  [[1,0],[2,0],[1,1],[2,1]], [[1,0],[0,1],[1,1],[2,1]],
+  [[0,0],[1,0],[1,1],[2,1]]
+];
+const FS_COLORS = ['#f2cc58','#b78d65','#f6df9b','#a46e4d','#f9e6a3','#715544','#e6b5a4'];
+let fs = null;
+function fsHigh(mode) { try { return Number(localStorage.getItem('swl-fluff-stack-'+mode)||0); } catch { return 0; } }
+function fsSaveHigh() { if (!fs || fs.score <= fsHigh(fs.mode)) return false; try { localStorage.setItem('swl-fluff-stack-'+fs.mode,String(fs.score)); } catch {} return true; }
+function fsBag() { let a=[0,1,2,3,4,5,6]; for(let i=6;i>0;i--){let j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];} return a; }
+function fsNext() { if(fs.queue.length<7) fs.queue.push(...fsBag()); return fs.queue.shift(); }
+function fsPiece(type) { return {type, cells:FS_SHAPES[type].map(p=>[...p]),x:3,y:0}; }
+function fsValid(p,dx=0,dy=0,cells=p.cells) { return cells.every(([cx,cy])=>{let x=p.x+cx+dx,y=p.y+cy+dy;return x>=0&&x<10&&y<20&&(y<0||!fs.board[y][x]);}); }
+function fsSpawn(type=fsNext()) { fs.piece=fsPiece(type);fs.canHold=true;if(!fsValid(fs.piece))fsEnd();fsDraw(); }
+function fsBear(what='idle') {
+  if(!fs)return;
+  let bear=document.getElementById('fs-bear');if(!bear)return;
+  bear.className='fs-bear fs-'+what;
+  let speech=document.getElementById('fs-bear-speech');
+  const lines={idle:'You got this! ♥',clear:'YAY! Nice line!',combo:'More hearts! ♥',tetris:'FLUFF-TASTIC!',danger:'Oh fluff…',record:'NEW BEST! ♥',over:'One more round?',hold:'Saved for later!'};
+  if(speech)speech.textContent=lines[what]||lines.idle;
+  clearTimeout(fs.bearTimer);
+  if(!['over','danger'].includes(what))fs.bearTimer=setTimeout(()=>{if(fs&&fs.running)fsBear('idle');},1400);
+}
+function fsPoof(n=12) {let box=document.getElementById('fs-effects');if(!box)return;for(let i=0;i<n;i++){let el=document.createElement('span');el.textContent=i%3?'✦':'♥';el.style.left=(15+Math.random()*70)+'%';el.style.top=(25+Math.random()*50)+'%';el.style.setProperty('--fx',((Math.random()-.5)*160)+'px');el.style.setProperty('--fy',(-35-Math.random()*130)+'px');box.append(el);setTimeout(()=>el.remove(),850);}}
+function fsEnd() {if(!fs||!fs.running)return;fs.running=false;clearInterval(fs.timer);clearInterval(fs.clock);let record=fsSaveHigh();fsBear(record?'record':'over');fsStatus(record?'New high score!':'Game over');fsDraw();}
+function fsStatus(text) {let e=document.getElementById('fs-status');if(e)e.textContent=text;}
+function fsLevelDelay(){return Math.max(85,850*Math.pow(.80,fs.level-1));}
+function fsStart(mode) {
+  if(fs){clearInterval(fs.timer);clearInterval(fs.clock);clearTimeout(fs.bearTimer);}
+  fs={mode,board:Array.from({length:20},()=>Array(10).fill(null)),queue:[],piece:null,hold:null,canHold:true,score:0,lines:0,level:1,combo:-1,time:120,running:true,paused:false,timer:null,clock:null,bearTimer:null};
+  document.getElementById('fs-menu').hidden=true;
+  document.getElementById('fs-play').hidden=false;
+  document.getElementById('fs-mode').textContent=mode==='timed'?'2-MINUTE RUSH':'ENDLESS';
+  document.getElementById('fs-timebox').hidden=mode!=='timed';
+  fsSpawn();fsBear('idle');fsTickStart();fsClockStart();fsDraw();
+}
+function fsTickStart(){clearInterval(fs.timer);fs.timer=setInterval(()=>{if(!fs||!fs.running||fs.paused)return;fsMove(0,1,true);},fsLevelDelay());}
+function fsClockStart(){clearInterval(fs.clock);if(fs.mode!=='timed')return;fs.clock=setInterval(()=>{if(!fs||!fs.running||fs.paused)return;fs.time=Math.max(0,fs.time-1);if(!fs.time)fsEnd();fsDraw();},1000);}
+function fsMove(dx,dy,gravity=false){if(!fs?.running||fs.paused)return;let p=fs.piece;if(fsValid(p,dx,dy)){p.x+=dx;p.y+=dy;fsDraw();}else if(dy>0)fsLock();}
+function fsRotate(){if(!fs?.running||fs.paused)return;let p=fs.piece;let rotated=p.cells.map(([x,y])=>[1-y,x]);for(let dx of [0,-1,1,-2,2]){if(fsValid(p,dx,0,rotated)){p.x+=dx;p.cells=rotated;fsDraw();return;}}}
+function fsHard(){if(!fs?.running||fs.paused)return;let n=0;while(fsValid(fs.piece,0,1)){fs.piece.y++;n++;}fs.score+=n*2;fsLock();}
+function fsHold(){if(!fs?.running||fs.paused||!fs.canHold)return;let t=fs.piece.type;if(fs.hold===null){fs.hold=t;fsSpawn();}else{let old=fs.hold;fs.hold=t;fsSpawn(old);}fs.canHold=false;fsBear('hold');fsDraw();}
+function fsLock(){if(!fs?.running)return;let p=fs.piece;for(let [cx,cy] of p.cells){let x=p.x+cx,y=p.y+cy;if(y<0){fsEnd();return;}fs.board[y][x]=p.type;}let rows=fs.board.filter(r=>r.every(c=>c!==null));let n=rows.length;
+  if(n){fs.board=fs.board.filter(r=>r.some(c=>c===null));while(fs.board.length<20)fs.board.unshift(Array(10).fill(null));fs.combo++;fs.score+=([0,100,300,500,800][n]*fs.level)+Math.max(0,fs.combo)*50*fs.level;fs.lines+=n;fs.level=1+Math.floor(fs.lines/10);fsPoof(n===4?45:10+n*6);fsBear(n===4?'tetris':fs.combo>0?'combo':'clear');fsTickStart();}
+  else fs.combo=-1;
+  fsSpawn();if(fs?.running&&fs.board.slice(0,4).some(r=>r.some(c=>c!==null)))fsBear('danger');fsDraw();
+}
+function fsPause(){if(!fs?.running)return;fs.paused=!fs.paused;document.getElementById('fs-pause').textContent=fs.paused?'Resume':'Pause';fsStatus(fs.paused?'Paused':'');fsDraw();}
+function fsCell(ctx,x,y,type,cell){let px=x*cell,py=y*cell;ctx.fillStyle=FS_COLORS[type];ctx.beginPath();ctx.roundRect(px+1,py+1,cell-2,cell-2,Math.max(2,cell*.15));ctx.fill();ctx.strokeStyle='#4c332555';ctx.lineWidth=1;ctx.stroke();ctx.fillStyle='#ffffff55';ctx.fillRect(px+4,py+3,Math.max(2,cell-9),2);}
+function fsMini(id,type){let canvas=document.getElementById(id);if(!canvas)return;let ctx=canvas.getContext('2d');ctx.clearRect(0,0,canvas.width,canvas.height);if(type===null||type===undefined)return;let cells=FS_SHAPES[type],maxX=Math.max(...cells.map(p=>p[0])),maxY=Math.max(...cells.map(p=>p[1])),size=18,ox=(canvas.width-(maxX+1)*size)/2,oy=(canvas.height-(maxY+1)*size)/2;for(let [x,y] of cells){ctx.fillStyle=FS_COLORS[type];ctx.fillRect(ox+x*size+1,oy+y*size+1,size-2,size-2);ctx.strokeStyle='#4c332577';ctx.strokeRect(ox+x*size+1,oy+y*size+1,size-2,size-2);}}
+function fsDraw(){if(!fs)return;let c=document.getElementById('fs-board');if(!c)return;let ctx=c.getContext('2d'),s=c.width/10;ctx.clearRect(0,0,c.width,c.height);ctx.fillStyle='#fffaf1';ctx.fillRect(0,0,c.width,c.height);ctx.strokeStyle='#4c33251b';ctx.lineWidth=.7;for(let x=0;x<=10;x++){ctx.beginPath();ctx.moveTo(x*s,0);ctx.lineTo(x*s,c.height);ctx.stroke();}for(let y=0;y<=20;y++){ctx.beginPath();ctx.moveTo(0,y*s);ctx.lineTo(c.width,y*s);ctx.stroke();}
+  fs.board.forEach((row,y)=>row.forEach((type,x)=>{if(type!==null)fsCell(ctx,x,y,type,s);}));
+  if(fs.piece&&fs.running){let ghost={...fs.piece};while(fsValid(ghost,0,1))ghost.y++;ctx.globalAlpha=.22;for(let [x,y] of ghost.cells)if(ghost.y+y>=0)fsCell(ctx,ghost.x+x,ghost.y+y,ghost.type,s);ctx.globalAlpha=1;for(let [x,y] of fs.piece.cells)if(fs.piece.y+y>=0)fsCell(ctx,fs.piece.x+x,fs.piece.y+y,fs.piece.type,s);}
+  if(fs.paused){ctx.fillStyle='#4c3325cc';ctx.fillRect(0,0,c.width,c.height);ctx.fillStyle='#fffaf1';ctx.font='bold 25px sans-serif';ctx.textAlign='center';ctx.fillText('PAUSED',c.width/2,c.height/2);}
+  document.getElementById('fs-score').textContent=fs.score.toLocaleString();document.getElementById('fs-high').textContent=Math.max(fs.score,fsHigh(fs.mode)).toLocaleString();document.getElementById('fs-level').textContent=fs.level;document.getElementById('fs-lines').textContent=fs.lines;document.getElementById('fs-time').textContent=Math.floor(fs.time/60)+':'+String(fs.time%60).padStart(2,'0');fsMini('fs-next',fs.queue[0]);fsMini('fs-hold',fs.hold);
+}
+function fsKey(e){if(!document.getElementById('fs-overlay')||!fs?.running)return;let keys=['ArrowLeft','ArrowRight','ArrowDown','ArrowUp',' ','Space','z','Z','x','X','c','C','Shift','p','P'];if(keys.includes(e.key))e.preventDefault();if(e.repeat&&['ArrowUp',' ','Space','c','C','Shift'].includes(e.key))return;switch(e.key){case'ArrowLeft':fsMove(-1,0);break;case'ArrowRight':fsMove(1,0);break;case'ArrowDown':if(fs&&!fs.paused){fs.score++;fsMove(0,1);}break;case'ArrowUp':case'x':case'X':fsRotate();break;case'z':case'Z':fsRotate();break;case' ':case'Space':fsHard();break;case'c':case'C':case'Shift':fsHold();break;case'p':case'P':fsPause();}}
+function fsTouch(action){switch(action){case'left':fsMove(-1,0);break;case'right':fsMove(1,0);break;case'down':fsMove(0,1);if(fs?.running&&!fs.paused)fs.score++;break;case'rotate':fsRotate();break;case'drop':fsHard();break;case'hold':fsHold();break;}}
+function fsClose(){if(fs){clearInterval(fs.timer);clearInterval(fs.clock);clearTimeout(fs.bearTimer);fs=null;}document.removeEventListener('keydown',fsKey);document.getElementById('fs-overlay')?.remove();}
+function openFluffStack(){if(document.getElementById('fs-overlay'))return;let layer=document.createElement('div');layer.id='fs-overlay';layer.innerHTML=`
+  <section class="fs-shell" role="dialog" aria-modal="true" aria-label="Fluff Stack game">
+    <header class="fs-header"><div><span class="fs-eyebrow">STUFFED WITH LOVE • MINI GAME</span><h2>♥ Fluff Stack ♥</h2></div><button type="button" class="fs-close" onclick="fsClose()" aria-label="Close game">×</button></header>
+    <div id="fs-menu" class="fs-menu"><div class="fs-menu-bear">🧸</div><h3>Ready to stack some fluff?</h3><p>Seven familiar shapes. Clear lines, build combos, and keep the stack below the top.</p><button type="button" onclick="fsStart('timed')">⏱ Timed · 2 minutes</button><button type="button" onclick="fsStart('endless')">∞ Endless</button><small>Best timed: <span id="fs-menu-timed">${fsHigh('timed').toLocaleString()}</span> · Best endless: <span id="fs-menu-endless">${fsHigh('endless').toLocaleString()}</span></small></div>
+    <div id="fs-play" hidden><div class="fs-scoreline"><span id="fs-mode">ENDLESS</span><span>Score <strong id="fs-score">0</strong></span><span>Best <strong id="fs-high">0</strong></span><span id="fs-timebox">⏱ <strong id="fs-time">2:00</strong></span></div>
+      <div class="fs-stage"><div class="fs-board-frame"><div class="fs-frame-hearts" aria-hidden="true">♥ ✦ ♥ ✦ ♥ ✦ ♥</div><div class="fs-board-wrap"><canvas id="fs-board" width="280" height="560" aria-label="Falling blocks playfield"></canvas><div id="fs-effects" aria-hidden="true"></div></div><div class="fs-frame-bottom" aria-hidden="true">✦ STUFF • FLUFF • LOVE ✦</div></div>
+        <aside class="fs-side"><div class="fs-panel"><span>NEXT</span><canvas id="fs-next" width="88" height="64"></canvas></div><div class="fs-panel"><span>HOLD</span><canvas id="fs-hold" width="88" height="64"></canvas></div><div class="fs-panel fs-level"><span>LEVEL</span><strong id="fs-level">1</strong><span>LINES</span><strong id="fs-lines">0</strong></div>
+          <div class="fs-bear-box"><div id="fs-bear" class="fs-bear fs-idle" aria-label="Animated teddy bear"><svg viewBox="0 0 120 145" role="img" aria-label="Cheering teddy bear"><g class="fs-bear-body"><ellipse cx="60" cy="103" rx="38" ry="37" fill="#b88c64" stroke="#715544" stroke-width="3"/><ellipse cx="60" cy="112" rx="23" ry="23" fill="#f2e2c7"/><g class="fs-arm fs-arm-left"><ellipse cx="28" cy="94" rx="13" ry="24" transform="rotate(25 28 94)" fill="#b88c64" stroke="#715544" stroke-width="3"/></g><g class="fs-arm fs-arm-right"><ellipse cx="92" cy="94" rx="13" ry="24" transform="rotate(-25 92 94)" fill="#b88c64" stroke="#715544" stroke-width="3"/></g><ellipse cx="43" cy="130" rx="17" ry="11" fill="#b88c64" stroke="#715544" stroke-width="3"/><ellipse cx="78" cy="130" rx="17" ry="11" fill="#b88c64" stroke="#715544" stroke-width="3"/><circle cx="27" cy="31" r="17" fill="#b88c64" stroke="#715544" stroke-width="3"/><circle cx="93" cy="31" r="17" fill="#b88c64" stroke="#715544" stroke-width="3"/><circle cx="27" cy="31" r="8" fill="#e9c9a5"/><circle cx="93" cy="31" r="8" fill="#e9c9a5"/><circle cx="60" cy="58" r="45" fill="#b88c64" stroke="#715544" stroke-width="3"/><ellipse cx="60" cy="75" rx="23" ry="19" fill="#f2e2c7"/><g class="fs-eyes"><ellipse cx="44" cy="54" rx="4" ry="5" fill="#37271f"/><ellipse cx="76" cy="54" rx="4" ry="5" fill="#37271f"/></g><path d="M54 69 Q60 64 66 69 L60 76 Z" fill="#4c3325"/><path class="fs-mouth" d="M60 76 Q52 86 45 78 M60 76 Q68 86 75 78" fill="none" stroke="#4c3325" stroke-width="2.5" stroke-linecap="round"/><ellipse cx="31" cy="69" rx="7" ry="4" fill="#d99183" opacity=".65"/><ellipse cx="89" cy="69" rx="7" ry="4" fill="#d99183" opacity=".65"/><path d="M60 107 C48 96 44 110 60 122 C76 110 72 96 60 107" fill="#f2cc58"/></g></svg></div><div id="fs-bear-speech" class="fs-speech">You got this! ♥</div><img class="fs-logo" src="/admin/swl-logo.png" alt="Stuffed With Love logo" onerror="this.style.display='none'" /></div>
+        </aside></div><div id="fs-status" class="fs-status" role="status"></div><div class="fs-controls"><button type="button" onclick="fsTouch('left')" aria-label="Move left">◀</button><button type="button" onclick="fsTouch('rotate')" aria-label="Rotate">↻</button><button type="button" onclick="fsTouch('right')" aria-label="Move right">▶</button><button type="button" onclick="fsTouch('down')" aria-label="Soft drop">▼</button><button type="button" class="fs-drop" onclick="fsTouch('drop')">DROP ↓</button><button type="button" onclick="fsTouch('hold')">HOLD</button></div><div class="fs-actions"><button id="fs-pause" type="button" onclick="fsPause()">Pause</button><button type="button" onclick="fsClose();openFluffStack()">New game</button></div><p class="fs-help">Keyboard: ← → move · ↑ rotate · ↓ soft drop · Space hard drop · C hold · P pause</p>
+    </div>
+  </section>`;document.body.appendChild(layer);document.addEventListener('keydown',fsKey);
+}
