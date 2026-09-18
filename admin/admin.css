@@ -8944,3 +8944,6 @@ button.inventory-add-photo-placeholder {
 .swl-cat-rain img{position:absolute;top:-100px;width:48px;height:48px;object-fit:contain;animation:swl-cat-fall 3.5s linear both}
 @keyframes swl-cat-fall{to{transform:translateY(calc(100vh + 150px)) rotate(var(--cat-turn));opacity:.9}}
 @media(prefers-reduced-motion:reduce){.swl-cat-rain img{animation-duration:.01ms!important}}
+
+/* Make it rain lives below notification settings on the Home screen. */
+.swl-home-utility-row .swl-rain-button{display:block;width:100%;min-height:46px;margin-top:12px;font-size:.9rem}
