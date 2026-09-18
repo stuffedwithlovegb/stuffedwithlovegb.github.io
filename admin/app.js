@@ -223,6 +223,24 @@ function getSWLDailyMessage() {
   return SWL_DAILY_MESSAGES[hash % SWL_DAILY_MESSAGES.length];
 }
 
+function swlMakeItRain() {
+  if(document.querySelector('.swl-cat-rain'))return;
+  const layer=document.createElement('div');
+  layer.className='swl-cat-rain';
+  layer.setAttribute('aria-hidden','true');
+  for(let i=0;i<28;i++) {
+    const cat=document.createElement('img');
+    cat.src='/admin/orange-kitty.png';
+    cat.alt='';
+    cat.style.left=`${Math.random()*96}%`;
+    cat.style.animationDelay=`${Math.random()*1.6}s`;
+    cat.style.animationDuration=`${2.8+Math.random()*2}s`;
+    cat.style.setProperty('--cat-turn',`${Math.random()*220-110}deg`);
+    layer.appendChild(cat);
+  }
+  document.body.appendChild(layer);
+  setTimeout(()=>layer.remove(),5700);
+}
 function showSWLToast(message, options = {}) {
   const existing = document.querySelector(".swl-toast");
   if (existing) existing.remove();
@@ -405,6 +423,13 @@ const clientNotesCache = new Map();
 let activeEventTab = "info";
 let activeInventoryCategory = "Plush";
 let inventorySearch = "";
+let inventoryView = localStorage.getItem('swl-inventory-view') || 'list';
+function setInventoryView(view) {
+  if(!['list','grid','compact'].includes(view))return;
+  inventoryView=view;
+  localStorage.setItem('swl-inventory-view',view);
+  renderInventory();
+}
 let wizard = null;
 let wizardStep = 0;
 
@@ -1165,6 +1190,10 @@ function buildEventLoadOut(event) {
 
   const capacity = plannedSWLCount(event);
 
+  const customRows=(event.extraPackItems||[]).map(item=>({
+    key:'custom:'+item.id,kind:'gear',name:item.name,quantity:item.quantity,
+    note:'Added for this event',status:normalizeLoadOutStatus(event.loadOut?.['custom:'+item.id])
+  }));
   const gearRows = masterPackingList
     .filter(name => name !== "Fluff")
     .map(name => {
@@ -1200,8 +1229,8 @@ function buildEventLoadOut(event) {
 
   return {
     inventoryRows,
-    gearRows,
-    rows: [...inventoryRows, ...gearRows]
+    gearRows: [...customRows.slice().reverse(), ...gearRows],
+    rows: [...inventoryRows, ...customRows, ...gearRows]
   };
 }
 
@@ -1554,6 +1583,9 @@ function navigate(screen) {
 }
 
 function render() {
+  let rainButton=document.getElementById('swlRainButton');
+  if(!rainButton){rainButton=document.createElement('button');rainButton.id='swlRainButton';rainButton.type='button';rainButton.className='swl-rain-button';rainButton.textContent='🐈 Make it rain';rainButton.onclick=swlMakeItRain;document.querySelector('.topbar > div')?.appendChild(rainButton);}
+
   updateAttentionBadge();
 
   switch (currentScreen) {
@@ -1623,10 +1655,19 @@ function calendarEntries(date) {
 }
 function calendarShiftMonth(delta) {
   calendarMonth=new Date(calendarMonth.getFullYear(),calendarMonth.getMonth()+delta,1);
-  calendarSelected=swlDateKey(calendarMonth);
   renderCalendar();
 }
-function calendarSelect(date) {calendarSelected=date;renderCalendar();}
+function calendarSelect(date) {
+  calendarSelected=date;
+  const entries=calendarEntries(date);
+  const label=new Date(date+'T12:00:00').toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric'});
+  document.getElementById('modalRoot').innerHTML=`<div class="swl-cal-overlay" onclick="if(event.target===this)closeModal()">
+    <section class="swl-cal-form card swl-day-sheet" role="dialog" aria-modal="true" aria-label="${escapeHTML(label)}">
+      <div class="swl-cal-form-head"><h2>${escapeHTML(label)}</h2><button type="button" onclick="closeModal()" aria-label="Close">×</button></div>
+      <button class="primary-button" type="button" onclick="openAppointmentForm()">+ Appointment</button>
+      <div class="swl-day-entries">${entries.length?entries.map(e=>`<button type="button" class="card swl-cal-entry" onclick="${e.type==='event'?`closeModal();calendarOpenEvent('${escapeHTML(e.id)}')`:`openAppointmentForm('${escapeHTML(e.id)}')`}"><span class="swl-cal-entry-icon ${e.type}">${e.type==='event'?'♥':'◷'}</span><span><strong>${escapeHTML(e.title)}</strong><small>${e.type==='event'?'SWL event':'Appointment'}${e.time?' · '+escapeHTML(e.time):''}</small></span><span>›</span></button>`).join(''):'<p class="muted">Nothing scheduled for this day.</p>'}</div>
+    </section></div>`;
+}
 function renderCalendar() {
   setHeader('Calendar');
   const year=calendarMonth.getFullYear(),month=calendarMonth.getMonth();
@@ -1641,7 +1682,11 @@ function renderCalendar() {
       onclick="calendarSelect('${date}')" aria-label="${date}, ${entries.length} items" aria-pressed="${date===calendarSelected}">
       <span>${day}</span><span class="swl-cal-dots">${entries.some(e=>e.type==='event')?'<i class="event"></i>':''}${entries.some(e=>e.type==='appointment')?'<i class="appointment"></i>':''}</span></button>`;
   }).join('');
-  const entries=calendarEntries(calendarSelected);
+  const monthEntries=[];
+  for(let day=1;day<=days;day++) {
+    const date=`${year}-${String(month+1).padStart(2,'0')}-${String(day).padStart(2,'0')}`;
+    for(const entry of calendarEntries(date)) monthEntries.push({...entry,date});
+  }
   document.getElementById('mainContent').innerHTML=`
     <section class="swl-calendar card">
       <div class="swl-cal-toolbar"><button type="button" onclick="calendarShiftMonth(-1)" aria-label="Previous month">‹</button>
@@ -1650,11 +1695,8 @@ function renderCalendar() {
       <div class="swl-cal-grid">${cells}</div>
       <div class="swl-cal-legend"><span><i class="event"></i> SWL event</span><span><i class="appointment"></i> Appointment</span></div>
     </section>
-    <div class="swl-cal-agenda-head"><h2>${escapeHTML(new Date(calendarSelected+'T12:00:00').toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric'}))}</h2>
-      <button class="primary-button" type="button" onclick="openAppointmentForm()">+ Appointment</button></div>
-    ${entries.length?entries.map(e=>`<button type="button" class="card swl-cal-entry" onclick="${e.type==='event'?`calendarOpenEvent('${escapeHTML(e.id)}')`:`openAppointmentForm('${escapeHTML(e.id)}')`}">
-      <span class="swl-cal-entry-icon ${e.type}">${e.type==='event'?'♥':'◷'}</span><span><strong>${escapeHTML(e.title)}</strong><small>${e.type==='event'?'SWL event':'Appointment'}${e.time?' · '+escapeHTML(e.time):''}</small></span><span>›</span></button>`).join(''):
-      '<div class="card empty-card"><strong>Nothing on the calendar yet</strong><p>Enjoy the breathing room, or add an appointment.</p></div>'}`;
+    <div class="swl-cal-agenda-head"><h2>${escapeHTML(monthLabel)} snapshot</h2><button class="primary-button" type="button" onclick="calendarSelect('${swlDateKey(new Date(year,month,1))}')">+ Appointment</button></div>
+    ${monthEntries.length?monthEntries.map(e=>`<button type="button" class="card swl-cal-entry" onclick="calendarSelect('${e.date}')"><span class="swl-cal-entry-icon ${e.type}">${new Date(e.date+'T12:00:00').toLocaleDateString('en-US',{month:'short',day:'numeric'})}</span><span><strong>${escapeHTML(e.title)}</strong><small>${e.type==='event'?'SWL event':'Appointment'}${e.time?' · '+escapeHTML(e.time):''}</small></span><span>›</span></button>`).join(''):'<div class="card empty-card"><strong>No events or appointments this month</strong><p>Tap a day to add something.</p></div>'}`;
 }
 function calendarOpenEvent(id) {
   currentEventId=id;currentScreen='event-detail';render();
@@ -4486,20 +4528,14 @@ function renderEventDetail() {
       </div>
 
       <form class="event-pack-add" onsubmit="addEventPackInventory(event, '${event.id}')">
-        <label for="pack-item-${event.id}">Add inventory to this event only</label>
+        <label for="pack-item-${event.id}">Add to this event’s packing list</label>
         <div class="event-pack-add-controls">
-          <select id="pack-item-${event.id}" name="itemId" required>
-            <option value="">Choose an inventory item…</option>
-            ${state.inventory
-              .filter(item => !loadOut.inventoryRows.some(row => row.itemId === item.id))
-              .map(item => `<option value="${escapeHTML(item.id)}">${escapeHTML(inventoryDisplayName(item))}</option>`)
-              .join("")}
-          </select>
-          <input type="number" name="quantity" min="1" step="1" value="1" aria-label="Quantity" required />
+          <input id="pack-item-${event.id}" type="text" name="name" maxlength="120" placeholder="What do we need?" required />
+          <input type="number" name="quantity" min="1" max="99999" step="1" value="1" aria-label="Quantity" required />
           <button type="submit">Add</button>
         </div>
       </form>
-
+      ${(event.extraPackItems||[]).length ? `<div class="card loadout-list-card swl-event-extras">${[...(event.extraPackItems||[])].reverse().map(item=>loadOutRowHTML({key:'custom:'+item.id,kind:'gear',name:item.name,quantity:item.quantity,note:'Added for this event',status:normalizeLoadOutStatus(event.loadOut?.['custom:'+item.id])},event.id)).join('')}</div>` : ''}
       <div class="card loadout-list-card">
         ${
           loadOut.inventoryRows.length
@@ -4523,7 +4559,7 @@ function renderEventDetail() {
       </div>
 
       <div class="card loadout-list-card">
-        ${loadOut.gearRows
+        ${loadOut.gearRows.filter(row=>!row.key.startsWith('custom:'))
           .map(row => loadOutRowHTML(row, event.id))
           .join("")}
       </div>
@@ -4552,24 +4588,18 @@ function renderEventDetail() {
 }
 async function addEventPackInventory(formEvent, eventId) {
   formEvent.preventDefault();
-  const form = formEvent.currentTarget;
-  const event = state.events.find(item => item.id === eventId);
-  if (!event) return;
-  const itemId = form.elements.itemId.value;
-  const quantity = Number(form.elements.quantity.value);
-  if (!getInventoryItem(itemId) || !Number.isSafeInteger(quantity) || quantity < 1) return;
-  const previous = structuredClone(event.extraPackInventory || []);
-  event.extraPackInventory ||= [];
-  if (buildEventLoadOut(event).inventoryRows.some(row => row.itemId === itemId)) return;
-  event.extraPackInventory.push({ itemId, quantity });
+  const form=formEvent.currentTarget;
+  const event=state.events.find(item=>item.id===eventId);
+  if(!event)return;
+  const name=String(form.elements.name.value||'').trim();
+  const quantity=Number(form.elements.quantity.value);
+  if(!name||!Number.isSafeInteger(quantity)||quantity<1||quantity>99999)return;
+  const previous=structuredClone(event.extraPackItems||[]);
+  event.extraPackItems||=[];
+  event.extraPackItems.push({id:makeId('extra'),name,quantity});
   renderEventDetail();
-  try {
-    await saveEventToServer(event);
-  } catch (err) {
-    event.extraPackInventory = previous;
-    renderEventDetail();
-    alert(`Could not add the item. ${err.message}`);
-  }
+  try {await saveEventToServer(event);showSWLToast('Added to this event');}
+  catch(err){event.extraPackItems=previous;renderEventDetail();alert(`Could not add the item. ${err.message}`);}
 }
 
 async function togglePacking(
@@ -4906,16 +4936,21 @@ function renderInventory() {
             </span>
           </div>
 
+          <div class="swl-inventory-heading-actions">
+            <div class="swl-inventory-view-switch" role="group" aria-label="Inventory layout">
+              ${[['list','List'],['grid','Grid'],['compact','Small grid']].map(([value,label])=>`<button type="button" class="${inventoryView===value?'active':''}" aria-pressed="${inventoryView===value}" onclick="setInventoryView('${value}')">${label}</button>`).join('')}
+            </div>
           <button
             class="inventory-add-item-button"
             onclick="openAddInventoryItem('${escapeHTML(category)}')"
           >
             ＋ Add Item
           </button>
+          </div>
 
         </div>
 
-        <div class="inventory-list-card">
+        <div class="inventory-list-card swl-inventory-${inventoryView}">
     `;
 
     categoryItems.forEach(item => {
@@ -6203,19 +6238,7 @@ function renderFilesContent() {
           Category
         </button>
 
-        ${
-          activeFileCategory !== "All"
-            ? `
-              <button
-                class="files-category-button files-folder-add-button"
-                onclick="openAddFileFolder()"
-              >
-                <span>＋</span>
-                Folder
-              </button>
-            `
-            : ""
-        }
+        <button class="files-category-button files-folder-add-button" onclick="openAddFileFolder()"><span>＋</span> Folder</button>
 
       </div>
 
@@ -6919,11 +6942,6 @@ function refreshEditFolderOptions(form) {
 }
 
 function openAddFileFolder() {
-  if (activeFileCategory === "All") {
-    alert("Open a category first, then add a folder inside it.");
-    return;
-  }
-
   document.getElementById("modalRoot").innerHTML = `
     <div class="modal-backdrop" onclick="closeModalFromBackdrop(event)">
       <div class="modal-sheet files-modal-sheet file-folder-sheet">
@@ -6937,6 +6955,9 @@ function openAddFileFolder() {
         </div>
 
         <form onsubmit="event.preventDefault(); createFileFolder(this);">
+          <label class="field-label">Category
+            <select name="category" required>${fileCategories.map(c=>`<option value="${escapeHTML(c.name)}" ${c.name===activeFileCategory?'selected':''}>${escapeHTML(c.name)}</option>`).join('')}</select>
+          </label>
           <label class="field-label">
             Folder Name
             <input name="name" type="text" placeholder="Insurance, Contracts, Taxes…" required autofocus />
@@ -6950,7 +6971,8 @@ function openAddFileFolder() {
 
 async function createFileFolder(form) {
   const name = form.elements.name.value.trim();
-  if (!name || activeFileCategory === "All") return;
+  const category=form.elements.category.value;
+  if (!name || !fileCategories.some(c=>c.name===category)) return;
 
   const button = form.querySelector('button[type="submit"]');
   button.disabled = true;
@@ -6961,11 +6983,13 @@ async function createFileFolder(form) {
       method: "POST",
       body: JSON.stringify({
         name,
-        category: activeFileCategory
+        category
       })
     });
 
     fileFolders.push(response.folder);
+    activeFileCategory=category;
+    activeFileFolderId=null;
     fileFolders.sort((a, b) => a.name.localeCompare(b.name));
 
     closeModal();
