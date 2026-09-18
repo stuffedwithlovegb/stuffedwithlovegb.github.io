@@ -3039,6 +3039,33 @@ function reminderPushCopy(reminder, now) {
   };
 }
 
+// All scheduled notification times below use America/Chicago. The daily key
+// prevents repeats across 15-minute Cron runs and across registered devices.
+const SWL_GEAR_CHECKLIST = [
+  "Stuffing machine", "Fluff", "EcoFlow / power", "Rugs", "Tablecloths",
+  "Tables", "Wood crates", "Photo-op pieces / photo hearts", "Friend Hotel",
+  "Adoption certificates", "Pens", "Welcome sign", "Signage", "Trash bags",
+  "Felt wall", "Felt-wall accessories", "Clothes / mini wardrobe rack", "Crash kit"
+];
+
+function swlDateKey(parts) {
+  return `${parts.year}-${String(parts.month).padStart(2, "0")}-${String(parts.day).padStart(2, "0")}`;
+}
+
+function swlEventMissing(event) {
+  const statuses = event.loadOut || {};
+  const oldPacked = new Set((event.packing || []).filter(x => x?.done).map(x => x.name));
+  const gear = SWL_GEAR_CHECKLIST.filter(name => {
+    const status = statuses[`gear:${name}`];
+    return status !== "packed" && status !== "loaded" && !oldPacked.has(name);
+  });
+  const inventory = (event.reservations || []).filter(item =>
+    Number(item?.quantity || 0) > 0 &&
+    !["packed", "loaded"].includes(statuses[`inventory:${item.itemId}`])
+  ).map(item => String(item.name || item.itemId || "reserved supplies"));
+  return [...new Set([...gear, ...inventory])];
+}
+
 async function processPushNotifications(env) {
   if (!env.VAPID_PRIVATE_JWK) {
     console.warn("Push skipped: VAPID_PRIVATE_JWK is not configured.");
@@ -3052,70 +3079,124 @@ async function processPushNotifications(env) {
   const candidates = [];
   const local = swlLocalParts();
   const today = swlTodayValue();
+  const dayKey = swlDateKey(local);
+  const now = new Date();
+  // The first Cron execution in/after the hour sends the daily batch.
+  // No minute-specific cutoff: a delayed Cron won't silently skip the day.
+  const morning = local.hour >= 9;
+  const afternoon = local.hour >= 16;
+  const evening = local.hour >= 18;
+  const nightly = local.hour >= 20;
+  const eventRows = (await env.DB.prepare(`SELECT id, data FROM events`).all()).results || [];
+  const events = [];
+  for (const row of eventRows) {
+    let event;
+    try { event = JSON.parse(row.data); } catch { continue; }
+    if (!event || event.closed || !event.date) continue;
+    const dateValue = swlDateOnlyValue(event.date);
+    if (dateValue == null) continue;
+    events.push({ ...event, id: event.id || row.id, days: Math.round((dateValue - today) / 86400000) });
+  }
 
-  if (local.hour >= 9) {
-    const rows = (await env.DB.prepare(`SELECT id, data FROM events`).all()).results || [];
-    for (const row of rows) {
-      let event;
-      try { event = JSON.parse(row.data); } catch { continue; }
-      if (!event || event.closed || !event.date) continue;
-      const value = swlDateOnlyValue(event.date);
-      if (value == null) continue;
-      const days = Math.round((value - today) / 86400000);
-      if (days !== 7 && days !== 1) continue;
-      const copy = eventPushCopy(event, days);
-      candidates.push({ key:`event:${event.id}:${event.date}:${days}`, ...copy, url:"/admin/" });
+  const reminders = (await env.DB.prepare(`
+    SELECT id, title, event_id, remind_by, done FROM reminders WHERE done = 0
+  `).all()).results || [];
+  const outstanding = reminders.filter(r => r.remind_by &&
+    !Number.isNaN(new Date(r.remind_by).getTime()) && new Date(r.remind_by) <= now);
+
+  if (morning) {
+    for (const event of events) {
+      if (event.days === 7 || event.days === 1) {
+        candidates.push({key:`event:${event.id}:${event.date}:${event.days}`,
+          ...eventPushCopy(event, event.days), url:"/admin/?screen=events"});
+      }
+      if (event.days === 0) {
+        candidates.push({key:`event-today:${event.id}:${dayKey}`,
+          title:`🧸 Event day: ${event.name || "SWL event"}`,
+          body:"Today's the day! Check your supplies, setup and arrival details.",
+          url:"/admin/?screen=events"});
+      }
     }
   }
 
-  const now = new Date();
-  const reminders = (await env.DB.prepare(`
-    SELECT id, title, remind_by, done
-    FROM reminders
-    WHERE done = 0 AND remind_by IS NOT NULL
-  `).all()).results || [];
-
-  for (const reminder of reminders) {
-    const due = new Date(reminder.remind_by);
-    if (Number.isNaN(due.getTime()) || due > now) continue;
-    const copy = reminderPushCopy(reminder, now);
-    candidates.push({ key:`reminder:${reminder.id}`, ...copy, url:"/admin/" });
+  // A second, distinct reminder on the evening BEFORE every event.
+  if (evening) for (const event of events) {
+    if (event.days !== 1) continue;
+    const missing = swlEventMissing(event);
+    candidates.push({key:`event-eve:${event.id}:${dayKey}`,
+      title:`🌙 Tomorrow: ${event.name || "SWL event"}`,
+      body:missing.length ? `${missing.length} load-out items still unchecked: ${missing.slice(0, 3).join(", ")}${missing.length > 3 ? "…" : ""}`
+        : "Load-out looks checked off. Confirm arrival and setup details.",
+      url:"/admin/?screen=events"});
   }
 
-  // Appointment notifications use the existing push queue and delivery tracking.
-  // Cron runs every 15 minutes. Keep appointment reminders eligible for 30 minutes
-  // after their target time so normal cron timing does not silently skip them.
+  // Daily per-event nudge for unchecked load-out items in the coming week.
+  // This is based on actual saved loadOut/packing data, not a fabricated shortage.
+  if (afternoon) for (const event of events) {
+    if (event.days < 0 || event.days > 7) continue;
+    const missing = swlEventMissing(event);
+    const eventTasks = reminders.filter(r => r.event_id === event.id);
+    if (!missing.length && !eventTasks.length) continue;
+    const pieces = [];
+    if (missing.length) pieces.push(`${missing.length} unchecked load-out items (${missing.slice(0, 2).join(", ")}${missing.length > 2 ? "…" : ""})`);
+    if (eventTasks.length) pieces.push(`${eventTasks.length} open event reminders`);
+    candidates.push({key:`event-open:${event.id}:${dayKey}`,
+      title:`📋 ${event.name || "SWL event"}: still to do`,
+      body:pieces.join(" · "), url:"/admin/?screen=events"});
+  }
+
+  for (const reminder of outstanding) {
+    // Initial due alert, plus fresh nudges twice daily while still incomplete.
+    candidates.push({key:`reminder:${reminder.id}`,
+      ...reminderPushCopy(reminder, now), url:"/admin/?screen=attention"});
+    if (morning) candidates.push({key:`reminder-followup:${reminder.id}:${dayKey}:am`,
+      title:"⏰ Still on your list", body:`${reminder.title} is overdue and not checked off.`,
+      url:"/admin/?screen=attention"});
+    if (afternoon) candidates.push({key:`reminder-followup:${reminder.id}:${dayKey}:pm`,
+      title:"📣 One more nudge", body:`${reminder.title} is still open.`,
+      url:"/admin/?screen=attention"});
+  }
+
+  if (nightly) {
+    const tomorrow = events.filter(e => e.days === 1);
+    const nextWeek = events.filter(e => e.days >= 0 && e.days <= 7);
+    const unchecked = nextWeek.reduce((sum, e) => sum + swlEventMissing(e).length, 0);
+    candidates.push({key:`nightly-wrap:${dayKey}`,
+      title:"🌙 SWL Ops nightly wrap-up",
+      body:`${tomorrow.length} event${tomorrow.length === 1 ? "" : "s"} tomorrow · ${outstanding.length} overdue reminder${outstanding.length === 1 ? "" : "s"} · ${unchecked} unchecked load-out items across the next 7 days.`,
+      url:"/admin/"});
+  }
+
+  // Appointments: 15-minute Cron must not use a five-minute eligibility window.
   await ensureAppointmentsTable(env);
-  const appointmentRows=(await env.DB.prepare(`SELECT * FROM appointments
+  const appointmentRows = (await env.DB.prepare(`SELECT * FROM appointments
     WHERE starts_at >= ? AND starts_at <= ? AND remind_minutes >= 0`)
     .bind(new Date(now.getTime()-86400000).toISOString(),
       new Date(now.getTime()+86400000).toISOString()).all()).results || [];
   for (const appointment of appointmentRows) {
-    const reminderAt=new Date(appointment.starts_at).getTime()-appointment.remind_minutes*60000;
-    if (reminderAt>now.getTime() || now.getTime()-reminderAt>30*60000) continue;
-    const when=new Intl.DateTimeFormat('en-US',{timeZone:'America/Chicago',
-      hour:'numeric',minute:'2-digit'}).format(new Date(appointment.starts_at));
+    const reminderAt = new Date(appointment.starts_at).getTime() - appointment.remind_minutes * 60000;
+    if (!Number.isFinite(reminderAt) || reminderAt > now.getTime() || now.getTime()-reminderAt > 30*60000) continue;
+    const when = new Intl.DateTimeFormat("en-US", {timeZone:"America/Chicago",
+      hour:"numeric", minute:"2-digit"}).format(new Date(appointment.starts_at));
     candidates.push({key:`appointment:${appointment.id}:${appointment.starts_at}:${appointment.remind_minutes}`,
-      title:`${appointment.title} ${appointment.remind_minutes===0?'starts now':'coming up'}`,
-      body:`${appointment.kind==='call'?'Phone call':'Appointment'} at ${when}${appointment.location?' · '+appointment.location:''}`,
-      url:'/admin/?screen=calendar'});
+      title:`${appointment.title} ${appointment.remind_minutes===0 ? "starts now" : "coming up"}`,
+      body:`${appointment.kind === "call" ? "Phone call" : "Appointment"} at ${when}${appointment.location ? " · " + appointment.location : ""}`,
+      url:"/admin/?screen=calendar"});
   }
 
-  console.log("SWL scheduled push candidates", { subscriptions: subscriptions.length, candidates: candidates.map(c => c.key) });
+  console.log("SWL scheduled push candidates", {subscriptions:subscriptions.length, candidates:candidates.map(c => c.key)});
   for (const sub of subscriptions) {
     for (const candidate of candidates) {
       const already = await env.DB.prepare(`
         SELECT 1 FROM push_deliveries WHERE endpoint = ? AND notification_key = ?
       `).bind(sub.endpoint, candidate.key).first();
       if (already) continue;
-
-      const pendingId = crypto.randomUUID();
       try {
         await env.DB.prepare(`
           INSERT OR IGNORE INTO push_pending (id, endpoint, notification_key, title, body, url, created_at)
           VALUES (?, ?, ?, ?, ?, ?, ?)
-        `).bind(pendingId, sub.endpoint, candidate.key, candidate.title, candidate.body, candidate.url, now.toISOString()).run();
-
+        `).bind(crypto.randomUUID(), sub.endpoint, candidate.key, candidate.title,
+          candidate.body, candidate.url, now.toISOString()).run();
         const response = await sendEmptyWebPush(env, sub.endpoint);
         if (response.status === 404 || response.status === 410) {
           await env.DB.prepare(`DELETE FROM push_subscriptions WHERE endpoint = ?`).bind(sub.endpoint).run();
@@ -3123,16 +3204,15 @@ async function processPushNotifications(env) {
           break;
         }
         if (!response.ok) {
-          console.warn("SWL scheduled push rejected", { key: candidate.key, status: response.status });
+          console.warn("SWL scheduled push rejected", {key:candidate.key, status:response.status});
           continue;
         }
-        console.log("SWL scheduled push accepted", { key: candidate.key, status: response.status });
-
+        console.log("SWL scheduled push accepted", {key:candidate.key, status:response.status});
         await env.DB.prepare(`
           INSERT OR IGNORE INTO push_deliveries (endpoint, notification_key, sent_at) VALUES (?, ?, ?)
         `).bind(sub.endpoint, candidate.key, now.toISOString()).run();
       } catch (err) {
-        console.error("Push send failed", err);
+        console.error("Push send failed", {key:candidate.key, error:String(err)});
       }
     }
   }
