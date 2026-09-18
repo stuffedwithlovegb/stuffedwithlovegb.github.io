@@ -1121,6 +1121,25 @@ function buildEventLoadOut(event) {
     });
   }
 
+  // Extra inventory added only to this event's packing list. This does
+  // not change master inventory or reserve stock for other events.
+  for (const extra of event.extraPackInventory || []) {
+    const item = getInventoryItem(extra.itemId);
+    if (!item || seenInventory.has(item.id)) continue;
+    const quantity = Math.max(1, Math.floor(Number(extra.quantity) || 1));
+    const key = loadOutKeyForReservation(item.id);
+    seenInventory.add(item.id);
+    inventoryRows.push({
+      key, kind: "inventory", itemId: item.id,
+      name: inventoryDisplayName(item), quantity,
+      unit: item.unit || "item", image: inventoryImageUrl(item),
+      shortage: 0, availableForThisEvent: Number(item.onHand || 0),
+      note: "Added to this event only",
+      eventOnly: true,
+      status: normalizeLoadOutStatus(event.loadOut[key])
+    });
+  }
+
   // Fluff is intentionally not auto-reserved, but it absolutely belongs
   // on load-out. Keep it as a visual supply check instead of inventing
   // a per-plush fluff quantity before SWL has real usage data.
@@ -1640,17 +1659,60 @@ function renderCalendar() {
 function calendarOpenEvent(id) {
   currentEventId=id;currentScreen='event-detail';render();
 }
+function swlLocalDateTime(date, time) {
+  if (!date || !time) return null;
+  const result = new Date(`${date}T${time}`);
+  return Number.isFinite(result.getTime()) ? result : null;
+}
+function swlDateTimeParts(date) {
+  return {
+    date: `${date.getFullYear()}-${String(date.getMonth()+1).padStart(2,'0')}-${String(date.getDate()).padStart(2,'0')}`,
+    time: `${String(date.getHours()).padStart(2,'0')}:${String(date.getMinutes()).padStart(2,'0')}`
+  };
+}
+function swlEventDurationMinutes(type) {
+  return type === 'Birthday Party' ? 120 : 240;
+}
+function swlAppointmentDurationMinutes(kind) {
+  return kind === 'call' ? 30 : kind === 'meeting' ? 60 : 240;
+}
+function swlUpdateAppointmentEnd() {
+  const start = document.getElementById('apptStart');
+  const end = document.getElementById('apptEnd');
+  const kind = document.getElementById('apptKind');
+  if (!start?.value || !end || !kind) return;
+  const parsed = new Date(start.value);
+  if (!Number.isFinite(parsed.getTime())) return;
+  const next = new Date(parsed.getTime() + swlAppointmentDurationMinutes(kind.value) * 60000);
+  const parts = swlDateTimeParts(next);
+  end.value = `${parts.date}T${parts.time}`;
+}
+function swlUpdateWizardEnd() {
+  const startDate = document.getElementById('eventDate');
+  const startTime = document.getElementById('eventTime');
+  const endDate = document.getElementById('eventEndDate');
+  const endTime = document.getElementById('eventEndTime');
+  const type = document.getElementById('eventType');
+  if (!startDate || !startTime || !endDate || !endTime || !type) return;
+  const start = swlLocalDateTime(startDate.value, startTime.value);
+  if (!start) return;
+  const parts = swlDateTimeParts(new Date(start.getTime() + swlEventDurationMinutes(type.value) * 60000));
+  endDate.value = parts.date;
+  endTime.value = parts.time;
+  wizard.endDate = parts.date;
+  wizard.endTime = parts.time;
+}
 function openAppointmentForm(id='') {
   const a=(state.appointments||[]).find(item=>item.id===id);
   const start=a?new Date(a.startAt):new Date(calendarSelected+'T09:00:00');
-  const end=a?new Date(a.endAt):new Date(start.getTime()+30*60000);
+  const end=a?new Date(a.endAt):new Date(start.getTime()+swlAppointmentDurationMinutes('meeting')*60000);
   const localInput=d=>`${swlDateKey(d)}T${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`;
   document.getElementById('modalRoot').innerHTML=`<div class="swl-cal-overlay" onclick="if(event.target===this)closeModal()">
     <form class="swl-cal-form card" onsubmit="saveAppointmentForm(event,'${escapeHTML(id)}')">
       <div class="swl-cal-form-head"><h2>${a?'Edit':'New'} appointment</h2><button type="button" onclick="closeModal()" aria-label="Close">×</button></div>
       <div class="field"><label for="apptTitle">Title</label><input id="apptTitle" name="title" required maxlength="180" value="${escapeHTML(a?.title||'')}" placeholder="Partner meeting"></div>
-      <div class="field"><label for="apptKind">Type</label><select id="apptKind" name="kind">${[['meeting','Meeting'],['call','Phone call'],['other','Other']].map(([v,t])=>`<option value="${v}" ${a?.kind===v?'selected':''}>${t}</option>`).join('')}</select></div>
-      <div class="field"><label for="apptStart">Starts</label><input id="apptStart" name="start" type="datetime-local" required value="${localInput(start)}"></div>
+      <div class="field"><label for="apptKind">Type</label><select id="apptKind" name="kind" onchange="swlUpdateAppointmentEnd()">${[['meeting','Meeting'],['call','Phone call'],['other','Other']].map(([v,t])=>`<option value="${v}" ${a?.kind===v?'selected':''}>${t}</option>`).join('')}</select></div>
+      <div class="field"><label for="apptStart">Starts</label><input id="apptStart" name="start" type="datetime-local" required oninput="swlUpdateAppointmentEnd()" onchange="swlUpdateAppointmentEnd()" value="${localInput(start)}"></div>
       <div class="field"><label for="apptEnd">Ends</label><input id="apptEnd" name="end" type="datetime-local" required value="${localInput(end)}"></div>
       <div class="field"><label for="apptLocation">Location / call link</label><input id="apptLocation" name="location" maxlength="500" value="${escapeHTML(a?.location||'')}"></div>
       <div class="field"><label for="apptNotes">Notes</label><textarea id="apptNotes" name="notes" maxlength="4000">${escapeHTML(a?.notes||'')}</textarea></div>
@@ -4359,9 +4421,6 @@ function renderEventDetail() {
       <div class="loadout-hero ${ready ? "ready" : ""}">
         <div class="loadout-hero-top">
           <div>
-            <div class="card-label">
-              Intelligent load out
-            </div>
             <h3>
               ${
                 ready
@@ -4418,12 +4477,6 @@ function renderEventDetail() {
             `
       }
 
-      <div class="loadout-legend">
-        <span><i class="loadout-dot packed"></i>Packed = in a tote / ready</span>
-        <span><i class="loadout-dot loaded"></i>Loaded = actually in the vehicle</span>
-        <span><i class="loadout-dot load-only"></i>Big gear skips Packed and goes straight to Loaded</span>
-      </div>
-
       <div class="event-section-heading loadout-heading">
         <div>
           <div class="card-label">Event-specific</div>
@@ -4431,6 +4484,21 @@ function renderEventDetail() {
         </div>
         <span class="loadout-section-count">${loadOut.inventoryRows.length}</span>
       </div>
+
+      <form class="event-pack-add" onsubmit="addEventPackInventory(event, '${event.id}')">
+        <label for="pack-item-${event.id}">Add inventory to this event only</label>
+        <div class="event-pack-add-controls">
+          <select id="pack-item-${event.id}" name="itemId" required>
+            <option value="">Choose an inventory item…</option>
+            ${state.inventory
+              .filter(item => !loadOut.inventoryRows.some(row => row.itemId === item.id))
+              .map(item => `<option value="${escapeHTML(item.id)}">${escapeHTML(inventoryDisplayName(item))}</option>`)
+              .join("")}
+          </select>
+          <input type="number" name="quantity" min="1" step="1" value="1" aria-label="Quantity" required />
+          <button type="submit">Add</button>
+        </div>
+      </form>
 
       <div class="card loadout-list-card">
         ${
@@ -4482,6 +4550,28 @@ function renderEventDetail() {
 
   main.innerHTML = html;
 }
+async function addEventPackInventory(formEvent, eventId) {
+  formEvent.preventDefault();
+  const form = formEvent.currentTarget;
+  const event = state.events.find(item => item.id === eventId);
+  if (!event) return;
+  const itemId = form.elements.itemId.value;
+  const quantity = Number(form.elements.quantity.value);
+  if (!getInventoryItem(itemId) || !Number.isSafeInteger(quantity) || quantity < 1) return;
+  const previous = structuredClone(event.extraPackInventory || []);
+  event.extraPackInventory ||= [];
+  if (buildEventLoadOut(event).inventoryRows.some(row => row.itemId === itemId)) return;
+  event.extraPackInventory.push({ itemId, quantity });
+  renderEventDetail();
+  try {
+    await saveEventToServer(event);
+  } catch (err) {
+    event.extraPackInventory = previous;
+    renderEventDetail();
+    alert(`Could not add the item. ${err.message}`);
+  }
+}
+
 async function togglePacking(
   eventId,
   packingId,
@@ -9414,6 +9504,8 @@ function createBlankEventDraft() {
 
     date: "",
     time: "",
+    endDate: "",
+    endTime: "",
 
     hostName: "",
     hostPhone: "",
@@ -9455,6 +9547,7 @@ function createBlankEventDraft() {
     reservations: [],
 
     loadOut: {},
+    extraPackInventory: [],
 
     packing:
       masterPackingList.map(
@@ -9488,6 +9581,7 @@ function normalizeEventDraft(event) {
     [];
 
   merged.loadOut ||= {};
+  merged.extraPackInventory ||= [];
 
   merged.plushQuantities ||= {};
   // Existing events used guestCount for both attendance and inventory planning.
@@ -9721,6 +9815,16 @@ function buildReservationsForWizard() {
 ========================================================= */
 
 function renderWizard() {
+  // Existing events may predate end-date fields; derive a default without
+  // overwriting a previously customized end.
+  if (wizard?.date && wizard?.time && (!wizard.endDate || !wizard.endTime)) {
+    const start = swlLocalDateTime(wizard.date, wizard.time);
+    if (start) {
+      const parts = swlDateTimeParts(new Date(start.getTime() + swlEventDurationMinutes(wizard.eventType) * 60000));
+      wizard.endDate = parts.date;
+      wizard.endTime = parts.time;
+    }
+  }
   recalculatePayment();
 
   let html = `
@@ -9933,6 +10037,7 @@ function basicsStepHTML() {
           <input
             id="eventDate"
             type="date"
+            oninput="swlUpdateWizardEnd()" onchange="swlUpdateWizardEnd()"
             value="${wizard.date}"
           />
 
@@ -9947,11 +10052,17 @@ function basicsStepHTML() {
           <input
             id="eventTime"
             type="time"
+            oninput="swlUpdateWizardEnd()" onchange="swlUpdateWizardEnd()"
             value="${wizard.time}"
           />
 
         </div>
 
+      </div>
+
+      <div class="inline-fields">
+        <div class="field"><label>End date</label><input id="eventEndDate" type="date" value="${wizard.endDate || ''}" /></div>
+        <div class="field"><label>End time</label><input id="eventEndTime" type="time" value="${wizard.endTime || ''}" /></div>
       </div>
 
       <div class="field">
@@ -10677,6 +10788,9 @@ function syncWizardFromCurrentStep() {
         get("eventTime").value;
     }
 
+    if (get("eventEndDate")) wizard.endDate = get("eventEndDate").value;
+    if (get("eventEndTime")) wizard.endTime = get("eventEndTime").value;
+
     if (get("eventAddress")) {
       wizard.address =
         get("eventAddress").value;
@@ -10790,6 +10904,7 @@ function syncPartyFields() {
 
 function changeWizardEventType(value) {
   wizard.eventType = value;
+  swlUpdateWizardEnd();
   if (isVendorEventType(value) || isContractedEventType(value)) wizard.package = "Custom";
   applyEventTypeDefaults(wizard, true);
 }
@@ -11114,6 +11229,18 @@ async function saveEventFromWizard() {
     if (!continueWithoutPlush) {
       return;
     }
+  }
+
+  if (wizard.date && wizard.time) {
+    const start = swlLocalDateTime(wizard.date, wizard.time);
+    if (!start) { alert('Enter a valid event start date and time.'); return; }
+    if (!wizard.endDate || !wizard.endTime) {
+      const parts = swlDateTimeParts(new Date(start.getTime() + swlEventDurationMinutes(wizard.eventType) * 60000));
+      wizard.endDate = parts.date;
+      wizard.endTime = parts.time;
+    }
+    const end = swlLocalDateTime(wizard.endDate, wizard.endTime);
+    if (!end || end <= start) { alert('Event end must be after the start.'); return; }
   }
 
   const savedEvent =
