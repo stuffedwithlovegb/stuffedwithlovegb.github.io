@@ -8922,3 +8922,25 @@ button.inventory-add-photo-placeholder {
 .event-pack-add-controls input { width:70px; }
 .event-pack-add-controls select, .event-pack-add-controls input { border:1px solid var(--line-strong); border-radius:12px; padding:10px; background:var(--white); color:var(--text); }
 .event-pack-add-controls button { border:0; border-radius:12px; padding:10px 17px; background:var(--yellow); color:var(--brown); font-weight:800; }
+/* SWL requested enhancements */
+.swl-day-sheet {max-height:85vh;overflow-y:auto}.swl-day-entries{margin-top:14px}.swl-cal-entry{width:100%;text-align:left}
+.swl-inventory-heading-actions{display:flex;align-items:center;gap:8px;flex-wrap:wrap;justify-content:flex-end}
+.swl-inventory-view-switch{display:flex;gap:2px;border:1px solid var(--line-strong);border-radius:12px;padding:3px;background:var(--cream-soft)}
+.swl-inventory-view-switch button{border:0;border-radius:9px;background:transparent;color:var(--brown);padding:7px 9px;font-size:.72rem;font-weight:750}
+.swl-inventory-view-switch button.active{background:var(--yellow)}
+.swl-inventory-grid,.swl-inventory-compact{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px;background:transparent;border:0;box-shadow:none}
+.swl-inventory-compact{grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}
+.swl-inventory-grid .inventory-item-row,.swl-inventory-compact .inventory-item-row{min-width:0;display:flex;flex-direction:column;align-items:center;text-align:center;padding:10px 5px;border:1px solid var(--line);border-radius:14px;background:white}
+.swl-inventory-grid .inventory-item-left,.swl-inventory-compact .inventory-item-left{display:flex;flex-direction:column;align-items:center;min-width:0;width:100%}
+.swl-inventory-grid .inventory-item-copy,.swl-inventory-compact .inventory-item-copy{width:100%;text-align:center;min-width:0}
+.swl-inventory-grid .inventory-plush-thumb{width:72px;height:72px}.swl-inventory-compact .inventory-plush-thumb{display:none}
+.swl-inventory-grid .inventory-plush-count-grid,.swl-inventory-compact .inventory-plush-count-grid{width:100%;gap:2px}
+.swl-inventory-compact .inventory-item-row{padding:8px 3px}.swl-inventory-compact .inventory-item-copy strong{font-size:.72rem;overflow-wrap:anywhere}
+.swl-inventory-compact .inventory-plush-count{padding:3px 0}.swl-inventory-compact .inventory-plush-count strong{font-size:.9rem}
+.inventory-plush-card .inventory-item-copy{text-align:center}
+.event-pack-add-controls input[name="name"]{flex:1 1 160px;min-width:0;width:auto}
+.swl-rain-button{border:0;border-radius:999px;padding:8px 10px;background:var(--yellow);color:var(--brown);font-weight:800;font-size:.72rem}
+.swl-cat-rain{position:fixed;inset:0;z-index:9999;pointer-events:none;overflow:hidden}
+.swl-cat-rain img{position:absolute;top:-100px;width:48px;height:48px;object-fit:contain;animation:swl-cat-fall 3.5s linear both}
+@keyframes swl-cat-fall{to{transform:translateY(calc(100vh + 150px)) rotate(var(--cat-turn));opacity:.9}}
+@media(prefers-reduced-motion:reduce){.swl-cat-rain img{animation-duration:.01ms!important}}
