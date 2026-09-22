@@ -110,7 +110,8 @@ async function handleApi(request, env, url) {
       return handleEvents(
         request,
         env,
-        id
+        id,
+        action
       );
     }
 
@@ -373,7 +374,8 @@ async function handleBootstrap(env) {
 async function handleEvents(
   request,
   env,
-  id
+  id,
+  action
 ) {
   if (
     request.method === "GET" &&
@@ -433,6 +435,138 @@ async function handleEvents(
       ok: true,
       event
     });
+  }
+
+  if (
+    request.method === "POST" &&
+    id &&
+    action === "reconcile"
+  ) {
+    const row = await env.DB.prepare(`
+      SELECT data FROM events WHERE id = ?
+    `).bind(id).first();
+
+    if (!row) return error("Event not found.", 404);
+
+    let event;
+    try {
+      event = JSON.parse(row.data);
+    } catch {
+      return error("This event's saved data could not be read.", 500);
+    }
+
+    const body = await request.json();
+    const requestId = String(body.requestId || "").trim();
+    const correction = Boolean(body.correction);
+
+    if (!requestId) return error("A reconciliation request ID is required.");
+
+    if (event.reconciliation?.requestId === requestId) {
+      return json({ ok: true, event, alreadyApplied: true });
+    }
+
+    if (event.closed && !correction) {
+      return error("This event has already been reconciled.", 409);
+    }
+
+    if (event.closed && !event.reconciliation) {
+      return error("This completed event does not have an editable reconciliation.", 409);
+    }
+
+    const reservationMap = new Map(
+      (event.reservations || []).map(item => [String(item.itemId), Math.max(0, Number(item.quantity || 0))])
+    );
+    const rawItems = Array.isArray(body.items) ? body.items : [];
+    const items = [];
+    const seen = new Set();
+    const allowedFields = ["brought", "returned", "sold", "used", "giveaway", "damaged", "missing"];
+
+    for (const raw of rawItems) {
+      const itemId = String(raw?.itemId || "");
+      if (!itemId || seen.has(itemId) || !reservationMap.has(itemId)) {
+        return error("Reconciliation contains an item that is not reserved for this event.");
+      }
+      seen.add(itemId);
+      const item = { itemId };
+      for (const field of allowedFields) {
+        const value = Number(raw?.[field] || 0);
+        if (!Number.isSafeInteger(value) || value < 0 || value > 100000) {
+          return error(`Invalid ${field} quantity for ${itemId}.`);
+        }
+        item[field] = value;
+      }
+      const accounted = item.returned + item.sold + item.used + item.giveaway + item.damaged + item.missing;
+      if (accounted !== item.brought) {
+        return error(`The counts for ${itemId} do not add up to the amount brought.`);
+      }
+      item.deducted = item.sold + item.used + item.giveaway + item.damaged + item.missing;
+      items.push(item);
+    }
+
+    if (items.length !== reservationMap.size) {
+      return error("Every reserved inventory item must be reconciled.");
+    }
+
+    const equipment = {};
+    const allowedEquipment = new Set(["returned", "not-brought", "left-behind"]);
+    for (const [key, value] of Object.entries(body.equipment || {})) {
+      const status = String(value || "");
+      if (!allowedEquipment.has(status)) return error("Choose a valid status for every equipment item.");
+      equipment[String(key)] = status;
+    }
+
+    const now = new Date().toISOString();
+    const previous = event.reconciliation || null;
+    const previousDeductions = new Map(
+      (previous?.items || []).map(item => [String(item.itemId), Number(item.deducted || 0)])
+    );
+    const statements = [];
+    const inventoryRows = (await env.DB.prepare(`SELECT id, on_hand FROM inventory`).all()).results || [];
+    const inventoryCounts = new Map(inventoryRows.map(item => [String(item.id), Number(item.on_hand || 0)]));
+
+    for (const item of items) {
+      const delta = item.deducted - (correction ? Number(previousDeductions.get(item.itemId) || 0) : 0);
+      if (delta !== 0) {
+        if (!inventoryCounts.has(item.itemId)) return error(`Inventory item ${item.itemId} no longer exists.`, 409);
+        const nextOnHand = inventoryCounts.get(item.itemId) - delta;
+        if (nextOnHand < 0) return error(`Not enough ${item.itemId} inventory to apply this closeout.`, 409);
+        statements.push(env.DB.prepare(`
+          UPDATE inventory
+          SET on_hand = ?
+          WHERE id = ?
+        `).bind(nextOnHand, item.itemId));
+      }
+    }
+
+    const revenue = Number(body.revenue || 0);
+    const actualGuests = Number(body.actualGuests || 0);
+    const revision = Math.max(1, Number(previous?.revision || 0) + 1);
+    const reconciliation = {
+      requestId,
+      revision,
+      corrected: correction,
+      items,
+      equipment,
+      revenue: Number.isFinite(revenue) && revenue >= 0 ? revenue : 0,
+      actualGuests: Number.isSafeInteger(actualGuests) && actualGuests >= 0 ? actualGuests : 0,
+      notes: String(body.notes || "").trim().slice(0, 5000),
+      closedAt: previous?.closedAt || now,
+      updatedAt: now
+    };
+
+    event.reconciliation = reconciliation;
+    event.reconciliationDraft = null;
+    event.closed = true;
+    event.status = "completed";
+    event.closedAt = reconciliation.closedAt;
+
+    statements.push(env.DB.prepare(`
+      UPDATE events SET data = ?, updated_at = ? WHERE id = ?
+    `).bind(JSON.stringify(event), now, id));
+    statements.push(env.DB.prepare(`DELETE FROM reminders WHERE event_id = ?`).bind(id));
+
+    await env.DB.batch(statements);
+    return json({ ok: true, event });
   }
 
   if (
@@ -3063,6 +3197,22 @@ function swlDateKey(parts) {
   return `${parts.year}-${String(parts.month).padStart(2, "0")}-${String(parts.day).padStart(2, "0")}`;
 }
 
+function swlEventEndKey(event) {
+  const date = String(event.endDate || event.date || "").slice(0, 10);
+  if (!date) return "";
+  if (!event.endTime && event.date && event.time) {
+    const match = `${String(event.date).slice(0, 10)}T${String(event.time).slice(0, 5)}`
+      .match(/^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2})$/);
+    if (match) {
+      const duration = event.eventType === "Birthday Party" ? 120 : 240;
+      const end = new Date(Date.UTC(Number(match[1]), Number(match[2]) - 1, Number(match[3]), Number(match[4]), Number(match[5])) + duration * 60000);
+      return `${end.getUTCFullYear()}-${String(end.getUTCMonth() + 1).padStart(2, "0")}-${String(end.getUTCDate()).padStart(2, "0")}T${String(end.getUTCHours()).padStart(2, "0")}:${String(end.getUTCMinutes()).padStart(2, "0")}`;
+    }
+  }
+  const time = String(event.endTime || "23:59").slice(0, 5);
+  return `${date}T${time}`;
+}
+
 function swlEventMissing(event) {
   const statuses = event.loadOut || {};
   const oldPacked = new Set((event.packing || []).filter(x => x?.done).map(x => x.name));
@@ -3107,6 +3257,27 @@ async function processPushNotifications(env) {
     const dateValue = swlDateOnlyValue(event.date);
     if (dateValue == null) continue;
     events.push({ ...event, id: event.id || row.id, days: Math.round((dateValue - today) / 86400000) });
+  }
+
+  const localNowKey = `${dayKey}T${String(local.hour).padStart(2, "0")}:${String(local.minute).padStart(2, "0")}`;
+  for (const event of events) {
+    const endKey = swlEventEndKey(event);
+    if (!endKey || endKey > localNowKey) continue;
+    candidates.push({
+      key: `event-closeout:${event.id}:${endKey}`,
+      title: `📋 Close out ${event.name || "SWL event"}`,
+      body: "The event has ended. Reconcile what came back so inventory stays accurate.",
+      url: "/admin/?screen=events"
+    });
+    const endDay = swlDateOnlyValue(endKey.slice(0, 10));
+    if (morning && endDay != null && endDay < today) {
+      candidates.push({
+        key: `event-closeout-followup:${event.id}:${dayKey}`,
+        title: "🧸 Event closeout is still waiting",
+        body: `${event.name || "An SWL event"} still needs inventory reconciliation.`,
+        url: "/admin/?screen=events"
+      });
+    }
   }
 
   const reminders = (await env.DB.prepare(`
