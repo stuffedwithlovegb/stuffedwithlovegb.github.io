@@ -421,6 +421,9 @@ let clientSearch = "";
 let activeClientListTab = "upcoming";
 const clientNotesCache = new Map();
 let activeEventTab = "info";
+let completedEventsExpanded = false;
+let reconciliationSaveTimer = null;
+let reconciliationCorrectionMode = false;
 let activeInventoryCategory = "Plush";
 let inventorySearch = "";
 let inventoryView = localStorage.getItem('swl-inventory-view') || 'grid';
@@ -506,6 +509,8 @@ function normalizeLoadedEvent(event) {
   normalized.selectedPlush ||= [];
   normalized.reservations ||= [];
   normalized.loadOut ||= {};
+  normalized.reconciliation ||= null;
+  normalized.reconciliationDraft ||= null;
 
   normalized.packing =
     normalized.packing?.length
@@ -1423,8 +1428,36 @@ function animateLoadOutTap(key) {
    EVENT ISSUES
 ========================================================= */
 
+function eventEndDateTime(event) {
+  const date = String(event?.endDate || event?.date || "").slice(0, 10);
+  if (!date) return null;
+  if (!event?.endTime && event?.date && event?.time) {
+    const start = new Date(`${String(event.date).slice(0, 10)}T${String(event.time).slice(0, 5)}`);
+    if (Number.isFinite(start.getTime())) {
+      return new Date(start.getTime() + swlEventDurationMinutes(event.eventType) * 60000);
+    }
+  }
+  const time = String(event?.endTime || "23:59").slice(0, 5);
+  const value = new Date(`${date}T${time}`);
+  return Number.isFinite(value.getTime()) ? value : null;
+}
+
+function eventNeedsCloseout(event) {
+  if (!event || event.closed) return false;
+  const end = eventEndDateTime(event);
+  return Boolean(end && end.getTime() <= Date.now());
+}
+
+function isUpcomingEvent(event) {
+  return Boolean(event && !event.closed && !eventNeedsCloseout(event));
+}
+
 function eventIssues(event) {
   const issues = [];
+
+  if (eventNeedsCloseout(event)) {
+    return ["Close out this event"];
+  }
 
   if (!event.date) {
     issues.push("Event date is missing");
@@ -1624,6 +1657,10 @@ case "attention":
       renderEventDetail();
       break;
 
+    case "event-reconcile":
+      renderEventReconciliation();
+      break;
+
     default:
       renderHome();
   }
@@ -1801,7 +1838,7 @@ function renderHome() {
 
   const upcoming =
     [...state.events]
-      .filter(event => !event.closed)
+      .filter(isUpcomingEvent)
       .sort(
         (a, b) =>
           new Date(a.date) -
@@ -3221,113 +3258,68 @@ async function deleteClientNote(
 function renderEvents() {
   setHeader("Events");
 
-  const main =
-    document.getElementById(
-      "mainContent"
-    );
+  const main = document.getElementById("mainContent");
+  const byDateAsc = (a, b) => new Date(a.date || 0) - new Date(b.date || 0);
+  const byDateDesc = (a, b) => new Date(b.date || 0) - new Date(a.date || 0);
+  const upcoming = [...state.events].filter(isUpcomingEvent).sort(byDateAsc);
+  const needsCloseout = [...state.events].filter(eventNeedsCloseout).sort(byDateAsc);
+  const completed = [...state.events].filter(event => event.closed).sort(byDateDesc);
 
-  const events =
-    [...state.events]
-      .filter(event => !event.closed)
-      .sort(
-        (a, b) =>
-          new Date(a.date) -
-          new Date(b.date)
-      );
+  const eventCard = (event, mode = "upcoming") => {
+    const issues = eventIssues(event);
+    const recap = event.reconciliation;
+    const totalDeducted = (recap?.items || []).reduce((sum, item) => sum + Number(item.deducted || 0), 0);
+    return `
+      <button class="card list-card tap-card swl-event-list-card ${mode}" type="button" onclick="openEvent('${event.id}')">
+        <span class="swl-event-list-main">
+          <strong>${escapeHTML(event.name)}</strong>
+          <small>${formatDate(event.date)}${event.time ? ` · ${formatTime(event.time)}` : ""}</small>
+        </span>
+        <span class="meta-row">
+          ${event.eventType ? `<span class="pill">${escapeHTML(event.eventType)}</span>` : ""}
+          ${mode === "closeout"
+            ? `<span class="pill warning">Needs closeout</span>`
+            : mode === "completed"
+              ? `<span class="pill success">✓ Completed</span>${totalDeducted ? `<span class="pill">${totalDeducted} used/sold</span>` : ""}`
+              : issues.length
+                ? `<span class="pill warning">${issues.length} need attention</span>`
+                : `<span class="pill success">✓ On track</span>`}
+        </span>
+        <span class="swl-event-list-arrow">›</span>
+      </button>`;
+  };
 
   let html = `
-    <button
-      class="primary-button full-width"
-      onclick="openAddEventWizard()"
-    >
-      + Add Event
-    </button>
-
+    <button class="primary-button full-width" onclick="openAddEventWizard()">+ Add Event</button>
+    ${needsCloseout.length ? `
+      <section class="section swl-closeout-section">
+        <div class="section-heading"><h2>Needs Closeout</h2><span class="swl-section-count warning">${needsCloseout.length}</span></div>
+        <div class="swl-event-list">${needsCloseout.map(event => eventCard(event, "closeout")).join("")}</div>
+      </section>` : ""}
     <section class="section">
-  `;
-
-  if (events.length === 0) {
-    html += `
-      <div class="card empty-card">
-        <strong>No events yet.</strong>
-
-        <p>
-          Your confirmed bookings
-          will live here.
-        </p>
-      </div>
-    `;
-  } else {
-    events.forEach(event => {
-      const issues =
-        eventIssues(event);
-
-      html += `
-        <div
-          class="card list-card tap-card"
-          onclick="openEvent('${event.id}')"
-        >
-          <h3>
-            ${escapeHTML(event.name)}
-          </h3>
-
-          <p>
-            ${formatDate(event.date)}
-            ${
-              event.time
-                ? ` · ${formatTime(event.time)}`
-                : ""
-            }
-          </p>
-
-          <div class="meta-row">
-
-            ${
-              event.guestCount
-                ? `
-                  <span class="pill">
-                    ${event.guestCount} guests
-                  </span>
-                `
-                : ""
-            }
-
-            ${
-              event.package
-                ? `
-                  <span class="pill">
-                    ${escapeHTML(event.package)}
-                  </span>
-                `
-                : ""
-            }
-
-            ${
-              issues.length
-                ? `
-                  <span class="pill warning">
-                    ${issues.length}
-                    need attention
-                  </span>
-                `
-                : `
-                  <span class="pill success">
-                    ✓ On track
-                  </span>
-                `
-            }
-
-          </div>
-        </div>
-      `;
-    });
-  }
-
-  html += `
+      <div class="section-heading"><h2>Upcoming Events</h2><span class="swl-section-count">${upcoming.length}</span></div>
+      ${upcoming.length
+        ? `<div class="swl-event-list">${upcoming.map(event => eventCard(event)).join("")}</div>`
+        : `<div class="card empty-card"><strong>No upcoming events.</strong><p>Your confirmed bookings will live here.</p></div>`}
     </section>
-  `;
+    <section class="section swl-completed-section">
+      <button class="swl-completed-toggle" type="button" onclick="toggleCompletedEvents()" aria-expanded="${completedEventsExpanded}">
+        <span><strong>Completed Events</strong><small>${completed.length} reconciled</small></span>
+        <span class="swl-completed-chevron">${completedEventsExpanded ? "⌃" : "⌄"}</span>
+      </button>
+      ${completedEventsExpanded
+        ? completed.length
+          ? `<div class="swl-event-list swl-completed-list">${completed.map(event => eventCard(event, "completed")).join("")}</div>`
+          : `<div class="card empty-card swl-small-empty"><strong>No completed events yet.</strong></div>`
+        : ""}
+    </section>`;
 
   main.innerHTML = html;
+}
+
+function toggleCompletedEvents() {
+  completedEventsExpanded = !completedEventsExpanded;
+  renderEvents();
 }
 
 
@@ -3378,6 +3370,11 @@ function renderEventDetail() {
 
   const days =
     daysUntil(event.date);
+
+  if (event.closed) {
+    renderCompletedEventDetail(event, main);
+    return;
+  }
 
   const nonPlushReservations =
   (event.reservations || [])
@@ -3526,6 +3523,16 @@ function renderEventDetail() {
       </div>
 
     </div>
+
+    ${eventNeedsCloseout(event) ? `
+      <section class="swl-closeout-callout">
+        <div>
+          <span class="card-label">EVENT ENDED</span>
+          <h3>Inventory is waiting for closeout</h3>
+          <p>Count what came back, record what left inventory, and finish this event.</p>
+        </div>
+        <button class="primary-button" type="button" onclick="openEventReconciliation('${event.id}')">Reconcile & Close</button>
+      </section>` : ""}
 
 
     <div
@@ -4055,30 +4062,9 @@ function renderEventDetail() {
 
       <div class="card detail-card">
 
-        ${
-          event.closed
-            ? `
-                <div
-                  class="
-                    event-complete-message
-                  "
-                >
-                  ✓ Event closed out
-                </div>
-              `
-            : `
-                <div
-                  class="
-                    event-empty-mini
-                  "
-                >
-                  Final counts,
-                  inventory reconciliation
-                  and completion will live
-                  here.
-                </div>
-              `
-        }
+        ${eventNeedsCloseout(event)
+          ? `<button class="primary-button full-width" type="button" onclick="openEventReconciliation('${event.id}')">Reconcile Inventory & Close Event</button>`
+          : `<div class="event-empty-mini">Reconciliation becomes available after the scheduled event end time.</div>`}
 
       </div>
 
@@ -4590,6 +4576,251 @@ function renderEventDetail() {
   `;
 
   main.innerHTML = html;
+}
+
+function reconciliationItemName(itemId) {
+  return inventoryDisplayName(getInventoryItem(itemId) || { id: itemId, name: itemId });
+}
+
+function reconciliationEquipmentForEvent(event) {
+  const statuses = event.loadOut || {};
+  const names = [...new Set([
+    ...masterPackingList,
+    ...(event.extraPackItems || []).map(item => item.name)
+  ])];
+  return Object.fromEntries(names.map(name => {
+    const custom = (event.extraPackItems || []).find(item => item.name === name);
+    const key = custom ? `custom:${custom.id}` : `gear:${name}`;
+    const packed = ["packed", "loaded"].includes(statuses[key]);
+    return [key, packed ? "returned" : "not-brought"];
+  }));
+}
+
+function makeReconciliationDraft(event) {
+  return {
+    requestId: makeId("reconcile"),
+    actualGuests: Number(event.swlCapacity || event.guestCount || 0),
+    revenue: 0,
+    notes: "",
+    items: (event.reservations || []).map(reservation => ({
+      itemId: reservation.itemId,
+      brought: Math.max(0, Number(reservation.quantity || 0)),
+      returned: Math.max(0, Number(reservation.quantity || 0)),
+      sold: 0,
+      used: 0,
+      giveaway: 0,
+      damaged: 0,
+      missing: 0
+    })),
+    equipment: reconciliationEquipmentForEvent(event)
+  };
+}
+
+function openEventReconciliation(eventId, correction = false) {
+  const event = state.events.find(item => item.id === eventId);
+  if (!event) return;
+  currentEventId = eventId;
+  reconciliationCorrectionMode = Boolean(correction);
+  if (correction) {
+    const previous = event.reconciliation;
+    if (!previous) return;
+    event.reconciliationDraft = {
+      ...structuredClone(previous),
+      requestId: makeId("reconcile-correction")
+    };
+  } else if (!event.reconciliationDraft) {
+    event.reconciliationDraft = makeReconciliationDraft(event);
+    scheduleReconciliationDraftSave(event);
+  }
+  currentScreen = "event-reconcile";
+  render();
+  window.scrollTo({ top: 0, left: 0, behavior: "instant" });
+}
+
+function closeReconciliation() {
+  currentScreen = "event-detail";
+  reconciliationCorrectionMode = false;
+  render();
+}
+
+function scheduleReconciliationDraftSave(event) {
+  if (event.closed) return;
+  clearTimeout(reconciliationSaveTimer);
+  reconciliationSaveTimer = setTimeout(async () => {
+    try {
+      await saveEventToServer(event);
+    } catch (err) {
+      showSWLToast("Draft could not save");
+    }
+  }, 450);
+}
+
+function setReconciliationCount(eventId, itemId, field, rawValue) {
+  const event = state.events.find(item => item.id === eventId);
+  const row = event?.reconciliationDraft?.items?.find(item => item.itemId === itemId);
+  if (!row) return;
+  const value = Math.max(0, Math.floor(Number(rawValue) || 0));
+  row[field] = value;
+  const outboundFields = ["sold", "used", "giveaway", "damaged", "missing"];
+  if (field === "brought" || outboundFields.includes(field)) {
+    const outbound = outboundFields.reduce((sum, key) => sum + Number(row[key] || 0), 0);
+    row.returned = Math.max(0, row.brought - outbound);
+  }
+  scheduleReconciliationDraftSave(event);
+  renderEventReconciliation();
+}
+
+function setReconciliationEquipment(eventId, encodedKey, status) {
+  const event = state.events.find(item => item.id === eventId);
+  if (!event?.reconciliationDraft) return;
+  const key = decodeURIComponent(encodedKey);
+  event.reconciliationDraft.equipment[key] = status;
+  scheduleReconciliationDraftSave(event);
+  renderEventReconciliation();
+}
+
+function updateReconciliationText(eventId, field, value) {
+  const event = state.events.find(item => item.id === eventId);
+  if (!event?.reconciliationDraft) return;
+  event.reconciliationDraft[field] = field === "notes" ? value : Math.max(0, Number(value) || 0);
+  scheduleReconciliationDraftSave(event);
+}
+
+function reconciliationRowTotal(row) {
+  return ["returned", "sold", "used", "giveaway", "damaged", "missing"]
+    .reduce((sum, key) => sum + Number(row[key] || 0), 0);
+}
+
+function reconciliationCountField(event, row, field, label) {
+  return `
+    <label class="swl-reconcile-count ${field}">
+      <span>${label}</span>
+      <input type="number" min="0" step="1" value="${Number(row[field] || 0)}"
+        onchange="setReconciliationCount('${event.id}','${escapeHTML(row.itemId)}','${field}',this.value)" />
+    </label>`;
+}
+
+function renderEventReconciliation() {
+  const event = state.events.find(item => item.id === currentEventId);
+  if (!event) { navigate("events"); return; }
+  if (!event.reconciliationDraft) event.reconciliationDraft = makeReconciliationDraft(event);
+  const draft = event.reconciliationDraft;
+  const vendor = isVendorEventType(event.eventType);
+  const discrepancies = draft.items.filter(row => reconciliationRowTotal(row) !== Number(row.brought || 0));
+  const leftBehind = Object.values(draft.equipment || {}).filter(value => value === "left-behind").length;
+  setHeader(reconciliationCorrectionMode ? "Correct Closeout" : "Close Event");
+
+  document.getElementById("mainContent").innerHTML = `
+    <button class="back-button" type="button" onclick="closeReconciliation()">← ${reconciliationCorrectionMode ? "Event Recap" : "Event"}</button>
+    <section class="swl-reconcile-hero">
+      <span class="card-label">${reconciliationCorrectionMode ? "CORRECTION" : "EVENT CLOSEOUT"}</span>
+      <h2>${escapeHTML(event.name)}</h2>
+      <p>${formatDate(event.date)} · Count what actually happened. Your draft saves automatically.</p>
+    </section>
+
+    <section class="swl-reconcile-section">
+      <div class="event-section-heading"><div><div class="card-label">Quick recap</div><h3>${vendor ? "Sales & attendance" : "Guests served"}</h3></div></div>
+      <div class="card swl-reconcile-basics">
+        <label><span>${vendor ? "SWL experiences completed" : "Actual children served"}</span><input type="number" min="0" value="${Number(draft.actualGuests || 0)}" oninput="updateReconciliationText('${event.id}','actualGuests',this.value)" /></label>
+        ${vendor ? `<label><span>Event revenue</span><div class="swl-money-input"><b>$</b><input type="number" min="0" step="0.01" value="${Number(draft.revenue || 0)}" oninput="updateReconciliationText('${event.id}','revenue',this.value)" /></div></label>` : ""}
+      </div>
+    </section>
+
+    <section class="swl-reconcile-section">
+      <div class="event-section-heading"><div><div class="card-label">Inventory</div><h3>What came back?</h3></div><span class="swl-section-count">${draft.items.length}</span></div>
+      <p class="swl-reconcile-help">Change the sold/used, giveaway, damaged or missing amounts. Returned updates automatically.</p>
+      ${draft.items.length ? draft.items.map(row => {
+        const total = reconciliationRowTotal(row);
+        const balanced = total === Number(row.brought || 0);
+        return `<article class="card swl-reconcile-item ${balanced ? "balanced" : "unbalanced"}">
+          <div class="swl-reconcile-item-head"><div><strong>${escapeHTML(reconciliationItemName(row.itemId))}</strong><small>${balanced ? "Everything accounted for" : `${Math.abs(Number(row.brought || 0) - total)} not accounted for`}</small></div><span class="${balanced ? "ok" : "warning"}">${balanced ? "✓" : "!"}</span></div>
+          <div class="swl-reconcile-counts">
+            ${reconciliationCountField(event, row, "brought", "Brought")}
+            ${reconciliationCountField(event, row, "returned", "Returned")}
+            ${reconciliationCountField(event, row, vendor ? "sold" : "used", vendor ? "Sold" : "Used")}
+            ${reconciliationCountField(event, row, "giveaway", "Giveaway")}
+            ${reconciliationCountField(event, row, "damaged", "Damaged")}
+            ${reconciliationCountField(event, row, "missing", "Missing")}
+          </div>
+        </article>`;
+      }).join("") : `<div class="card empty-card"><strong>No reserved inventory.</strong><p>You can still finish the equipment check and close the event.</p></div>`}
+    </section>
+
+    <section class="swl-reconcile-section">
+      <div class="event-section-heading"><div><div class="card-label">Pack back in</div><h3>Equipment check</h3></div></div>
+      <p class="swl-reconcile-help">Anything you marked Packed or Loaded is prefilled as returned. Unchecked gear is prefilled as not brought.</p>
+      <div class="card swl-return-list">
+        ${Object.entries(draft.equipment || {}).map(([key, value]) => {
+          const name = key.startsWith("gear:") ? key.slice(5) : (event.extraPackItems || []).find(item => `custom:${item.id}` === key)?.name || key;
+          return `<div class="swl-return-row"><strong>${escapeHTML(name)}</strong><div class="swl-return-options">
+            ${[["returned","Returned"],["not-brought","Not brought"],["left-behind","Left behind"]].map(([status, label]) => `<button type="button" class="${value === status ? "active" : ""} ${status}" onclick="setReconciliationEquipment('${event.id}','${encodeURIComponent(key)}','${status}')">${label}</button>`).join("")}
+          </div></div>`;
+        }).join("")}
+      </div>
+    </section>
+
+    <section class="swl-reconcile-section">
+      <div class="event-section-heading"><div><div class="card-label">Anything worth remembering?</div><h3>Closeout notes</h3></div></div>
+      <textarea class="swl-reconcile-notes" placeholder="Great seller, damaged item, follow-up needed…" oninput="updateReconciliationText('${event.id}','notes',this.value)">${escapeHTML(draft.notes || "")}</textarea>
+    </section>
+
+    ${discrepancies.length || leftBehind ? `<div class="status-banner warning swl-reconcile-warning">${discrepancies.length ? `${discrepancies.length} inventory ${discrepancies.length === 1 ? "row does" : "rows do"} not add up.` : ""}${discrepancies.length && leftBehind ? " · " : ""}${leftBehind ? `${leftBehind} item${leftBehind === 1 ? " is" : "s are"} marked left behind.` : ""}</div>` : ""}
+    <button class="primary-button full-width swl-finish-closeout" type="button" onclick="finalizeEventReconciliation('${event.id}')" ${discrepancies.length ? "disabled" : ""}>${reconciliationCorrectionMode ? "Save Inventory Correction" : "Confirm & Close Event"}</button>
+    <p class="swl-reconcile-final-note">${reconciliationCorrectionMode ? "Only the difference from the original closeout will change inventory." : "This releases reservations and deducts sold, used, giveaway, damaged and missing items exactly once."}</p>`;
+}
+
+async function finalizeEventReconciliation(eventId) {
+  const event = state.events.find(item => item.id === eventId);
+  const draft = event?.reconciliationDraft;
+  if (!event || !draft) return;
+  const bad = draft.items.find(row => reconciliationRowTotal(row) !== Number(row.brought || 0));
+  if (bad) { alert(`The counts for ${reconciliationItemName(bad.itemId)} do not add up.`); return; }
+  const verb = reconciliationCorrectionMode ? "save this correction" : "close this event and update inventory";
+  if (!confirm(`Ready to ${verb}?`)) return;
+  const button = document.querySelector(".swl-finish-closeout");
+  if (button) { button.disabled = true; button.textContent = "Saving…"; }
+  try {
+    const response = await reconcileEventOnServer(eventId, {
+      ...structuredClone(draft),
+      correction: reconciliationCorrectionMode
+    });
+    const index = state.events.findIndex(item => item.id === eventId);
+    state.events[index] = normalizeLoadedEvent(response.event);
+    reconciliationCorrectionMode = false;
+    currentScreen = "event-detail";
+    render();
+    showSWLToast(response.alreadyApplied ? "Already closed — inventory unchanged" : "Event closed & inventory reconciled ♥");
+  } catch (err) {
+    if (button) { button.disabled = false; button.textContent = reconciliationCorrectionMode ? "Save Inventory Correction" : "Confirm & Close Event"; }
+    alert(`Could not finish the closeout. ${err.message}`);
+  }
+}
+
+function renderCompletedEventDetail(event, main) {
+  const recap = event.reconciliation;
+  if (!recap) {
+    main.innerHTML = `<button class="back-button" onclick="navigate('events')">← Events</button><div class="card empty-card"><strong>Event completed</strong><p>No reconciliation details were saved for this older event.</p></div>`;
+    return;
+  }
+  const outbound = (recap.items || []).reduce((sum, item) => sum + Number(item.deducted || 0), 0);
+  const equipmentIssues = Object.entries(recap.equipment || {}).filter(([, status]) => status === "left-behind");
+  main.innerHTML = `
+    <button class="back-button" onclick="navigate('events')">← Events</button>
+    <section class="swl-completed-hero"><span class="swl-completed-check">✓</span><div><span class="card-label">COMPLETED EVENT</span><h2>${escapeHTML(event.name)}</h2><p>${formatDate(event.date)}${event.time ? ` · ${formatTime(event.time)}` : ""}</p></div></section>
+    <div class="swl-recap-stats">
+      <div class="card"><strong>${Number(recap.actualGuests || 0)}</strong><span>${isVendorEventType(event.eventType) ? "experiences" : "guests served"}</span></div>
+      <div class="card"><strong>${outbound}</strong><span>left inventory</span></div>
+      ${isVendorEventType(event.eventType) ? `<div class="card"><strong>${money(recap.revenue || 0)}</strong><span>revenue</span></div>` : ""}
+    </div>
+    <section class="swl-reconcile-section"><div class="event-section-heading"><div><div class="card-label">Final inventory</div><h3>Event reconciliation</h3></div></div>
+      <div class="card swl-recap-table">${(recap.items || []).map(item => `<div class="swl-recap-row"><div><strong>${escapeHTML(reconciliationItemName(item.itemId))}</strong><small>${item.brought} brought · ${item.returned} returned</small></div><div class="swl-recap-breakdown">${item.sold ? `<span>${item.sold} sold</span>` : ""}${item.used ? `<span>${item.used} used</span>` : ""}${item.giveaway ? `<span>${item.giveaway} giveaway</span>` : ""}${item.damaged ? `<span>${item.damaged} damaged</span>` : ""}${item.missing ? `<span>${item.missing} missing</span>` : ""}${!item.deducted ? `<span class="success">All returned</span>` : ""}</div></div>`).join("") || `<div class="event-empty-mini">No reserved inventory was attached.</div>`}</div>
+    </section>
+    <section class="swl-reconcile-section"><div class="event-section-heading"><div><div class="card-label">Equipment</div><h3>Return check</h3></div></div>
+      <div class="card detail-card"><div class="detail-row"><span>Returned</span><strong>${Object.values(recap.equipment || {}).filter(value => value === "returned").length}</strong></div><div class="detail-row"><span>Not brought</span><strong>${Object.values(recap.equipment || {}).filter(value => value === "not-brought").length}</strong></div><div class="detail-row"><span>Left behind</span><strong class="${equipmentIssues.length ? "warning-text" : ""}">${equipmentIssues.length}</strong></div></div>
+    </section>
+    ${recap.notes ? `<section class="swl-reconcile-section"><div class="event-section-heading"><div><div class="card-label">Notes</div><h3>Closeout notes</h3></div></div><div class="card event-notes-card">${escapeHTML(recap.notes)}</div></section>` : ""}
+    <div class="swl-recap-footer"><span>Closed ${new Date(recap.closedAt).toLocaleString()}</span>${Number(recap.revision || 1) > 1 ? `<span>Corrected ${Number(recap.revision) - 1} time${Number(recap.revision) === 2 ? "" : "s"}</span>` : ""}</div>
+    <button class="secondary-button full-width" type="button" onclick="openEventReconciliation('${event.id}', true)">Edit Reconciliation</button>`;
 }
 async function addEventPackInventory(formEvent, eventId) {
   formEvent.preventDefault();
@@ -11567,4 +11798,11 @@ function openFluffStack(){if(document.getElementById('fs-overlay'))return;let la
     button.addEventListener('click',fsControlClick);
   });
   document.addEventListener('keydown',fsKey);
+}
+
+async function reconcileEventOnServer(eventId, payload) {
+  return apiRequest(`events/${encodeURIComponent(eventId)}/reconcile`, {
+    method: "POST",
+    body: JSON.stringify(payload)
+  });
 }
