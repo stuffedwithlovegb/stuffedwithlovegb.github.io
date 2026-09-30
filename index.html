@@ -1,825 +1,232 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-    <!-- SEO -->
-    <title>Stuffed With Love | Mobile Stuffed Animal Parties in Green Bay</title>
-    <meta name="description" content="Stuffed With Love brings mobile stuffed animal party experiences to birthdays, schools, baby showers, festivals, and events throughout Green Bay and Northeast Wisconsin.">
-
-    <!-- Favicon -->
-    <link rel="icon" type="image/png" href="favicon.png">
-
-    <!-- Speed -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-
-    <!-- Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Bubblegum+Sans&family=Nunito:wght@400;600;700;800&family=Quicksand:wght@400;500;600;700&display=swap" rel="stylesheet">
-
-    <!-- Your CSS -->
-    <link rel="stylesheet" href="style.css">
-
-    <!-- Font Awesome (non-blocking) -->
-    <link rel="preload"
-          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
-          as="style"
-          onload="this.onload=null;this.rel='stylesheet'">
-
-    <noscript>
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    </noscript>
-</head>
-    <!-- Google tag (gtag.js) -->
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="icon" type="image/png" href="favicon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bubblegum+Sans&family=Nunito:wght@400;600;700;800&family=Quicksand:wght@500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-WQGXFYZVTH"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-
-  gtag('config', 'G-WQGXFYZVTH');
-</script>
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag('js',new Date());gtag('config','G-WQGXFYZVTH');</script>
+<title>Stuffed With Love | Mobile Stuffed Animal Parties in Green Bay</title>
+<meta name="description" content="Stuffed With Love brings a complete mobile stuffed animal experience to birthdays, schools, festivals, family events, and celebrations throughout Green Bay and Northeast Wisconsin.">
+</head>
 <body>
-
-<!-- ===========================
-     Navigation
-=========================== -->
-
-<nav>
-
-    <div class="nav-container">
-
-        <a href="#" class="logo">
-            <img
-                src="finallogo.webp"
-                alt="Stuffed With Love"
-                class="logo-img">
-        </a>
-
-       <div class="header-tagline">
-            We Bring the Plush Party to You!
+<nav class="site-nav">
+  <div class="nav-container">
+    <a href="index.html" class="logo"><img src="finallogo.webp" alt="Stuffed With Love" class="logo-img"></a>
+    <div class="header-tagline">We Bring the Plush Party to You!</div>
+    <ul class="nav-links">
+      <li><a href="index.html#home">Home</a></li>
+      <li><a href="index.html#what-we-do">The Experience</a></li>
+      <li><a href="pricing.html">Pricing</a></li>
+      <li><a href="gallery.html">Gallery</a></li>
+      <li class="dropdown">
+        <button class="dropdown-toggle" type="button">Explore</button>
+        <div class="dropdown-menu">
+          <a href="about.html">Our Story</a>
+          <a href="faq.html">FAQ</a>
+          <a href="policies.html">Policies</a>
         </div>
-
-        <ul class="nav-links">
-
-            <li><a href="#home">Home</a></li>
-
-            <li>
-                <a href="#contact"
-                   class="btn btn-primary">
-                    Book Your Experience!
-                </a>
-            </li>
-
-            <li><a href="#what-we-do">What We Do</a></li>
-
-            <li><a href="pricing.html">Pricing</a></li>
-
-            <li class="dropdown">
-
-    <button
-        class="dropdown-toggle"
-        type="button">
-        Explore
-    </button>
-
-    <div class="dropdown-menu">
-
-        <a href="about.html">Our Story</a>
-
-        <a href="index.html#what-we-do">What We Do</a>
-
-        <a href="gallery.html">Gallery</a>
-
-        <a href="pricing.html">Packages</a>
-
-        <a href="policies.html">Policies</a>
-
-        <a href="faq.html">FAQ</a>
-
-    </div>
-
-</li>
-
-</ul>
-
-<button
-    class="mobile-toggle"
-    type="button"
-    onclick="toggleMobile()"
-    aria-label="Open mobile menu">
-    ☰
-</button>
-
-</div>
-
+      </li>
+      <li><a href="index.html#contact" class="btn btn-primary header-book-btn">Book Your Experience</a></li>
+    </ul>
+    <button class="mobile-toggle" type="button" aria-label="Open mobile menu" aria-expanded="false">☰</button>
+  </div>
 </nav>
-
-
-<!-- ===========================
-     Mobile Menu
-=========================== -->
-
 <div class="mobile-menu" id="mobileMenu">
-
-    <a href="index.html#home" onclick="toggleMobile()">
-        Home
-    </a>
-
-    <a href="about.html" onclick="toggleMobile()">
-        Our Story
-    </a>
-
-    <a href="index.html#what-we-do" onclick="toggleMobile()">
-        What We Do
-    </a>
-
-    <a href="gallery.html" onclick="toggleMobile()">
-        Gallery
-    </a>
-
-    <a href="pricing.html" onclick="toggleMobile()">
-        Packages
-    </a>
-
-    <a href="policies.html" onclick="toggleMobile()">
-        Policies
-    </a>
-
-    <a href="faq.html" onclick="toggleMobile()">
-        FAQ
-    </a>
-
-    <a href="index.html#contact" onclick="toggleMobile()">
-        Book Your Experience
-    </a>
-
+  <a href="index.html#home">Home</a>
+  <a href="index.html#what-we-do">The Experience</a>
+  <a href="pricing.html">Pricing</a>
+  <a href="gallery.html">Gallery</a>
+  <a href="about.html">Our Story</a>
+  <a href="faq.html">FAQ</a>
+  <a href="policies.html">Policies</a>
+  <a href="index.html#contact" class="mobile-book">Book Your Experience</a>
 </div>
-
-
-<!-- ===========================
-     HERO
-=========================== -->
-
+<main>
 <section class="hero" id="home">
-
-<div class="hero-container">
-
-<div class="hero-content">
-
-
-<div class="hero-announcement">
-
-🎉 NOW BOOKING EVENTS SEPTEMBER 2026 🎉
-
-</div>
-
-
-<p class="hero-subtitle">
-
-We bring the complete stuffed animal experience directly to your
-birthday party, baby shower, school, daycare, festival,
-or special event.
-
-</p>
-
-
-
-<div class="how-it-works">
-
-  <div class="step">
-    <div class="step-icon">
-      <i class="fas fa-paw"></i>
-    </div>
-    <h4>Choose</h4>
-    <p>Pick Your Plush</p>
-  </div>
-
-  <div class="connector"></div>
-
-  <div class="step">
-    <div class="step-icon">
-      <i class="fas fa-heart"></i>
-    </div>
-    <h4>Heart</h4>
-    <p>Make A Wish</p>
-  </div>
-
-  <div class="connector"></div>
-
-  <div class="step">
-    <div class="step-icon">
-      <i class="fas fa-cloud"></i>
-    </div>
-    <h4>Stuff</h4>
-    <p>Bring It To Life</p>
-  </div>
-
-  <div class="connector"></div>
-
-  <div class="step">
-    <div class="step-icon">
-      <i class="fas fa-shirt"></i>
-    </div>
-    <h4>Dress</h4>
-    <p>Make It Yours</p>
-  </div>
-
-  <div class="connector"></div>
-
-  <div class="step final-step">
-    <div class="step-icon">
-      <i class="fas fa-gift"></i>
-    </div>
-    <h4>Love</h4>
-    <p>Take Home Your New Best Friend</p>
-  </div>
-
-</div>
-
-<div class="hero-buttons">
-  <a href="#contact" class="btn btn-primary">Book Your Experience</a>
-  <a href="pricing.html" class="btn btn-primary">View Pricing</a>
-</div>
-
-<div class="hero-image-single">
-
-<img
-
-src="heropic2.webp"
-
-alt="Children making stuffed animals"
-
-class="hero-main-image">
-
-</div>
-
-</div>
-
-</section>
-<section class="intro-section" id="what-we-do">
-
-    <div class="intro-flex">
-
-       <!-- Left Side -->
-<div class="intro-content">
-
-    <h2>More Than a Plush Party</h2>
-
-    <p>
-        Stuffed With Love brings a complete mobile plush-building experience
-        directly to your event anywhere in Northeast Wisconsin. We transform
-        your space into a charming little world where guests can create, play,
-        explore, and bring their very own plush friend to life.
-    </p>
-
-    <p>
-        Each guest begins by choosing a plush friend, then visits our stuffing
-        station to help bring it to life. They add a special heart, make a wish
-        during our signature heart ceremony, name their new friend, and complete
-        a personalized birth certificate before taking their keepsake home.
-    </p>
-
-    <p>
-        The experience goes far beyond the stuffing station. Guests can explore our interactive felt activity wall,
-        visit the Friend Hotel, pose for photos in our themed photo area, and
-        shop our optional plush boutique for clothing and accessories. Together, these create the feeling of a tiny village made just for new furry
-        friends.
-    </p>
-
-    <p>
-        Stuffed With Love is perfect for birthday celebrations, schools, daycares,
-        company family events, holiday gatherings, festivals, fundraisers, and
-        community events. We bring the equipment, supplies, décor, activities,
-        setup, staffing, and cleanup so you can relax and enjoy the experience
-        with your guests.
-    </p>
-
-</div>
-
-
-    </div>
-
-</section>
-    <!-- Services Section -->
-    <section id="services">
-    <div class="section-header">
-        <h2>Perfect for...</h2>
-    </div>
-
-    <div class="services-grid">
-
-        <div class="service-card">
-            <div class="service-icon"><i class="fas fa-birthday-cake"></i></div>
-            <h3>Birthday Parties</h3>
-            <p>Make your child's birthday unforgettable! Each guest creates and takes home their very own stuffed animal friend.</p>
-        </div>
-
-        <div class="service-card">
-            <div class="service-icon"><i class="fas fa-football-ball"></i></div>
-            <h3>Game Day Events</h3>
-            <p>Game day got even better! We bring the fun to tailgates and Sports-themed celebrations near Lambeau.</p>
-        </div>
-
-        <div class="service-card">
-            <div class="service-icon"><i class="fas fa-store"></i></div>
-            <h3>Fairs & Festivals</h3>
-            <p>Find us at local Green Bay events and community fairs throughout the year!</p>
-        </div>
-
-        <div class="service-card">
-            <div class="service-icon"><i class="fas fa-school"></i></div>
-            <h3>School Events</h3>
-            <p>Perfect for classroom parties, field days, and school fundraisers. Educational and fun!</p>
-        </div>
-
-        <div class="service-card">
-            <div class="service-icon"><i class="fas fa-gifts"></i></div>
-            <h3>Special Events</h3>
-            <p>Graduations, holidays, family reunions—any celebration is better with stuffed animals!</p>
-        </div>
-
-        <div class="service-card">
-            <div class="service-icon"><i class="fas fa-building"></i></div>
-            <h3>Corporate Events</h3>
-            <p>Team building with heart! Great for company family days and community outreach.</p>
-        </div>
-
-    </div>
-</section>
-
-
-    <section id="service-areas">
-    <div class="service-areas-content">
-
-        <h2>Proudly Based in Green Bay </h2>
-
-        <p>
-            Stuffed With Love is a local Green Bay family business bringing mobile
-            plush stuffing experiences to birthdays, schools, festivals, community
-            events, and special celebrations throughout Northeast Wisconsin.
-        </p>
-
-        <p>
-            We're located just minutes from Lambeau Field and happily travel to
-            surrounding communities to bring the fun directly to you.
-        </p>
-
-        <div class="service-area-box">
-
-            <h3>Travel & Service Area</h3>
-
-            <div class="travel-item">
-                <strong>FREE Travel</strong>
-                <span>Within 15 miles of Green Bay</span>
-            </div>
-
-            <div class="travel-item">
-                <strong>$20 Travel Fee</strong>
-                <span>15–60 miles from Green Bay</span>
-            </div>
-
-        </div>
-
-        <div class="city-grid">
-
-            <div class="city-card">Green Bay</div>
-            <div class="city-card">Ashwaubenon</div>
-            <div class="city-card">De Pere</div>
-            <div class="city-card">Bellevue</div>
-            <div class="city-card">Howard</div>
-            <div class="city-card">Suamico</div>
-
-            <div class="city-card">Appleton</div>
-            <div class="city-card">Kaukauna</div>
-            <div class="city-card">Little Chute</div>
-            <div class="city-card">Pulaski</div>
-            <div class="city-card">Wrightstown</div>
-            <div class="city-card">Fox Valley Area</div>
-
-        </div>
-
-        <p class="service-note">
-            Don't see your town listed? Reach out! We may still be able to bring
-            Stuffed With Love to your event.
-        </p>
-
-    </div>
-</section>
-
-   <section id="packages-preview">
-
-    <div class="section-header">
-        <h2>Party Packages</h2>
-        <p>Choose the perfect stuffed animal experience for your celebration.</p>
-    </div>
-
-    <div class="pricing-grid">
-
-        <div class="pricing-card">
-            <h3>Stuff & Love</h3>
-            <div class="price">Starting at $30/child</div>
-            <p>Perfect for smaller celebrations with all the essentials.</p>
-        </div>
-
-        <div class="pricing-card featured">
-            <div class="pricing-badge">Most Popular</div>
-            <h3>Stuff, Fluff & Love</h3>
-            <div class="price">Starting at $35/child</div>
-            <p>More plush options and a special outfit for the guest of honor.</p>
-        </div>
-
-        <div class="pricing-card">
-            <h3>Ultimate Stuff, Fluff & Love</h3>
-            <div class="price">Starting at $40/child</div>
-            <p>Our deluxe experience with custom shirts and premium extras.</p>
-        </div>
-
-    </div>
-
-    <div class="pricing-preview-footer">
-        <p>
-            We also create custom baby shower, group, corporate, school, nonprofit, festival, and community event experiences.
-        </p>
-
-        <a href="pricing.html" class="btn btn-primary">
-            View Full Pricing & Packages
-        </a>
-    </div>
-
-</section>
-
-
-    <!-- Why Families Choose Us Section -->
-<!-- Why Families Choose Us Section -->
-<section id="why-us">
-    <div class="section-header">
-        <h2>Why Families Choose Stuffed With Love</h2>
-        <p>Creating memorable experiences for kids and families throughout Green Bay and Northeast Wisconsin.</p>
-    </div>
-
-    <div class="feature-grid">
-
-        <div class="feature-card">
-            <h3>We Come To You</h3>
-            <p>
-                No hauling kids across town. We bring the complete plush stuffing experience
-                directly to your party, school, daycare, festival, or event.
-            </p>
-        </div>
-
-        <div class="feature-card">
-            <h3>A Keepsake That Lasts</h3>
-            <p>
-                Every child creates their own stuffed animal and leaves with a personalized
-                keepsake they'll treasure long after the celebration ends.
-            </p>
-        </div>
-
-        <div class="feature-card">
-            <h3>Local & Family-Owned</h3>
-            <p>
-                Based in Green Bay, we're passionate about creating fun, screen-free
-                experiences that bring families together and create lasting memories.
-            </p>
-        </div>
-
-        <div class="feature-card featured-card">
-            <h3>Now Booking Events</h3>
-            <p>
-                Birthday parties, schools, festivals, daycare events, community gatherings,
-                and more. We'd love to help make your next event unforgettable.
-            </p>
-
-            
-        </div>
-
-    </div>
-</section>
-
-    <!-- Contact Section -->
-   <section id="contact">
-
-    <div class="section-header">
-        <h2>Let's Plan Something Magical!</h2>
-        <p>
-            Tell us a little about your event and we'll be in touch within one business day.
-            There's no obligation—we'd love to help bring your vision to life!
-        </p>
-    </div>
-
-        <form
-            id="booking-form"
-            class="contact-form"
-            action="https://formspree.io/f/mbdvjnow"
-            method="POST">
-
-            <input
-                type="hidden"
-                name="_redirect"
-                value="https://stuffedwithlovegb.com/thank-you.html">
-
-            <input
-                type="hidden"
-                name="_subject"
-                value="🎉 New Stuffed With Love Booking Inquiry">
-
-            <div class="form-grid">
-
-                <div class="form-group">
-                    <label for="name">Your Name</label>
-                    <input
-                        type="text"
-                        id="name"
-                        name="name"
-                        placeholder="Your name"
-                        required>
-                </div>
-
-                <div class="form-group">
-                    <label for="email">Email Address</label>
-                    <input
-                        type="email"
-                        id="email"
-                        name="email"
-                        placeholder="your@email.com"
-                        required>
-                </div>
-
-                <div class="form-group">
-                    <label for="phone">Phone Number (Optional)</label>
-                    <input
-                        type="tel"
-                        id="phone"
-                        name="phone"
-                        placeholder="(920) 555-1234">
-                </div>
-
-                <div class="form-group">
-                    <label for="event-type">Event Type</label>
-
-                    <select id="event-type" name="event_type">
-
-                        <option value="">Select an event...</option>
-
-                        <option value="birthday">
-                            Birthday Party
-                        </option>
-
-                        <option value="baby-shower">
-                            Baby Shower
-                        </option>
-
-                        <option value="school">
-                            School or Daycare
-                        </option>
-
-                        <option value="corporate">
-                            Corporate Event
-                        </option>
-
-                        <option value="festival">
-                            Festival or Community Event
-                        </option>
-
-                        <option value="holiday">
-                            Holiday Event
-                        </option>
-
-                        <option value="fundraiser">
-                            Fundraiser
-                        </option>
-
-                        <option value="other">
-                            Other
-                        </option>
-
-                    </select>
-
-                </div>
-
-                <div class="form-group full-width">
-
-                    <label for="message">
-                        Tell Us About Your Event
-                    </label>
-
-                    <textarea
-                        id="message"
-                        name="message"
-                        placeholder="Tell us about your event! Include your preferred date, location, estimated guest count, and anything else you'd like us to know."></textarea>
-
-                </div>
-
-            </div>
-
-            <button
-                type="submit"
-                class="btn btn-primary">
-                Request Booking
-            </button>
-
-            <p class="form-note">
-                We'll respond within one business day. No payment is required to
-                inquire about your event.
-            </p>
-
-        </form>
-
-    </div>
-
-</section>
-            <div class="contact-info">
-                <div class="contact-info-item">
-                    <span></span>
-                    <p>hello@stuffedwithlovegb.com</p>
-                </div>
-                <div class="contact-info-item">
-                    <span></span>
-                    <p>Stuffed With Love LLC</p>
-                </div>
-                <div class="contact-info-item">
-                    <span></span>
-                    <p>Green Bay, Wisconsin</p>
-                </div>
-            </div>
-        </div>
-    </section>
-
-  
-<footer class="site-footer">
-
-  <div class="footer-container">
-
-    <!-- Brand -->
-    <div class="footer-column footer-brand">
-
-      <img src="finallogo.webp"
-           alt="Stuffed With Love Logo"
-           class="footer-logo">
-
-      <p>
-        Creating unforgettable memories one stuffed friend at a time.
-      </p>
-
-    </div>
-
-    <!-- Quick Links -->
-    <div class="footer-column">
-
-      <h4>Quick Links</h4>
-
-      <a href="index.html">Home</a>
-      <a href="about.html">About Us</a>
-      <a href="gallery.html">Gallery</a>
-      <a href="pricing.html">Pricing</a>
-      <a href="faq.html">FAQ</a>
-      <a href="policies.html">Policies</a>
-
-    </div>
-
-    <!-- Bookings -->
-    <div class="footer-column">
-
-      <h4>Bookings</h4>
-
-      <a href="index.html#contact">Book Your Experience</a>
-      <a href="mailto:hello@stuffedwithlovegb.com">Email Us</a>
-
-      <p class="footer-note">
-        Serving Green Bay and surrounding areas.
-      </p>
-
-    </div>
-
-    <!-- Social -->
-    <div class="footer-column">
-
-      <h4>Follow Along</h4>
-
-      <div class="social-icons">
-
-        <a href="https://www.facebook.com/profile.php?id=61591472361383" target="_blank" class="facebook">
-          <i class="fab fa-facebook-f"></i>
-        </a>
-
-        <a href="https://www.instagram.com/stuffedwithlove.gb" target="_blank" class="instagram">
-          <i class="fab fa-instagram"></i>
-        </a>
-
-        <a href="https://www.tiktok.com/@stuffedwithlovegb" target="_blank" class="tiktok">
-          <i class="fab fa-tiktok"></i>
-        </a>
-
+  <div class="hero-container">
+    <div class="hero-copy">
+      <div class="eyebrow">GREEN BAY'S MOBILE PLUSH-BUILDING EXPERIENCE</div>
+      <h1>Stuff it. Fluff it.<br><span>Love it.</span></h1>
+      <p class="hero-subtitle">We bring the stuffing station, plush friends, wishing hearts, keepsakes, activities, and all the little details directly to your celebration.</p>
+      <div class="hero-buttons">
+        <a href="#contact" class="btn btn-primary">Book Your Experience</a>
+        <a href="pricing.html" class="btn btn-secondary">See Party Packages</a>
       </div>
-
+      <p class="hero-local"><i class="fa-solid fa-location-dot"></i> Family-owned in Green Bay • Serving Northeast Wisconsin</p>
     </div>
-
+    <div class="hero-collage" aria-label="Stuffed With Love experience photos">
+      <figure class="hero-photo hero-photo-main">
+        <img src="gallery-03.webp" alt="Stuffed With Love complete mobile party setup">
+        <figcaption>The whole experience comes to you.</figcaption>
+      </figure>
+      <figure class="hero-photo hero-photo-small">
+        <img src="gallery-02.webp" alt="Child enjoying a Stuffed With Love wishing heart moment">
+        <figcaption>And they leave with a new best friend. 💛</figcaption>
+      </figure>
+    </div>
   </div>
+</section>
 
-  <div class="footer-bottom">
-
-    <p>
-      © 2026 Stuffed With Love LLC • Green Bay, Wisconsin • Made with 💛
-    </p>
-
+<section class="experience-strip" aria-label="How Stuffed With Love works">
+  <div class="experience-steps">
+    <div><span><i class="fa-solid fa-paw"></i></span><strong>Choose</strong><small>Pick your plush</small></div>
+    <i class="fa-solid fa-chevron-right step-arrow"></i>
+    <div><span><i class="fa-solid fa-heart"></i></span><strong>Heart</strong><small>Make a wish</small></div>
+    <i class="fa-solid fa-chevron-right step-arrow"></i>
+    <div><span><i class="fa-solid fa-cloud"></i></span><strong>Stuff</strong><small>Bring it to life</small></div>
+    <i class="fa-solid fa-chevron-right step-arrow"></i>
+    <div><span><i class="fa-solid fa-shirt"></i></span><strong>Dress</strong><small>Make it yours</small></div>
+    <i class="fa-solid fa-chevron-right step-arrow"></i>
+    <div><span><i class="fa-solid fa-gift"></i></span><strong>Love</strong><small>Take it home</small></div>
   </div>
+</section>
 
+<section class="story-section story-section-compact" id="what-we-do">
+  <div class="story-grid compact-story-grid">
+    <div class="story-photo"><img src="gallery-04.webp" alt="Child making a plush at the Stuffed With Love stuffing station"></div>
+    <div class="story-copy compact-story-copy">
+      <span class="eyebrow">MORE THAN A STUFFED ANIMAL</span>
+      <h2>They don't just pick a plush. They make a memory.</h2>
+      <p>Every guest chooses a new friend, adds a wishing heart, brings it to life at the stuffing station, and takes home a keepsake they made themselves.</p>
+      <div class="compact-perks">
+        <span><i class="fa-solid fa-heart"></i> Wishing heart ceremony</span>
+        <span><i class="fa-solid fa-cloud"></i> Live stuffing station</span>
+        <span><i class="fa-solid fa-shirt"></i> Dress & personalize</span>
+        <span><i class="fa-solid fa-wand-magic-sparkles"></i> Interactive party extras</span>
+      </div>
+      <a href="pricing.html" class="text-link">See what's included in each package →</a>
+    </div>
+  </div>
+</section>
+
+<section class="news-feature">
+  <div class="news-grid">
+    <div class="news-copy">
+      <span class="media-pill"><i class="fa-solid fa-tv"></i> AS SEEN ON LOCAL 5 LIVE</span>
+      <h2>See Stuffed With Love in action.</h2>
+      <p>We brought the plush party to Local 5 Live and showed the experience from stuffing to the finishing touches. Press play for a peek at what makes a Stuffed With Love event different.</p>
+      <a href="#contact" class="btn btn-primary">Bring It to Your Event</a>
+    </div>
+    <div class="video-shell">
+      <div class="video-frame">
+        <iframe title="Stuffed With Love on Local 5 Live" src="https://redir1.wearegreenbay.com/nxs-video/vid-anvato-12220747/embed/?autoplay=0&injected_via=embed&post_id=3140882&aspect_ratio=landscape" loading="lazy" allowfullscreen></iframe>
+      </div>
+      <div class="video-note">Featured on Local 5 Live • Green Bay</div>
+    </div>
+  </div>
+</section>
+
+<section class="packages-preview">
+  <div class="section-heading">
+    <span class="eyebrow">PARTY PACKAGES</span>
+    <h2>Pick the experience that fits your celebration.</h2>
+    <p>Party packages start at a 10-child minimum. Package pricing includes applicable taxes.</p>
+  </div>
+  <div class="pricing-grid">
+    <article class="pricing-card"><h3>Stuff & Love</h3><div class="price">$30 <span>/ child</span></div><p>The essentials: plush, stuffing, heart ceremony, adoption certificate, and travel bag.</p><a href="pricing.html" class="text-link">See everything included →</a></article>
+    <article class="pricing-card featured"><div class="pricing-badge">Most Popular</div><h3>Stuff, Fluff & Love</h3><div class="price">$35 <span>/ child</span></div><p>More plush choices, an accessory for each child, plus a special outfit for the birthday child.</p><a href="pricing.html" class="text-link">See everything included →</a></article>
+    <article class="pricing-card"><h3>Ultimate Stuff, Fluff & Love</h3><div class="price">$40 <span>/ child</span></div><p>Our fullest party experience with all six plush styles, accessories, and custom plush T-shirts.</p><a href="pricing.html" class="text-link">See everything included →</a></article>
+  </div>
+</section>
+
+<section class="gallery-preview">
+  <div class="section-heading">
+    <span class="eyebrow">REAL SWL MOMENTS</span>
+    <h2>This is what the magic looks like.</h2>
+    <p>Real smiles, real parties, and a whole lot of new stuffed best friends.</p>
+  </div>
+  <div class="preview-collage">
+    <img src="gallery-01.webp" alt="Stuffed With Love party moment">
+    <img src="gallery-02.webp" alt="Child enjoying the Stuffed With Love experience">
+    <img src="gallery-03.webp" alt="Stuffed With Love event setup">
+    <img src="gallery-04.webp" alt="Stuffed With Love wishing heart and party details">
+  </div>
+  <div class="center"><a href="gallery.html" class="btn btn-secondary">See the Full Gallery</a></div>
+</section>
+
+<section class="service-area">
+  <div class="service-area-card">
+    <div><span class="eyebrow">PROUDLY BASED IN GREEN BAY</span><h2>The plush party comes to you.</h2><p>Free travel within 15 miles of Green Bay. A flat $20 travel fee applies more than 15 and up to 60 miles away.</p></div>
+    <div class="area-tags"><span>Green Bay</span><span>Ashwaubenon</span><span>De Pere</span><span>Bellevue</span><span>Howard</span><span>Suamico</span><span>Appleton</span><span>Fox Valley</span></div>
+  </div>
+</section>
+
+<section id="contact" class="contact-section">
+  <div class="contact-layout">
+    <div class="contact-intro"><span class="eyebrow">LET'S PLAN SOMETHING MAGICAL</span><h2>Tell us what you're celebrating.</h2><p>Share your date, location, guest count, and what you have in mind. We'll be in touch within one business day.</p><div class="contact-bits"><span><i class="fa-solid fa-envelope"></i> hello@stuffedwithlovegb.com</span><span><i class="fa-solid fa-location-dot"></i> Green Bay, Wisconsin</span></div></div>
+    <form id="booking-form" class="contact-form" action="https://formspree.io/f/mbdvjnow" method="POST">
+      <input type="hidden" name="_redirect" value="https://stuffedwithlovegb.com/thank-you.html">
+      <input type="hidden" name="_subject" value="New Stuffed With Love Booking Inquiry">
+      <div class="form-grid">
+        <div class="form-group"><label for="name">Your Name</label><input id="name" name="name" required></div>
+        <div class="form-group"><label for="email">Email Address</label><input type="email" id="email" name="email" required></div>
+        <div class="form-group"><label for="phone">Phone Number</label><input type="tel" id="phone" name="phone"></div>
+        <div class="form-group"><label for="event-type">Event Type</label><select id="event-type" name="event_type"><option value="">Select an event...</option><option>Birthday Party</option><option>Baby Shower</option><option>School or Daycare</option><option>Corporate Event</option><option>Festival or Community Event</option><option>Holiday Event</option><option>Fundraiser</option><option>Other</option></select></div>
+        <div class="form-group full-width"><label for="message">Tell Us About Your Event</label><textarea id="message" name="message" rows="6" placeholder="Preferred date, location, estimated guest count, and anything else you'd like us to know."></textarea></div>
+      </div>
+      <button type="submit" class="btn btn-primary">Request Booking</button>
+      <p class="form-note">No payment is required to inquire about your event.</p>
+    </form>
+  </div>
+</section>
+</main>
+<footer class="site-footer">
+  <div class="footer-container">
+    <div class="footer-column footer-brand">
+      <img src="finallogo.webp" alt="Stuffed With Love Logo" class="footer-logo">
+      <p>Creating unforgettable memories one stuffed friend at a time.</p>
+    </div>
+    <div class="footer-column">
+      <h4>Explore</h4>
+      <a href="index.html">Home</a><a href="about.html">Our Story</a><a href="gallery.html">Gallery</a>
+      <a href="pricing.html">Pricing</a><a href="faq.html">FAQ</a><a href="policies.html">Policies</a>
+    </div>
+    <div class="footer-column">
+      <h4>Bookings</h4>
+      <a href="index.html#contact">Book Your Experience</a>
+      <a href="mailto:hello@stuffedwithlovegb.com">hello@stuffedwithlovegb.com</a>
+      <p class="footer-note">Green Bay + Northeast Wisconsin</p>
+    </div>
+    <div class="footer-column social-column">
+      <h4>Follow Along</h4>
+      <div class="social-icons">
+        <a href="https://www.facebook.com/profile.php?id=61591472361383" target="_blank" rel="noopener noreferrer" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
+        <a href="https://www.instagram.com/stuffedwithlove.gb" target="_blank" rel="noopener noreferrer" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+        <a href="https://www.tiktok.com/@stuffedwithlovegb" target="_blank" rel="noopener noreferrer" aria-label="TikTok"><i class="fab fa-tiktok"></i></a>
+      </div>
+    </div>
+  </div>
+  <div class="footer-bottom">© 2026 Stuffed With Love LLC • Green Bay, Wisconsin • Made with 💛</div>
 </footer>
-
-
-    <script>
-        function toggleMobile() {
-            const menu = document.getElementById('mobileMenu');
-            menu.classList.toggle('active');
-        }
-
-        // Close mobile menu when clicking outside
-        document.addEventListener('click', function(event) {
-            const menu = document.getElementById('mobileMenu');
-            const toggle = document.querySelector('.mobile-toggle');
-            if (!menu.contains(event.target) && !toggle.contains(event.target)) {
-                menu.classList.remove('active');
-            }
-        });
-
-
-    </script>
-  <script>
-document.addEventListener("DOMContentLoaded", function () {
-    const nav = document.querySelector("nav");
-
-    window.addEventListener("scroll", function () {
-        if (window.scrollY > 50) {
-            nav.classList.add("shrink");
-        } else {
-            nav.classList.remove("shrink");
-        }
+<script>
+(function(){
+  const nav=document.querySelector('.site-nav');
+  const toggle=document.querySelector('.mobile-toggle');
+  const menu=document.getElementById('mobileMenu');
+  if(toggle&&menu){
+    toggle.addEventListener('click',function(e){
+      e.stopPropagation();
+      const open=menu.classList.toggle('active');
+      toggle.setAttribute('aria-expanded',open?'true':'false');
     });
+    menu.querySelectorAll('a').forEach(a=>a.addEventListener('click',()=>{menu.classList.remove('active');toggle.setAttribute('aria-expanded','false');}));
+    document.addEventListener('click',e=>{if(!menu.contains(e.target)&&!toggle.contains(e.target)){menu.classList.remove('active');toggle.setAttribute('aria-expanded','false');}});
+  }
+  if(nav) window.addEventListener('scroll',()=>nav.classList.toggle('shrink',window.scrollY>40),{passive:true});
+})();
+</script>
+<script>
+const booking=document.getElementById('booking-form');
+if(booking) booking.addEventListener('submit',async function(e){
+  e.preventDefault(); const b=booking.querySelector('[type="submit"]'); const old=b.textContent; b.disabled=true;b.textContent='Sending...';
+  try{const r=await fetch(booking.action,{method:'POST',body:new FormData(booking),headers:{Accept:'application/json'}});if(r.ok)location.href='thank-you.html';else throw new Error();}
+  catch(err){alert("We couldn't submit the form. Please try again.");b.disabled=false;b.textContent=old;}
 });
 </script>
-    <script>
-document.addEventListener("DOMContentLoaded", function () {
-
-    const forms = [
-        document.getElementById("newsletter-form"),
-        document.getElementById("booking-form")
-    ];
-
-    forms.forEach(function (form) {
-
-        if (!form) return;
-
-        form.addEventListener("submit", async function (event) {
-            event.preventDefault();
-
-            const submitButton = form.querySelector('[type="submit"]');
-            const originalButtonText = submitButton
-                ? submitButton.textContent
-                : "";
-
-            if (submitButton) {
-                submitButton.disabled = true;
-                submitButton.textContent = "Sending...";
-            }
-
-            try {
-                const response = await fetch(form.action, {
-                    method: form.method,
-                    body: new FormData(form),
-                    headers: {
-                        "Accept": "application/json"
-                    }
-                });
-
-                if (response.ok) {
-                    window.location.href =
-                        "https://stuffedwithlovegb.com/thank-you.html";
-                } else {
-                    alert(
-                        "Something went wrong while submitting the form. Please try again."
-                    );
-
-                    if (submitButton) {
-                        submitButton.disabled = false;
-                        submitButton.textContent = originalButtonText;
-                    }
-                }
-
-            } catch (error) {
-                alert(
-                    "We couldn't submit the form. Please check your connection and try again."
-                );
-
-                if (submitButton) {
-                    submitButton.disabled = false;
-                    submitButton.textContent = originalButtonText;
-                }
-            }
-        });
-    });
-});
-</script>
-</body>
-</html>
+</body></html>
