@@ -10,7 +10,28 @@
     <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag('js',new Date());gtag('config','G-WQGXFYZVTH');</script>
     <title>Gallery | Stuffed With Love Events</title>
     <meta name="description" content="See real Stuffed With Love party moments, event setups, plush creations, and happy kids throughout Green Bay and Northeast Wisconsin.">
-    </head><body><nav class="site-nav">
+    
+<style>
+/* Large featured gallery payoff photo */
+.gallery-mosaic .gallery-featured{
+  grid-column: span 2;
+  grid-row: span 2;
+}
+.gallery-mosaic .gallery-featured img{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  object-position:center 38%;
+}
+@media (max-width: 767px){
+  .gallery-mosaic .gallery-featured{
+    grid-column:1 / -1;
+    grid-row:auto;
+    aspect-ratio:3 / 4;
+  }
+}
+</style>
+</head><body><nav class="site-nav">
       <div class="nav-container">
         <a href="index.html" class="logo"><img src="finallogo.webp" alt="Stuffed With Love" class="logo-img"></a>
         <div class="header-tagline">We Bring the Plush Party to You!</div>
@@ -49,7 +70,10 @@
         <h2>Pick a friend. Make a wish. Stuff it with love.</h2>
         <p>Real moments from Stuffed With Love parties, from the stuffing station and wishing hearts to the Friend Hotel, interactive play and finished best friends.</p>
       </div>
-      <div class="gallery-mosaic"><button class="gallery-tile g01" type="button" data-full="gallery-01.webp" aria-label="Open gallery photo 1">
+      <div class="gallery-mosaic">
+    <button class="gallery-tile gallery-featured g16" type="button" data-full="gallery-16.webp" aria-label="Open featured gallery photo">
+      <img src="gallery-16.webp" alt="Two children holding their finished Stuffed With Love plush friends at the Stuff It, Fluff It, Love It heart photo spot" loading="eager">
+    </button><button class="gallery-tile g01" type="button" data-full="gallery-01.webp" aria-label="Open gallery photo 1">
       <img src="gallery-01.webp" alt="Stuffed With Love stuffing machine and stuffing station" loading="lazy">
     </button>
     <button class="gallery-tile g02" type="button" data-full="gallery-02.webp" aria-label="Open gallery photo 2">
