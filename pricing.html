@@ -1,378 +1,378 @@
 
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-   <!-- PRICING / pricing.html -->
-<title>Party Pricing | Stuffed With Love Mobile Plush Parties</title>
-<meta name="description" content="View Stuffed With Love party packages, pricing, add-ons, and mobile stuffed animal experience options for birthdays, schools, baby showers, festivals, and events.">
-    <link rel="icon" type="image/png" href="favicon.png">
-<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&family=Quicksand:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="style.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Bubblegum+Sans&display=swap" rel="stylesheet">
-</head>
-    <!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-WQGXFYZVTH"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+       <!-- PRICING / pricing.html -->
+    <title>Party Pricing | Stuffed With Love Mobile Plush Parties</title>
+    <meta name="description" content="View Stuffed With Love party packages, pricing, add-ons, and mobile stuffed animal experience options for birthdays, schools, baby showers, festivals, and events.">
+        <link rel="icon" type="image/png" href="favicon.png">
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&family=Quicksand:wght@400;500;600;700&display=swap" rel="stylesheet">
+        <link rel="stylesheet" href="style.css">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+        <link href="https://fonts.googleapis.com/css2?family=Bubblegum+Sans&display=swap" rel="stylesheet">
+    </head>
+        <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-WQGXFYZVTH"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
 
-  gtag('config', 'G-WQGXFYZVTH');
-</script>
-<body>
-    <!-- Navigation -->
-   <nav>
-    <div class="nav-container">
-        <a href="index.html" class="logo">
-    <img
-        src="finallogo.webp"
-        alt="Stuffed With Love"
-        class="logo-img">
-</a>
+      gtag('config', 'G-WQGXFYZVTH');
+    </script>
+    <body>
+        <!-- Navigation -->
+       <nav>
+        <div class="nav-container">
+            <a href="index.html" class="logo">
+        <img
+            src="finallogo.webp"
+            alt="Stuffed With Love"
+            class="logo-img">
+    </a>
 
-        <div class="header-tagline">
-            We Bring the Plush Party to You!
+            <div class="header-tagline">
+                We Bring the Plush Party to You!
+            </div>
+
+            <ul class="nav-links">
+                <li><a href="index.html#home">Home</a></li>
+
+                <li><a href="index.html#contact" class="btn btn-primary header-book-btn">Book Your Experience!</a></li>
+
+                <li><a href="index.html#what-we-do">What We Do</a></li>
+
+                <li><a href="pricing.html">Pricing</a></li>
+
+                <li class="dropdown">
+
+        <button
+            class="dropdown-toggle"
+            type="button">
+            Explore
+        </button>
+
+        <div class="dropdown-menu">
+
+            <a href="about.html">Our Story</a>
+
+            <a href="index.html#what-we-do">What We Do</a>
+
+            <a href="gallery.html">Gallery</a>
+
+            <a href="policies.html">Policies</a>
+
+            <a href="faq.html">FAQ</a>
+
         </div>
 
-        <ul class="nav-links">
-            <li><a href="index.html#home">Home</a></li>
+    </li>
 
-            <li><a href="index.html#contact" class="btn btn-primary header-book-btn">Book Your Experience!</a></li>
-
-            <li><a href="index.html#what-we-do">What We Do</a></li>
-
-            <li><a href=pricing.html>Pricing</a></li>
-
-            <li class="dropdown">
+    </ul>
 
     <button
-        class="dropdown-toggle"
-        type="button">
-        Explore
+        class="mobile-toggle"
+        type="button"
+        onclick="toggleMobile()"
+        aria-label="Open mobile menu">
+        ☰
     </button>
 
-    <div class="dropdown-menu">
+    </div>
 
-        <a href="about.html">Our Story</a>
+    </nav>
 
-        <a href="index.html#what-we-do">What We Do</a>
 
-        <a href="gallery.html">Gallery</a>
+    <!-- ===========================
+         Mobile Menu
+    =========================== -->
 
-        <a href="policies.html">Policies</a>
+    <div class="mobile-menu" id="mobileMenu">
 
-        <a href="faq.html">FAQ</a>
+        <a href="index.html#home" onclick="toggleMobile()">
+            Home
+        </a>
+
+        <a href="about.html" onclick="toggleMobile()">
+            Our Story
+        </a>
+
+        <a href="index.html#what-we-do" onclick="toggleMobile()">
+            What We Do
+        </a>
+
+        <a href="gallery.html" onclick="toggleMobile()">
+            Gallery
+        </a>
+
+        <a href="policies.html" onclick="toggleMobile()">
+            Policies
+        </a>
+
+        <a href="faq.html" onclick="toggleMobile()">
+            FAQ
+        </a>
+
+        <a href="index.html#contact" onclick="toggleMobile()">
+            Book Your Experience
+        </a>
 
     </div>
 
-</li>
-
-</ul>
-
-<button
-    class="mobile-toggle"
-    type="button"
-    onclick="toggleMobile()"
-    aria-label="Open mobile menu">
-    ☰
-</button>
-
-</div>
-
-</nav>
-
-
-<!-- ===========================
-     Mobile Menu
-=========================== -->
-
-<div class="mobile-menu" id="mobileMenu">
-
-    <a href="index.html#home" onclick="toggleMobile()">
-        Home
-    </a>
-
-    <a href="about.html" onclick="toggleMobile()">
-        Our Story
-    </a>
-
-    <a href="index.html#what-we-do" onclick="toggleMobile()">
-        What We Do
-    </a>
-
-    <a href="gallery.html" onclick="toggleMobile()">
-        Gallery
-    </a>
-
-    <a href="policies.html" onclick="toggleMobile()">
-        Policies
-    </a>
-
-    <a href="faq.html" onclick="toggleMobile()">
-        FAQ
-    </a>
-
-    <a href="index.html#contact" onclick="toggleMobile()">
-        Book Your Experience
-    </a>
-
-</div>
-
-    <!-- Pricing Section -->
-    <section id="pricing"> 
-        <div class="section-header"> 
-            <h2>Party Packages</h2> 
-            <p>We transform your space into a small, magical plush village where every child gets to explore, create, and bring a new friend to life.</p>
-            <p>Your experience includes our interactive felt wall, stuffing machine, Friend Hotel, themed photo-op area, plush displays, and accessory tables—all brought to you and set up for the celebration.</p>
-            <p>Package prices include applicable taxes. Travel is free within 15 miles; a flat $20 travel fee applies to locations more than 15 and up to 60 miles away.</p>
-        </div>
-    <div class="pricing-grid">
-
-    <div class="pricing-card">
-        <h3>Stuff & Love</h3>
-        <div class="price">$30<span style="font-size:0.8rem;"> / child</span></div>
-
-        <ul>
-            <li>10 Child Minimum</li>
-            <li>Party Host Selects 2 Of Our 6 Plush Styles</li>
-            <li>Heart Ceremony</li>
-            <li>Stuffing Station Experience</li>
-            <li>Adoption Certificate For Each Child</li>
-            <li>Travel Bag For Each Child</li>
-        </ul>
-
-        <a href="index.html#contact" class="btn btn-primary">Book Now</a>
-    </div>
-
-    <div class="pricing-card featured">
-        <div class="pricing-badge">Most Popular</div>
-
-        <h3>Stuff, Fluff & Love</h3>
-        <div class="price">$35<span style="font-size:0.8rem;"> / child</span></div>
-
-        <ul>
-            <li>10 Child Minimum</li>
-            <li>Party Host Selects 4 Of Our 6 Plush Styles</li>
-            <li>Heart Ceremony</li>
-            <li>Stuffing Station Experience</li>
-            <li>Adoption Certificate for each child</li>
-            <li>Travel Bag For Each Child</li>
-            <li>Plush Accessory For Each Child</li>
-            <li>Birthday Child Receives A Special Full Plush Outfit</li>
-        </ul>
-
-        <a href="index.html#contact" class="btn btn-gold">Book Now</a>
-    </div>
-
-    <div class="pricing-card">
-        <h3>Ultimate Stuff, Fluff & Love</h3>
-        <div class="price">$40<span style="font-size:0.8rem;"> / child</span></div>
-
-        <ul>
-            <li>10 Child Minimum</li>
-            <li>Six Plush Styles Available</li>
-            <li>Heart Ceremony</li>
-            <li>Stuffing Station Experience</li>
-            <li>Adoption Certificate For Each Child</li>
-            <li>Travel Bag For Each Child</li>
-            <li>Choice Of Plush Accessory For Each Child</li>
-            <li>Custom Plush T-Shirt For Each Child</li>
-            <li>Five Vinyl Design Options Available For Each Child</li>
-            <li>Special Birthday Full Plush Outfit And Birthday Accessory</li>
-        </ul>
-
-        <p style="margin:1rem 0 1.5rem; color:#fff8ef; font-size:0.95rem; line-height:1.55; text-align:left;">
-    <strong>How it works:</strong> Before the party, the host selects five vinyl designs for us to bring. During the party, each child chooses their favorite design, which we press onto their plush friend’s T-shirt.
-</p>
-
-        <a href="index.html#contact" class="btn btn-primary">Book Now</a>
-    </div>
-
-</div>
-<div class="pricing-note-box">
-    <p class="pricing-note">
-        Every child may choose any of the plush styles selected for the party.
-        We bring enough of each selected style so every child can pick their favorite—even if everyone chooses the same one.
-    </p>
-</div>
-<div class="addons-section">
-
-    <h3>Party Add-Ons</h3>
-
-    <div class="addons-grid">
-
-        <div class="addon-item">
-            <strong>Plush Outfit</strong>
-            <span>$8</span>
-        </div>
-
-        <div class="addon-item">
-            <strong>Recorded Voice Chip</strong>
-            <span>$10</span>
-        </div>
-
-        <div class="addon-item">
-            <strong>Additional Plush T-Shirt</strong>
-            <span>$5</span>
-        </div>
-
-        <div class="addon-item">
-            <strong>Additional Custom Vinyl Design Upgrade</strong>
-            <span>$5</span>
-        </div>
-
-    </div>
-
-</div>
-<div class="custom-package-box" style="margin-top:5rem;">
-    <h2>Group &amp; Event Experiences</h2>
-
-    <p>
-        Planning something bigger than a birthday party? We create custom mobile
-        stuffed animal experiences for schools and daycares, nonprofit organizations,
-        corporate events, festivals and community events, fundraisers, baby showers,
-        and other special celebrations.
-    </p>
-
-    <p>
-        Every group and event is different, so pricing is customized based on your
-        guest count, location, plush selection, and experience details.
-    </p>
-
-    <a href="index.html#contact" class="btn btn-primary">
-        Request a Custom Quote
-    </a>
-</div>
-
-<div class="custom-package-box" style="margin-top:2rem;">
-    <h2>Baby Shower Experiences</h2>
-
-    <p>
-        Give family and friends a meaningful way to welcome the newest little love.
-        Guests can stuff a keepsake plush, add a wishing heart, and create a special
-        friend to be gifted to the baby.
-    </p>
-
-    <p>
-        Experiences can be customized with a selection of plush styles, personalized
-        plush T-shirts, recorded voice chips, and other thoughtful details. We'll work
-        with you to create an experience that fits your shower, guest count, and vision.
-    </p>
-
-    <a href="index.html#contact" class="btn btn-primary">
-        Plan a Baby Shower Experience
-    </a>
-</div>
-
-<div class="pricing-note-box">
-
-    <p class="pricing-note">
-        Pricing is based on the number of participating children.
-        A non-refundable deposit is required to reserve your event date.
-        Dates are not guaranteed until the deposit has been received.
-    </p>
-
-</div>
-
-</section>
-
-   <footer class="site-footer">
-
-    <div class="footer-container">
-
-        <!-- Brand -->
-       <!-- Brand -->
-<div class="footer-column footer-brand">
-    <img src="finallogo.webp" alt="Stuffed With Love Logo" class="footer-logo">
-   
-</div>
-
-        <!-- Pages -->
-        <div class="footer-column">
-            <h4>Pages</h4>
-            <a href="index.html">Home</a>
-            <a href="about.html">About</a>
-            <a href="gallery.html">Gallery</a>
-            <a href="policies.html">Policies</a>
-        </div>
-
-        <!-- Contact -->
-        <div class="footer-column">
-            <h4>Contact</h4>
-            <a href="mailto:hello@stuffedwithlove.com">Email Us</a>
-            <a href="index.html#contact">Book Your Experience</a>
-        </div>
-
-        <!-- Follow Us -->
-        <div class="footer-column social-column">
-            <h4>Follow Us</h4>
-
-            <div class="social-icons">
-
-                <a href="https://www.facebook.com/profile.php?id=61591472361383"
-                   target="_blank"
-                   aria-label="Facebook"
-                   class="facebook">
-                    <i class="fab fa-facebook-f"></i>
-                </a>
-
-                <a href="https://www.instagram.com/stuffedwithlove.gb"
-                   target="_blank"
-                   aria-label="Instagram"
-                   class="instagram">
-                    <i class="fab fa-instagram"></i>
-                </a>
-
-                <a href="https://www.tiktok.com/@stuffedwithlovegb"
-                   target="_blank"
-                   aria-label="TikTok"
-                   class="tiktok">
-                    <i class="fab fa-tiktok"></i>
-                </a>
-
+        <!-- Pricing Section -->
+        <section id="pricing"> 
+            <div class="section-header"> 
+                <h2>Party Packages</h2> 
+                <p>We transform your space into a small, magical plush village where every child gets to explore, create, and bring a new friend to life.</p>
+                <p>Your experience includes our interactive felt wall, stuffing machine, Friend Hotel, themed photo-op area, plush displays, and accessory tables—all brought to you and set up for the celebration.</p>
+                <p>Package prices include applicable taxes. Travel is free within 15 miles; a flat $20 travel fee applies to locations more than 15 and up to 60 miles away.</p>
             </div>
+        <div class="pricing-grid">
+
+        <div class="pricing-card">
+            <h3>Stuff & Love</h3>
+            <div class="price">$30<span style="font-size:0.8rem;"> / child</span></div>
+
+            <ul>
+                <li>10 Child Minimum</li>
+                <li>Party Host Selects 2 Of Our 6 Plush Styles</li>
+                <li>Heart Ceremony</li>
+                <li>Stuffing Station Experience</li>
+                <li>Adoption Certificate For Each Child</li>
+                <li>Travel Bag For Each Child</li>
+            </ul>
+
+            <a href="index.html#contact" class="btn btn-primary">Book Now</a>
+        </div>
+
+        <div class="pricing-card featured">
+            <div class="pricing-badge">Most Popular</div>
+
+            <h3>Stuff, Fluff & Love</h3>
+            <div class="price">$35<span style="font-size:0.8rem;"> / child</span></div>
+
+            <ul>
+                <li>10 Child Minimum</li>
+                <li>Party Host Selects 4 Of Our 6 Plush Styles</li>
+                <li>Heart Ceremony</li>
+                <li>Stuffing Station Experience</li>
+                <li>Adoption Certificate for each child</li>
+                <li>Travel Bag For Each Child</li>
+                <li>Plush Accessory For Each Child</li>
+                <li>Birthday Child Receives A Special Full Plush Outfit</li>
+            </ul>
+
+            <a href="index.html#contact" class="btn btn-gold">Book Now</a>
+        </div>
+
+        <div class="pricing-card">
+            <h3>Ultimate Stuff, Fluff & Love</h3>
+            <div class="price">$40<span style="font-size:0.8rem;"> / child</span></div>
+
+            <ul>
+                <li>10 Child Minimum</li>
+                <li>Six Plush Styles Available</li>
+                <li>Heart Ceremony</li>
+                <li>Stuffing Station Experience</li>
+                <li>Adoption Certificate For Each Child</li>
+                <li>Travel Bag For Each Child</li>
+                <li>Choice Of Plush Accessory For Each Child</li>
+                <li>Custom Plush T-Shirt For Each Child</li>
+                <li>Five Vinyl Design Options Available For Each Child</li>
+                <li>Special Birthday Full Plush Outfit And Birthday Accessory</li>
+            </ul>
+
+            <p style="margin:1rem 0 1.5rem; color:#fff8ef; font-size:0.95rem; line-height:1.55; text-align:left;">
+        <strong>How it works:</strong> Before the party, the host selects five vinyl designs for us to bring. During the party, each child chooses their favorite design, which we press onto their plush friend’s T-shirt.
+    </p>
+
+            <a href="index.html#contact" class="btn btn-primary">Book Now</a>
         </div>
 
     </div>
+    <div class="pricing-note-box">
+        <p class="pricing-note">
+            Every child may choose any of the plush styles selected for the party.
+            We bring enough of each selected style so every child can pick their favorite—even if everyone chooses the same one.
+        </p>
+    </div>
+    <div class="addons-section">
 
-    <div class="footer-bottom">
-        <p>© 2026 Stuffed with Love LLC. All rights reserved.</p>
+        <h3>Party Add-Ons</h3>
+
+        <div class="addons-grid">
+
+            <div class="addon-item">
+                <strong>Plush Outfit</strong>
+                <span>$8</span>
+            </div>
+
+            <div class="addon-item">
+                <strong>Recorded Voice Chip</strong>
+                <span>$10</span>
+            </div>
+
+            <div class="addon-item">
+                <strong>Additional Plush T-Shirt</strong>
+                <span>$5</span>
+            </div>
+
+            <div class="addon-item">
+                <strong>Additional Custom Vinyl Design Upgrade</strong>
+                <span>$5</span>
+            </div>
+
+        </div>
+
+    </div>
+    <div class="custom-package-box" style="margin-top:5rem;">
+        <h2>Group &amp; Event Experiences</h2>
+
+        <p>
+            Planning something bigger than a birthday party? We create custom mobile
+            stuffed animal experiences for schools and daycares, nonprofit organizations,
+            corporate events, festivals and community events, fundraisers, baby showers,
+            and other special celebrations.
+        </p>
+
+        <p>
+            Every group and event is different, so pricing is customized based on your
+            guest count, location, plush selection, and experience details.
+        </p>
+
+        <a href="index.html#contact" class="btn btn-primary">
+            Request a Custom Quote
+        </a>
     </div>
 
-</footer>
+    <div class="custom-package-box" style="margin-top:2rem;">
+        <h2>Baby Shower Experiences</h2>
 
-    <script>
-        function toggleMobile() {
-            const menu = document.getElementById('mobileMenu');
-            menu.classList.toggle('active');
-        }
+        <p>
+            Give family and friends a meaningful way to welcome the newest little love.
+            Guests can stuff a keepsake plush, add a wishing heart, and create a special
+            friend to be gifted to the baby.
+        </p>
 
-        // Close mobile menu when clicking outside
-        document.addEventListener('click', function(event) {
-            const menu = document.getElementById('mobileMenu');
-            const toggle = document.querySelector('.mobile-toggle');
-            if (!menu.contains(event.target) && !toggle.contains(event.target)) {
-                menu.classList.remove('active');
+        <p>
+            Experiences can be customized with a selection of plush styles, personalized
+            plush T-shirts, recorded voice chips, and other thoughtful details. We'll work
+            with you to create an experience that fits your shower, guest count, and vision.
+        </p>
+
+        <a href="index.html#contact" class="btn btn-primary">
+            Plan a Baby Shower Experience
+        </a>
+    </div>
+
+    <div class="pricing-note-box">
+
+        <p class="pricing-note">
+            Pricing is based on the number of participating children.
+            A non-refundable deposit is required to reserve your event date.
+            Dates are not guaranteed until the deposit has been received.
+        </p>
+
+    </div>
+
+    </section>
+
+       <footer class="site-footer">
+
+        <div class="footer-container">
+
+            <!-- Brand -->
+           <!-- Brand -->
+    <div class="footer-column footer-brand">
+        <img src="finallogo.webp" alt="Stuffed With Love Logo" class="footer-logo">
+       
+    </div>
+
+            <!-- Pages -->
+            <div class="footer-column">
+                <h4>Pages</h4>
+                <a href="index.html">Home</a>
+                <a href="about.html">About</a>
+                <a href="gallery.html">Gallery</a>
+                <a href="policies.html">Policies</a>
+            </div>
+
+            <!-- Contact -->
+            <div class="footer-column">
+                <h4>Contact</h4>
+                <a href="mailto:hello@stuffedwithlovegb.com">Email Us</a>
+                <a href="index.html#contact">Book Your Experience</a>
+            </div>
+
+            <!-- Follow Us -->
+            <div class="footer-column social-column">
+                <h4>Follow Us</h4>
+
+                <div class="social-icons">
+
+                    <a href="https://www.facebook.com/profile.php?id=61591472361383"
+                       target="_blank"
+                       aria-label="Facebook"
+                       class="facebook">
+                        <i class="fab fa-facebook-f"></i>
+                    </a>
+
+                    <a href="https://www.instagram.com/stuffedwithlove.gb"
+                       target="_blank"
+                       aria-label="Instagram"
+                       class="instagram">
+                        <i class="fab fa-instagram"></i>
+                    </a>
+
+                    <a href="https://www.tiktok.com/@stuffedwithlovegb"
+                       target="_blank"
+                       aria-label="TikTok"
+                       class="tiktok">
+                        <i class="fab fa-tiktok"></i>
+                    </a>
+
+                </div>
+            </div>
+
+        </div>
+
+        <div class="footer-bottom">
+            <p>© 2026 Stuffed with Love LLC. All rights reserved.</p>
+        </div>
+
+    </footer>
+
+        <script>
+            function toggleMobile() {
+                const menu = document.getElementById('mobileMenu');
+                menu.classList.toggle('active');
+            }
+
+            // Close mobile menu when clicking outside
+            document.addEventListener('click', function(event) {
+                const menu = document.getElementById('mobileMenu');
+                const toggle = document.querySelector('.mobile-toggle');
+                if (!menu.contains(event.target) && !toggle.contains(event.target)) {
+                    menu.classList.remove('active');
+                }
+            });
+
+
+        </script>
+      <script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const nav = document.querySelector("nav");
+
+        window.addEventListener("scroll", function () {
+            if (window.scrollY > 50) {
+                nav.classList.add("shrink");
+            } else {
+                nav.classList.remove("shrink");
             }
         });
-
-
-    </script>
-  <script>
-document.addEventListener("DOMContentLoaded", function () {
-    const nav = document.querySelector("nav");
-
-    window.addEventListener("scroll", function () {
-        if (window.scrollY > 50) {
-            nav.classList.add("shrink");
-        } else {
-            nav.classList.remove("shrink");
-        }
     });
-});
-</script>
-</body>
-</html>
+    </script>
+    </body>
+    </html>
