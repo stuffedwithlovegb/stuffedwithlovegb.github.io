@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://sandbox.web.squarecdn.com https://web.squarecdn.com; frame-src 'self' https://sandbox.web.squarecdn.com https://web.squarecdn.com; connect-src 'self' https://sandbox.web.squarecdn.com https://web.squarecdn.com https://pci-connect.squareupsandbox.com https://pci-connect.squareup.com https://o160250.ingest.sentry.io; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdnjs.cloudflare.com https://sandbox.web.squarecdn.com https://web.squarecdn.com; font-src 'self' https://fonts.gstatic.com https://cdnjs.cloudflare.com https://square-fonts-production-f.squarecdn.com https://d1g145x70srn7h.cloudfront.net; img-src 'self' data:; object-src 'none'; base-uri 'self'; form-action 'self'">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="icon" type="image/png" href="favicon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bubblegum+Sans&family=Fredoka:wght@400;500;600;700&family=Fredoka:wght@400;500;600;700&family=Nunito:wght@400;600;700;800&family=Quicksand:wght@500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css?v=20261008-shop">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+<title>Checkout | Stuffed With Love</title>
+<meta name="description" content="Stuff your own plush friend at home. Shop DIY plush kits and birthday boxes from Stuffed With Love in Green Bay.">
+<meta name="robots" content="noindex"></head>
+<body data-shop-nav="true">
+<nav class="site-nav">
+  <div class="nav-container">
+    <a href="index.html" class="logo"><img src="finallogo.webp" alt="Stuffed With Love" class="logo-img"></a>
+    <div class="header-tagline">We Bring the Plush Party to You!</div>
+    <ul class="nav-links">
+      <li><a href="index.html#home">Home</a></li>
+      <li><a href="index.html#what-we-do">The Experience</a></li>
+      <li><a href="pricing.html">Pricing</a></li>
+      <li><a href="gallery.html">Gallery</a></li>
+      <li><a href="stuff-at-home.html">Stuff At Home</a></li>
+<li class="dropdown">
+        <button class="dropdown-toggle" type="button">Explore</button>
+        <div class="dropdown-menu">
+          <a href="about.html">Our Story</a>
+          <a href="faq.html">FAQ</a>
+          <a href="policies.html">Policies</a>
+        </div>
+      </li>
+      <li><a href="index.html#contact" class="btn btn-primary header-book-btn">Book Your Experience</a></li>
+    </ul>
+    <a class="swl-header-cart" href="cart.html" aria-label="View shopping cart"><i class="fa-solid fa-bag-shopping" aria-hidden="true"></i><span class="swl-cart-label">Cart</span><span data-cart-count>0</span></a>
+<button class="mobile-toggle" type="button" aria-label="Open mobile menu" aria-expanded="false">☰</button>
+  </div>
+</nav>
+<div class="mobile-menu" id="mobileMenu">
+<a href="stuff-at-home.html">Stuff At Home</a>
+  <a href="index.html#home">Home</a>
+  <a href="index.html#what-we-do">The Experience</a>
+  <a href="pricing.html">Pricing</a>
+  <a href="gallery.html">Gallery</a>
+  <a href="about.html">Our Story</a>
+  <a href="faq.html">FAQ</a>
+  <a href="policies.html">Policies</a>
+  <a href="index.html#contact" class="mobile-book">Book Your Experience</a>
+</div>
+<main class="swl-shop"><section class="swl-shop-wrap swl-shop-section"><span class="eyebrow">ONE STEP CLOSER TO CUDDLES</span><h1>Let’s send some love.</h1><div id="checkout-mode" class="swl-notice" role="status">Checking checkout availability…</div><div class="swl-cart-layout"><div><form id="checkout-address" class="swl-checkout-card"><h2>1. Where’s your crew headed?</h2><div class="swl-field-grid"><label>Full name<input name="name" autocomplete="name" maxlength="120" required></label><label>Email<input name="email" type="email" autocomplete="email" maxlength="180" required></label><label class="swl-field-wide">Street address<input name="street1" autocomplete="shipping address-line1" maxlength="180" required></label><label class="swl-field-wide">Apartment / suite (optional)<input name="street2" autocomplete="shipping address-line2" maxlength="80"></label><label>City<input name="city" autocomplete="shipping address-level2" maxlength="100" required></label><label>State<select name="state" autocomplete="shipping address-level1" required id="checkout-state"><option value="">Choose a state</option></select></label><label>ZIP code<input name="zip" autocomplete="shipping postal-code" pattern="[0-9]{5}(-[0-9]{4})?" title="Five-digit ZIP or ZIP+4" required></label><label>Phone (optional)<input name="phone" type="tel" autocomplete="tel" maxlength="30"></label></div><p class="swl-fine">Currently shipping within the United States. Shipping and Wisconsin sales tax are calculated from your delivery address.</p><button type="submit" class="btn btn-primary" id="get-shipping">Show Shipping Options</button></form><section class="swl-checkout-card" id="shipping-section" hidden><h2>2. Choose your delivery</h2><div id="shipping-options"></div><p class="swl-fine">Carrier transit estimates exclude our preparation time and are not delivery guarantees.</p></section><section class="swl-checkout-card" id="payment-section" hidden><h2>3. A new friend is almost yours.</h2><p id="payment-test-copy"></p><div id="square-card"></div><label class="swl-agree"><input type="checkbox" id="order-agree">I’ve checked my delivery address, plush choices, and spelling of any custom names.</label><button class="btn btn-primary" id="pay-button" type="button" disabled>Pay securely</button><p class="swl-fine">Card details are handled securely by Square.</p></section><p id="checkout-status" class="swl-status" role="status" aria-live="polite"></p></div><aside class="swl-order-summary"><h2>Your crew</h2><div id="checkout-items"></div><div class="swl-summary-row"><span>Items</span><strong id="checkout-subtotal"></strong></div><div class="swl-summary-row"><span>Shipping</span><strong id="checkout-shipping">Choose delivery</strong></div><div class="swl-summary-row"><span>Sales tax</span><strong id="checkout-tax">Calculated with delivery</strong></div><div class="swl-summary-row swl-grand-total"><span>Total</span><strong id="checkout-total">—</strong></div><a href="cart.html" class="swl-text-link">Edit your cart</a></aside></div></section></main><footer class="site-footer">
+  <div class="footer-container">
+    <div class="footer-column footer-brand">
+      <img src="finallogo.webp" alt="Stuffed With Love Logo" class="footer-logo">
+      <p>Creating unforgettable memories one stuffed friend at a time.</p>
+    </div>
+    <div class="footer-column">
+      <h4>Explore</h4><a href="stuff-at-home.html">Stuff At Home</a>
+      <a href="index.html">Home</a><a href="about.html">Our Story</a><a href="gallery.html">Gallery</a>
+      <a href="pricing.html">Pricing</a><a href="faq.html">FAQ</a><a href="policies.html">Policies</a>
+    </div>
+    <div class="footer-column">
+      <h4>Bookings</h4>
+      <a href="index.html#contact">Book Your Experience</a>
+      <a href="mailto:hello@stuffedwithlovegb.com">hello@stuffedwithlovegb.com</a>
+      <a href="tel:+19206648282">(920) 664-8282</a>
+      <p class="footer-note">Green Bay + Northeast Wisconsin</p>
+    </div>
+    <div class="footer-column social-column">
+      <h4>Follow Along</h4>
+      <div class="social-icons">
+        <a href="https://www.facebook.com/profile.php?id=61591472361383" target="_blank" rel="noopener noreferrer" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
+        <a href="https://www.instagram.com/stuffedwithlove.gb" target="_blank" rel="noopener noreferrer" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+        <a href="https://www.tiktok.com/@stuffedwithlovegb" target="_blank" rel="noopener noreferrer" aria-label="TikTok"><i class="fab fa-tiktok"></i></a>
+      </div>
+    </div>
+  </div>
+  <div class="footer-bottom">© 2026 Stuffed With Love LLC • Green Bay, Wisconsin • Made with 💛</div>
+</footer>
+
+<script src="shop.js?v=20261008-shop" defer></script><script src="checkout.js?v=20261008-shop" defer></script></body></html>
