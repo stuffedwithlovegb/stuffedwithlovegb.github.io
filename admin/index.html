@@ -10,7 +10,7 @@
   <title>Stuffed With Love Ops</title>
   <link rel="manifest" href="manifest.webmanifest" />
   <link rel="apple-touch-icon" href="icon-192.png" />
-  <link rel="stylesheet" href="admin.css" />
+  <link rel="stylesheet" href="admin.css?v=20261008-catalog" />
 </head>
 <body>
   <div id="app">
@@ -21,9 +21,7 @@
       </div>
       <button id="headerAction" class="icon-button hidden" type="button">+</button>
     </header>
-
     <main id="mainContent" class="main-content"></main>
-
     <nav class="bottom-nav">
       <button class="nav-item active" data-screen="home"><span class="nav-icon">⌂</span><span>Home</span></button>
       <button class="nav-item" data-screen="calendar"><span class="nav-icon">▦</span><span>Calendar</span></button>
@@ -33,9 +31,8 @@
       <button class="nav-item" data-screen="attention"><span class="nav-icon">!</span><span>Attention</span><span id="attentionBadge" class="nav-badge hidden">0</span></button>
     </nav>
   </div>
-
   <div id="modalRoot"></div>
-  <script src="app.js"></script>
+  <script src="app.js?v=20261008-catalog"></script>
   <script>
     if ("serviceWorker" in navigator) {
       window.addEventListener("load", () => navigator.serviceWorker.register("sw.js"));
