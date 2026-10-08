@@ -1,14 +1,16 @@
 {
   "name": "stuffedwithlovegb-github-io",
   "main": "worker.js",
-"keep_vars": true,
+  "keep_vars": true,
   "compatibility_date": "2026-09-11",
-
   "assets": {
     "directory": "./",
-    "binding": "ASSETS"
+    "binding": "ASSETS",
+    "run_worker_first": [
+      "/shop/api/*",
+      "/admin/api/*"
+    ]
   },
-
   "d1_databases": [
     {
       "binding": "DB",
@@ -16,14 +18,12 @@
       "database_id": "8adeb632-4740-48de-bc12-75a9b0e8775f"
     }
   ],
-
   "r2_buckets": [
     {
       "binding": "IMAGES",
       "bucket_name": "swl-inventory-images"
     }
   ],
-
   "observability": {
     "logs": {
       "enabled": true,
