@@ -156,5 +156,5 @@
     (function(){const box=document.getElementById('lightbox'),img=document.getElementById('lightboxImage'),close=box.querySelector('.lightbox-close');
     document.querySelectorAll('.gallery-tile').forEach(t=>t.addEventListener('click',()=>{img.src=t.dataset.full;img.alt=t.querySelector('img').alt;box.classList.add('open');box.setAttribute('aria-hidden','false');}));
     function shut(){box.classList.remove('open');box.setAttribute('aria-hidden','true');img.src='';} close.addEventListener('click',shut);box.addEventListener('click',e=>{if(e.target===box)shut();});document.addEventListener('keydown',e=>{if(e.key==='Escape')shut();});})();
-    </script><script src="shop.js?v=20261008-shop" defer></script>
+    </script><script src="shop.js?v=20261008-catalog" defer></script>
 </body></html>
