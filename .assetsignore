@@ -1,0 +1,10 @@
+worker.js
+wrangler.jsonc
+wrangler.json
+wrangler.toml
+.git
+node_modules
+*.txt
+*.zip
+.env*
+.dev.vars*
