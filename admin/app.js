@@ -5084,6 +5084,8 @@ function renderInventory() {
     );
 
   let html = `
+    <div class="ops-shop-intro"><strong>Sell your friends online 💛</strong><p>Open a plush below to choose “Sell on website” and set its kit price.</p></div>
+
     ${
       hasShortage
         ? `
@@ -5902,6 +5904,8 @@ imageUrl
 
   html += `
         </section>
+
+        ${renderOpsShopControls(item)}
 
         <button
           class="inventory-delete-button"
@@ -11806,3 +11810,49 @@ async function reconcileEventOnServer(eventId, payload) {
     body: JSON.stringify(payload)
   });
 }
+/* Website selling controls — reuses Ops inventory and its existing photo. */
+let opsShopProducts=null;
+let opsShopKey='';
+try{opsShopKey=sessionStorage.getItem('swl-shop-admin-key')||'';}catch(e){}
+function renderOpsShopControls(item){
+ if(item.category!=='Plush')return '';
+ setTimeout(()=>loadOpsShopControls(item.id),0);
+ return `<section class="ops-shop-controls" data-shop-inventory="${escapeHTML(item.id)}"><h3>Stuff At Home shop</h3><p>Loading website settings…</p></section>`;
+}
+function opsShopControlElement(id){return [...document.querySelectorAll('[data-shop-inventory]')].find(e=>e.dataset.shopInventory===id);}
+async function opsShopRequest(options={}){
+ const r=await fetch('/shop/api/admin-catalog',{credentials:'same-origin',cache:'no-store',...options,
+  headers:{'Content-Type':'application/json',Authorization:'Bearer '+opsShopKey}});
+ let d;try{d=await r.json();}catch(e){throw Error('Website settings could not connect. Please refresh Ops.');}
+ if(!r.ok){if(r.status===401){opsShopKey='';opsShopProducts=null;try{sessionStorage.removeItem('swl-shop-admin-key');}catch(e){}}
+  throw Error(d.error||'Website settings could not be saved.');}return d;
+}
+function opsShopLocked(el,message=''){
+ el.innerHTML=`<h3>Stuff At Home shop</h3><p>Unlock website selling controls with your shop admin key. You only need to enter it once per session.</p><form class="ops-shop-unlock" onsubmit="unlockOpsShop(event)"><label>Shop admin key<input name="key" type="password" autocomplete="off" required></label><button class="ops-shop-save" type="submit">Unlock Shop Controls</button><p class="ops-shop-status" role="status">${escapeHTML(message)}</p></form>`;
+}
+async function unlockOpsShop(event){
+ event.preventDefault();const f=event.target,el=f.closest('[data-shop-inventory]'),button=f.querySelector('button');
+ opsShopKey=f.elements.key.value.trim();button.disabled=true;
+ try{const d=await opsShopRequest();opsShopProducts=d.products;try{sessionStorage.setItem('swl-shop-admin-key',opsShopKey);}catch(e){}await loadOpsShopControls(el.dataset.shopInventory);}
+ catch(e){opsShopLocked(el,e.message);}
+}
+async function loadOpsShopControls(id){
+ const el=opsShopControlElement(id);if(!el)return;
+ if(!opsShopKey){opsShopLocked(el);return;}
+ try{opsShopProducts=(await opsShopRequest()).products;
+  if(!el.isConnected)return;
+  const p=opsShopProducts.find(p=>p.inventoryId===id);if(!p){el.innerHTML='<h3>Stuff At Home shop</h3><p>Refresh Ops to load this plush’s website settings.</p>';return;}
+  el.innerHTML=`<div class="ops-shop-title"><h3>Stuff At Home shop</h3><span class="ops-shop-badge">${p.enabled?'On website':'Hidden'}</span></div><form class="ops-shop-form" onsubmit="saveOpsShopSettings(event)"><label class="ops-shop-toggle"><input type="checkbox" name="enabled" ${p.enabled?'checked':''}> Sell on website</label><label>Website name<input name="name" type="text" maxlength="100" value="${escapeHTML(p.name)}" required></label><label>Kit price ($)<input name="price" type="number" inputmode="decimal" min="1" max="1000" step="0.01" value="${(p.price/100).toFixed(2)}" required></label><p class="ops-shop-note">${p.hasImage?'Uses this plush’s existing Ops photo. Change the photo above to update the shop too.':'Add a photo above before turning on website sales.'} Published plush also appear in the $250 Birthday Box choices. Shirt and voice recorder add-ons remain $10 each.</p><button class="ops-shop-save" type="submit">Save Website Settings</button><p class="ops-shop-status" role="status"></p></form><a href="/stuff-at-home.html" target="_blank" rel="noopener">Preview Stuff At Home ↗</a><button class="ops-shop-lock" type="button" onclick="lockOpsShop()">Lock Shop Controls</button>`;
+ }catch(e){if(!opsShopKey)opsShopLocked(el,e.message);else el.innerHTML=`<h3>Stuff At Home shop</h3><p role="alert">${escapeHTML(e.message)}</p><button class="ops-shop-save" type="button" onclick="retryOpsShop()">Try Again</button>`;}
+}
+async function saveOpsShopSettings(event){
+ event.preventDefault();const f=event.target,el=f.closest('[data-shop-inventory]'),button=f.querySelector('button'),status=f.querySelector('[role="status"]');
+ const value=Number(f.elements.price.value),price=Math.round(value*100);
+ if(!Number.isFinite(value)||price<100||price>100000||Math.abs(value*100-price)>0.000001){status.textContent='Enter a price from $1 to $1,000 with no more than two decimal places.';return;}
+ button.disabled=true;status.textContent='Saving…';
+ try{const d=await opsShopRequest({method:'PUT',body:JSON.stringify({inventoryId:el.dataset.shopInventory,enabled:f.elements.enabled.checked,name:f.elements.name.value.trim(),price})});opsShopProducts=d.products;
+  if(el.isConnected){el.querySelector('.ops-shop-badge').textContent=f.elements.enabled.checked?'On website':'Hidden';status.textContent=f.elements.enabled.checked?'Saved! This friend is available on the website.':'Saved! This friend is hidden from the shop.';showSWLToast('Website settings saved 💛');}
+ }catch(e){if(!opsShopKey)opsShopLocked(el,e.message);else status.textContent=e.message;}finally{button.disabled=false;}
+}
+function retryOpsShop(){opsShopProducts=null;document.querySelectorAll('[data-shop-inventory]').forEach(el=>loadOpsShopControls(el.dataset.shopInventory));}
+function lockOpsShop(){opsShopKey='';opsShopProducts=null;try{sessionStorage.removeItem('swl-shop-admin-key');}catch(e){}document.querySelectorAll('[data-shop-inventory]').forEach(el=>opsShopLocked(el));}
