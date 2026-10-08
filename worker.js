@@ -2,6 +2,11 @@ export default {
   async fetch(request, env) {
     const url = new URL(request.url);
 
+    // Public storefront checkout; existing Ops routes are preserved.
+    if (url.pathname.startsWith("/shop/api/")) {
+      return handleShopApi(request, env, url);
+    }
+
     // SWL Ops API
     if (url.pathname.startsWith("/admin/api/")) {
       return handleApi(request, env, url);
@@ -3553,3 +3558,92 @@ async function handleNotes(
     405
   );
 }
+
+/* STUFF AT HOME CHECKOUT — added alongside the existing SWL Ops API. */
+const SHOP_PRODUCTS = {teddy:'Honey Teddy',dog:'Golden Retriever',dino:'Dino',unicorn:'Unicorn'};
+const SHOP_STATES = new Set('AL AK AZ AR CA CO CT DE DC FL GA HI ID IL IN IA KS KY LA ME MD MA MI MN MS MO MT NE NV NH NJ NM NY NC ND OH OK OR PA RI SC SD TN TX UT VT VA WA WV WI WY'.split(' '));
+// PROVISIONAL packing estimates. Replace these after measuring your packed orders.
+const SHOP_PARCELS = [{capacity:1,length:8,width:8,height:8,weight:3},{capacity:2,length:16,width:8,height:8,weight:6},{capacity:4,length:16,width:16,height:8,weight:12},{capacity:10,length:24,width:18,height:18,weight:30}];
+function shopJson(data,status=200){return new Response(JSON.stringify(data),{status,headers:{'Content-Type':'application/json','Cache-Control':'no-store','X-Content-Type-Options':'nosniff'}});}
+function shopFail(message,status=400){const e=new Error(message);e.status=status;throw e;}
+function shopTest(env){return env.SQUARE_ENVIRONMENT!=='production';}
+function shopConfig(env){
+ const test=shopTest(env);
+ const credentials=env.SQUARE_APPLICATION_ID&&env.SQUARE_LOCATION_ID&&env.SQUARE_ACCESS_TOKEN&&env.SHIPPO_API_TOKEN;
+ const address=env.SHIP_FROM_STREET1&&env.SHIP_FROM_CITY&&env.SHIP_FROM_STATE&&env.SHIP_FROM_ZIP;
+ const match=test?String(env.SQUARE_APPLICATION_ID||'').startsWith('sandbox-')&&String(env.SHIPPO_API_TOKEN||'').startsWith('shippo_test_'):!String(env.SQUARE_APPLICATION_ID||'').startsWith('sandbox-')&&String(env.SHIPPO_API_TOKEN||'').startsWith('shippo_live_');
+ const enabled=test||(env.SHOP_LIVE_ENABLED==='true'&&env.SHOP_PACKAGING_CONFIRMED==='true');
+ return {test,ready:Boolean(credentials&&address&&match&&enabled),applicationId:env.SQUARE_APPLICATION_ID||'',locationId:env.SQUARE_LOCATION_ID||'',message:!credentials?'Checkout connection settings are incomplete.':!address?'Shipping origin settings are incomplete.':!match?'Payment and shipping credentials must both use the selected test or live mode.':!enabled?'Online ordering is coming soon. Please contact us for help.':''};
+}
+async function shopBody(request){if(!request.headers.get('Content-Type')?.includes('application/json'))shopFail('Please send a JSON checkout request.',415);const text=await request.text();if(text.length>40000)shopFail('Checkout request is too large.',413);try{return JSON.parse(text);}catch(e){shopFail('Checkout request could not be read.');}}
+function shopChild(c){if(!c||!SHOP_PRODUCTS[c.productId])shopFail('Choose an available plush friend.');const shirt=c.shirt===true;const shirtName=shirt?String(c.shirtName||'').trim():'';if(shirt&&(!shirtName||shirtName.length>40))shopFail('Each custom shirt needs a name of 1–40 characters.');return {productId:c.productId,shirt,shirtName,recorder:c.recorder===true};}
+function shopCart(raw){if(!Array.isArray(raw)||!raw.length||raw.length>50)shopFail('Your cart is empty or too large.');let kits=0,subtotal=0;const cart=raw.map(r=>{const quantity=Number(r.quantity);if(!Number.isSafeInteger(quantity)||quantity<1||quantity>20)shopFail('Choose a quantity from 1 to 20.');let clean,price;if(r.kind==='kit'){clean={kind:'kit',quantity,...shopChild(r)};price=2999+(clean.shirt?1000:0)+(clean.recorder?1000:0);kits+=quantity;}else if(r.kind==='birthday'&&Array.isArray(r.children)&&r.children.length===10){clean={kind:'birthday',quantity,children:r.children.map(shopChild)};price=25000+clean.children.reduce((n,c)=>n+(c.shirt?1000:0)+(c.recorder?1000:0),0);kits+=10*quantity;}else shopFail('A Birthday Box must contain exactly ten friends.');subtotal+=price*quantity;return clean;});if(kits>20)shopFail('Online checkout supports up to 20 kits per order. Please contact us for a larger order.');return {cart,kits,subtotal};}
+function shopAddress(a){if(!a||typeof a!=='object')shopFail('Enter your delivery address.');const v={};for(const [key,max] of Object.entries({name:120,email:180,street1:180,street2:80,city:100,state:2,zip:10,phone:30})){v[key]=String(a[key]||'').trim();if(v[key].length>max)shopFail('Please shorten the '+key+' field.');}v.state=v.state.toUpperCase();v.email=v.email.toLowerCase();if(!v.name||!v.street1||!v.city||!SHOP_STATES.has(v.state)||!/^\d{5}(-\d{4})?$/.test(v.zip)||!/^\S+@\S+\.\S+$/.test(v.email))shopFail('Enter a complete U.S. shipping address and valid email.');return v;}
+function shopPacking(kits,env){let profiles=SHOP_PARCELS;if(env.SHOP_PARCEL_PROFILES){try{profiles=JSON.parse(env.SHOP_PARCEL_PROFILES);}catch(e){shopFail('Shipping box configuration needs attention.',503);}}if(!Array.isArray(profiles)||!profiles.length||profiles.some(p=>!Number.isSafeInteger(p.capacity)||p.capacity<1||['length','width','height','weight'].some(k=>!Number.isFinite(Number(p[k]))||Number(p[k])<=0)))shopFail('Shipping box configuration needs attention.',503);profiles=[...profiles].sort((a,b)=>a.capacity-b.capacity);const parcels=[];while(kits>0){const p=profiles.find(p=>p.capacity>=kits)||profiles[profiles.length-1];parcels.push({length:String(p.length),width:String(p.width),height:String(p.height),weight:String(p.weight),distance_unit:'in',mass_unit:'lb'});kits-=p.capacity;}return parcels;}
+let shopSchemaPromise;
+async function shopTables(env){if(!shopSchemaPromise){shopSchemaPromise=(async()=>{await env.DB.prepare(`CREATE TABLE IF NOT EXISTS shop_rate_limits (id TEXT PRIMARY KEY, hits INTEGER NOT NULL, created_at INTEGER NOT NULL)`).run();await env.DB.prepare(`CREATE TABLE IF NOT EXISTS shop_quotes (id TEXT PRIMARY KEY, data TEXT NOT NULL, expires_at INTEGER NOT NULL, created_at INTEGER NOT NULL)`).run();await env.DB.prepare(`CREATE TABLE IF NOT EXISTS shop_orders (id TEXT PRIMARY KEY, quote_id TEXT NOT NULL UNIQUE, access_key TEXT NOT NULL, status TEXT NOT NULL, data TEXT NOT NULL, payment_request TEXT, created_at INTEGER NOT NULL, updated_at INTEGER NOT NULL)`).run();})().catch(e=>{shopSchemaPromise=null;throw e;});}await shopSchemaPromise;}
+async function shopExternal(url,options={}){try{const r=await fetch(url,{...options,signal:AbortSignal.timeout(25000)});const d=await r.json();return {ok:r.ok,status:r.status,data:d};}catch(e){shopFail('A checkout service is unavailable. Please try again shortly.',503);}}
+async function shopWisconsinTax(address){
+ if(address.state!=='WI')return {rate:0,source:'No collection configured outside Wisconsin'};
+ // Same public lookup service used by Wisconsin DOR's official lookup page.
+ // This is not a contracted tax API; if it changes or cannot match, checkout stops.
+ const date=new Intl.DateTimeFormat('en-US',{timeZone:'America/Chicago',month:'2-digit',day:'2-digit',year:'numeric'}).format(new Date());
+ const endpoint=new URL('https://ww2.revenue.wi.gov/VaultExternal/rest/strb/lookup');
+ endpoint.search=new URLSearchParams({saleDate:date,address:address.street1,zip:address.zip.slice(0,5),plus4:address.zip.slice(6)}).toString();
+ const r=await shopExternal(endpoint.toString());const s=r.data?.subject;
+ const boundaries=s?.boundaries?.filter(x=>x.salesType==='general')||[];
+ if(!r.ok||r.data.result!=='Ok'||s.fullMatch!=='t'||boundaries.length!==1)shopFail('We could not confirm the Wisconsin tax rate for this street address. Please check the address or contact us.',422);
+ const rate=Number(String(boundaries[0].totalRate).replace('%',''))/100;
+ if(!Number.isFinite(rate)||rate<.05||rate>.10)shopFail('The Wisconsin tax lookup needs attention. Please contact us.',503);
+ return {rate,source:'Wisconsin Department of Revenue address lookup',interpretedAddress:s.interpretAddress,jurisdictions:boundaries[0].jurisdictions};
+}
+async function shopQuote(request,env){
+ const ip=request.headers.get('CF-Connecting-IP');
+ if(ip){const hash=Array.from(new Uint8Array(await crypto.subtle.digest('SHA-256',new TextEncoder().encode(ip)))).map(v=>v.toString(16).padStart(2,'0')).join('');const now=Date.now();const bucket=hash+'-'+Math.floor(now/60000);const limit=await env.DB.prepare('INSERT INTO shop_rate_limits (id,hits,created_at) VALUES (?,1,?) ON CONFLICT(id) DO UPDATE SET hits=hits+1 RETURNING hits').bind(bucket,now).first();if(limit.hits>5)shopFail('Please wait a minute before requesting more shipping quotes.',429);await env.DB.prepare('DELETE FROM shop_rate_limits WHERE created_at<?').bind(now-3600000).run();}
+ const {cart:raw,address:a}=await shopBody(request);const order=shopCart(raw),address=shopAddress(a);
+ const tax=await shopWisconsinTax(address);const parcels=shopPacking(order.kits,env);
+ const from={name:env.SHIP_FROM_NAME||'Stuffed With Love LLC',street1:env.SHIP_FROM_STREET1,street2:env.SHIP_FROM_STREET2||'',city:env.SHIP_FROM_CITY,state:env.SHIP_FROM_STATE,zip:env.SHIP_FROM_ZIP,country:'US',email:'hello@stuffedwithlovegb.com',phone:env.SHIP_FROM_PHONE||'9206648282'};
+ const result=await shopExternal('https://api.goshippo.com/shipments/',{method:'POST',headers:{Authorization:'ShippoToken '+env.SHIPPO_API_TOKEN,'Content-Type':'application/json','SHIPPO-API-VERSION':'2018-02-08'},body:JSON.stringify({address_from:from,address_to:{...address,country:'US'},parcels,async:false})});
+ if(!result.ok)shopFail('Shipping options could not be retrieved. Please check your address or contact us.',503);
+ const rates=(result.data.rates||[]).filter(r=>r.currency==='USD'&&r.object_id&&Number.isFinite(Number(r.amount))&&Number(r.amount)>0).map(r=>({id:r.object_id,provider:r.provider,service:r.servicelevel?.name||r.servicelevel?.token||'Delivery',amount:Math.round(Number(r.amount)*100),days:Number(r.estimated_days)||null})).sort((a,b)=>a.amount-b.amount).slice(0,12).map(r=>({...r,tax:Math.round((order.subtotal+r.amount)*tax.rate)}));
+ if(!rates.length)shopFail('No shipping options were available for this address and box size. Please contact us.',422);
+ const id=crypto.randomUUID(),now=Date.now(),data={...order,address,tax,rates,parcels,shipmentId:result.data.object_id,test:shopTest(env)};
+ await env.DB.prepare('DELETE FROM shop_quotes WHERE expires_at<?').bind(now-86400000).run();
+ await env.DB.prepare('INSERT INTO shop_quotes (id,data,expires_at,created_at) VALUES (?,?,?,?)').bind(id,JSON.stringify(data),now+30*60000,now).run();
+ return shopJson({id,subtotal:order.subtotal,address,rates,test:data.test});
+}
+async function shopPrepare(request,env){const body=await shopBody(request);const quote=await env.DB.prepare('SELECT * FROM shop_quotes WHERE id=?').bind(String(body.quoteId||'')).first();if(!quote||quote.expires_at<Date.now())shopFail('Your shipping quote expired. Please request shipping options again.',409);const data=JSON.parse(quote.data);if(data.test!==shopTest(env))shopFail('Checkout mode changed. Please refresh your shipping options.',409);const rate=data.rates.find(r=>r.id===body.rateId);if(!rate)shopFail('Choose one of the quoted shipping options.');const id='SWL-'+crypto.randomUUID(),key=crypto.randomUUID()+crypto.randomUUID(),now=Date.now();const d={...data,selectedRate:rate,total:data.subtotal+rate.amount+rate.tax,locationId:env.SQUARE_LOCATION_ID};const result=await env.DB.prepare('INSERT OR IGNORE INTO shop_orders (id,quote_id,access_key,status,data,created_at,updated_at) VALUES (?,?,?,?,?,?,?)').bind(id,quote.id,key,'pending',JSON.stringify(d),now,now).run();if(!result.meta.changes){const existing=await env.DB.prepare('SELECT id,access_key,status,data FROM shop_orders WHERE quote_id=?').bind(quote.id).first();const ed=JSON.parse(existing.data);if(ed.selectedRate.id!==rate.id)shopFail('This shipping quote already has an order. Request new shipping options.',409);return shopJson({id:existing.id,key:existing.access_key,status:existing.status});}return shopJson({id,key,status:'pending'});}
+async function shopGetOrder(env,id,key){const row=await env.DB.prepare('SELECT * FROM shop_orders WHERE id=? AND access_key=?').bind(String(id||''),String(key||'')).first();if(!row)shopFail('Order reference was not found.',404);return row;}
+function shopNote(data){const describe=c=>SHOP_PRODUCTS[c.productId]+(c.shirt?' [shirt: '+c.shirtName+']':'')+(c.recorder?' [+voice]':'');return data.cart.map(r=>r.quantity+'x '+(r.kind==='birthday'?'Birthday Box: '+r.children.map(describe).join(', '):describe(r))).join('; ').slice(0,450);}
+async function shopProcessPayment(row,env){
+ const data=JSON.parse(row.data),payload=JSON.parse(row.payment_request);
+ const base=data.test?'https://connect.squareupsandbox.com':'https://connect.squareup.com';
+ // Replaying this exact payload with the same idempotency key cannot charge twice.
+ const r=await shopExternal(base+'/v2/payments',{method:'POST',headers:{Authorization:'Bearer '+env.SQUARE_ACCESS_TOKEN,'Content-Type':'application/json','Square-Version':'2026-09-16'},body:JSON.stringify(payload)});
+ if(!r.ok){const codes=(r.data.errors||[]).map(e=>e.code);if(r.status>=500||r.status===429||codes.includes('IDEMPOTENCY_KEY_REUSED'))shopFail('Payment confirmation is pending. Do not place another order; check the order status.',503);await env.DB.prepare('UPDATE shop_orders SET status=?,payment_request=NULL,updated_at=? WHERE id=? AND status=?').bind('failed',Date.now(),row.id,'processing').run();return {status:'failed',id:row.id,error:'Square declined or could not complete this payment. Contact us or return to checkout with a new shipping quote.'};}
+ const payment=r.data.payment;if(!payment?.id)shopFail('Payment confirmation is pending. Check your order status.',503);
+ if(payment.status!=='COMPLETED'){shopFail('Payment confirmation is pending. Check your order status.',503);}
+ if(payment.amount_money?.amount!==data.total||payment.amount_money?.currency!=='USD')shopFail('The payment amount needs review. Please contact us.',503);
+ const updated={...data,paymentId:payment.id,receiptUrl:payment.receipt_url||'',paidAt:new Date().toISOString()};
+ await env.DB.prepare('UPDATE shop_orders SET status=?,data=?,payment_request=NULL,updated_at=? WHERE id=?').bind('paid',JSON.stringify(updated),Date.now(),row.id).run();
+ return {status:'paid',id:row.id};
+}
+async function shopPay(request,env){const body=await shopBody(request);let row=await shopGetOrder(env,body.id,body.key);if(row.status==='paid')return shopJson({status:'paid',id:row.id});if(row.status==='failed')return shopJson({status:'failed',id:row.id,error:'Payment was not completed. Please contact us or request a new shipping quote.'});if(row.status==='processing')return shopJson(await shopProcessPayment(row,env));const data=JSON.parse(row.data);if(data.test!==shopTest(env)||data.locationId!==env.SQUARE_LOCATION_ID)shopFail('Payment settings changed. Please start checkout again.',409);if(Date.now()-row.created_at>30*60000)shopFail('This checkout expired. Please request shipping options again.',409);const sourceId=String(body.sourceId||'');if(!sourceId||sourceId.length>500)shopFail('Square payment token is missing.');const a=data.address;const payload={source_id:sourceId,idempotency_key:row.id,amount_money:{amount:data.total,currency:'USD'},autocomplete:true,location_id:data.locationId,reference_id:row.id,buyer_email_address:a.email,shipping_address:{address_line_1:a.street1,address_line_2:a.street2,locality:a.city,administrative_district_level_1:a.state,postal_code:a.zip,country:'US',first_name:a.name.split(' ')[0],last_name:a.name.split(' ').slice(1).join(' ')},note:'Stuff At Home '+shopNote(data)};
+ const locked=await env.DB.prepare('UPDATE shop_orders SET status=?,payment_request=?,updated_at=? WHERE id=? AND status=?').bind('processing',JSON.stringify(payload),Date.now(),row.id,'pending').run();row=await shopGetOrder(env,body.id,body.key);if(!locked.meta.changes&&row.status==='paid')return shopJson({status:'paid',id:row.id});if(row.status!=='processing')shopFail('This order could not be processed. Please contact us.',409);return shopJson(await shopProcessPayment(row,env));}
+async function shopOrderStatus(url,env){let row=await shopGetOrder(env,url.searchParams.get('id'),url.searchParams.get('key'));if(row.status==='processing'&&Date.now()-row.updated_at>10000){try{await shopProcessPayment(row,env);row=await shopGetOrder(env,row.id,row.access_key);}catch(e){/* Keep uncertain payments pending and recover with the same key. */}}
+ const d=JSON.parse(row.data);return shopJson({id:row.id,status:row.status,test:d.test,total:d.total,cart:d.cart,address:d.address,receiptUrl:d.receiptUrl||''});}
+async function handleShopApi(request,env,url){try{
+ const path=url.pathname.slice('/shop/api/'.length);
+ if(path==='config'&&request.method==='GET')return shopJson(shopConfig(env));
+ if(path==='admin-orders'&&request.method==='GET'){if(!env.SHOP_ADMIN_TOKEN||request.headers.get('Authorization')!=='Bearer '+env.SHOP_ADMIN_TOKEN)shopFail('Enter your shop admin key.',401);await shopTables(env);const rows=(await env.DB.prepare("SELECT id,status,data,created_at FROM shop_orders WHERE status IN ('paid','processing','failed') ORDER BY created_at DESC LIMIT 100").all()).results;return shopJson({orders:rows.map(r=>({...JSON.parse(r.data),id:r.id,status:r.status,createdAt:r.created_at}))});}
+ if(!['quote','prepare','pay','order'].includes(path))return shopJson({error:'Checkout route not found.'},404);
+ if(request.method==='POST'){const origin=request.headers.get('Origin');if(origin&&origin!==url.origin)shopFail('Checkout must be submitted from this website.',403);}
+ if(path==='order'&&request.method==='GET'){await shopTables(env);return await shopOrderStatus(url,env);}
+ if(request.method!=='POST')return shopJson({error:'Unsupported checkout request.'},405);
+ const config=shopConfig(env);if(!config.ready)shopFail(config.message,503);
+ await shopTables(env);
+ if(path==='quote')return await shopQuote(request,env);
+ if(path==='prepare')return await shopPrepare(request,env);
+ if(path==='pay')return await shopPay(request,env);
+ return shopJson({error:'Checkout route not found.'},404);
+}catch(e){return shopJson({error:e.status?e.message:'Checkout could not complete the request. Please try again or contact us.'},e.status||500);}}
