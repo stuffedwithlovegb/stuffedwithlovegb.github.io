@@ -282,20 +282,10 @@ h1,h2,h3{
   .gallery-featured-wrap{margin-bottom:16px;}
   .gallery-featured-wrap .gallery-tile.gallery-featured{border-radius:20px;}
 }
-/* Draw the pricing hearts in CSS: no platform-dependent emoji colors. */
+/* Simple round pricing bullets. */
 .pricing-card li{padding-left:1.35rem;position:relative;}
-.pricing-card li::before{
-  content:"";position:absolute;left:0;top:.83rem;
-  width:.85rem;height:.85rem;margin:0;background:var(--gold);
-  border-radius:0;transform:none;
-  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M12 21 3.5 12.5C-3 6 5-2 12 5c7-7 15 1 8.5 7.5Z'/%3E%3C/svg%3E") center / contain no-repeat;
-  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M12 21 3.5 12.5C-3 6 5-2 12 5c7-7 15 1 8.5 7.5Z'/%3E%3C/svg%3E") center / contain no-repeat;
-}
+.pricing-card li::before{content:"";position:absolute;left:0;top:1rem;width:.45rem;height:.45rem;margin:0;background:var(--gold);border-radius:50%;transform:none;mask:none;-webkit-mask:none;}
 .pricing-card li::after{content:none;}
-.pricing-card .fa-heart,.pricing-card .heart,.pricing-card .heart-icon{
-  color:var(--gold)!important;
-}
-.pricing-card svg.fa-heart{fill:currentColor;}
 @media(prefers-reduced-motion:reduce){
   html{scroll-behavior:auto;}
   .gallery-tile img{transition:none;}
@@ -334,7 +324,7 @@ h1,h2,h3{
 .party-booking-form input:focus-visible,.party-booking-form textarea:focus-visible,.party-booking-form select:focus-visible,.party-policy-copy summary:focus-visible{outline:3px solid var(--gold);outline-offset:3px;}
 .party-received-section{min-height:70vh;background:linear-gradient(135deg,var(--cream),var(--cream-2));}
 .party-received-card{max-width:850px;margin:auto;background:white;border:1px solid var(--border);border-radius:30px;box-shadow:var(--shadow);padding:3rem;text-align:center;}
-.party-received-heart{font-size:3rem;}.party-received-card h1{font-size:clamp(2.5rem,5vw,3.7rem);margin:.8rem 0 1.2rem;}.party-received-card>p{color:var(--muted);margin:1rem 0;}
+.party-received-heart{display:none;}.party-received-card h1{font-size:clamp(2.5rem,5vw,3.7rem);margin:.8rem 0 1.2rem;}.party-received-card>p{color:var(--muted);margin:1rem 0;}
 .party-next-steps{text-align:left;background:var(--cream);border-radius:20px;padding:1.5rem 1.8rem;margin:1.8rem 0;}
 .party-next-steps h2{font-size:1.6rem;margin-bottom:1rem;}.party-next-steps ol{padding-left:1.3rem;}.party-next-steps li{margin:.8rem 0;}
 .party-important{font-weight:900;color:var(--brown-dark)!important;}.party-received-card .hero-buttons{justify-content:center;margin-top:1.5rem;}
@@ -360,3 +350,13 @@ h1,h2,h3{
 @media(max-width:700px){.swl-shop-wrap{padding-inline:18px}.swl-shop-section{padding-block:35px}.swl-shop-hero{padding-top:35px}.swl-shop-hero-grid,.swl-birthday-card,.swl-cart-layout{grid-template-columns:1fr}.swl-shop-hero-grid{gap:20px}.swl-hero-friends{min-height:290px;max-width:420px;width:100%;margin:auto}.swl-hero-friends img{height:290px}.swl-hero-friends img+img{height:270px}.swl-hero-sticker{width:100px;height:100px;font-size:1rem}.swl-order-summary{position:static}.swl-birthday-card{padding:23px}.swl-cart-line{grid-template-columns:65px 1fr;gap:14px}.swl-cart-line img{width:65px;height:90px}.swl-cart-line>strong{grid-column:2}.swl-header-cart .swl-cart-label{display:none}.swl-checkout-card{padding:20px}.swl-receipt{padding:25px}.swl-unboxing{padding:35px 20px}}
 @media(max-width:450px){.swl-product-grid{grid-template-columns:1fr}.swl-product-photo{height:320px}.swl-product-photo img{height:265px}.swl-field-grid{grid-template-columns:1fr}.swl-field-wide{grid-column:auto}.swl-kit-strip{gap:20px 10px}.swl-kit-strip strong{font-size:.9rem}}
 @media(prefers-reduced-motion:reduce){.swl-shop *{scroll-behavior:auto;transition:none!important}.swl-product:hover .swl-product-photo img{transform:none}}
+/* Fluff On Wheels experience details */
+.fow-experience-details{background:var(--cream-2);}
+.fow-detail-grid{max-width:var(--max);margin:auto;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:1.2rem;}
+.fow-detail-grid article{background:white;border:1px solid var(--border);border-radius:24px;padding:1.6rem;box-shadow:var(--shadow-soft);}
+.fow-detail-grid article>i{display:grid;place-items:center;width:48px;height:48px;border-radius:16px;background:var(--gold-light);color:var(--brown-dark);font-size:1.3rem;margin-bottom:1rem;}
+.fow-detail-grid h3{font-family:'Fredoka',sans-serif;color:var(--brown-dark);font-size:1.2rem;margin-bottom:.65rem;}
+.fow-detail-grid p{color:var(--muted);font-size:.95rem;}
+.swl-kit-strip{grid-template-columns:repeat(3,minmax(0,1fr));}
+@media(max-width:980px){.fow-detail-grid{grid-template-columns:repeat(2,minmax(0,1fr));}}
+@media(max-width:680px){.fow-detail-grid{grid-template-columns:1fr;}.swl-kit-strip{grid-template-columns:1fr;}.experience-steps{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));overflow:visible;gap:1rem .5rem;}.experience-steps>div{min-width:0;}.experience-steps .step-arrow{display:none;}}
