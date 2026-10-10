@@ -1,106 +1,77 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<link rel="icon" type="image/png" href="favicon.png">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Bubblegum+Sans&family=Fredoka:wght@400;500;600;700&family=Fredoka:wght@400;500;600;700&family=Nunito:wght@400;600;700;800&family=Quicksand:wght@500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css?v=20261010-fow">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-WQGXFYZVTH"></script>
-<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag('js',new Date());gtag('config','G-WQGXFYZVTH');</script>
-<title>Stuff At Home | Fluff On Wheels</title>
-<meta name="description" content="Stuff your own plush friend at home. Shop DIY plush kits and birthday boxes from Fluff On Wheels in Green Bay.">
-</head>
-<body>
-<nav class="site-nav">
-  <div class="nav-container">
-    <a href="index.html" class="logo"><img src="finallogo.webp" alt="Fluff On Wheels" class="logo-img"></a>
-    <div class="header-tagline">We Bring the Plush Party to You!</div>
-    <ul class="nav-links">
-      <li><a href="index.html#home">Home</a></li>
-      <li><a href="index.html#what-we-do">The Experience</a></li>
-      <li><a href="pricing.html">Pricing</a></li>
-      <li><a href="gallery.html">Gallery</a></li>
-      <li><a href="stuff-at-home.html">Stuff At Home</a></li>
-<li class="dropdown">
-        <button class="dropdown-toggle" type="button">Explore</button>
-        <div class="dropdown-menu">
-          <a href="about.html">Our Story</a>
-          <a href="faq.html">FAQ</a>
-          <a href="policies.html">Policies</a>
-        </div>
-      </li>
-      <li><a href="index.html#contact" class="btn btn-primary header-book-btn">Book Your Experience</a></li>
-    </ul>
-    <a class="swl-header-cart" href="cart.html" aria-label="View shopping cart"><i class="fa-solid fa-bag-shopping" aria-hidden="true"></i><span class="swl-cart-label">Cart</span><span data-cart-count>0</span></a>
-<button class="mobile-toggle" type="button" aria-label="Open mobile menu" aria-expanded="false">☰</button>
-  </div>
-</nav>
-<div class="mobile-menu" id="mobileMenu">
-<a href="stuff-at-home.html">Stuff At Home</a>
-  <a href="index.html#home">Home</a>
-  <a href="index.html#what-we-do">The Experience</a>
-  <a href="pricing.html">Pricing</a>
-  <a href="gallery.html">Gallery</a>
-  <a href="about.html">Our Story</a>
-  <a href="faq.html">FAQ</a>
-  <a href="policies.html">Policies</a>
-  <a href="index.html#contact" class="mobile-book">Book Your Experience</a>
-</div>
-<main class="swl-shop">
-<section class="swl-shop-hero"><div class="swl-shop-wrap swl-shop-hero-grid"><div><span class="eyebrow">A LITTLE BOX. A BRAND-NEW BEST FRIEND.</span><h1>Fluff up a friendship.<br><span>Right at home.</span></h1><p>Open a box of possibilities. Choose a friend, add soft stuffing, and make a keepsake with your own two hands.</p><div class="hero-buttons"><a href="#friends" class="btn btn-primary">Meet Your New Friend</a><a href="#birthday-box" class="btn btn-secondary">Party in a Box</a></div><p class="swl-fine">DIY kits from our Green Bay family to yours ✨</p></div><div class="swl-hero-friends"><span class="swl-hero-sticker">Made by you.<br>Ready for cuddles.</span><img src="shop-teddy.png" alt="Honey Teddy plush"><img src="shop-unicorn.png" alt="Rainbow Unicorn plush"></div></div></section>
-<section class="swl-shop-wrap swl-kit-strip" aria-label="Included in each kit"><div><i class="fa-solid fa-paw" aria-hidden="true"></i><strong>Your plush friend</strong><span>Arrives unstuffed, ready for you</span></div><div><i class="fa-solid fa-cloud" aria-hidden="true"></i><strong>Soft stuffing</strong><span>Make them soft and snuggly</span></div><div><i class="fa-solid fa-certificate" aria-hidden="true"></i><strong>Birth certificate</strong><span>Give your new friend a name</span></div></section>
-<section class="swl-shop-wrap swl-shop-section" id="friends"><div class="swl-section-heading"><span class="eyebrow">YOUR NEXT BEST FRIEND IS WAITING</span><h2>Pick your cuddle crew.</h2><p>Choose your DIY kit below, then add a personal touch. Tax and shipping are additional.</p></div><div id="shop-products" class="swl-product-grid"></div><noscript><p>Please enable JavaScript to choose options and add kits to your cart.</p></noscript><p class="swl-fine swl-centered">Photos show finished plush friends. Your kit arrives unstuffed for the hands-on fun.</p></section>
-<section class="swl-shop-wrap swl-shop-section" id="birthday-box"><div class="swl-birthday-card"><div><span class="eyebrow">TEN FRIENDS. ONE BIG CELEBRATION.</span><h2>A party, packed<br>with possibilities.</h2><p>Our Birthday Box brings the DIY plush fun home for 10 kids. Mix your favorite friends and let everyone make their own keepsake.</p><p class="swl-box-price">$250 <small>for 10 kits</small></p><p class="swl-fine">Ten DIY kits for one celebration. Tax and shipping are additional. This box is a DIY activity; a hosted visit and stuffing machine are not included.</p><div class="swl-box-friends" id="birthday-preview"><img src="shop-teddy.png" alt=""><img src="shop-dog.png" alt=""><img src="shop-dino.png" alt=""><img src="shop-unicorn.png" alt=""></div></div><form id="birthday-builder"><h3>Build your birthday crew</h3><p>Choose a friend for each of your 10 guests. Optional shirts and recorders are $10 each, per child.</p><div id="birthday-children"></div><div class="swl-builder-total">Your box <strong id="birthday-total">$250.00</strong></div><button class="btn btn-primary" type="submit">Add Birthday Box to Cart</button></form></div></section>
-<section class="swl-shop-wrap swl-shop-section"><div class="swl-unboxing"><span class="swl-unboxing-icon" aria-hidden="true"><i class="fa-solid fa-box-open"></i></span><span class="eyebrow">THE FUN STARTS WHEN YOU OPEN THE BOX</span><h2>A peek inside is coming soon.</h2><p>We’re getting our unboxing photos ready! Soon you’ll see exactly how a little fluff turns into a brand-new plush pal.</p><span class="swl-coming-tag">Unboxing photos coming soon</span></div></section>
-<section class="swl-shop-wrap swl-shop-section swl-shop-faq"><h2>A few little details</h2><details><summary>What comes in my kit?</summary><p>An unstuffed plush, stuffing, and a birth certificate. Shirts and voice recorders are optional add-ons. A travel bag is not included.</p></details><details><summary>Can I personalize a shirt?</summary><p>Yes! Add a custom name shirt for $10 and enter the name exactly as you want it printed. Add each different name separately so every friend gets the right shirt.</p></details><details><summary>How much is shipping?</summary><p>Enter your delivery address in checkout to see available shipping options before paying. Shipping is paid by the customer.</p></details><details><summary>Want us to bring the full party experience?</summary><p>Our hosted mobile parties are a different experience, complete with our stuffing station and activities. <a href="pricing.html">Explore party packages</a>.</p></details></section>
-<div class="swl-toast" id="shop-toast" role="status" aria-live="polite" hidden></div></main><footer class="site-footer">
-  <div class="footer-container">
-    <div class="footer-column footer-brand">
-      <img src="finallogo.webp" alt="Fluff On Wheels Logo" class="footer-logo">
-      <p>Creating unforgettable memories one stuffed friend at a time.</p>
-    </div>
-    <div class="footer-column">
-      <h4>Explore</h4><a href="stuff-at-home.html">Stuff At Home</a>
-      <a href="index.html">Home</a><a href="about.html">Our Story</a><a href="gallery.html">Gallery</a>
-      <a href="pricing.html">Pricing</a><a href="faq.html">FAQ</a><a href="policies.html">Policies</a>
-    </div>
-    <div class="footer-column">
-      <h4>Bookings</h4>
-      <a href="index.html#contact">Book Your Experience</a>
-      <a href="mailto:fluffonwheels@gmail.com">fluffonwheels@gmail.com</a>
-      <a href="tel:+19206648282">(920) 664-8282</a>
-      <p class="footer-note">Green Bay + Northeast Wisconsin</p>
-    </div>
-    <div class="footer-column social-column">
-      <h4>Follow Along</h4>
-      <div class="social-icons">
-        <a href="https://www.facebook.com/profile.php?id=61591472361383" target="_blank" rel="noopener noreferrer" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
-        <a href="https://www.instagram.com/stuffedwithlove.gb" target="_blank" rel="noopener noreferrer" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
-        <a href="https://www.tiktok.com/@stuffedwithlovegb" target="_blank" rel="noopener noreferrer" aria-label="TikTok"><i class="fab fa-tiktok"></i></a>
-      </div>
-    </div>
-  </div>
-  <div class="footer-bottom">© 2026 Fluff On Wheels • Green Bay, Wisconsin • Made for happy memories</div>
-</footer>
-<script>
+/* Stuff At Home: products published from Ops, plus a persistent cart. */
 (function(){
-  const nav=document.querySelector('.site-nav');
-  const toggle=document.querySelector('.mobile-toggle');
-  const menu=document.getElementById('mobileMenu');
-  if(toggle&&menu){
-    toggle.addEventListener('click',function(e){
-      e.stopPropagation();
-      const open=menu.classList.toggle('active');
-      toggle.setAttribute('aria-expanded',open?'true':'false');
-    });
-    menu.querySelectorAll('a').forEach(a=>a.addEventListener('click',()=>{menu.classList.remove('active');toggle.setAttribute('aria-expanded','false');}));
-    document.addEventListener('click',e=>{if(!menu.contains(e.target)&&!toggle.contains(e.target)){menu.classList.remove('active');toggle.setAttribute('aria-expanded','false');}});
-  }
-  if(nav) window.addEventListener('scroll',()=>nav.classList.toggle('shrink',window.scrollY>40),{passive:true});
+'use strict';
+const KEY='swl-stuff-at-home-cart-v1';
+const money=n=>new Intl.NumberFormat('en-US',{style:'currency',currency:'USD'}).format(n/100);
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const legacy={teddy:'Honey Teddy',dog:'Golden Retriever',dino:'Dino',unicorn:'Unicorn'};
+const legacyImages={teddy:'shop-teddy.png',dog:'shop-dog.png',dino:'shop-dino.png',unicorn:'shop-unicorn.png'};
+let CATALOG=[],loaded=false,storageOK=true;
+const item=id=>CATALOG.find(p=>p.id===id)||{id,name:legacy[id]||'Saved plush selection',image:legacyImages[id]||'shop-teddy.png',price:2999,enabled:false};
+const name=c=>c.productName||item(c.productId).name;
+function safeImage(src){return typeof src==='string'&&((src.startsWith('/')&&!src.startsWith('//'))||/^shop-(teddy|dog|dino|unicorn)\.png$/.test(src))?src:'shop-teddy.png';}
+function cleanChild(c){
+ if(!c||typeof c.productId!=='string'||!c.productId||c.productId.length>180)throw Error('Invalid friend');
+ return {productId:c.productId,productName:String(c.productName||legacy[c.productId]||'Saved plush selection').slice(0,100),
+ kitPrice:Number.isSafeInteger(c.kitPrice)&&c.kitPrice>=100&&c.kitPrice<=100000?c.kitPrice:2999,
+ image:safeImage(c.image||legacyImages[c.productId]),shirt:c.shirt===true,
+ shirtName:c.shirt===true?String(c.shirtName||'').trim().slice(0,40):'',recorder:c.recorder===true};
+}
+function normalize(raw){if(!Array.isArray(raw))return [];return raw.slice(0,50).flatMap(r=>{try{
+ const quantity=Math.max(1,Math.min(20,Math.floor(Number(r.quantity)||1)));
+ const id=String(r.id||crypto.randomUUID());
+ if(r.kind==='kit')return [{id,kind:'kit',quantity,...cleanChild(r)}];
+ if(r.kind==='birthday'&&Array.isArray(r.children)&&r.children.length===10)return [{id,kind:'birthday',quantity,children:r.children.map(cleanChild)}];
+ }catch(e){}return [];});}
+let cart=[];try{cart=normalize(JSON.parse(localStorage.getItem(KEY)||'[]'));}catch(e){storageOK=false;}
+function enrich(c){const p=CATALOG.find(p=>p.id===c.productId);return p?{...c,productName:p.name,kitPrice:p.price,image:p.image}:c;}
+function refreshCart(){cart=cart.map(r=>r.kind==='birthday'?{...r,children:r.children.map(enrich)}:{...r,...enrich(r)});}
+const extra=c=>(c.shirt?1000:0)+(c.recorder?1000:0);
+const unitPrice=r=>r.kind==='birthday'?25000+r.children.reduce((n,c)=>n+extra(c),0):(r.kitPrice??2999)+extra(r);
+const subtotal=()=>cart.reduce((n,r)=>n+unitPrice(r)*r.quantity,0);
+const count=()=>cart.reduce((n,r)=>n+r.quantity*(r.kind==='birthday'?10:1),0);
+const available=r=>loaded&&(r.kind==='birthday'?r.children.every(c=>CATALOG.some(p=>p.id===c.productId)):CATALOG.some(p=>p.id===r.productId));
+function persist(){try{localStorage.setItem(KEY,JSON.stringify(cart));}catch(e){storageOK=false;}}
+function save(){persist();render();window.dispatchEvent(new Event('swl-cart-change'));}
+function add(r){if(!available(r))throw Error('This friend is unavailable. Please refresh the shop.');
+ const signature=x=>JSON.stringify({...x,id:undefined,quantity:undefined});const same=cart.find(x=>signature(x)===signature(r));
+ if(same){if(same.quantity+r.quantity>20)throw Error('Please limit each selection to 20.');same.quantity+=r.quantity;}
+ else{if(cart.length>=50)throw Error('Your cart is full. Please contact us for larger orders.');cart.push({...r,id:crypto.randomUUID()});}save();}
+const extras=c=>[c.shirt?'Name shirt: '+c.shirtName:null,c.recorder?'Voice recorder':null].filter(Boolean).join(' Â· ')||'Kit only';
+const description=r=>r.kind==='birthday'?r.children.map((c,i)=>`${i+1}. ${name(c)} â€” ${extras(c)}`).join('\n'):extras(r);
+function toast(message){const t=document.getElementById('shop-toast');if(!t)return;t.textContent=message;t.hidden=false;clearTimeout(toast.timer);toast.timer=setTimeout(()=>t.hidden=true,5000);}
+function render(){
+ document.querySelectorAll('[data-cart-count]').forEach(e=>e.textContent=count());
+ const target=document.getElementById('cart-items');if(!target)return;
+ target.innerHTML=cart.length?cart.map(r=>`<article class="swl-cart-line"><img src="${esc(safeImage(r.kind==='birthday'?'shop-teddy.png':r.image))}" alt="${esc(r.kind==='birthday'?'Birthday Box':name(r))}"><div><h2>${r.kind==='birthday'?'Birthday Box Â· 10 kits':esc(name(r))}</h2>${r.kind==='birthday'?`<details><summary>View your 10 friends &amp; extras</summary><p class="swl-line-details">${esc(description(r))}</p></details>`:`<p>${esc(extras(r))}</p>`}${loaded&&!available(r)?'<p class="swl-fine"><strong>A selected friend is no longer available. Remove this selection and choose from the shop.</strong></p>':''}<p class="swl-fine">${money(unitPrice(r))} ${r.kind==='birthday'?'per box':'each'}</p><div class="swl-quantity"><button type="button" data-change="-1" data-id="${esc(r.id)}" aria-label="Decrease quantity">âˆ’</button><span aria-label="Quantity">${r.quantity}</span><button type="button" data-change="1" data-id="${esc(r.id)}" aria-label="Increase quantity">+</button><button type="button" class="swl-remove" data-remove="${esc(r.id)}">Remove</button></div></div><strong>${money(unitPrice(r)*r.quantity)}</strong></article>`).join(''):'<div class="swl-empty"><h2>Your crew is waiting.</h2><p>Your cart is empty. Letâ€™s find you a new friend!</p><a href="stuff-at-home.html" class="btn btn-primary">Choose Your Friend</a></div>';
+ document.getElementById('cart-subtotal').textContent=money(subtotal());
+ document.getElementById('cart-checkout').hidden=!cart.length||!loaded||cart.some(r=>!available(r));
+ document.getElementById('cart-storage-status').textContent=!storageOK?'Your browser could not save your cart. Allow site storage to continue shopping across pages.':!loaded?'Checking which friends are availableâ€¦':'';
+}
+const products=document.getElementById('shop-products'),builder=document.getElementById('birthday-builder');
+function renderProducts(){
+ const preview=document.getElementById('birthday-preview');if(preview)preview.innerHTML=CATALOG.slice(0,4).map(p=>`<img src="${esc(p.image)}" alt="${esc(p.name)}">`).join('');
+ if(products)products.innerHTML=CATALOG.length?CATALOG.map(p=>`<article class="swl-product"><div class="swl-product-photo"><span>Made by you</span><img src="${esc(p.image)}" alt="${esc(p.name)} finished plush" loading="lazy"></div><div class="swl-product-info"><h3>${esc(p.name)}</h3><p>${esc(p.copy)}</p><p class="swl-product-price">${money(p.price)} <small>DIY kit</small></p><form data-product="${esc(p.id)}"><label class="swl-option"><input type="checkbox" name="shirt"> Custom name shirt <strong>+$10</strong></label><label class="swl-name-field" hidden>Name on shirt<input name="shirtName" maxlength="40" disabled placeholder="Exactly as youâ€™d like it printed"></label><label class="swl-option"><input type="checkbox" name="recorder"> Voice recorder <strong>+$10</strong></label><div class="swl-add-row"><label>Qty<input type="number" name="quantity" min="1" max="20" value="1" required></label><button type="submit" class="btn btn-primary">Add to Cart</button></div><p class="swl-product-message" role="status"></p></form></div></article>`).join(''):'<p>No friends are available to order right now. Please check back soon!</p>';
+ if(builder){document.getElementById('birthday-children').innerHTML=CATALOG.length?Array.from({length:10},(_,i)=>`<fieldset class="swl-child"><legend>Friend ${i+1}</legend><label>Plush<select name="friend-${i}">${CATALOG.map(p=>`<option value="${esc(p.id)}">${esc(p.name)}</option>`).join('')}</select></label><label class="swl-option"><input type="checkbox" name="shirt-${i}"> Name shirt +$10</label><label class="swl-child-name" hidden>Name on shirt<input name="name-${i}" maxlength="40" disabled placeholder="Name exactly as printed"></label><label class="swl-option"><input type="checkbox" name="recorder-${i}"> Voice recorder +$10</label></fieldset>`).join(''):'<p>Birthday Boxes will be available when our friends are back in the shop.</p>';
+ builder.querySelector('button[type="submit"]').disabled=!CATALOG.length;
+ }
+}
+products?.addEventListener('change',e=>{if(e.target.name==='shirt'){const f=e.target.form,n=f.elements.shirtName;f.querySelector('.swl-name-field').hidden=!e.target.checked;n.required=e.target.checked;n.disabled=!e.target.checked;}});
+products?.addEventListener('submit',e=>{e.preventDefault();const f=e.target,msg=f.querySelector('[role="status"]');try{
+ const p=item(f.dataset.product),r={kind:'kit',productId:p.id,productName:p.name,kitPrice:p.price,image:p.image,shirt:f.elements.shirt.checked,shirtName:f.elements.shirtName.value.trim(),recorder:f.elements.recorder.checked,quantity:Number(f.elements.quantity.value)};
+ if(!Number.isSafeInteger(r.quantity)||r.quantity<1||r.quantity>20)throw Error('Choose a quantity from 1 to 20.');
+ if(r.shirt&&!r.shirtName)throw Error('Please enter a name for your shirt.');add(r);msg.textContent='Added!';toast(p.name+' added to your bag âœ¨');
+ }catch(err){msg.textContent=err.message;}});
+builder?.addEventListener('change',()=>{let price=25000;for(let i=0;i<10;i++){const shirt=builder.elements['shirt-'+i]?.checked,n=builder.elements['name-'+i];if(!n)return;n.required=shirt;n.disabled=!shirt;n.closest('label').hidden=!shirt;price+=(shirt?1000:0)+(builder.elements['recorder-'+i].checked?1000:0);}document.getElementById('birthday-total').textContent=money(price);});
+builder?.addEventListener('submit',e=>{e.preventDefault();try{const children=Array.from({length:10},(_,i)=>{const p=item(builder.elements['friend-'+i].value);return {productId:p.id,productName:p.name,kitPrice:p.price,image:p.image,shirt:builder.elements['shirt-'+i].checked,shirtName:builder.elements['name-'+i].value.trim(),recorder:builder.elements['recorder-'+i].checked};});if(children.some(c=>c.shirt&&!c.shirtName))throw Error('Please enter a name for each selected shirt.');add({kind:'birthday',quantity:1,children});toast('Your Birthday Box is in the bag âœ¨');}catch(err){toast(err.message);}});
+document.getElementById('cart-items')?.addEventListener('click',e=>{const button=e.target.closest('button');if(!button)return;if(button.dataset.remove)cart=cart.filter(r=>r.id!==button.dataset.remove);else if(button.dataset.change){const r=cart.find(r=>r.id===button.dataset.id);if(r){r.quantity=Math.min(20,r.quantity+Number(button.dataset.change));if(r.quantity<1)cart=cart.filter(x=>x!==r);}}save();});
+window.addEventListener('storage',e=>{if(e.key===KEY){try{cart=normalize(JSON.parse(e.newValue||'[]'));refreshCart();}catch(err){cart=[];}render();window.dispatchEvent(new Event('swl-cart-change'));}});
+document.addEventListener('error',e=>{if(e.target instanceof HTMLImageElement&&e.target.closest('.swl-shop')&&!e.target.src.endsWith('/shop-teddy.png'))e.target.src='shop-teddy.png';},true);
+if(document.body.dataset.shopNav==='true'){const toggle=document.querySelector('.mobile-toggle'),menu=document.getElementById('mobileMenu'),nav=document.querySelector('.site-nav');if(toggle&&menu){toggle.addEventListener('click',e=>{e.stopPropagation();const open=menu.classList.toggle('active');toggle.setAttribute('aria-expanded',String(open));});document.addEventListener('click',e=>{if(!menu.contains(e.target)&&!toggle.contains(e.target)){menu.classList.remove('active');toggle.setAttribute('aria-expanded','false');}});document.addEventListener('keydown',e=>{if(e.key==='Escape'){menu.classList.remove('active');toggle.setAttribute('aria-expanded','false');}});}if(nav)window.addEventListener('scroll',()=>nav.classList.toggle('shrink',window.scrollY>40),{passive:true});}
+window.SWLShop={get CATALOG(){return CATALOG;},get catalogReady(){return loaded;},money,esc,item,name,unitPrice,description,available,getCart:()=>JSON.parse(JSON.stringify(cart)),subtotal,clear:()=>{cart=[];save();}};
+render();if(products)products.innerHTML='<p role="status">Finding your new friendsâ€¦</p>';if(builder)builder.querySelector('button[type="submit"]').disabled=true;
+window.SWLShop.ready=(async()=>{try{
+ const r=await fetch('/shop/api/catalog',{cache:'no-store'});const d=await r.json();if(!r.ok||!Array.isArray(d.products))throw Error('We couldnâ€™t load our friends. Please refresh or contact us.');
+ CATALOG=d.products.filter(p=>p.enabled&&typeof p.id==='string'&&Number.isSafeInteger(p.price));loaded=true;refreshCart();persist();renderProducts();render();
+ }catch(e){if(products)products.innerHTML='<p role="alert">We couldnâ€™t load our friends. Please refresh or contact us.</p>';const notice=document.getElementById('cart-storage-status');if(notice)notice.textContent='We couldnâ€™t check availability. Refresh this page before checking out.';}window.dispatchEvent(new Event('swl-catalog-ready'));})();
 })();
-</script>
-<script src="shop.js?v=20261008-catalog" defer></script></body></html>
