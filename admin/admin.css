@@ -1,5 +1,5 @@
 /* =========================================================
-   STUFFED WITH LOVE OPS
+   FLUFF ON WHEELS OPS
    Complete app stylesheet
    ========================================================= */
 
@@ -2218,7 +2218,7 @@ a {
 
 }
 /* =========================================================
-   SWL PLUSH + INVENTORY VISUALS
+   FOW PLUSH + INVENTORY VISUALS
    ========================================================= */
 
 .inventory-plush-thumb,
@@ -8259,7 +8259,7 @@ button.inventory-add-photo-placeholder {
   }
 
   .bottom-nav::before {
-    content: "SWL OPS";
+    content: "FOW OPS";
 
     position: absolute;
     left: 18px;
@@ -9277,3 +9277,23 @@ button.inventory-add-photo-placeholder {
 .ops-shop-controls a{font-size:13px;color:var(--brown);font-weight:700;text-decoration:underline}
 .ops-shop-lock{display:block;margin-top:16px;padding:8px 0;background:transparent;border:0;color:var(--brown-2);text-decoration:underline;font:inherit;font-size:12px;cursor:pointer}
 .ops-shop-controls :focus-visible{outline:3px solid var(--brown-2);outline-offset:3px}
+/* =========================================================
+   FLUFF ON WHEELS — TEAM MOTTO
+   A little independent spirit, same familiar brand styling.
+   ========================================================= */
+.fow-rebel-footer {
+  max-width: 720px;
+  margin: 20px auto 0;
+  padding: 8px 18px 18px;
+  text-align: center;
+  color: var(--brown-soft);
+  font-size: 0.68rem;
+  line-height: 1.5;
+  opacity: 0.7;
+}
+.fow-rebel-footer span {
+  display: block;
+  margin-top: 4px;
+  font-weight: 800;
+  color: var(--brown-2);
+}
