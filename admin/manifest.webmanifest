@@ -1,7 +1,7 @@
 {
-  "name": "Stuffed With Love Ops",
-  "short_name": "SWL Ops",
-  "description": "Internal operations app for Stuffed With Love.",
+  "name": "Fluff On Wheels Ops",
+  "short_name": "FOW Ops",
+  "description": "Internal operations app for Fluff On Wheels.",
   "start_url": "/admin/",
   "scope": "/admin/",
   "display": "standalone",
@@ -9,15 +9,7 @@
   "theme_color": "#F6E9CD",
   "orientation": "portrait",
   "icons": [
-    {
-      "src": "icon-192.png",
-      "sizes": "192x192",
-      "type": "image/png"
-    },
-    {
-      "src": "icon-512.png",
-      "sizes": "512x512",
-      "type": "image/png"
-    }
+    { "src": "icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png" }
   ]
 }
