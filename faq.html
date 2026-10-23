@@ -1,580 +1,860 @@
-    <!DOCTYPE html>
-    <html lang="en">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-        <!-- FAQ / faq.html -->
-        <title>FAQ | Fluff On Wheels Mobile Plush-Building Events</title>
-
-        <meta
-            name="description"
-            content="Find answers to common questions about Fluff On Wheels mobile plush-building events, booking, pricing, travel, setup, guest counts, plush options, and event details."
-        >
-
-        <link rel="icon" type="image/png" href="favicon.png">
-
-        <link rel="preconnect" href="https://fonts.googleapis.com">
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-
-        <link
-            href="https://fonts.googleapis.com/css2?family=Bubblegum+Sans&family=Fredoka:wght@400;500;600;700&family=Fredoka:wght@400;500;600;700&family=Nunito:wght@400;600;700;800&family=Quicksand:wght@400;500;600;700&display=swap"
-            rel="stylesheet"
-        >
-
-        <link rel="stylesheet" href="style.css?v=20261010-fow">
-
-        <link
-            rel="preload"
-            href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
-            as="style"
-            onload="this.onload=null;this.rel='stylesheet'"
-        >
-
-        <noscript>
-            <link
-                rel="stylesheet"
-                href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
-            >
-        </noscript>
-
-        <!-- Google tag (gtag.js) -->
-        <script
-            async
-            src="https://www.googletagmanager.com/gtag/js?id=G-WQGXFYZVTH">
-        </script>
-
-        <script>
-            window.dataLayer = window.dataLayer || [];
-
-            function gtag() {
-                dataLayer.push(arguments);
-            }
-
-            gtag("js", new Date());
-            gtag("config", "G-WQGXFYZVTH");
-        </script>
-
-        <!-- ===========================
-             FAQ Accordion Styles
-             (scoped here so you don't have to touch style.css —
-             move into style.css later if you'd rather keep it centralized)
-        =========================== -->
-        <style>
-            .faq-item {
-                border-bottom: 1px solid #f0e2c0;
-            }
-
-            .faq-question {
-                width: 100%;
-                display: flex;
-                justify-content: space-between;
-                align-items: center;
-                background: none;
-                border: none;
-                cursor: pointer;
-                text-align: left;
-                padding: 18px 4px;
-                font-family: 'Nunito', sans-serif;
-                font-weight: 700;
-                font-size: 1.05rem;
-                color: #5b3d1e;
-            }
-
-            .faq-question .faq-icon {
-                font-size: 1.4rem;
-                color: #d9a441;
-                transition: transform 0.3s ease;
-                margin-left: 12px;
-                flex-shrink: 0;
-            }
-
-            .faq-item.active .faq-question .faq-icon {
-                transform: rotate(45deg);
-            }
-
-            .faq-answer {
-                max-height: 0;
-                overflow: hidden;
-                transition: max-height 0.35s ease;
-                padding: 0 4px;
-            }
-
-            .faq-item.active .faq-answer {
-                padding-bottom: 18px;
-            }
-
-            .faq-answer p {
-                margin: 0 0 12px 0;
-            }
-
-            .faq-answer p:last-child {
-                margin-bottom: 0;
-            }
-        </style>
-    </head>
-
-    <body class="faq-page">
-
-    <!-- ===========================
-         Navigation
-    =========================== -->
-
-    <nav class="site-nav">
-  <div class="nav-container">
-    <a href="index.html" class="logo"><img src="finallogo.webp" alt="Fluff On Wheels" class="logo-img"></a>
-    <div class="header-tagline">We Bring the Plush Party to You!</div>
+<!DOCTYPE html>
+<html lang="en">
+ <head>
+  <meta charset="utf-8"/>
+  <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+  <title>
+   FAQ &amp; Policies | Fluff On Wheels
+  </title>
+  <meta content="Questions about your Fluff On Wheels event? Read our experience FAQ, booking, payment, travel, weather and event policies." name="description"/>
+  <link href="favicon.png" rel="icon"/>
+  <link href="https://fonts.googleapis.com" rel="preconnect"/>
+  <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+  <link href="https://fonts.googleapis.com/css2?family=Bubblegum+Sans&amp;family=Fredoka:wght@400;500;600;700&amp;family=Nunito:wght@400;600;700;800&amp;family=Quicksand:wght@500;600;700&amp;display=swap" rel="stylesheet"/>
+  <link href="style.css?v=20261022-redesign" rel="stylesheet"/>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet"/>
+  <script async="" src="https://www.googletagmanager.com/gtag/js?id=G-WQGXFYZVTH">
+  </script>
+  <script>
+   window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag("js",new Date());gtag("config","G-WQGXFYZVTH");
+  </script>
+ </head>
+ <body class="fow-redesign">
+  <a class="skip-link" href="#main">
+   Skip to content
+  </a>
+  <nav aria-label="Main navigation" class="site-nav">
+   <div class="nav-container">
+    <a aria-label="Fluff On Wheels — The Experience" class="logo" href="index.html">
+     <img alt="Fluff On Wheels" class="logo-img" height="80" src="finallogo.webp" width="100"/>
+    </a>
     <ul class="nav-links">
-      <li><a href="index.html#home">Home</a></li>
-      <li><a href="index.html#what-we-do">The Experience</a></li>
-      <li><a href="pricing.html">Pricing</a></li>
-      <li><a href="gallery.html">Gallery</a></li>
-      <li><a href="stuff-at-home.html">Fluff At Home</a></li>
-<li class="dropdown">
-        <button class="dropdown-toggle" type="button">Explore</button>
-        <div class="dropdown-menu">
-          <a href="about.html">Our Story</a>
-          <a href="faq.html">FAQ</a>
-          <a href="policies.html">Policies</a>
-        </div>
-      </li>
-      <li><a href="index.html#contact" class="btn btn-primary header-book-btn">Book Your Experience</a></li>
+     <li>
+      <a href="index.html">
+       The Experience
+      </a>
+     </li>
+     <li class="dropdown">
+      <button aria-controls="events-menu" aria-expanded="false" class="dropdown-toggle" type="button">
+       Events
+      </button>
+      <div class="dropdown-menu" id="events-menu">
+       <a href="large-events.html">
+        Large Events
+       </a>
+       <a href="pricing.html">
+        Birthday Parties
+       </a>
+      </div>
+     </li>
+     <li>
+      <a href="meet-the-crew.html">
+       Meet the Crew
+      </a>
+     </li>
+     <li class="dropdown">
+      <button aria-controls="explore-menu" aria-expanded="false" class="dropdown-toggle" type="button">
+       Explore
+      </button>
+      <div class="dropdown-menu" id="explore-menu">
+       <a href="gallery.html">
+        Gallery
+       </a>
+       <a href="about.html">
+        About Us
+       </a>
+       <a href="stuff-at-home.html">
+        Fluff at Home
+       </a>
+       <a href="faq.html">
+        FAQ &amp; Policies
+       </a>
+      </div>
+     </li>
     </ul>
-    <a class="swl-header-cart" href="cart.html" aria-label="View shopping cart"><i class="fa-solid fa-bag-shopping" aria-hidden="true"></i><span class="swl-cart-label">Cart</span><span data-cart-count>0</span></a>
-<button onclick="toggleMobile()" class="mobile-toggle" type="button" aria-label="Open mobile menu" aria-expanded="false">☰</button>
+    <a class="btn btn-primary nav-plan" href="large-events.html">
+     Plan Your Event
+    </a>
+    <a aria-label="View shopping cart" class="swl-header-cart" hidden="" href="cart.html">
+     <i aria-hidden="true" class="fa-solid fa-bag-shopping">
+     </i>
+     <span class="swl-cart-label">
+      Cart
+     </span>
+     <span data-cart-count="">
+      0
+     </span>
+    </a>
+    <button aria-controls="mobileMenu" aria-expanded="false" aria-label="Open navigation menu" class="mobile-toggle" type="button">
+     ☰
+    </button>
+   </div>
+  </nav>
+  <div class="mobile-menu" hidden="" id="mobileMenu">
+   <a href="index.html">
+    The Experience
+   </a>
+   <span class="mobile-group">
+    Events
+   </span>
+   <a href="large-events.html">
+    Large Events
+   </a>
+   <a href="pricing.html">
+    Birthday Parties
+   </a>
+   <a href="meet-the-crew.html">
+    Meet the Crew
+   </a>
+   <span class="mobile-group">
+    Explore
+   </span>
+   <a href="gallery.html">
+    Gallery
+   </a>
+   <a href="about.html">
+    About Us
+   </a>
+   <a href="stuff-at-home.html">
+    Fluff at Home
+   </a>
+   <a href="faq.html">
+    FAQ &amp; Policies
+   </a>
   </div>
-</nav>
-
-
-    <!-- ===========================
-         Mobile Menu
-    =========================== -->
-
-    <div class="mobile-menu" id="mobileMenu">
-<a href="stuff-at-home.html">Fluff At Home</a>
-  <a href="index.html#home">Home</a>
-  <a href="index.html#what-we-do">The Experience</a>
-  <a href="pricing.html">Pricing</a>
-  <a href="gallery.html">Gallery</a>
-  <a href="about.html">Our Story</a>
-  <a href="faq.html">FAQ</a>
-  <a href="policies.html">Policies</a>
-  <a href="index.html#contact" class="mobile-book">Book Your Experience</a>
-</div><main>
-    <!-- ===========================
-         FAQ Section
-    =========================== -->
-
-    <section id="faq">
-
-        <div class="section-header">
-            <h2>Questions? We've Got You Covered!</h2>
-
-            <p>
-                Everything you need to know before booking your
-                Fluff On Wheels experience.
-            </p>
-        </div>
-
-        <div class="faq-container">
-
-            <!-- FAQ 1 -->
-            <div class="faq-item">
-                <button class="faq-question" type="button">
-                    <span>What is the Fluff On Wheels experience?</span>
-                    <span class="faq-icon">+</span>
-                </button>
-                <div class="faq-answer">
-                    <p>
-                        More than entertainment, it is an unforgettable interactive
+  <main id="main">
+   <section class="fow-page-hero fow-wrap">
+    <span class="eyebrow">
+     GOOD QUESTIONS. CLEAR ANSWERS.
+    </span>
+    <h1>
+     A little planning.
+     <br/>
+     A lot of happy.
+    </h1>
+    <p>
+     Find the practical details here, then get back to dreaming up your event.
+    </p>
+   </section>
+   <section class="fow-wrap fow-faq-wrap">
+    <div class="fow-buttons">
+     <a class="btn btn-secondary" href="#questions">
+      Common Questions
+     </a>
+     <a class="btn btn-secondary" href="#policies">
+      Booking Policies
+     </a>
+    </div>
+    <h2 id="questions">
+     Before the fluff flies.
+    </h2>
+    <details class="fow-faq">
+     <summary>
+      What is the Fluff On Wheels experience?
+     </summary>
+     <div>
+      <p>
+       More than entertainment, it is an unforgettable interactive
                         experience where every guest creates memories they will treasure
                         long after the event is over.
-                    </p>
-
-                    <p>
-                        We transform your space into a charming little world where children
+      </p>
+      <p>
+       We transform your space into a charming little world where children
                         become the creators of their very own plush friends. Guests choose their plush, help fill it at our stuffing station with guidance from our team, and name their new friend on a keepsake certificate.
-                    </p>
-
-                    <p>
-                        Guests can explore our interactive felt activity wall, visit the
+      </p>
+      <p>
+       Guests can explore our interactive felt activity wall, visit the
                         Friend Hotel, snap photos in our themed photo area, and, with select
                         packages, browse our adorable boutique for extra accessories. Every
                         child leaves with a personalized plush, special keepsakes, and
                         wonderful memories.
-                    </p>
-                </div>
-            </div>
-
-            <!-- FAQ 2 -->
-            <div class="faq-item">
-                <button class="faq-question" type="button">
-                    <span>What ages are your stuffed animal events best for?</span>
-                    <span class="faq-icon">+</span>
-                </button>
-                <div class="faq-answer">
-                    <p>
-                        Our experiences are most popular with children ages 3–12, but guests
+      </p>
+      <p>
+       Every event and package also includes our wishing ceremony, where guests add a little magic to bring their friend to life.
+      </p>
+     </div>
+    </details>
+    <details class="fow-faq">
+     <summary>
+      What ages are your stuffed animal events best for?
+     </summary>
+     <div>
+      <p>
+       Our experiences are most popular with children ages 3–12, but guests
                         of all ages can enjoy creating their own plush friend. Younger
                         children may need a little help from a parent or guardian, while
                         older children and adults often enjoy the experience just as much.
-                    </p>
-                </div>
-            </div>
-
-            <!-- FAQ 3 -->
-            <div class="faq-item">
-                <button class="faq-question" type="button">
-                    <span>What is included in a Fluff On Wheels event?</span>
-                    <span class="faq-icon">+</span>
-                </button>
-                <div class="faq-answer">
-                    <p>
-                        Every Fluff On Wheels package includes everything needed to create
+      </p>
+     </div>
+    </details>
+    <details class="fow-faq">
+     <summary>
+      What is included in a Fluff On Wheels event?
+     </summary>
+     <div>
+      <p>
+       Every Fluff On Wheels package includes everything needed to create
                         a magical plush-building experience. Guests receive a premium plush,
                         stuffing, a birth certificate, and a take-home bag.
-                    </p>
-
-                    <p>
-                        We also provide professional setup, friendly on-site staff, and
+      </p>
+      <p>
+       We also provide professional setup, friendly on-site staff, and
                         interactive experience stations, including our stuffing station,
                         Friend Hotel, themed photo area, and felt activity wall. Select
                         packages may also include our plush boutique, accessories, outfits,
                         and other premium add-ons.
-                    </p>
-                </div>
-            </div>
-
-            <!-- FAQ 4 -->
-            <div class="faq-item">
-                <button class="faq-question" type="button">
-                    <span>Do you require a deposit?</span>
-                    <span class="faq-icon">+</span>
-                </button>
-                <div class="faq-answer">
-                    <p>
-                        Yes. A deposit is required to reserve your event date and secure your
+      </p>
+      <p>
+       Every event and package also includes our wishing ceremony, where guests add a little magic to bring their friend to life.
+      </p>
+     </div>
+    </details>
+    <details class="fow-faq">
+     <summary>
+      Do you require a deposit?
+     </summary>
+     <div>
+      <p>
+       Yes. A deposit is required to reserve your event date and secure your
                         booking. Deposit amounts, payment schedules, cancellation details,
                         and rescheduling information can be found on our
-                        <a href="policies.html">Policies Page</a>.
-                    </p>
-
-                    <p>
-                        Please contact us anytime if you have questions about payment or
+       <a href="#policies">
+        Policies Page
+       </a>
+       .
+      </p>
+      <p>
+       Please contact us anytime if you have questions about payment or
                         booking.
-                    </p>
-                </div>
-            </div>
-
-            <!-- FAQ 5 -->
-            <div class="faq-item">
-                <button class="faq-question" type="button">
-                    <span>How much space is needed for a Fluff On Wheels event?</span>
-                    <span class="faq-icon">+</span>
-                </button>
-                <div class="faq-answer">
-                    <p>
-                        We can set up indoors or outdoors and are happy to work with your
+      </p>
+     </div>
+    </details>
+    <details class="fow-faq">
+     <summary>
+      How much space is needed for a Fluff On Wheels event?
+     </summary>
+     <div>
+      <p>
+       We can set up indoors or outdoors and are happy to work with your
                         space. Our full Fluff On Wheels experience, including the stuffing
                         station, interactive activity area, Friend Hotel, themed photo spot,
                         and optional boutique, fits comfortably in an area about the size of
                         one standard parking space.
-                    </p>
-
-                    <p>
-                        Do not have that much room? No problem. We can customize our setup to
+      </p>
+      <p>
+       Do not have that much room? No problem. We can customize our setup to
                         fit smaller spaces while still creating a magical experience for
                         your guests.
-                    </p>
-
-                    <p>
-                        Even better, we bring our own power source, so no electrical outlet
-                        is required.
-                    </p>
-
-                    <p>
-                        Not sure whether your space will work? Simply send us a photo of your
+      </p>
+      <p>
+       We’ll confirm power access and the right setup for your location during planning.
+      </p>
+      <p>
+       Not sure whether your space will work? Simply send us a photo of your
                         event space, and we will help design the perfect setup.
-                    </p>
-                </div>
-            </div>
-
-            <!-- FAQ 6 -->
-            <div class="faq-item">
-                <button class="faq-question" type="button">
-                    <span>How far in advance should I book?</span>
-                    <span class="faq-icon">+</span>
-                </button>
-                <div class="faq-answer">
-                    <p>
-                        We recommend booking as early as possible, especially for weekends,
+      </p>
+     </div>
+    </details>
+    <details class="fow-faq">
+     <summary>
+      How far in advance should I book?
+     </summary>
+     <div>
+      <p>
+       We recommend booking as early as possible, especially for weekends,
                         school breaks, holiday events, and other popular dates.
-                    </p>
-
-                    <p>
-                        However, please feel free to contact us even if your event is coming
+      </p>
+      <p>
+       However, please feel free to contact us even if your event is coming
                         up soon. If we have availability and can secure the necessary
                         supplies, we may still be able to accommodate your celebration.
-                    </p>
-                </div>
-            </div>
-
-            <!-- FAQ 7 -->
-            <div class="faq-item">
-                <button class="faq-question" type="button">
-                    <span>Do you travel outside of Green Bay?</span>
-                    <span class="faq-icon">+</span>
-                </button>
-                <div class="faq-answer">
-                    <p>
-                        Yes! We proudly serve Green Bay and surrounding communities
+      </p>
+     </div>
+    </details>
+    <details class="fow-faq">
+     <summary>
+      Do you travel outside of Green Bay?
+     </summary>
+     <div>
+      <p>
+       Yes! We proudly serve Green Bay and surrounding communities
                         throughout Northeast Wisconsin. Travel within our standard service
                         area may be included depending on the package, while events farther
                         away may require a small travel fee.
-                    </p>
-
-                    <p>
-                        Contact us with your event location, and we will provide clear travel
+      </p>
+      <p>
+       Contact us with your event location, and we will provide clear travel
                         details before you book.
-                    </p>
-                </div>
-            </div>
-
-            <!-- FAQ 8 -->
-            <div class="faq-item">
-                <button class="faq-question" type="button">
-                    <span>Can children choose their own plush?</span>
-                    <span class="faq-icon">+</span>
-                </button>
-                <div class="faq-answer">
-                    <p>
-                        Absolutely! Guests can choose from the plush friends available with
+      </p>
+     </div>
+    </details>
+    <details class="fow-faq">
+     <summary>
+      Can children choose their own plush?
+     </summary>
+     <div>
+      <p>
+       Absolutely! Guests can choose from the plush friends available with
                         their selected package. We offer a collection of classic favorites,
                         rotating options, and seasonal plushes depending on availability and
                         the type of event.
-                    </p>
-
-                    <p>
-                        Plush selections may vary, and specialty or custom options may be
+      </p>
+      <p>
+       Plush selections may vary, and specialty or custom options may be
                         available for larger events with advance notice.
-                    </p>
-                </div>
-            </div>
-
-            <!-- FAQ 9 -->
-            <div class="faq-item">
-                <button class="faq-question" type="button">
-                    <span>What if I do not know my final guest count yet?</span>
-                    <span class="faq-icon">+</span>
-                </button>
-                <div class="faq-answer">
-                    <p>
-                        That is completely understandable. Guest counts often change as an
+      </p>
+     </div>
+    </details>
+    <details class="fow-faq">
+     <summary>
+      What if I do not know my final guest count yet?
+     </summary>
+     <div>
+      <p>
+       That is completely understandable. Guest counts often change as an
                         event gets closer, and we will work with you throughout the planning
                         process.
-                    </p>
-
-                    <p>
-                        Your selected package secures the included number of participants.
+      </p>
+      <p>
+       Your selected package secures the included number of participants.
                         Additional guests may be added when supplies and scheduling allow.
                         Please let us know about any changes as early as possible so we can
                         prepare enough plushes, certificates, and take-home bags.
-                    </p>
-                </div>
-            </div>
-
-            <!-- FAQ 10 -->
-            <div class="faq-item">
-                <button class="faq-question" type="button">
-                    <span>How long does the Fluff On Wheels experience last?</span>
-                    <span class="faq-icon">+</span>
-                </button>
-                <div class="faq-answer">
-                    <p>
-                        Event length depends on the number of participants, selected package,
+      </p>
+     </div>
+    </details>
+    <details class="fow-faq">
+     <summary>
+      How long does the Fluff On Wheels experience last?
+     </summary>
+     <div>
+      <p>
+       Event length depends on the number of participants, selected package,
                         and event format. Most birthday experiences last approximately
                         60–90 minutes.
-                    </p>
-
-                    <p>
-                        Larger school, corporate, festival, and community events may be
+      </p>
+      <p>
+       Larger school, corporate, festival, and community events may be
                         structured over a longer timeframe so guests can move comfortably
                         through each station. We will recommend the best timing and setup
                         based on your event details.
-                    </p>
-                </div>
-            </div>
-
-            <!-- FAQ 11 -->
-            <div class="faq-item">
-                <button class="faq-question" type="button">
-                    <span>What happens if it rains during an outdoor event?</span>
-                    <span class="faq-icon">+</span>
-                </button>
-                <div class="faq-answer">
-                    <p>
-                        We will provide an outdoor canopy covering, but because our equipment, plushes, paperwork, and activity stations need
+      </p>
+     </div>
+    </details>
+    <details class="fow-faq">
+     <summary>
+      What happens if it rains during an outdoor event?
+     </summary>
+     <div>
+      <p>
+       We will provide an outdoor canopy covering, but because our equipment, plushes, paperwork, and activity stations need
                         to stay dry, outdoor events must have a safe backup plan in case of
                         heavy rain, strong wind, or severe weather.
-                    </p>
-
-                    <p>
-                        A covered indoor space, garage, pavilion, or alternate
+      </p>
+      <p>
+       A covered indoor space, garage, pavilion, or alternate
                         event area may work depending on the conditions. We will communicate
                         with you before the event and help determine the safest setup.
-                    </p>
-                </div>
-            </div>
-
-            <!-- FAQ 12 -->
-            <div class="faq-item">
-                <button class="faq-question" type="button">
-                    <span>Can you attend schools, festivals, and community events?</span>
-                    <span class="faq-icon">+</span>
-                </button>
-                <div class="faq-answer">
-                    <p>
-                        Absolutely! We love participating in school functions, daycare
+      </p>
+     </div>
+    </details>
+    <details class="fow-faq">
+     <summary>
+      Can you attend schools, festivals, and community events?
+     </summary>
+     <div>
+      <p>
+       Absolutely! We love participating in school functions, daycare
                         events, fairs, festivals, fundraisers, corporate family events,
                         employee celebrations, holiday gatherings, and community
                         celebrations.
-                    </p>
-
-                    <p>
-                        We can customize the event flow, setup, plush selection, and guest
+      </p>
+      <p>
+       We can customize the event flow, setup, plush selection, and guest
                         experience to fit both small private events and larger public
                         gatherings.
-                    </p>
-                </div>
-            </div>
-
-        </div>
-
-    </section>
-
-    <!-- ===========================
-         CTA
-    =========================== -->
-
-    <section class="about-cta">
-
-        <h2>Let's Create Something Special Together</h2>
-
-        <p>
-            Fluff On Wheels was created to bring families together through
-            hands-on experiences, imagination, and memories that last. We would
-            love to be part of your next celebration.
-        </p>
-
-        <a href="index.html#contact" class="btn btn-primary">
-            Contact Us
-        </a>
-
-    </section>
-
-    <!-- ===========================
-         Footer
-    =========================== -->
-
-    </main><footer class="site-footer">
-  <div class="footer-container">
+      </p>
+     </div>
+    </details>
+    <h2 id="policies">
+     Booking &amp; event policies
+    </h2>
+    <h3 class="fow-policy-group">
+     Booking Your Event
+    </h3>
+    <details class="fow-faq">
+     <summary>
+      Reservation Deposit
+     </summary>
+     <div>
+      <p>
+       A $100 deposit locks in your date and time. This deposit is
+                        non-refundable, and your event isn't officially on our calendar
+                        until it's received and we've confirmed your booking.
+      </p>
+     </div>
+    </details>
+    <details class="fow-faq">
+     <summary>
+      Final Payment
+     </summary>
+     <div>
+      <p>
+       The remaining balance is due on or before your event, unless
+                        we've made other arrangements ahead of time.
+      </p>
+      <p>
+       Schools, daycares, corporate partners, and nonprofit or community
+                        organizations can be invoiced according to the terms we agree on
+                        during booking.
+      </p>
+      <p>
+       We accept major credit cards and other approved electronic payment
+                        methods.
+      </p>
+     </div>
+    </details>
+    <details class="fow-faq">
+     <summary>
+      Guest Count
+     </summary>
+     <div>
+      <p>
+       We ask for your final guest count at least 7 days before the
+                        event. Your package includes a set number of participants.
+      </p>
+      <p>
+       Need to add more guests? We'll do our best to accommodate based on
+                        supply and staffing availability, billed at your package's
+                        per-guest rate.
+      </p>
+      <p>
+       The earlier you can let us know about changes, the better —
+                        it helps us make sure we bring enough plushes, certificates, and take-home bags for everyone.
+      </p>
+     </div>
+    </details>
+    <h3 class="fow-policy-group">
+     Changes &amp; Cancellations
+    </h3>
+    <details class="fow-faq">
+     <summary>
+      Cancellation Policy
+     </summary>
+     <div>
+      <p>
+       Reservation deposits are non-refundable.
+      </p>
+      <p>
+       Life happens — if you need to cancel more than 14 days before
+                        your event, we'll gladly transfer your deposit to one new date
+                        within the next 6 months, based on availability.
+      </p>
+      <p>
+       Cancellations within 14 days of the event will forfeit the
+                        deposit. Any custom, personalized, or special-order items already
+                        purchased or made for your event may also be non-refundable.
+      </p>
+     </div>
+    </details>
+    <details class="fow-faq">
+     <summary>
+      Rescheduling Policy
+     </summary>
+     <div>
+      <p>
+       We offer one complimentary reschedule when you let us know at
+                        least 14 days before your original event date.
+      </p>
+      <p>
+       Your new date needs to fall within 6 months and is subject to
+                        availability. Additional reschedules may come with a small fee.
+      </p>
+     </div>
+    </details>
+    <details class="fow-faq">
+     <summary>
+      Unforeseen Circumstances
+     </summary>
+     <div>
+      <p>
+       On the rare occasion something beyond our control keeps us from
+                        making it to your event, we'll work with you to reschedule or
+                        find a solution that feels fair.
+      </p>
+      <p>
+       This includes things like severe weather, unsafe travel
+                        conditions, power outages, government restrictions, equipment
+                        failure, illness, or other genuine emergencies.
+      </p>
+     </div>
+    </details>
+    <h3 class="fow-policy-group">
+     Travel &amp; Event Day
+    </h3>
+    <details class="fow-faq">
+     <summary>
+      Travel Policy
+     </summary>
+     <div>
+      <p>
+       Travel within 15 miles of Green Bay is always included, no extra
+                        charge.
+      </p>
+      <p>
+       Events further out may include a travel fee — but we'll always
+                        let you know the exact amount and get your okay before your
+                        booking is finalized.
+      </p>
+     </div>
+    </details>
+    <details class="fow-faq">
+     <summary>
+      Arrival &amp; Setup
+     </summary>
+     <div>
+      <p>
+       We typically arrive 30–45 minutes before your event start time
+                        to get everything set up.
+      </p>
+      <p>
+       Bigger events, custom installations, or extra experience stations
+                        may need a little more setup time.
+      </p>
+      <p>
+       We just ask that the setup area be clean, dry, accessible, and
+                        ready for us when we arrive.
+      </p>
+     </div>
+    </details>
+    <details class="fow-faq">
+     <summary>
+      Event Space Requirements
+     </summary>
+     <div>
+      <p>
+       Our full setup fits comfortably in a space about the size of one
+                        parking spot.
+      </p>
+      <p>
+       We're happy to set up indoors or outdoors and can adjust our
+                        layout for smaller spaces when needed. The area should be level,
+                        clean, dry, accessible, and free of hazards.
+      </p>
+      <p>
+       We’ll confirm power access and any equipment requirements with you during planning.
+      </p>
+     </div>
+    </details>
+    <details class="fow-faq">
+     <summary>
+      Event Start Time
+     </summary>
+     <div>
+      <p>
+       We'll start right at the scheduled time whenever possible.
+      </p>
+      <p>
+       If guests or the host run late, we may still need to end at the
+                        originally scheduled time so we can make it to our next
+                        commitment.
+      </p>
+     </div>
+    </details>
+    <details class="fow-faq">
+     <summary>
+      Weather Policy
+     </summary>
+     <div>
+      <p>
+       Planning an outdoor event? We just ask that you have a backup
+                        plan in place.
+      </p>
+      <p>
+       If rain, high winds, extreme temperatures, storms, or other
+                        unsafe conditions are in the forecast, we'll work with you to
+                        move things indoors or find a new date.
+      </p>
+      <p>
+       A covered pavilion or tent can work depending on conditions, as
+                        long as it fully protects our equipment, plushes, paperwork, and
+                        everyone involved.
+      </p>
+      <p>
+       The safety of our guests, staff, and supplies always comes first.
+      </p>
+     </div>
+    </details>
+    <h3 class="fow-policy-group">
+     Guests &amp; Safety
+    </h3>
+    <details class="fow-faq">
+     <summary>
+      Adult Supervision
+     </summary>
+     <div>
+      <p>
+       We'll bring the magic, but we need a responsible adult present
+                        the whole time. Our team runs the experience, we're not there
+                        to supervise kids.
+      </p>
+      <p>
+       Parents, guardians, hosts, and event organizers stay responsible
+                        for guest behavior and supervision throughout.
+      </p>
+     </div>
+    </details>
+    <details class="fow-faq">
+     <summary>
+      Guest Safety
+     </summary>
+     <div>
+      <p>
+       We work hard to keep things fun, organized, and safe. We ask
+                        guests to follow the instructions our team gives during the
+                        event.
+      </p>
+      <p>
+       Parents, guardians, and hosts are best positioned to know
+                        whether certain activities, accessories, or small pieces are
+                        appropriate for each participant.
+      </p>
+      <p>
+       Fluff On Wheels isn't responsible for injuries resulting from
+                        unsafe behavior, not following instructions, inadequate
+                        supervision, or conditions at the host's venue.
+      </p>
+     </div>
+    </details>
+    <details class="fow-faq">
+     <summary>
+      Food &amp; Beverages
+     </summary>
+     <div>
+      <p>
+       To help keep our stuffing machine, plushes, certificates, and
+                        supplies in good shape, we kindly ask that food and drinks stay
+                        away from our setup when possible.
+      </p>
+      <p>
+       Please let us know ahead of time about any venue restrictions,
+                        allergy concerns, or accommodations we should be aware of.
+      </p>
+     </div>
+    </details>
+    <details class="fow-faq">
+     <summary>
+      Personal Belongings
+     </summary>
+     <div>
+      <p>
+       We're not able to take responsibility for lost, stolen, damaged,
+                        or unattended personal belongings during an event.
+      </p>
+     </div>
+    </details>
+    <h3 class="fow-policy-group">
+     Plushes, Supplies &amp; Customization
+    </h3>
+    <details class="fow-faq">
+     <summary>
+      Equipment &amp; Supplies
+     </summary>
+     <div>
+      <p>
+       We do everything we can to bring the plush styles, clothing, and
+                        accessories you've requested.
+      </p>
+      <p>
+       Every so often, supplier delays, inventory changes, or
+                        discontinued products mean we need to substitute with a
+                        comparable option of equal or greater value.
+      </p>
+     </div>
+    </details>
+    <details class="fow-faq">
+     <summary>
+      Plush Selection
+     </summary>
+     <div>
+      <p>
+       Plush options depend on availability and can vary by package,
+                        season, event size, and what our suppliers have in stock.
+      </p>
+      <p>
+       Unless we've confirmed a specific plush selection with you in
+                        writing, we'll bring an assortment of available friends for
+                        guests to choose from.
+      </p>
+     </div>
+    </details>
+    <details class="fow-faq">
+     <summary>
+      Custom Items &amp; Themes
+     </summary>
+     <div>
+      <p>
+       We love helping bring your vision to life! Custom vinyl designs,
+                        themed items, personalized apparel, specialty plushes, branded
+                        accessories, and other special requests need at least 14 days'
+                        notice.
+      </p>
+      <p>
+       Larger custom orders, corporate branding, or specialty products
+                        may need extra production time.
+      </p>
+      <p>
+       We'll always do our best to make your custom request happen, but
+                        availability, design complexity, materials, and production
+                        timelines can sometimes limit what's possible.
+      </p>
+      <p>
+       If we ever need to decline or adjust a custom request, we'll
+                        communicate clearly and work with you to find something you'll
+                        love just as much.
+      </p>
+     </div>
+    </details>
+    <details class="fow-faq">
+     <summary>
+      Personalized &amp; Special-Order Items
+     </summary>
+     <div>
+      <p>
+       Personalized, branded, or special-order items usually can't be
+                        reused for another event, so they may be non-refundable once
+                        we've started production or purchasing.
+      </p>
+     </div>
+    </details>
+    <h3 class="fow-policy-group">
+     Photography &amp; Promotion
+    </h3>
+    <details class="fow-faq">
+     <summary>
+      Photography
+     </summary>
+     <div>
+      <p>
+       We love capturing the sweet moments from our events. With
+                        permission, photos or videos may be used on our website, social
+                        media, promotional materials, and business listings.
+      </p>
+      <p>
+       If you'd rather certain guests not be photographed, just let us
+                        know before the event — we'll always honor that.
+      </p>
+      <p>
+       For schools, corporate events, and organizations with their own
+                        media policies, we'll follow whatever photography guidelines
+                        you provide.
+      </p>
+     </div>
+    </details>
+   </section>
+   <section class="fow-wrap fow-cta">
+    <span class="eyebrow">
+     LET’S MAKE SOME MEMORIES
+    </span>
+    <h2>
+     Still have a question?
+    </h2>
+    <p>
+     Tell us what you’re planning and we’ll help with the details.
+    </p>
+    <a class="btn btn-primary" href="large-events.html">
+     Plan Your Event
+     <span aria-hidden="true">
+      ↗
+     </span>
+    </a>
+   </section>
+  </main>
+  <footer class="site-footer">
+   <div class="footer-container">
     <div class="footer-column footer-brand">
-      <img src="finallogo.webp" alt="Fluff On Wheels Logo" class="footer-logo">
-      <p>Creating unforgettable memories one stuffed friend at a time.</p>
+     <a href="index.html">
+      <img alt="Fluff On Wheels" class="footer-logo" loading="lazy" src="finallogo.webp"/>
+     </a>
+     <p>
+      We Bring the Plush Party to You!
+     </p>
+     <p class="footer-note">
+      Family-owned in Green Bay.
+      <br/>
+      Making memories across Northeast Wisconsin.
+     </p>
     </div>
     <div class="footer-column">
-      <h4>Explore</h4><a href="stuff-at-home.html">Fluff At Home</a>
-      <a href="index.html">Home</a><a href="about.html">Our Story</a><a href="gallery.html">Gallery</a>
-      <a href="pricing.html">Pricing</a><a href="faq.html">FAQ</a><a href="policies.html">Policies</a>
+     <h4>
+      Find your fun
+     </h4>
+     <a href="index.html">
+      The Experience
+     </a>
+     <a href="large-events.html">
+      Large Events
+     </a>
+     <a href="pricing.html">
+      Birthday Parties
+     </a>
+     <a href="meet-the-crew.html">
+      Meet the Crew
+     </a>
     </div>
     <div class="footer-column">
-      <h4>Bookings</h4>
-      <a href="index.html#contact">Book Your Experience</a>
-      <a href="mailto:hello@fluffonwheels.com">hello@fluffonwheels.com</a>
-      <a href="tel:+19206648282">(920) 664-8282</a>
-      <p class="footer-note">Green Bay + Northeast Wisconsin</p>
+     <h4>
+      A little more fluff
+     </h4>
+     <a href="gallery.html">
+      Gallery
+     </a>
+     <a href="about.html">
+      About Us
+     </a>
+     <a href="stuff-at-home.html">
+      Fluff at Home
+     </a>
+     <a href="faq.html">
+      FAQ &amp; Policies
+     </a>
     </div>
-    <div class="footer-column social-column">
-      <h4>Follow Along</h4>
-      <div class="social-icons">
-        <a href="https://www.facebook.com/fluffonwheelsgb" target="_blank" rel="noopener noreferrer" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
-        <a href="https://www.instagram.com/fluffonwheelsgb/" target="_blank" rel="noopener noreferrer" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
-        <a href="https://www.tiktok.com/@fluffonwheelsgb" target="_blank" rel="noopener noreferrer" aria-label="TikTok"><i class="fab fa-tiktok"></i></a>
-      </div>
+    <div class="footer-column">
+     <h4>
+      Let’s make it happen
+     </h4>
+     <a href="large-events.html">
+      Plan Your Event
+     </a>
+     <a href="mailto:hello@fluffonwheels.com">
+      hello@fluffonwheels.com
+     </a>
+     <a href="tel:+19206648282">
+      (920) 664-8282
+     </a>
+     <div class="social-icons">
+      <a aria-label="Facebook" href="https://www.facebook.com/fluffonwheelsgb" rel="noopener noreferrer" target="_blank">
+       <i class="fab fa-facebook-f">
+       </i>
+      </a>
+      <a aria-label="Instagram" href="https://www.instagram.com/fluffonwheelsgb/" rel="noopener noreferrer" target="_blank">
+       <i class="fab fa-instagram">
+       </i>
+      </a>
+      <a aria-label="TikTok" href="https://www.tiktok.com/@fluffonwheelsgb" rel="noopener noreferrer" target="_blank">
+       <i class="fab fa-tiktok">
+       </i>
+      </a>
+     </div>
     </div>
-  </div>
-  <div class="footer-bottom">© 2026 Fluff On Wheels • Green Bay, Wisconsin • Made for happy memories</div>
-</footer>
-
-    <script>
-        function toggleMobile() {
-            const menu = document.getElementById("mobileMenu");
-
-            if (menu) {
-                const open = menu.classList.toggle("active");
-                document.querySelector(".mobile-toggle")?.setAttribute("aria-expanded", String(open));
-            }
-        }
-
-        document.addEventListener("click", function (event) {
-            const menu = document.getElementById("mobileMenu");
-            const toggle = document.querySelector(".mobile-toggle");
-
-            if (
-                menu &&
-                toggle &&
-                !menu.contains(event.target) &&
-                !toggle.contains(event.target)
-            ) {
-                menu.classList.remove("active");
-            }
-        });
-
-        document.addEventListener("DOMContentLoaded", function () {
-            const nav = document.querySelector("nav");
-
-            if (!nav) {
-                return;
-            }
-
-            window.addEventListener("scroll", function () {
-                if (window.scrollY > 50) {
-                    nav.classList.add("shrink");
-                } else {
-                    nav.classList.remove("shrink");
-                }
-            });
-        });
-
-        // ===========================
-        // FAQ Accordion
-        // ===========================
-        document.addEventListener("DOMContentLoaded", function () {
-            const faqItems = document.querySelectorAll(".faq-item");
-
-            faqItems.forEach(function (item) {
-                const question = item.querySelector(".faq-question");
-                const answer = item.querySelector(".faq-answer");
-
-                question.addEventListener("click", function () {
-                    const isOpen = item.classList.contains("active");
-
-                    // Close all other open items (remove this loop if you want
-                    // multiple answers open at once instead of one-at-a-time)
-                    faqItems.forEach(function (otherItem) {
-                        otherItem.classList.remove("active");
-                        otherItem.querySelector(".faq-answer").style.maxHeight = null;
-                    });
-
-                    if (!isOpen) {
-                        item.classList.add("active");
-                        answer.style.maxHeight = answer.scrollHeight + "px";
-                    }
-                });
-            });
-        });
-    </script>
-
-    <script src="shop.js?v=20261010-fow" defer></script>
-</body>
-    </html>
+   </div>
+   <div class="footer-bottom">
+    © 2026 Fluff On Wheels · A little fluff. A lasting friendship.
+   </div>
+  </footer>
+  <script defer="" src="site.js?v=20261022-redesign">
+  </script>
+  <script defer="" src="shop.js?v=20261022-redesign">
+  </script>
+ </body>
+</html>
