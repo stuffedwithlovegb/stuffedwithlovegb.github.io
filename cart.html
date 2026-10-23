@@ -1,98 +1,257 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<link rel="icon" type="image/png" href="favicon.png">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Bubblegum+Sans&family=Fredoka:wght@400;500;600;700&family=Fredoka:wght@400;500;600;700&family=Nunito:wght@400;600;700;800&family=Quicksand:wght@500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css?v=20261010-fow">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-
-<title>Your Cart | Fluff On Wheels</title>
-<meta name="description" content="Stuff your own plush friend at home. Shop DIY plush kits and birthday boxes from Fluff On Wheels in Green Bay.">
-<meta name="robots" content="noindex"></head>
-<body>
-<nav class="site-nav">
-  <div class="nav-container">
-    <a href="index.html" class="logo"><img src="finallogo.webp" alt="Fluff On Wheels" class="logo-img"></a>
-    <div class="header-tagline">We Bring the Plush Party to You!</div>
+ <head>
+  <meta charset="utf-8"/>
+  <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+  <title>
+   Your Cart | Fluff On Wheels
+  </title>
+  <meta content="Check your Fluff at Home selections before checkout." name="description"/>
+  <meta content="noindex" name="robots"/>
+  <link href="favicon.png" rel="icon"/>
+  <link href="https://fonts.googleapis.com" rel="preconnect"/>
+  <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+  <link href="https://fonts.googleapis.com/css2?family=Bubblegum+Sans&amp;family=Fredoka:wght@400;500;600;700&amp;family=Nunito:wght@400;600;700;800&amp;family=Quicksand:wght@500;600;700&amp;display=swap" rel="stylesheet"/>
+  <link href="style.css?v=20261022-redesign" rel="stylesheet"/>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet"/>
+  <script async="" src="https://www.googletagmanager.com/gtag/js?id=G-WQGXFYZVTH">
+  </script>
+  <script>
+   window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag("js",new Date());gtag("config","G-WQGXFYZVTH");
+  </script>
+ </head>
+ <body class="fow-redesign">
+  <a class="skip-link" href="#main">
+   Skip to content
+  </a>
+  <nav aria-label="Main navigation" class="site-nav">
+   <div class="nav-container">
+    <a aria-label="Fluff On Wheels — The Experience" class="logo" href="index.html">
+     <img alt="Fluff On Wheels" class="logo-img" height="80" src="finallogo.webp" width="100"/>
+    </a>
     <ul class="nav-links">
-      <li><a href="index.html#home">Home</a></li>
-      <li><a href="index.html#what-we-do">The Experience</a></li>
-      <li><a href="pricing.html">Pricing</a></li>
-      <li><a href="gallery.html">Gallery</a></li>
-      <li><a href="stuff-at-home.html">Fluff At Home</a></li>
-<li class="dropdown">
-        <button class="dropdown-toggle" type="button">Explore</button>
-        <div class="dropdown-menu">
-          <a href="about.html">Our Story</a>
-          <a href="faq.html">FAQ</a>
-          <a href="policies.html">Policies</a>
-        </div>
-      </li>
-      <li><a href="index.html#contact" class="btn btn-primary header-book-btn">Book Your Experience</a></li>
-    </ul>
-    <a class="swl-header-cart" href="cart.html" aria-label="View shopping cart"><i class="fa-solid fa-bag-shopping" aria-hidden="true"></i><span class="swl-cart-label">Cart</span><span data-cart-count>0</span></a>
-<button class="mobile-toggle" type="button" aria-label="Open mobile menu" aria-expanded="false">☰</button>
-  </div>
-</nav>
-<div class="mobile-menu" id="mobileMenu">
-<a href="stuff-at-home.html">Fluff At Home</a>
-  <a href="index.html#home">Home</a>
-  <a href="index.html#what-we-do">The Experience</a>
-  <a href="pricing.html">Pricing</a>
-  <a href="gallery.html">Gallery</a>
-  <a href="about.html">Our Story</a>
-  <a href="faq.html">FAQ</a>
-  <a href="policies.html">Policies</a>
-  <a href="index.html#contact" class="mobile-book">Book Your Experience</a>
-</div>
-<main class="swl-shop"><section class="swl-shop-wrap swl-shop-section"><span class="eyebrow">YOUR CUDDLE CREW</span><h1>Your bag of happy.</h1><p>Double-check your friends and personal touches before checkout.</p><div class="swl-cart-layout"><div id="cart-items"></div><aside class="swl-order-summary"><h2>A little happiness, added up.</h2><div class="swl-summary-row"><span>Items subtotal</span><strong id="cart-subtotal">$0.00</strong></div><p class="swl-fine">Shipping and applicable tax are calculated at checkout.</p><a id="cart-checkout" href="checkout.html" class="btn btn-primary">Continue to Checkout</a><a href="stuff-at-home.html" class="swl-text-link">Keep choosing friends →</a><p class="swl-fine">Your cart is saved in this browser. Personalized names apply to every kit in that cart line.</p></aside></div><p id="cart-storage-status" role="status"></p></section></main><footer class="site-footer">
-  <div class="footer-container">
-    <div class="footer-column footer-brand">
-      <img src="finallogo.webp" alt="Fluff On Wheels Logo" class="footer-logo">
-      <p>Creating unforgettable memories one stuffed friend at a time.</p>
-    </div>
-    <div class="footer-column">
-      <h4>Explore</h4><a href="stuff-at-home.html">Fluff At Home</a>
-      <a href="index.html">Home</a><a href="about.html">Our Story</a><a href="gallery.html">Gallery</a>
-      <a href="pricing.html">Pricing</a><a href="faq.html">FAQ</a><a href="policies.html">Policies</a>
-    </div>
-    <div class="footer-column">
-      <h4>Bookings</h4>
-      <a href="index.html#contact">Book Your Experience</a>
-      <a href="mailto:hello@fluffonwheels.com">hello@fluffonwheels.com</a>
-      <a href="tel:+19206648282">(920) 664-8282</a>
-      <p class="footer-note">Green Bay + Northeast Wisconsin</p>
-    </div>
-    <div class="footer-column social-column">
-      <h4>Follow Along</h4>
-      <div class="social-icons">
-        <a href="https://www.facebook.com/fluffonwheelsgb" target="_blank" rel="noopener noreferrer" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
-        <a href="https://www.instagram.com/fluffonwheelsgb/" target="_blank" rel="noopener noreferrer" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
-        <a href="https://www.tiktok.com/@fluffonwheelsgb" target="_blank" rel="noopener noreferrer" aria-label="TikTok"><i class="fab fa-tiktok"></i></a>
+     <li>
+      <a href="index.html">
+       The Experience
+      </a>
+     </li>
+     <li class="dropdown">
+      <button aria-controls="events-menu" aria-expanded="false" class="dropdown-toggle" type="button">
+       Events
+      </button>
+      <div class="dropdown-menu" id="events-menu">
+       <a href="large-events.html">
+        Large Events
+       </a>
+       <a href="pricing.html">
+        Birthday Parties
+       </a>
       </div>
-    </div>
+     </li>
+     <li>
+      <a href="meet-the-crew.html">
+       Meet the Crew
+      </a>
+     </li>
+     <li class="dropdown">
+      <button aria-controls="explore-menu" aria-expanded="false" class="dropdown-toggle" type="button">
+       Explore
+      </button>
+      <div class="dropdown-menu" id="explore-menu">
+       <a href="gallery.html">
+        Gallery
+       </a>
+       <a href="about.html">
+        About Us
+       </a>
+       <a href="stuff-at-home.html">
+        Fluff at Home
+       </a>
+       <a href="faq.html">
+        FAQ &amp; Policies
+       </a>
+      </div>
+     </li>
+    </ul>
+    <a class="btn btn-primary nav-plan" href="large-events.html">
+     Plan Your Event
+    </a>
+    <a aria-label="View shopping cart" class="swl-header-cart" hidden="" href="cart.html">
+     <i aria-hidden="true" class="fa-solid fa-bag-shopping">
+     </i>
+     <span class="swl-cart-label">
+      Cart
+     </span>
+     <span data-cart-count="">
+      0
+     </span>
+    </a>
+    <button aria-controls="mobileMenu" aria-expanded="false" aria-label="Open navigation menu" class="mobile-toggle" type="button">
+     ☰
+    </button>
+   </div>
+  </nav>
+  <div class="mobile-menu" hidden="" id="mobileMenu">
+   <a href="index.html">
+    The Experience
+   </a>
+   <span class="mobile-group">
+    Events
+   </span>
+   <a href="large-events.html">
+    Large Events
+   </a>
+   <a href="pricing.html">
+    Birthday Parties
+   </a>
+   <a href="meet-the-crew.html">
+    Meet the Crew
+   </a>
+   <span class="mobile-group">
+    Explore
+   </span>
+   <a href="gallery.html">
+    Gallery
+   </a>
+   <a href="about.html">
+    About Us
+   </a>
+   <a href="stuff-at-home.html">
+    Fluff at Home
+   </a>
+   <a href="faq.html">
+    FAQ &amp; Policies
+   </a>
   </div>
-  <div class="footer-bottom">© 2026 Fluff On Wheels • Green Bay, Wisconsin • Made for happy memories</div>
-</footer>
-<script>
-(function(){
-  const nav=document.querySelector('.site-nav');
-  const toggle=document.querySelector('.mobile-toggle');
-  const menu=document.getElementById('mobileMenu');
-  if(toggle&&menu){
-    toggle.addEventListener('click',function(e){
-      e.stopPropagation();
-      const open=menu.classList.toggle('active');
-      toggle.setAttribute('aria-expanded',open?'true':'false');
-    });
-    menu.querySelectorAll('a').forEach(a=>a.addEventListener('click',()=>{menu.classList.remove('active');toggle.setAttribute('aria-expanded','false');}));
-    document.addEventListener('click',e=>{if(!menu.contains(e.target)&&!toggle.contains(e.target)){menu.classList.remove('active');toggle.setAttribute('aria-expanded','false');}});
-  }
-  if(nav) window.addEventListener('scroll',()=>nav.classList.toggle('shrink',window.scrollY>40),{passive:true});
-})();
-</script>
-<script src="shop.js?v=20261010-fow" defer></script></body></html>
+  <main class="swl-shop" id="main">
+   <section class="swl-shop-wrap swl-shop-section">
+    <span class="eyebrow">
+     YOUR CUDDLE CREW
+    </span>
+    <h1>
+     Your bag of happy.
+    </h1>
+    <p>
+     Double-check your friends and personal touches before checkout.
+    </p>
+    <div class="swl-cart-layout">
+     <div id="cart-items">
+     </div>
+     <aside class="swl-order-summary">
+      <h2>
+       A little happiness, added up.
+      </h2>
+      <div class="swl-summary-row">
+       <span>
+        Items subtotal
+       </span>
+       <strong id="cart-subtotal">
+        $0.00
+       </strong>
+      </div>
+      <p class="swl-fine">
+       Shipping and applicable tax are calculated at checkout.
+      </p>
+      <a class="btn btn-primary" hidden="" href="checkout.html" id="cart-checkout">
+       Continue to Checkout
+      </a>
+      <a class="swl-text-link" href="stuff-at-home.html">
+       Keep choosing friends →
+      </a>
+      <p class="swl-fine">
+       Your cart is saved in this browser. Personalized names apply to every kit in that cart line.
+      </p>
+     </aside>
+    </div>
+    <p id="cart-storage-status" role="status">
+    </p>
+   </section>
+  </main>
+  <footer class="site-footer">
+   <div class="footer-container">
+    <div class="footer-column footer-brand">
+     <a href="index.html">
+      <img alt="Fluff On Wheels" class="footer-logo" loading="lazy" src="finallogo.webp"/>
+     </a>
+     <p>
+      We Bring the Plush Party to You!
+     </p>
+     <p class="footer-note">
+      Family-owned in Green Bay.
+      <br/>
+      Making memories across Northeast Wisconsin.
+     </p>
+    </div>
+    <div class="footer-column">
+     <h4>
+      Find your fun
+     </h4>
+     <a href="index.html">
+      The Experience
+     </a>
+     <a href="large-events.html">
+      Large Events
+     </a>
+     <a href="pricing.html">
+      Birthday Parties
+     </a>
+     <a href="meet-the-crew.html">
+      Meet the Crew
+     </a>
+    </div>
+    <div class="footer-column">
+     <h4>
+      A little more fluff
+     </h4>
+     <a href="gallery.html">
+      Gallery
+     </a>
+     <a href="about.html">
+      About Us
+     </a>
+     <a href="stuff-at-home.html">
+      Fluff at Home
+     </a>
+     <a href="faq.html">
+      FAQ &amp; Policies
+     </a>
+    </div>
+    <div class="footer-column">
+     <h4>
+      Let’s make it happen
+     </h4>
+     <a href="large-events.html">
+      Plan Your Event
+     </a>
+     <a href="mailto:hello@fluffonwheels.com">
+      hello@fluffonwheels.com
+     </a>
+     <a href="tel:+19206648282">
+      (920) 664-8282
+     </a>
+     <div class="social-icons">
+      <a aria-label="Facebook" href="https://www.facebook.com/fluffonwheelsgb" rel="noopener noreferrer" target="_blank">
+       <i class="fab fa-facebook-f">
+       </i>
+      </a>
+      <a aria-label="Instagram" href="https://www.instagram.com/fluffonwheelsgb/" rel="noopener noreferrer" target="_blank">
+       <i class="fab fa-instagram">
+       </i>
+      </a>
+      <a aria-label="TikTok" href="https://www.tiktok.com/@fluffonwheelsgb" rel="noopener noreferrer" target="_blank">
+       <i class="fab fa-tiktok">
+       </i>
+      </a>
+     </div>
+    </div>
+   </div>
+   <div class="footer-bottom">
+    © 2026 Fluff On Wheels · A little fluff. A lasting friendship.
+   </div>
+  </footer>
+  <script defer="" src="site.js?v=20261022-redesign">
+  </script>
+  <script defer="" src="shop.js?v=20261022-redesign">
+  </script>
+ </body>
+</html>
