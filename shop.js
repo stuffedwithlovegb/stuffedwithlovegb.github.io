@@ -2,6 +2,8 @@
 (function(){
 'use strict';
 const KEY='swl-stuff-at-home-cart-v1';
+// Cart-line identifiers also work in local HTTP previews. Payment IDs are unchanged.
+const uid=()=>globalThis.crypto?.randomUUID?crypto.randomUUID():Array.from(crypto.getRandomValues(new Uint8Array(16)),b=>b.toString(16).padStart(2,'0')).join('');
 const money=n=>new Intl.NumberFormat('en-US',{style:'currency',currency:'USD'}).format(n/100);
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const legacy={teddy:'Honey Teddy',dog:'Golden Retriever',dino:'Dino',unicorn:'Unicorn'};
@@ -19,7 +21,7 @@ function cleanChild(c){
 }
 function normalize(raw){if(!Array.isArray(raw))return [];return raw.slice(0,50).flatMap(r=>{try{
  const quantity=Math.max(1,Math.min(20,Math.floor(Number(r.quantity)||1)));
- const id=String(r.id||crypto.randomUUID());
+ const id=String(r.id||uid());
  if(r.kind==='kit')return [{id,kind:'kit',quantity,...cleanChild(r)}];
  if(r.kind==='birthday'&&Array.isArray(r.children)&&r.children.length===10)return [{id,kind:'birthday',quantity,children:r.children.map(cleanChild)}];
  }catch(e){}return [];});}
@@ -36,12 +38,13 @@ function save(){persist();render();window.dispatchEvent(new Event('swl-cart-chan
 function add(r){if(!available(r))throw Error('This friend is unavailable. Please refresh the shop.');
  const signature=x=>JSON.stringify({...x,id:undefined,quantity:undefined});const same=cart.find(x=>signature(x)===signature(r));
  if(same){if(same.quantity+r.quantity>20)throw Error('Please limit each selection to 20.');same.quantity+=r.quantity;}
- else{if(cart.length>=50)throw Error('Your cart is full. Please contact us for larger orders.');cart.push({...r,id:crypto.randomUUID()});}save();}
+ else{if(cart.length>=50)throw Error('Your cart is full. Please contact us for larger orders.');cart.push({...r,id:uid()});}save();}
 const extras=c=>[c.shirt?'Name shirt: '+c.shirtName:null,c.recorder?'Voice recorder':null].filter(Boolean).join(' · ')||'Kit only';
 const description=r=>r.kind==='birthday'?r.children.map((c,i)=>`${i+1}. ${name(c)} — ${extras(c)}`).join('\n'):extras(r);
 function toast(message){const t=document.getElementById('shop-toast');if(!t)return;t.textContent=message;t.hidden=false;clearTimeout(toast.timer);toast.timer=setTimeout(()=>t.hidden=true,5000);}
 function render(){
  document.querySelectorAll('[data-cart-count]').forEach(e=>e.textContent=count());
+ document.querySelectorAll('.swl-header-cart').forEach(e=>{e.hidden=count()===0;e.setAttribute('aria-label',`View shopping cart, ${count()} plush kits`);});
  const target=document.getElementById('cart-items');if(!target)return;
  target.innerHTML=cart.length?cart.map(r=>`<article class="swl-cart-line"><img src="${esc(safeImage(r.kind==='birthday'?'shop-teddy.png':r.image))}" alt="${esc(r.kind==='birthday'?'Birthday Box':name(r))}"><div><h2>${r.kind==='birthday'?'Birthday Box · 10 kits':esc(name(r))}</h2>${r.kind==='birthday'?`<details><summary>View your 10 friends &amp; extras</summary><p class="swl-line-details">${esc(description(r))}</p></details>`:`<p>${esc(extras(r))}</p>`}${loaded&&!available(r)?'<p class="swl-fine"><strong>A selected friend is no longer available. Remove this selection and choose from the shop.</strong></p>':''}<p class="swl-fine">${money(unitPrice(r))} ${r.kind==='birthday'?'per box':'each'}</p><div class="swl-quantity"><button type="button" data-change="-1" data-id="${esc(r.id)}" aria-label="Decrease quantity">−</button><span aria-label="Quantity">${r.quantity}</span><button type="button" data-change="1" data-id="${esc(r.id)}" aria-label="Increase quantity">+</button><button type="button" class="swl-remove" data-remove="${esc(r.id)}">Remove</button></div></div><strong>${money(unitPrice(r)*r.quantity)}</strong></article>`).join(''):'<div class="swl-empty"><h2>Your crew is waiting.</h2><p>Your cart is empty. Let’s find you a new friend!</p><a href="stuff-at-home.html" class="btn btn-primary">Choose Your Friend</a></div>';
  document.getElementById('cart-subtotal').textContent=money(subtotal());
