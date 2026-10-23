@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="en">
+ <head>
+  <meta charset="utf-8"/>
+  <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+  <title>
+   Meet the Crew | Fluff On Wheels
+  </title>
+  <meta content="Meet some of the plush friends available for Fluff On Wheels parties and events, including classic, rotating and seasonal selections." name="description"/>
+  <link href="favicon.png" rel="icon"/>
+  <link href="https://fonts.googleapis.com" rel="preconnect"/>
+  <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+  <link href="https://fonts.googleapis.com/css2?family=Bubblegum+Sans&amp;family=Fredoka:wght@400;500;600;700&amp;family=Nunito:wght@400;600;700;800&amp;family=Quicksand:wght@500;600;700&amp;display=swap" rel="stylesheet"/>
+  <link href="style.css?v=20261022-redesign" rel="stylesheet"/>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet"/>
+  <script async="" src="https://www.googletagmanager.com/gtag/js?id=G-WQGXFYZVTH">
+  </script>
+  <script>
+   window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag("js",new Date());gtag("config","G-WQGXFYZVTH");
+  </script>
+ </head>
+ <body class="fow-redesign">
+  <a class="skip-link" href="#main">
+   Skip to content
+  </a>
+  <nav aria-label="Main navigation" class="site-nav">
+   <div class="nav-container">
+    <a aria-label="Fluff On Wheels — The Experience" class="logo" href="index.html">
+     <img alt="Fluff On Wheels" class="logo-img" height="80" src="finallogo.webp" width="100"/>
+    </a>
+    <ul class="nav-links">
+     <li>
+      <a href="index.html">
+       The Experience
+      </a>
+     </li>
+     <li class="dropdown">
+      <button aria-controls="events-menu" aria-expanded="false" class="dropdown-toggle" type="button">
+       Events
+      </button>
+      <div class="dropdown-menu" id="events-menu">
+       <a href="large-events.html">
+        Large Events
+       </a>
+       <a href="pricing.html">
+        Birthday Parties
+       </a>
+      </div>
+     </li>
+     <li>
+      <a href="meet-the-crew.html">
+       Meet the Crew
+      </a>
+     </li>
+     <li class="dropdown">
+      <button aria-controls="explore-menu" aria-expanded="false" class="dropdown-toggle" type="button">
+       Explore
+      </button>
+      <div class="dropdown-menu" id="explore-menu">
+       <a href="gallery.html">
+        Gallery
+       </a>
+       <a href="about.html">
+        About Us
+       </a>
+       <a href="stuff-at-home.html">
+        Fluff at Home
+       </a>
+       <a href="faq.html">
+        FAQ &amp; Policies
+       </a>
+      </div>
+     </li>
+    </ul>
+    <a class="btn btn-primary nav-plan" href="large-events.html">
+     Plan Your Event
+    </a>
+    <a aria-label="View shopping cart" class="swl-header-cart" hidden="" href="cart.html">
+     <i aria-hidden="true" class="fa-solid fa-bag-shopping">
+     </i>
+     <span class="swl-cart-label">
+      Cart
+     </span>
+     <span data-cart-count="">
+      0
+     </span>
+    </a>
+    <button aria-controls="mobileMenu" aria-expanded="false" aria-label="Open navigation menu" class="mobile-toggle" type="button">
+     ☰
+    </button>
+   </div>
+  </nav>
+  <div class="mobile-menu" hidden="" id="mobileMenu">
+   <a href="index.html">
+    The Experience
+   </a>
+   <span class="mobile-group">
+    Events
+   </span>
+   <a href="large-events.html">
+    Large Events
+   </a>
+   <a href="pricing.html">
+    Birthday Parties
+   </a>
+   <a href="meet-the-crew.html">
+    Meet the Crew
+   </a>
+   <span class="mobile-group">
+    Explore
+   </span>
+   <a href="gallery.html">
+    Gallery
+   </a>
+   <a href="about.html">
+    About Us
+   </a>
+   <a href="stuff-at-home.html">
+    Fluff at Home
+   </a>
+   <a href="faq.html">
+    FAQ &amp; Policies
+   </a>
+  </div>
+  <main id="main">
+   <section class="fow-page-hero fow-wrap">
+    <span class="eyebrow">
+     SO MANY FRIENDS. WHO WILL YOU CHOOSE?
+    </span>
+    <h1>
+     Meet the
+     <br/>
+     <em>
+      cuddle crew.
+     </em>
+    </h1>
+    <p>
+     A peek at some of our plush pals. Your event’s selection depends on package, season, and availability.
+    </p>
+   </section>
+   <section class="fow-wrap fow-section">
+    <div aria-label="Filter plush friends" class="fow-filters" role="group">
+     <button aria-pressed="true" data-crew-filter="all" type="button">
+      All friends
+     </button>
+     <button aria-pressed="false" data-crew-filter="regular" type="button">
+      Regular favorites
+     </button>
+     <button aria-pressed="false" data-crew-filter="rotating" type="button">
+      Rotating friends
+     </button>
+     <button aria-pressed="false" data-crew-filter="seasonal" type="button">
+      Seasonal friends
+     </button>
+    </div>
+    <div class="fow-crew-grid" id="fow-crew">
+    </div>
+    <p class="fow-empty-message" hidden="" id="crew-empty">
+     More seasonal friends are on the way. Ask us what’s available for your event date!
+    </p>
+    <noscript>
+     <p>
+      Enable JavaScript to browse our plush lineup.
+     </p>
+    </noscript>
+    <p class="fow-form-note">
+     Photos show example styles, not a live inventory count. We’ll confirm your event selections during booking. Looking for a DIY kit?
+     <a href="stuff-at-home.html">
+      Visit Fluff at Home.
+     </a>
+    </p>
+   </section>
+   <section class="fow-wrap fow-cta">
+    <span class="eyebrow">
+     LET’S MAKE SOME MEMORIES
+    </span>
+    <h2>
+     Found a friend you love?
+    </h2>
+    <p>
+     Tell us about your event and we’ll help plan your crew.
+    </p>
+    <a class="btn btn-primary" href="large-events.html">
+     Plan Your Event
+     <span aria-hidden="true">
+      ↗
+     </span>
+    </a>
+   </section>
+  </main>
+  <footer class="site-footer">
+   <div class="footer-container">
+    <div class="footer-column footer-brand">
+     <a href="index.html">
+      <img alt="Fluff On Wheels" class="footer-logo" loading="lazy" src="finallogo.webp"/>
+     </a>
+     <p>
+      We Bring the Plush Party to You!
+     </p>
+     <p class="footer-note">
+      Family-owned in Green Bay.
+      <br/>
+      Making memories across Northeast Wisconsin.
+     </p>
+    </div>
+    <div class="footer-column">
+     <h4>
+      Find your fun
+     </h4>
+     <a href="index.html">
+      The Experience
+     </a>
+     <a href="large-events.html">
+      Large Events
+     </a>
+     <a href="pricing.html">
+      Birthday Parties
+     </a>
+     <a href="meet-the-crew.html">
+      Meet the Crew
+     </a>
+    </div>
+    <div class="footer-column">
+     <h4>
+      A little more fluff
+     </h4>
+     <a href="gallery.html">
+      Gallery
+     </a>
+     <a href="about.html">
+      About Us
+     </a>
+     <a href="stuff-at-home.html">
+      Fluff at Home
+     </a>
+     <a href="faq.html">
+      FAQ &amp; Policies
+     </a>
+    </div>
+    <div class="footer-column">
+     <h4>
+      Let’s make it happen
+     </h4>
+     <a href="large-events.html">
+      Plan Your Event
+     </a>
+     <a href="mailto:hello@fluffonwheels.com">
+      hello@fluffonwheels.com
+     </a>
+     <a href="tel:+19206648282">
+      (920) 664-8282
+     </a>
+     <div class="social-icons">
+      <a aria-label="Facebook" href="https://www.facebook.com/fluffonwheelsgb" rel="noopener noreferrer" target="_blank">
+       <i class="fab fa-facebook-f">
+       </i>
+      </a>
+      <a aria-label="Instagram" href="https://www.instagram.com/fluffonwheelsgb/" rel="noopener noreferrer" target="_blank">
+       <i class="fab fa-instagram">
+       </i>
+      </a>
+      <a aria-label="TikTok" href="https://www.tiktok.com/@fluffonwheelsgb" rel="noopener noreferrer" target="_blank">
+       <i class="fab fa-tiktok">
+       </i>
+      </a>
+     </div>
+    </div>
+   </div>
+   <div class="footer-bottom">
+    © 2026 Fluff On Wheels · A little fluff. A lasting friendship.
+   </div>
+  </footer>
+  <script defer="" src="site.js?v=20261022-redesign">
+  </script>
+  <script defer="" src="shop.js?v=20261022-redesign">
+  </script>
+  <script defer="" src="content.js?v=20261022-redesign">
+  </script>
+ </body>
+</html>
