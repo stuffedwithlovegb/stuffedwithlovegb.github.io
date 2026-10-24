@@ -473,3 +473,132 @@ body.fow-redesign{padding-top:var(--fow-nav-height);background:var(--cream);over
 .fow-redesign .swl-order-summary h2,.fow-redesign .swl-checkout-card h2{font-size:1.6rem}
 .fow-redesign .swl-shop .swl-unboxing{padding:50px 25px}
 @media(max-width:700px){.fow-redesign .swl-shop .swl-shop-section{padding-block:35px}.fow-redesign .swl-shop .swl-shop-hero{padding-top:35px}.fow-redesign .swl-shop .swl-unboxing{padding:35px 20px}}
+/* Fluff On Wheels: matching buttons and original warm palette.
+   Paste AFTER everything currently in style.css. */
+:root {
+  --fow-sage: var(--cream-2);
+  --fow-blush: var(--cream-2);
+}
+
+/* Give the main action links the same button treatment. */
+.fow-redesign .btn,
+.fow-redesign .fow-text-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 48px;
+  padding: 13px 24px;
+  border: 2px solid var(--brown);
+  border-radius: 999px;
+  background: var(--brown);
+  color: var(--cream);
+  font-family: 'Fredoka', sans-serif;
+  font-size: 1rem;
+  font-weight: 500;
+  line-height: 1.4;
+  text-align: center;
+  text-decoration: none;
+  box-shadow: none;
+  cursor: pointer;
+}
+.fow-redesign .btn:hover,
+.fow-redesign .fow-text-link:hover {
+  background: var(--brown-dark);
+  border-color: var(--brown-dark);
+  color: var(--cream);
+}
+.fow-redesign .fow-buttons { gap: 14px; align-items: center; }
+.fow-redesign .fow-feature .fow-text-link {
+  display: inline-flex;
+  margin-top: 14px;
+}
+.fow-redesign .nav-plan {
+  min-height: 44px;
+  padding: 10px 18px;
+  font-size: .95rem;
+}
+
+/* Warm backgrounds, with one consistent treatment for every plush. */
+.fow-redesign .fow-plush-peek {
+  background: var(--gold-light);
+  border-radius: 28px;
+}
+.fow-redesign .fow-crew-photo,
+.fow-redesign .fow-crew-card:nth-child(3n+2) .fow-crew-photo,
+.fow-redesign .fow-crew-card:nth-child(3n) .fow-crew-photo {
+  background: var(--cream-2);
+  border: 1px solid var(--border);
+}
+.fow-redesign .fow-event-ribbon {
+  background: var(--gold-light);
+  border-color: var(--gold);
+}
+.fow-redesign .fow-blush,
+.fow-redesign .fow-cta { background: var(--cream-2); }
+
+/* Fluff at Home: remove the oval and restore the container's side padding.
+   The old section reset was overriding padding on the kit-details strip. */
+.fow-redesign .swl-hero-friends::before { content: none; }
+.fow-redesign .swl-shop-wrap {
+  width: 100%;
+  max-width: 1180px;
+  margin-inline: auto;
+  padding-inline: 32px;
+}
+.fow-redesign .swl-shop-hero { padding-block: 55px 40px; }
+.fow-redesign .swl-shop-section { padding-block: 52px; }
+.fow-redesign .swl-kit-strip {
+  padding-block: 30px;
+  padding-inline: 32px;
+  gap: 24px;
+}
+.fow-redesign .swl-kit-strip > div { min-width: 0; }
+.fow-redesign .swl-hero-friends {
+  justify-content: center;
+  gap: 10px;
+}
+.fow-redesign .swl-hero-friends img {
+  width: calc(50% - 5px);
+  max-width: 260px;
+}
+.fow-redesign .swl-hero-friends img + img {
+  margin-left: 0;
+  transform: none;
+}
+
+/* Restore the rich brown footer and readable cream/gold text. */
+.fow-redesign .site-footer {
+  background: var(--brown-dark);
+  color: var(--cream);
+  border-top: 0;
+}
+.fow-redesign .footer-column h4 { color: var(--gold-light); }
+.fow-redesign .footer-column a,
+.fow-redesign .footer-column p {
+  color: var(--cream);
+  opacity: 1;
+}
+.fow-redesign .footer-column a:hover { color: var(--gold-light); }
+.fow-redesign .footer-bottom {
+  color: var(--cream);
+  opacity: 1;
+  border-color: rgba(255,248,239,.25);
+}
+.fow-redesign .social-icons a {
+  background: rgba(255,248,239,.12);
+  color: var(--cream);
+}
+
+@media (max-width: 700px) {
+  .fow-redesign .swl-shop-wrap,
+  .fow-redesign .swl-kit-strip { padding-inline: 24px; }
+  .fow-redesign .swl-shop-hero { padding-block: 32px; }
+  .fow-redesign .swl-shop-section { padding-block: 36px; }
+  .fow-redesign .swl-shop-hero-grid { gap: 28px; }
+  .fow-redesign .nav-plan {
+    min-height: 42px;
+    padding: 9px 13px;
+    font-size: .82rem;
+  }
+}
