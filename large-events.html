@@ -18,6 +18,27 @@
   <script>
    window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag("js",new Date());gtag("config","G-WQGXFYZVTH");
   </script>
+
+  <style>
+   /* Full setup image and two stacked customization portraits. */
+   .fow-redesign .fow-feature img.fow-event-setup-photo {
+     display: block; width: 100%; height: auto; aspect-ratio: 4 / 3;
+     object-fit: contain; border-radius: 28px;
+   }
+   .fow-redesign .fow-event-custom-section { align-items: start; }
+   .fow-redesign .fow-event-custom-photos {
+     display: grid; grid-template-columns: minmax(0, 1fr); gap: 24px;
+     width: 100%; max-width: 360px; margin-inline: auto;
+   }
+   .fow-redesign .fow-event-custom-photos figure { margin: 0; }
+   .fow-redesign .fow-event-custom-photos img {
+     display: block; width: 100%; height: auto; aspect-ratio: 3 / 4;
+     object-fit: contain; border-radius: 24px;
+   }
+   @media (max-width: 700px) {
+     .fow-redesign .fow-event-custom-photos { gap: 20px; }
+   }
+  </style>
  </head>
  <body class="fow-redesign">
   <a class="skip-link" href="#main">
@@ -140,7 +161,7 @@
    </section>
    <section class="fow-wrap fow-feature fow-feature-first">
     <figure>
-     <img alt="Fluff On Wheels event setup and plush display" data-media="events" loading="eager" src="gallery-04.webp"/>
+     <img alt="Fluff On Wheels event setup with live stuffing station, plush display, and photo area" class="fow-event-setup-photo" width="1200" height="900" loading="eager" src="large-event.webp"/>
     </figure>
     <div>
      <span class="eyebrow">
@@ -210,7 +231,7 @@
     </div>
    </section>
    <section class="fow-blush">
-    <div class="fow-wrap fow-feature">
+    <div class="fow-wrap fow-feature fow-event-custom-section">
      <div>
       <span class="eyebrow">
        LITTLE DETAILS. BIG PERSONALITY.
@@ -227,9 +248,10 @@
        Pricing is tailored to your participant count, selections, location, and event format. Tell us whether your organization is hosting the experience or guests would purchase individually.
       </p>
      </div>
-     <figure>
-      <img alt="A look at the plush friends and details available for events" data-media="custom" loading="lazy" src="gallery-05.webp"/>
-     </figure>
+     <div class="fow-event-custom-photos" aria-label="Examples of event customizations">
+      <figure><img alt="Themed deer plush display with a custom Milwaukee Rookie shirt" width="900" height="1200" loading="lazy" decoding="async" src="custom1.webp"/></figure>
+      <figure><img alt="Individually packaged rookie trading cards for a basketball-themed event" width="900" height="1200" loading="lazy" decoding="async" src="custom2.webp"/></figure>
+     </div>
     </div>
    </section>
    <section class="fow-wrap fow-section fow-inquiry-layout" id="inquiry">
@@ -262,7 +284,7 @@
        Find birthday packages, prices, and the party inquiry form here.
       </p>
       <a class="btn btn-secondary" href="pricing.html">
-       View Birthday Parties →
+       View Birthday Parties
       </a>
      </div>
     </aside>
