@@ -2,6 +2,36 @@
 (function(){
 'use strict';
 const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
+
+// Remove decorative arrows without replacing button contents or event handlers.
+// Text nodes are edited individually, preserving nested icons and screen-reader text.
+function removeActionArrows(root) {
+  const selector = 'a.btn, button.btn, a.fow-text-link, a.swl-text-link, a.nav-plan';
+  const actions = root.nodeType === 1 && root.matches(selector) ? [root] : [];
+  if (root.querySelectorAll) actions.push(...root.querySelectorAll(selector));
+  for (const action of actions) {
+    const walker = document.createTreeWalker(action, NodeFilter.SHOW_TEXT);
+    let node;
+    while ((node = walker.nextNode())) {
+      const cleaned = node.nodeValue.replace(/[\u2190-\u21ff\u2794\u279c\u27a1\u27f6]/gu, '');
+      if (cleaned !== node.nodeValue) node.nodeValue = cleaned;
+    }
+    action.querySelectorAll('.fa-arrow-right, .fa-arrow-up-right, .fa-arrow-up-right-from-square, .fa-long-arrow-alt-right, .fa-long-arrow-right').forEach(icon => icon.remove());
+    const label = action.getAttribute('aria-label');
+    if (label) action.setAttribute('aria-label', label.replace(/[\u2190-\u21ff\u2794\u279c\u27a1\u27f6]/gu, '').trim());
+  }
+}
+removeActionArrows(document);
+// Also clean action links added later by the shop or other shared content.
+new MutationObserver(records => {
+  for (const record of records) {
+    for (const node of record.addedNodes) {
+      if (node.nodeType === 1) removeActionArrows(node);
+      else if (node.nodeType === 3 && node.parentElement) removeActionArrows(node.parentElement);
+    }
+  }
+}).observe(document.body, { childList: true, subtree: true });
+
 const menu=$('#mobileMenu'), toggle=$('.mobile-toggle');
 function closeMenu(){if(!menu||!toggle)return;menu.hidden=true;menu.classList.remove('active');toggle.setAttribute('aria-expanded','false');toggle.setAttribute('aria-label','Open navigation menu');}
 function closeDropdowns(except){$$('.dropdown').forEach(d=>{if(d!==except){d.classList.remove('is-open');d.querySelector('button')?.setAttribute('aria-expanded','false');}});}
