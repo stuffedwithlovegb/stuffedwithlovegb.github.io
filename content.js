@@ -23,12 +23,14 @@ window.FOW_CONTENT = {
   crew: [
     {name: 'Honey Teddy', image: 'shop-teddy.png', category: 'regular', alt: 'Honey Teddy plush friend'},
     {name: 'Golden Retriever', image: 'shop-dog.png', category: 'regular', alt: 'Golden Retriever plush friend'},
+    {name: 'Orange Kitty', image: 'orangecat.webp', category: 'regular', alt: 'Orange Kitty plush friend'},
     {name: 'Unicorn', image: 'shop-unicorn.png', category: 'rotating', alt: 'Unicorn plush friend'},
-    {name: 'Dino', image: 'shop-dino.png', category: 'rotating', alt: 'Dino plush friend'}
-    // Example after uploading its photo (add a comma to the preceding entry):
-    // ,{name: 'Orange Kitty', image: 'crew-kitty.webp', category: 'regular', alt: 'Orange Kitty plush'}
-    // ,{name: 'Frog', image: 'crew-frog.webp', category: 'rotating', alt: 'Frog plush'}
-    // ,{name: 'Black Cat', image: 'crew-black-cat.webp', category: 'seasonal', alt: 'Seasonal Black Cat plush'}
+    {name: 'Dino', image: 'shop-dino.png', category: 'rotating', alt: 'Dino plush friend'},
+    {name: 'Dino', image: 'dino2.webp', category: 'rotating', alt: 'Additional dinosaur plush friend'},
+    {name: 'Highland Cow', image: 'highland.webp', category: 'rotating', alt: 'Highland Cow plush friend'},
+    {name: 'Snowman', image: 'Snowman.webp', category: 'seasonal', alt: 'Seasonal Snowman plush friend'},
+    {name: 'Christmas Unicorn', image: 'xmasunicorn.webp', category: 'seasonal', alt: 'Seasonal Christmas Unicorn plush friend'},
+    {name: 'Christmas Pup', image: 'xmasdog.webp', category: 'seasonal', alt: 'Seasonal Christmas Pup plush friend'}
   ],
 
   gallery: [
