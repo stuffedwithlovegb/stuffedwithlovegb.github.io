@@ -43,6 +43,8 @@
      border-radius: 17px;
      background: #fff8e9;
    }
+   /* Keep the homepage clip as a clean, silent autoplay loop. */
+   .fow-redesign .fow-motion-grid .fow-video-control { display: none !important; }
   </style>
  </head>
  <body class="fow-redesign">
@@ -219,7 +221,7 @@
     <div class="fow-motion-grid">
      <figure>
       <div class="fow-media" data-video-slot="machine">
-       <video aria-label="Fluff spinning inside our stuffing machine" autoplay="" loop="" muted="" playsinline="" controls="" preload="metadata" width="512" height="910">
+       <video aria-label="Fluff spinning inside our stuffing machine" autoplay="" loop="" muted="" playsinline="" preload="metadata" width="512" height="910">
         <source src="machinespin.mp4" type="video/mp4"/>
         Your browser does not support embedded video.
        </video>
