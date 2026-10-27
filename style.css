@@ -920,3 +920,63 @@ body.fow-redesign .site-footer { border-top: 5px solid #f2c14e; }
   body.fow-redesign .fow-page-hero { border-radius: 0 0 23px 23px; }
   body.fow-redesign .fow-cta { border-radius: 23px; }
 }
+
+/* Consistent product backgrounds and clearer FAQ hierarchy. */
+@media (min-width: 1051px) {
+body.fow-redesign .fow-crew-card .fow-crew-photo,
+body.fow-redesign .fow-crew-card:nth-child(3n+2) .fow-crew-photo,
+body.fow-redesign .fow-crew-card:nth-child(3n) .fow-crew-photo,
+body.fow-redesign .swl-product .swl-product-photo,
+body.fow-redesign .swl-product:nth-child(3n+2) .swl-product-photo,
+body.fow-redesign .swl-product:nth-child(3n) .swl-product-photo {
+  background: #fff4d3;
+  background-image: none;
+}
+body.fow-redesign .fow-faq-wrap {
+  background: #f8eddf;
+  border: 1px solid #dfbd79;
+  border-radius: 28px;
+  padding: 30px clamp(18px, 3vw, 32px) 45px;
+  margin-block: 24px 50px;
+}
+body.fow-redesign .fow-faq-wrap > h2 {
+  margin-top: 26px;
+  padding-bottom: 14px;
+  border-bottom: 2px solid #c59849;
+}
+body.fow-redesign .fow-faq-wrap > h2:first-child { margin-top: 0; }
+body.fow-redesign .fow-faq {
+  padding: 0;
+  background: #fff8ef;
+  border: 1px solid #c99b4b;
+  border-radius: 16px;
+  box-shadow: 0 4px 12px #5a3a220b;
+}
+body.fow-redesign .fow-faq summary {
+  background: #f7d774;
+  color: #5a3a22;
+  padding: 19px 22px;
+  border-radius: 15px;
+  line-height: 1.5;
+}
+body.fow-redesign .fow-faq[open] summary {
+  background: #f2c14e;
+  border-radius: 15px 15px 0 0;
+  border-bottom: 1px solid #c99b4b;
+}
+body.fow-redesign .fow-faq > div {
+  padding: 22px;
+  color: #593e2a;
+  background: #fff8ef;
+  border-radius: 0 0 15px 15px;
+}
+body.fow-redesign .fow-faq summary:focus-visible {
+  outline: 3px solid #5a3a22;
+  outline-offset: 3px;
+}
+body.fow-redesign .fow-policy-group {
+  color: #5a3a22;
+  border-bottom: 2px solid #c59849;
+  padding-bottom: 10px;
+}
+}
