@@ -5,19 +5,21 @@
 */
 window.FOW_CONTENT = {
   media: {
-    hero: 'gallery-01.webp',
+    hero: 'setup1.webp',
     machine: 'gallery-02.webp',
-    stuffing: 'gallery-03.webp',
+    stuffing: 'gallery-02.webp',
     events: 'gallery-04.webp',
     custom: 'gallery-05.webp'
   },
-  /* Leave video filenames in place. Until the files exist, photos stay visible.
-     When ready, upload fluff-spinning.mp4 and child-stuffing.mp4 beside index.html.
+
+  /* Upload machinespin.mp4 beside index.html for the machine video.
+     child-stuffing.mp4 is optional; until uploaded, its photo stays visible.
      For optional webm files change the type to 'video/webm'. */
   videos: {
-    machine: {src: 'fluff-spinning.mp4', type: 'video/mp4'},
+    machine: {src: 'machinespin.mp4', type: 'video/mp4'},
     stuffing: {src: 'child-stuffing.mp4', type: 'video/mp4'}
   },
+
   crew: [
     {name: 'Honey Teddy', image: 'shop-teddy.png', category: 'regular', alt: 'Honey Teddy plush friend'},
     {name: 'Golden Retriever', image: 'shop-dog.png', category: 'regular', alt: 'Golden Retriever plush friend'},
@@ -28,6 +30,7 @@ window.FOW_CONTENT = {
     // ,{name: 'Frog', image: 'crew-frog.webp', category: 'rotating', alt: 'Frog plush'}
     // ,{name: 'Black Cat', image: 'crew-black-cat.webp', category: 'seasonal', alt: 'Seasonal Black Cat plush'}
   ],
+
   gallery: [
     {image: 'gallery-01.webp', alt: 'Fluff On Wheels event setup'},
     {image: 'gallery-02.webp', alt: 'A closer look at the stuffing experience'},
@@ -48,4 +51,5 @@ window.FOW_CONTENT = {
     // Example: ,{image: 'gallery-17.webp', alt: 'Describe your new photo here', caption: 'Optional caption under the photo'}
   ]
 };
+
 window.dispatchEvent(new Event('fow-content-ready'));
