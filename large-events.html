@@ -11,7 +11,7 @@
   <link href="https://fonts.googleapis.com" rel="preconnect"/>
   <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
   <link href="https://fonts.googleapis.com/css2?family=Bubblegum+Sans&amp;family=Fredoka:wght@400;500;600;700&amp;family=Nunito:wght@400;600;700;800&amp;family=Quicksand:wght@500;600;700&amp;display=swap" rel="stylesheet"/>
-  <link href="style.css?v=20261022-redesign" rel="stylesheet"/>
+  <link href="style.css?v=20261026-desktop2" rel="stylesheet"/>
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet"/>
   <script async="" src="https://www.googletagmanager.com/gtag/js?id=G-WQGXFYZVTH">
   </script>
@@ -37,6 +37,28 @@
    }
    @media (max-width: 700px) {
      .fow-redesign .fow-event-custom-photos { gap: 20px; }
+   }
+   @media (min-width: 1051px) {
+     .fow-redesign .fow-event-custom-section {
+       grid-template-columns: minmax(0, .85fr) minmax(0, 1.15fr);
+       gap: 36px;
+       align-items: center;
+       padding-block: 52px;
+     }
+     .fow-redesign .fow-event-custom-photos {
+       grid-template-columns: repeat(2, minmax(0, 1fr));
+       gap: 18px;
+       max-width: none;
+       margin: 0;
+       align-items: start;
+     }
+     .fow-redesign .fow-event-custom-photos figure { min-width: 0; }
+     .fow-redesign .fow-event-custom-photos img {
+       height: auto;
+       width: 100%;
+       aspect-ratio: 3 / 4;
+       object-fit: contain;
+     }
    }
   </style>
  </head>
