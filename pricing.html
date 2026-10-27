@@ -11,13 +11,29 @@
   <link href="https://fonts.googleapis.com" rel="preconnect"/>
   <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
   <link href="https://fonts.googleapis.com/css2?family=Bubblegum+Sans&amp;family=Fredoka:wght@400;500;600;700&amp;family=Nunito:wght@400;600;700;800&amp;family=Quicksand:wght@500;600;700&amp;display=swap" rel="stylesheet"/>
-  <link href="style.css?v=20261022-redesign" rel="stylesheet"/>
+  <link href="style.css?v=20261026-desktop2" rel="stylesheet"/>
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet"/>
   <script async="" src="https://www.googletagmanager.com/gtag/js?id=G-WQGXFYZVTH">
   </script>
   <script>
    window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag("js",new Date());gtag("config","G-WQGXFYZVTH");
   </script>
+  <style>
+   .fow-redesign .fow-birthday-hero-photo {
+     margin: 25px 0 0; min-width: 0; overflow: hidden;
+     border: 2px solid #dfbd79; border-radius: 24px; background: #fff8ef;
+   }
+   .fow-redesign .fow-birthday-hero-photo img {
+     display: block; width: 100%; height: auto; object-fit: contain;
+   }
+   @media (min-width: 1051px) {
+     .fow-redesign .fow-birthday-hero {
+       display: grid; grid-template-columns: minmax(0, .9fr) minmax(0, 1.1fr);
+       gap: 36px; align-items: center; padding-block: 42px;
+     }
+     .fow-redesign .fow-birthday-hero-photo { margin: 0; }
+   }
+  </style>
  </head>
  <body class="fow-redesign">
   <a class="skip-link" href="#main">
@@ -123,7 +139,8 @@
    </a>
   </div>
   <main id="main">
-   <section class="fow-page-hero fow-wrap">
+   <section class="fow-page-hero fow-wrap fow-birthday-hero">
+    <div class="fow-birthday-hero-copy">
     <span class="eyebrow">
      BIRTHDAY PARTIES
     </span>
@@ -135,6 +152,10 @@
     <p>
      A plush-making party brought to your home or venue, with a little magic for every guest.
     </p>
+    </div>
+    <figure class="fow-birthday-hero-photo">
+     <img src="setup1.webp" alt="Fluff On Wheels birthday party setup with plush friends, stuffing station, and photo area" width="1536" height="1152" fetchpriority="high" decoding="async"/>
+    </figure>
    </section>
    <section class="fow-wrap fow-section fow-pricing">
     <p class="fow-pricing-intro">
