@@ -29,6 +29,7 @@ window.FOW_CONTENT = {
     {name: 'Dino', image: 'dino2.webp', category: 'rotating', alt: 'Additional dinosaur plush friend'},
     {name: 'Highland Cow', image: 'highland.webp', category: 'rotating', alt: 'Highland Cow plush friend'},
     {name: 'Snowman', image: 'Snowman.webp', category: 'seasonal', alt: 'Seasonal Snowman plush friend'},
+    {name: 'Yeti', image: 'yeti.webp', category: 'seasonal', alt: 'Seasonal Snow Yeti plush friend'},
     {name: 'Christmas Unicorn', image: 'xmasunicorn.webp', category: 'seasonal', alt: 'Seasonal Christmas Unicorn plush friend'},
     {name: 'Christmas Pup', image: 'xmasdog.webp', category: 'seasonal', alt: 'Seasonal Christmas Pup plush friend'}
   ],
