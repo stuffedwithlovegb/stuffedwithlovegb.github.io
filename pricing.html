@@ -33,6 +33,25 @@
      }
      .fow-redesign .fow-birthday-hero-photo { margin: 0; }
    }
+   .fow-redesign .fow-birthday-hero-media { min-width: 0; }
+   .fow-redesign .fow-birthday-detail-photos {
+     display: grid; grid-template-columns: repeat(2, minmax(0, 1fr));
+     gap: 14px; margin-top: 14px;
+   }
+   .fow-redesign .fow-birthday-detail-photos figure {
+     margin: 0; min-width: 0; overflow: hidden;
+     border: 2px solid #dfbd79; border-radius: 20px; background: #fff8ef;
+   }
+   .fow-redesign .fow-birthday-detail-photos img {
+     display: block; width: 100%; height: auto;
+   }
+   @media (min-width: 1051px) {
+     .fow-redesign .fow-birthday-hero { align-items: start; }
+   }
+   @media (max-width: 700px) {
+     .fow-redesign .fow-birthday-detail-photos { gap: 10px; margin-top: 10px; }
+     .fow-redesign .fow-birthday-detail-photos figure { border-radius: 14px; }
+   }
   </style>
  </head>
  <body class="fow-redesign">
@@ -153,9 +172,19 @@
      A plush-making party brought to your home or venue, with a little magic for every guest.
     </p>
     </div>
+    <div class="fow-birthday-hero-media">
     <figure class="fow-birthday-hero-photo">
      <img src="setup1.webp" alt="Fluff On Wheels birthday party setup with plush friends, stuffing station, and photo area" width="1536" height="1152" fetchpriority="high" decoding="async"/>
     </figure>
+     <div class="fow-birthday-detail-photos">
+      <figure>
+       <img src="stuffedwithlove-153.webp" alt="A child choosing a plush friend from the Fluff On Wheels display" width="1025" height="1536" loading="lazy" decoding="async"/>
+      </figure>
+      <figure>
+       <img src="stuffedwithlove-203.webp" alt="An orange kitty plush being filled at the stuffing station" width="1025" height="1536" loading="lazy" decoding="async"/>
+      </figure>
+     </div>
+    </div>
    </section>
    <section class="fow-wrap fow-section fow-pricing">
     <p class="fow-pricing-intro">
