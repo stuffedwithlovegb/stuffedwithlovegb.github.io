@@ -670,3 +670,253 @@ body.fow-redesign .site-footer :is(h2, h3, h4, h5, h6),
 body.fow-redesign .pricing-card.featured :is(h2, h3, h4) {
   color: var(--cream) !important;
 }
+/* FOW PALETTE REFRESH — cream, warm white, gold, and brown.
+   Complete stylesheet: replace style.css with this entire file. */
+body.fow-redesign {
+  --fow-paper: #fffdf8;
+  --fow-butter: #fff0bc;
+  --fow-honey: #f2c14e;
+  --fow-frame: #dfbd79;
+  --fow-sage: #fff0bc;
+  --fow-blush: #fff0bc;
+  --peach: #f2c14e;
+  background: #fff8ef;
+  background-image: radial-gradient(ellipse at 5% 0%, #f7d77424, transparent 45%);
+  color: var(--ink);
+}
+
+/* A brighter navigation bar and distinct, warm page introductions. */
+body.fow-redesign .site-nav {
+  background: #fffdf8f7;
+  border-bottom: 1px solid #dfbd7970;
+  box-shadow: 0 3px 18px #5a3a2208;
+}
+body.fow-redesign :is(.fow-page-hero, .page-hero, .swl-shop-hero) {
+  background: linear-gradient(125deg, #fffdf8 12%, #fff0bc 100%);
+  border-bottom: 1px solid #dfbd7966;
+}
+body.fow-redesign .fow-page-hero {
+  border-radius: 0 0 32px 32px;
+  padding-inline: clamp(20px, 3vw, 38px);
+  margin-bottom: 24px;
+}
+body.fow-redesign .eyebrow {
+  color: #795027;
+}
+body.fow-redesign :is(.fow-section-intro, .swl-section-heading) > .eyebrow {
+  display: inline-block;
+  background: #fff0bc;
+  border: 1px solid #dfbd7970;
+  border-radius: 999px;
+  padding: 7px 13px;
+  margin-bottom: 15px;
+}
+
+/* Intentional section changes, using the existing page structure. */
+body.fow-redesign .fow-blush {
+  background: #fff0bc;
+  border-block: 1px solid #dfbd7966;
+}
+body.fow-redesign .fow-event-ribbon {
+  background: #f7d774;
+  border-block: 1px solid #d8b65c;
+}
+body.fow-redesign .fow-event-ribbon p { color: #5a3a22; }
+body.fow-redesign .fow-event-ribbon span { color: #795027; }
+body.fow-redesign .fow-crew-tease {
+  border-top: 1px solid #dfbd7970;
+}
+body.fow-redesign .fow-birthday-note {
+  background: #fffdf8;
+  border: 1px solid #dfbd79;
+  box-shadow: 0 8px 24px #5a3a220a;
+}
+body.fow-redesign .fow-cta {
+  background: #fff0bc;
+  border-block: 1px solid #dfbd7970;
+  border-radius: 30px;
+  margin-block: 20px 48px;
+}
+body.fow-redesign .fow-plush-peek {
+  background: #fff0bc;
+  border: 1px solid #dfbd79;
+}
+
+/* Plush cards: white outer cards with warm, varied photo backgrounds. */
+body.fow-redesign .fow-crew-card {
+  background: #fffdf8;
+  padding: 12px 12px 22px;
+  border: 1px solid #dfbd79;
+  border-radius: 30px;
+  box-shadow: 0 9px 24px #5a3a2210;
+  height: 100%;
+}
+body.fow-redesign .fow-crew-card .fow-crew-photo {
+  background: #fff4d3;
+  border: 1px solid #dfbd7966;
+  border-radius: 21px;
+}
+body.fow-redesign .fow-crew-card:nth-child(3n+2) .fow-crew-photo {
+  background: #fff0bc;
+}
+body.fow-redesign .fow-crew-card:nth-child(3n) .fow-crew-photo {
+  background: #f8eddf;
+}
+body.fow-redesign .fow-crew-card .fow-crew-category {
+  display: inline-block;
+  margin: 17px 8px 10px;
+  padding: 4px 9px;
+  border-radius: 999px;
+  background: #fff0bc;
+  color: #684324;
+  letter-spacing: .09em;
+}
+body.fow-redesign .fow-crew-card h2 { margin-inline: 8px; }
+body.fow-redesign .fow-filters button {
+  background: #fffdf8;
+  border-color: #dfbd79;
+  box-shadow: 0 3px 9px #5a3a2208;
+}
+body.fow-redesign .fow-filters button[aria-pressed="true"] {
+  background: #5a3a22;
+  border-color: #5a3a22;
+  color: #fff8ef;
+}
+
+/* Depth for the gallery, event options, forms and pricing. */
+body.fow-redesign :is(.fow-gallery-open, .about-photo-card) {
+  border: 5px solid #fffdf8;
+  outline: 1px solid #dfbd7980;
+  box-shadow: 0 8px 24px #5a3a2212;
+}
+body.fow-redesign .fow-occasion-grid { gap: 22px; }
+body.fow-redesign .fow-occasion-grid article {
+  padding: 26px;
+  border: 1px solid #dfbd7980;
+  border-top: 4px solid #f2c14e;
+  border-radius: 22px;
+  background: #fffdf8;
+  box-shadow: 0 7px 20px #5a3a2209;
+}
+body.fow-redesign :is(.fow-inquiry, .contact-form, .party-booking-form,
+  .swl-checkout-card, .swl-order-summary) {
+  background: #fffdf8;
+  border-color: #dfbd79;
+  box-shadow: 0 10px 28px #5a3a220d;
+}
+body.fow-redesign .fow-birthday-aside {
+  background: #fff4d3;
+  border: 1px solid #dfbd7980;
+}
+body.fow-redesign .pricing-card:not(.featured) {
+  background: #fffdf8;
+  border: 1px solid #dfbd79;
+  border-top: 5px solid #f2c14e;
+  box-shadow: 0 9px 24px #5a3a2210;
+}
+body.fow-redesign .pricing-card.featured {
+  background: #5a3a22;
+  border: 1px solid #5a3a22;
+  box-shadow: 0 9px 24px #5a3a221a;
+}
+body.fow-redesign :is(.fow-faq, .swl-shop-faq details) {
+  background: #fffdf8;
+  border: 1px solid #dfbd7980;
+  border-radius: 17px;
+  margin-block: 12px;
+  padding-inline: 20px;
+  box-shadow: 0 4px 12px #5a3a2206;
+}
+
+/* Matching storefront cards and a golden Birthday Box panel. */
+body.fow-redesign .swl-product {
+  background: #fffdf8;
+  border: 1px solid #dfbd79;
+  box-shadow: 0 8px 23px #5a3a2210;
+}
+body.fow-redesign .swl-product-photo {
+  background: #fff4d3;
+  border-bottom: 1px solid #dfbd7966;
+}
+body.fow-redesign .swl-product:nth-child(3n+2) .swl-product-photo {
+  background: #fff0bc;
+}
+body.fow-redesign .swl-product:nth-child(3n) .swl-product-photo {
+  background: #f8eddf;
+}
+body.fow-redesign .swl-birthday-card {
+  background: #fff0bc;
+  border-color: #dfbd79;
+  box-shadow: 0 9px 28px #5a3a220c;
+}
+body.fow-redesign #birthday-builder {
+  background: #fffdf8;
+  border: 1px solid #dfbd7980;
+}
+body.fow-redesign .swl-child {
+  background: #fff8ef;
+  border-color: #dfbd7980;
+}
+body.fow-redesign .swl-kit-strip {
+  background: #fffdf8;
+  border-block: 1px solid #dfbd7966;
+}
+body.fow-redesign .swl-unboxing {
+  background: #fff4d3;
+  border-color: #d1ae64;
+}
+/* Display availability labels beneath photos; keep other photo text hidden. */
+body.fow-redesign .swl-product:has(fieldset:disabled) .swl-product-photo {
+  height: auto;
+  min-height: 275px;
+  display: flex;
+  flex-direction: column;
+}
+body.fow-redesign .swl-product:has(fieldset:disabled) .swl-product-photo > span {
+  display: block !important;
+  order: 1;
+  align-self: center;
+  margin-top: 8px;
+  padding: 3px 12px;
+  background: #5a3a22;
+  color: #fff8ef;
+  border-radius: 999px;
+}
+body.fow-redesign button:disabled,
+body.fow-redesign fieldset:disabled button {
+  opacity: .65;
+  cursor: not-allowed;
+}
+
+/* Keep the brown footer and cream lettering. */
+body.fow-redesign .site-footer { border-top: 5px solid #f2c14e; }
+
+@media (hover: hover) and (prefers-reduced-motion: no-preference) {
+  body.fow-redesign :is(.fow-crew-card, .swl-product) {
+    transition: transform .2s ease, box-shadow .2s ease;
+  }
+  body.fow-redesign :is(.fow-crew-card, .swl-product):hover {
+    transform: translateY(-3px);
+    box-shadow: 0 13px 28px #5a3a2219;
+  }
+}
+@media (max-width: 700px) {
+  body.fow-redesign .fow-crew-card {
+    padding: 8px 8px 17px;
+    border-radius: 23px;
+  }
+  body.fow-redesign .fow-crew-card .fow-crew-photo {
+    border-radius: 16px;
+    padding: 10px;
+  }
+  body.fow-redesign .fow-crew-card .fow-crew-category {
+    margin-inline: 3px;
+    padding: 4px 6px;
+    font-size: .56rem;
+    letter-spacing: .04em;
+  }
+  body.fow-redesign .fow-crew-card h2 { margin-inline: 3px; }
+  body.fow-redesign .fow-occasion-grid article { padding: 22px; }
+  body.fow-redesign .fow-page-hero { border-radius: 0 0 23px 23px; }
+  body.fow-redesign .fow-cta { border-radius: 23px; }
+}
