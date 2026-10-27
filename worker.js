@@ -3576,7 +3576,7 @@ function shopConfig(env){
  return {test,ready:Boolean(credentials&&address&&match&&enabled),applicationId:env.SQUARE_APPLICATION_ID||'',locationId:env.SQUARE_LOCATION_ID||'',message:!credentials?'Checkout connection settings are incomplete.':!address?'Shipping origin settings are incomplete.':!match?'Payment and shipping credentials must both use the selected test or live mode.':!enabled?'Online ordering is coming soon. Please contact us for help.':''};
 }
 async function shopBody(request){if(!request.headers.get('Content-Type')?.includes('application/json'))shopFail('Please send a JSON checkout request.',415);const text=await request.text();if(text.length>40000)shopFail('Checkout request is too large.',413);try{return JSON.parse(text);}catch(e){shopFail('Checkout request could not be read.');}}
-function shopChild(c,products){const product=products?.find(p=>p.id===c?.productId&&p.enabled);if(!c||!product)shopFail('Choose an available plush friend.');const shirt=c.shirt===true;const shirtName=shirt?String(c.shirtName||'').trim():'';if(shirt&&(!shirtName||shirtName.length>40))shopFail('Each custom shirt needs a name of 1–40 characters.');return {productId:c.productId,productName:product.name,kitPrice:product.price,image:product.image,shirt,shirtName,recorder:c.recorder===true};}
+function shopChild(c,products){const product=products?.find(p=>p.id===c?.productId&&p.enabled&&!p.soldOut);if(!c||!product)shopFail('Choose an available plush friend.');const shirt=c.shirt===true;const shirtName=shirt?String(c.shirtName||'').trim():'';if(shirt&&(!shirtName||shirtName.length>40))shopFail('Each custom shirt needs a name of 1–40 characters.');return {productId:c.productId,productName:product.name,kitPrice:product.price,image:product.image,shirt,shirtName,recorder:c.recorder===true};}
 function shopCart(raw,products){if(!Array.isArray(raw)||!raw.length||raw.length>50)shopFail('Your cart is empty or too large.');let kits=0,subtotal=0;const cart=raw.map(r=>{const quantity=Number(r.quantity);if(!Number.isSafeInteger(quantity)||quantity<1||quantity>20)shopFail('Choose a quantity from 1 to 20.');let clean,price;if(r.kind==='kit'){clean={kind:'kit',quantity,...shopChild(r,products)};price=clean.kitPrice+(clean.shirt?1000:0)+(clean.recorder?1000:0);kits+=quantity;}else if(r.kind==='birthday'&&Array.isArray(r.children)&&r.children.length===10){clean={kind:'birthday',quantity,children:r.children.map(c=>shopChild(c,products))};price=25000+clean.children.reduce((n,c)=>n+(c.shirt?1000:0)+(c.recorder?1000:0),0);kits+=10*quantity;}else shopFail('A Birthday Box must contain exactly ten friends.');subtotal+=price*quantity;return clean;});if(kits>20)shopFail('Online checkout supports up to 20 kits per order. Please contact us for a larger order.');return {cart,kits,subtotal};}
 function shopAddress(a){if(!a||typeof a!=='object')shopFail('Enter your delivery address.');const v={};for(const [key,max] of Object.entries({name:120,email:180,street1:180,street2:80,city:100,state:2,zip:10,phone:30})){v[key]=String(a[key]||'').trim();if(v[key].length>max)shopFail('Please shorten the '+key+' field.');}v.state=v.state.toUpperCase();v.email=v.email.toLowerCase();if(!v.name||!v.street1||!v.city||!SHOP_STATES.has(v.state)||!/^\d{5}(-\d{4})?$/.test(v.zip)||!/^\S+@\S+\.\S+$/.test(v.email))shopFail('Enter a complete U.S. shipping address and valid email.');return v;}
 function shopPacking(kits,env){let profiles=SHOP_PARCELS;if(env.SHOP_PARCEL_PROFILES){try{profiles=JSON.parse(env.SHOP_PARCEL_PROFILES);}catch(e){shopFail('Shipping box configuration needs attention.',503);}}if(!Array.isArray(profiles)||!profiles.length||profiles.some(p=>!Number.isSafeInteger(p.capacity)||p.capacity<1||['length','width','height','weight'].some(k=>!Number.isFinite(Number(p[k]))||Number(p[k])<=0)))shopFail('Shipping box configuration needs attention.',503);profiles=[...profiles].sort((a,b)=>a.capacity-b.capacity);const parcels=[];while(kits>0){const p=profiles.find(p=>p.capacity>=kits)||profiles[profiles.length-1];parcels.push({length:String(p.length),width:String(p.width),height:String(p.height),weight:String(p.weight),distance_unit:'in',mass_unit:'lb'});kits-=p.capacity;}return parcels;}
@@ -3628,7 +3628,7 @@ async function shopProcessPayment(row,env){
  await env.DB.prepare('UPDATE shop_orders SET status=?,data=?,payment_request=NULL,updated_at=? WHERE id=?').bind('paid',JSON.stringify(updated),Date.now(),row.id).run();
  return {status:'paid',id:row.id};
 }
-async function shopPay(request,env){const body=await shopBody(request);let row=await shopGetOrder(env,body.id,body.key);if(row.status==='paid')return shopJson({status:'paid',id:row.id});if(row.status==='failed')return shopJson({status:'failed',id:row.id,error:'Payment was not completed. Please contact us or request a new shipping quote.'});if(row.status==='processing')return shopJson(await shopProcessPayment(row,env));const data=JSON.parse(row.data);if(data.test!==shopTest(env)||data.locationId!==env.SQUARE_LOCATION_ID)shopFail('Payment settings changed. Please start checkout again.',409);if(Date.now()-row.created_at>30*60000)shopFail('This checkout expired. Please request shipping options again.',409);const sourceId=String(body.sourceId||'');if(!sourceId||sourceId.length>500)shopFail('Square payment token is missing.');const a=data.address;const payload={source_id:sourceId,idempotency_key:row.id,amount_money:{amount:data.total,currency:'USD'},autocomplete:true,location_id:data.locationId,reference_id:row.id,buyer_email_address:a.email,shipping_address:{address_line_1:a.street1,address_line_2:a.street2,locality:a.city,administrative_district_level_1:a.state,postal_code:a.zip,country:'US',first_name:a.name.split(' ')[0],last_name:a.name.split(' ').slice(1).join(' ')},note:'Stuff At Home '+shopNote(data)};
+async function shopPay(request,env){const body=await shopBody(request);let row=await shopGetOrder(env,body.id,body.key);if(row.status==='paid')return shopJson({status:'paid',id:row.id});if(row.status==='failed')return shopJson({status:'failed',id:row.id,error:'Payment was not completed. Please contact us or request a new shipping quote.'});if(row.status==='processing')return shopJson(await shopProcessPayment(row,env));const data=JSON.parse(row.data);if(data.test!==shopTest(env)||data.locationId!==env.SQUARE_LOCATION_ID)shopFail('Payment settings changed. Please start checkout again.',409);if(Date.now()-row.created_at>30*60000)shopFail('This checkout expired. Please request shipping options again.',409);const current=shopCart(data.cart,await shopCatalog(env));if(current.subtotal!==data.subtotal)shopFail('A kit price changed. Please request shipping options again.',409);const sourceId=String(body.sourceId||'');if(!sourceId||sourceId.length>500)shopFail('Square payment token is missing.');const a=data.address;const payload={source_id:sourceId,idempotency_key:row.id,amount_money:{amount:data.total,currency:'USD'},autocomplete:true,location_id:data.locationId,reference_id:row.id,buyer_email_address:a.email,shipping_address:{address_line_1:a.street1,address_line_2:a.street2,locality:a.city,administrative_district_level_1:a.state,postal_code:a.zip,country:'US',first_name:a.name.split(' ')[0],last_name:a.name.split(' ').slice(1).join(' ')},note:'Stuff At Home '+shopNote(data)};
  const locked=await env.DB.prepare('UPDATE shop_orders SET status=?,payment_request=?,updated_at=? WHERE id=? AND status=?').bind('processing',JSON.stringify(payload),Date.now(),row.id,'pending').run();row=await shopGetOrder(env,body.id,body.key);if(!locked.meta.changes&&row.status==='paid')return shopJson({status:'paid',id:row.id});if(row.status!=='processing')shopFail('This order could not be processed. Please contact us.',409);return shopJson(await shopProcessPayment(row,env));}
 async function shopOrderStatus(url,env){let row=await shopGetOrder(env,url.searchParams.get('id'),url.searchParams.get('key'));if(row.status==='processing'&&Date.now()-row.updated_at>10000){try{await shopProcessPayment(row,env);row=await shopGetOrder(env,row.id,row.access_key);}catch(e){/* Keep uncertain payments pending and recover with the same key. */}}
  const d=JSON.parse(row.data);return shopJson({id:row.id,status:row.status,test:d.test,total:d.total,cart:d.cart,address:d.address,receiptUrl:d.receiptUrl||''});}
@@ -3676,6 +3676,14 @@ async function shopCatalogTables(env){
    enabled INTEGER NOT NULL DEFAULT 0, price INTEGER NOT NULL DEFAULT 2999,
    display_name TEXT NOT NULL DEFAULT '', updated_at INTEGER NOT NULL
   )`).run();
+  // Add catalog controls without changing inventory counts or existing publication settings.
+  const columns=(await env.DB.prepare('PRAGMA table_info(shop_catalog)').all()).results;
+  for (const [name,definition] of [['sold_out','INTEGER NOT NULL DEFAULT 0'],['image_path',"TEXT NOT NULL DEFAULT ''"]]) {
+   if(!columns.some(c=>c.name===name)){
+    try { await env.DB.prepare('ALTER TABLE shop_catalog ADD COLUMN '+name+' '+definition).run(); }
+    catch(e) { const current=(await env.DB.prepare('PRAGMA table_info(shop_catalog)').all()).results;if(!current.some(c=>c.name===name))throw e; }
+   }
+  }
   // Preserve the original four friends without publishing the rest of Ops inventory.
   for(const id of ['bear','golden','dino','unicorn']){
    await env.DB.prepare(`INSERT OR IGNORE INTO shop_catalog
@@ -3689,15 +3697,15 @@ async function shopCatalogTables(env){
 async function shopCatalog(env,includeHidden=false){
  await shopCatalogTables(env);
  const rows=(await env.DB.prepare(`SELECT i.id,i.name,i.image_key,
-  c.product_id,c.enabled,c.price,c.display_name,c.updated_at FROM inventory i
+  c.product_id,c.enabled,c.price,c.display_name,c.sold_out,c.image_path,c.updated_at FROM inventory i
   LEFT JOIN shop_catalog c ON c.inventory_id=i.id
   WHERE i.category='Plush' ORDER BY i.name`).all()).results;
  return rows.filter(r=>includeHidden||r.enabled===1).map(r=>{
   const meta=SHOP_INVENTORY_META[r.id];
-  const hasImage=Boolean(r.image_key||meta?.fallback);
+  const hasImage=Boolean(r.image_path||r.image_key||meta?.fallback);
   const p={id:r.product_id||meta?.id||'inventory:'+r.id,
    name:r.display_name||meta?.name||r.name,price:r.price??2999,
-   enabled:r.enabled===1,hasImage,
+   enabled:r.enabled===1,soldOut:r.sold_out===1,imagePath:r.image_path||'',hasImage,
    image:hasImage?'/shop/api/image/'+encodeURIComponent(r.id)+'?v='+encodeURIComponent(r.image_key||r.updated_at||'default'):'',
    tag:'Stuff, fluff & love',copy:'Build a new best friend, one handful of fluff at a time.'};
   return includeHidden?{...p,inventoryId:r.id}:p;
@@ -3714,22 +3722,27 @@ async function shopSaveCatalog(request,env){
  if(typeof b.enabled!=='boolean')shopFail('Choose whether this plush is sold on the website.');
  const price=Number(b.price);
  if(!Number.isSafeInteger(price)||price<100||price>100000)shopFail('Enter a kit price between $1 and $1,000.');
+ const existing=await env.DB.prepare('SELECT sold_out,image_path FROM shop_catalog WHERE inventory_id=?').bind(id).first();
+ const soldOut=b.soldOut===undefined?existing?.sold_out===1:b.soldOut;
+ if(typeof soldOut!=='boolean')shopFail('Choose whether this plush is sold out.');
+ const imagePath=b.imagePath===undefined?(existing?.image_path||''):String(b.imagePath||'').trim();
+ if(imagePath&&!/^\/?[a-zA-Z0-9_-]+(?:\/[a-zA-Z0-9_-]+)*\.(?:webp|png|jpg|jpeg|avif|gif)$/i.test(imagePath))shopFail('Use a website image filename such as Snowman.webp or images/Snowman.webp.');
  const name=String(b.name||'').trim();if(name.length>100)shopFail('Keep the website name to 100 characters.');
- if(b.enabled&&!row.image_key&&!SHOP_INVENTORY_META[id]?.fallback)
+ if(b.enabled&&!imagePath&&!row.image_key&&!SHOP_INVENTORY_META[id]?.fallback)
   shopFail('Add a photo to this plush in Ops before publishing it.');
  const productId=SHOP_INVENTORY_META[id]?.id||'inventory:'+id;
- await env.DB.prepare(`INSERT INTO shop_catalog (inventory_id,product_id,enabled,price,display_name,updated_at)
-  VALUES (?,?,?,?,?,?) ON CONFLICT(inventory_id) DO UPDATE SET
-  enabled=excluded.enabled,price=excluded.price,display_name=excluded.display_name,updated_at=excluded.updated_at`)
-  .bind(id,productId,b.enabled?1:0,price,name,Date.now()).run();
+ await env.DB.prepare(`INSERT INTO shop_catalog (inventory_id,product_id,enabled,price,display_name,sold_out,image_path,updated_at)
+  VALUES (?,?,?,?,?,?,?,?) ON CONFLICT(inventory_id) DO UPDATE SET
+  enabled=excluded.enabled,price=excluded.price,display_name=excluded.display_name,sold_out=excluded.sold_out,image_path=excluded.image_path,updated_at=excluded.updated_at`)
+  .bind(id,productId,b.enabled?1:0,price,name,soldOut?1:0,imagePath,Date.now()).run();
  return shopJson({ok:true,products:await shopCatalog(env,true)});
 }
 async function shopCatalogImage(env,id,request){
  await shopCatalogTables(env);
- const row=await env.DB.prepare(`SELECT i.image_key FROM inventory i JOIN shop_catalog c
+ const row=await env.DB.prepare(`SELECT i.image_key,c.image_path FROM inventory i JOIN shop_catalog c
   ON c.inventory_id=i.id WHERE i.id=? AND i.category='Plush' AND c.enabled=1`).bind(id).first();
  if(!row)return new Response('Image not found.',{status:404});
- if(!row.image_key){const fallback=SHOP_INVENTORY_META[id]?.fallback;if(!fallback)return new Response('Image not found.',{status:404});
+ if(row.image_path||!row.image_key){const fallback=row.image_path?'/'+row.image_path.replace(/^\//,''):SHOP_INVENTORY_META[id]?.fallback;if(!fallback)return new Response('Image not found.',{status:404});
   const url=new URL(request.url);url.pathname=fallback;url.search='';return env.ASSETS.fetch(new Request(url,request));}
  const object=await env.IMAGES.get(row.image_key);if(!object)return new Response('Image not found.',{status:404});
  const contentType=object.httpMetadata?.contentType||'image/jpeg';
