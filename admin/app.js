@@ -7822,7 +7822,7 @@ async function uploadSWLFiles(form) {
     index < files.length;
     index++
   ) {
-    const file = files[index];
+    let file = files[index];
     const nameInput =
       form.elements[
         `displayName_${index}`
@@ -7845,10 +7845,7 @@ async function uploadSWLFiles(form) {
       const formData =
         new FormData();
 
-      formData.append(
-        "file",
-        file
-      );
+
 
       formData.append(
         "name",
@@ -7866,6 +7863,8 @@ async function uploadSWLFiles(form) {
       );
 
       try {
+        file = await prepareGalleryPhoto(file);
+        formData.append("file",file);
         const response =
           await fetch(
             "/admin/api/files",
@@ -8148,6 +8147,7 @@ function openFileDetail(fileId) {
 
 
         <div class="file-detail-actions">
+          ${["image/webp","image/jpeg","image/png"].includes(file.contentType) ? `<button type="button" class="primary-button full-width" onclick="openWebsiteGalleryPhoto(decodeURIComponent('${encodeURIComponent(file.id)}'))">Website Gallery</button>` : ""}
 
           ${
             canPreview
@@ -11867,3 +11867,47 @@ function retryOpsShop(){opsShopProducts=null;document.querySelectorAll('[data-sh
 function lockOpsShop(){opsShopKey='';opsShopProducts=null;try{sessionStorage.removeItem('swl-shop-admin-key');}catch(e){}document.querySelectorAll('[data-shop-inventory]').forEach(el=>opsShopLocked(el));}
 
 function base64Key(value){return btoa(String.fromCharCode(...new Uint8Array(value)));}
+
+// Convert supported still photos locally before upload; keep PDFs and other files unchanged.
+async function prepareGalleryPhoto(file){
+  if(!(["image/jpeg","image/png","image/webp"].includes(file.type)||/\.(jpe?g|png|webp)$/i.test(file.name)))return file;
+  let source,release=()=>{};
+  try{
+    if(typeof createImageBitmap==="function"){
+      try{source=await createImageBitmap(file,{imageOrientation:"from-image"});release=()=>source.close();}catch{}
+    }
+    if(!source){
+      const url=URL.createObjectURL(file);const img=new Image();
+      try{img.src=url;await img.decode();source=img;}finally{URL.revokeObjectURL(url);}
+    }
+    const width=source.width||source.naturalWidth,height=source.height||source.naturalHeight;
+    if(!width||!height)throw Error("Invalid image dimensions.");
+    const scale=Math.min(1,1920/Math.max(width,height));
+    const canvas=document.createElement("canvas");canvas.width=Math.max(1,Math.round(width*scale));canvas.height=Math.max(1,Math.round(height*scale));
+    const context=canvas.getContext("2d");if(!context)throw Error("Image conversion is unavailable.");
+    context.drawImage(source,0,0,canvas.width,canvas.height);
+    let blob=await new Promise(resolve=>canvas.toBlob(resolve,"image/webp",0.84));
+    if(!blob||blob.type!=="image/webp"){
+      const {encodeWebP}=await import('/admin/webp-encoder.js?v=20261031-gallery');
+      blob=await encodeWebP(context.getImageData(0,0,canvas.width,canvas.height));
+    }
+    canvas.width=canvas.height=1;
+    return new File([blob],file.name.replace(/\.[^.]+$/,"")+".webp",{type:"image/webp",lastModified:Date.now()});
+  }finally{release();}
+}
+async function openWebsiteGalleryPhoto(id){
+  try{
+    const result=await apiRequest("gallery");const photo=result.photos.find(p=>p.file_id===id);
+    const file=swlFiles.find(f=>f.id===id);
+    document.getElementById("modalRoot").innerHTML=`<div class="modal-backdrop"><section class="modal-sheet files-modal-sheet" role="dialog" aria-modal="true" aria-label="Website gallery"><h2>Website Gallery</h2><p>${photo?"This photo is public on your website.":"Publishing makes this photo visible to everyone on your website."}</p><form onsubmit="event.preventDefault();saveWebsiteGalleryPhoto(this)"><input type="hidden" name="fileId" value="${escapeHTML(id)}"><div class="field"><label>Image description<input name="alt" maxlength="500" required value="${escapeHTML(photo?.alt||file?.name||"")}" placeholder="Describe what is in the photo"></label></div><div class="field"><label>Caption (optional)<textarea name="caption" maxlength="1000">${escapeHTML(photo?.caption||"")}</textarea></label></div><button type="submit" class="primary-button full-width">${photo?"Save Gallery Changes":"Publish to Website Gallery"}</button>${photo?`<button type="button" class="secondary-button full-width" onclick="removeWebsiteGalleryPhoto(decodeURIComponent('${encodeURIComponent(id)}'))">Remove from Website Gallery</button>`:""}<button type="button" class="secondary-button full-width" onclick="closeModal()">Cancel</button><p role="status"></p></form></section></div>`;
+  }catch(e){alert("Could not open gallery settings. "+e.message);}
+}
+async function saveWebsiteGalleryPhoto(form){
+  const button=form.querySelector('[type="submit"]');button.disabled=true;
+  try{await apiRequest("gallery/"+encodeURIComponent(form.elements.fileId.value),{method:"PUT",body:JSON.stringify({alt:form.elements.alt.value,caption:form.elements.caption.value})});closeModal();showSWLToast("Photo published to the website gallery");}
+  catch(e){form.querySelector('[role="status"]').textContent=e.message;button.disabled=false;}
+}
+async function removeWebsiteGalleryPhoto(id){
+  if(!confirm("Remove this photo from the public gallery? The file will stay in Files."))return;
+  try{await apiRequest("gallery/"+encodeURIComponent(id),{method:"DELETE"});closeModal();showSWLToast("Photo removed from the website gallery");}catch(e){alert(e.message);}
+}
