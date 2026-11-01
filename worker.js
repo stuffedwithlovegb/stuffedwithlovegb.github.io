@@ -4,6 +4,7 @@ export default {
 
     if (url.pathname === "/booking/api/submit") return handlePartyBooking(request, env, ctx);
     if (url.pathname === "/booking/api/push-ack" && request.method === "POST") return handlePush(request, env, "ack");
+    if (url.pathname === "/shop/api/gallery" || url.pathname.startsWith("/shop/api/gallery/")) return handlePublicGallery(request,env,url);
     // Public storefront checkout; existing Ops routes are preserved.
     if (url.pathname.startsWith("/shop/api/")) {
       return handleShopApi(request, env, url);
@@ -186,6 +187,8 @@ if (resource === "file-categories") {
         id
       );
     }
+
+    if (resource === "gallery") return handleGalleryAdmin(request,env,id);
 
     if (resource === "files") {
       return handleFiles(
@@ -2775,6 +2778,9 @@ if (requestedFolderId) {
     id &&
     !action
   ) {
+    await ensureGallery(env);
+    const published = await env.DB.prepare("SELECT file_id FROM gallery_photos WHERE file_id = ?").bind(id).first();
+    if(published) return error("Remove this photo from the website gallery before deleting the file.",409);
     const fileRecord =
       await env.DB
         .prepare(`
@@ -3830,4 +3836,48 @@ async function notifyPartyBooking(env,event){
     await env.DB.prepare("INSERT OR IGNORE INTO push_pending (id,endpoint,notification_key,title,body,url,created_at) VALUES (?,?,?,?,?,?,?)").bind(crypto.randomUUID(),sub.endpoint,"booking:"+event.id,"New party booking",`${event.name} · ${event.date} · Review and send deposit invoice`,"/admin/?screen=events",new Date().toISOString()).run();
     if(env.VAPID_PRIVATE_JWK) await sendEmptyWebPush(env,sub.endpoint,"booking:"+event.id);
   }
+}
+
+/* Website gallery: only explicitly published image files have public access. */
+async function ensureGallery(env){
+  await env.DB.prepare(`CREATE TABLE IF NOT EXISTS gallery_photos (
+    file_id TEXT PRIMARY KEY, caption TEXT NOT NULL DEFAULT '', alt TEXT NOT NULL,
+    published_at TEXT NOT NULL
+  )`).run();
+}
+async function handleGalleryAdmin(request,env,id){
+  try{
+    await ensureGallery(env);
+    if(request.method==="GET"&&!id){
+      const rows=await env.DB.prepare("SELECT file_id, caption, alt, published_at FROM gallery_photos ORDER BY published_at DESC, file_id").all();
+      return json({ok:true,photos:rows.results||[]});
+    }
+    if(request.method==="PUT"&&id){
+      const data=await request.json();const alt=String(data.alt||"").trim(),caption=String(data.caption||"").trim();
+      if(!alt||alt.length>500||caption.length>1000)return error("Enter an image description (up to 500 characters) and caption (up to 1000).");
+      const file=await env.DB.prepare("SELECT id, content_type FROM files WHERE id = ?").bind(id).first();
+      if(!file)return error("File not found.",404);
+      if(!["image/webp","image/jpeg","image/png"].includes(file.content_type))return error("Only WebP, JPEG and PNG photos can be published.");
+      await env.DB.prepare("INSERT INTO gallery_photos (file_id,caption,alt,published_at) VALUES (?,?,?,?) ON CONFLICT(file_id) DO UPDATE SET caption=excluded.caption,alt=excluded.alt").bind(id,caption,alt,new Date().toISOString()).run();
+      return json({ok:true});
+    }
+    if(request.method==="DELETE"&&id){await env.DB.prepare("DELETE FROM gallery_photos WHERE file_id = ?").bind(id).run();return json({ok:true});}
+    return error("Unsupported gallery request.",405);
+  }catch(e){console.error("Gallery admin error",String(e));return error("Could not update gallery.",500);}
+}
+async function handlePublicGallery(request,env,url){
+  if(request.method!=="GET")return error("GET required.",405);
+  try{
+    await ensureGallery(env);
+    if(url.pathname==="/shop/api/gallery"){
+      const rows=await env.DB.prepare("SELECT g.file_id, g.caption, g.alt FROM gallery_photos g JOIN files f ON f.id=g.file_id ORDER BY g.published_at DESC, g.file_id").all();
+      const response=json({ok:true,photos:(rows.results||[]).map(p=>({image:"/shop/api/gallery/"+encodeURIComponent(p.file_id)+"/image",caption:p.caption,alt:p.alt}))});
+      response.headers.set("Cache-Control","no-store");return response;
+    }
+    const match=url.pathname.match(/^\/shop\/api\/gallery\/([^/]+)\/image$/);if(!match)return error("Not found.",404);
+    const file=await env.DB.prepare("SELECT f.r2_key,f.content_type FROM files f JOIN gallery_photos g ON g.file_id=f.id WHERE f.id = ?").bind(decodeURIComponent(match[1])).first();
+    if(!file)return error("Not found.",404);
+    const object=await env.IMAGES.get(file.r2_key);if(!object)return error("Not found.",404);
+    return new Response(object.body,{headers:{"Content-Type":file.content_type,"Cache-Control":"no-store","X-Content-Type-Options":"nosniff"}});
+  }catch(e){console.error("Public gallery error",String(e));return error("Gallery unavailable.",503);}
 }
