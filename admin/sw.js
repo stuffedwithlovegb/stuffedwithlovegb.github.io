@@ -13,6 +13,13 @@ self.addEventListener("push", event => {
       return;
     }
     const endpoint = subscription.endpoint;
+    if(event.data){
+      const note=event.data.json();
+      await self.registration.showNotification(note.title||"FOW Ops",{body:note.body||"",icon:"/admin/icon-192.png",badge:"/admin/icon-192.png",tag:`fow-${note.notification_key||note.id}`,data:{url:note.url||"/admin/"}});
+      // Failure to acknowledge must not prevent display.
+      try{await fetch("/booking/api/push-ack",{method:"POST",credentials:"include",headers:{"Content-Type":"application/json"},body:JSON.stringify({endpoint,id:note.id})});}catch(e){console.warn("Push acknowledgment deferred",e);}
+      return;
+    }
     // One push may wake the worker for several queued reminders.
     for (let i = 0; i < 30; i++) {
       try {
@@ -25,8 +32,8 @@ self.addEventListener("push", event => {
         const note = (await response.json())?.notification;
         if (!note) return;
 
-        await self.registration.showNotification(note.title || "Stuffed With Love", {
-          body: note.body || "A little SWL nudge 💛",
+        await self.registration.showNotification(note.title || "FOW Ops", {
+          body: note.body || "A little FOW nudge 💛",
           icon: "/admin/icon-192.png",
           badge: "/admin/icon-192.png",
           tag: `swl-${note.notification_key || note.id}`,
@@ -34,7 +41,7 @@ self.addEventListener("push", event => {
           data: { url: note.url || "/admin/" }
         });
 
-        const ack = await fetch("/admin/api/push/ack", {
+        const ack = await fetch("/booking/api/push-ack", {
           method: "POST", credentials: "include",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ endpoint, id: note.id })
