@@ -1,7 +1,9 @@
 export default {
-  async fetch(request, env) {
+  async fetch(request, env, ctx) {
     const url = new URL(request.url);
 
+    if (url.pathname === "/booking/api/submit") return handlePartyBooking(request, env, ctx);
+    if (url.pathname === "/booking/api/push-ack" && request.method === "POST") return handlePush(request, env, "ack");
     // Public storefront checkout; existing Ops routes are preserved.
     if (url.pathname.startsWith("/shop/api/")) {
       return handleShopApi(request, env, url);
@@ -3020,6 +3022,14 @@ async function ensurePushTables(env) {
 async function handlePush(request, env, action) {
   await ensurePushTables(env);
 
+  if (request.method === "GET" && action === "config") {
+    if (!env.VAPID_PRIVATE_JWK) return error("Push signing key is missing in Cloudflare: VAPID_PRIVATE_JWK.", 503);
+    try {
+      const jwk = JSON.parse(env.VAPID_PRIVATE_JWK);
+      return json({ok:true, publicKey:base64UrlBytes(Uint8Array.from([4,...base64UrlDecode(jwk.x),...base64UrlDecode(jwk.y)]))});
+    } catch { return error("Push signing key is invalid.", 503); }
+  }
+
   if (request.method === "POST" && action === "subscribe") {
     const body = await request.json();
     const endpoint = String(body?.endpoint || "").trim();
@@ -3079,7 +3089,7 @@ async function handlePush(request, env, action) {
       now
     ).run();
 
-    const response = await sendEmptyWebPush(env, endpoint);
+    const response = await sendEmptyWebPush(env, endpoint, notificationKey);
     if (response.status === 404 || response.status === 410) {
       await env.DB.prepare(`DELETE FROM push_subscriptions WHERE endpoint = ?`).bind(endpoint).run();
       await env.DB.prepare(`DELETE FROM push_pending WHERE endpoint = ?`).bind(endpoint).run();
@@ -3242,7 +3252,8 @@ async function processPushNotifications(env) {
   const subscriptions = (await env.DB.prepare(`SELECT endpoint FROM push_subscriptions`).all()).results || [];
   if (!subscriptions.length) return;
 
-  const candidates = [];
+  const bookingRows=(await env.DB.prepare("SELECT DISTINCT notification_key AS key, title, body, url FROM push_pending WHERE notification_key LIKE 'booking:%'").all()).results || [];
+  const candidates = [...bookingRows];
   const local = swlLocalParts();
   const today = swlTodayValue();
   const dayKey = swlDateKey(local);
@@ -3384,7 +3395,7 @@ async function processPushNotifications(env) {
           VALUES (?, ?, ?, ?, ?, ?, ?)
         `).bind(crypto.randomUUID(), sub.endpoint, candidate.key, candidate.title,
           candidate.body, candidate.url, now.toISOString()).run();
-        const response = await sendEmptyWebPush(env, sub.endpoint);
+        const response = await sendEmptyWebPush(env, sub.endpoint, candidate.key);
         if (response.status === 404 || response.status === 410) {
           await env.DB.prepare(`DELETE FROM push_subscriptions WHERE endpoint = ?`).bind(sub.endpoint).run();
           await env.DB.prepare(`DELETE FROM push_pending WHERE endpoint = ?`).bind(sub.endpoint).run();
@@ -3428,7 +3439,7 @@ async function vapidToken(env, endpoint) {
   const payload = base64UrlText(JSON.stringify({
     aud: new URL(endpoint).origin,
     exp: Math.floor(Date.now()/1000) + 12*60*60,
-    sub: env.VAPID_SUBJECT || "mailto:hello@stuffedwithlovegb.com"
+    sub: env.VAPID_SUBJECT || "mailto:hello@fluffonwheels.com"
   }));
   const unsigned = `${header}.${payload}`;
   const key = await crypto.subtle.importKey("jwk", jwk, { name:"ECDSA", namedCurve:"P-256" }, false, ["sign"]);
@@ -3436,16 +3447,32 @@ async function vapidToken(env, endpoint) {
   return { token:`${unsigned}.${base64UrlBytes(signature)}`, publicKey };
 }
 
-async function sendEmptyWebPush(env, endpoint) {
-  const vapid = await vapidToken(env, endpoint);
-  return fetch(endpoint, {
-    method: "POST",
-    headers: {
-      "Authorization": `vapid t=${vapid.token},k=${vapid.publicKey}`,
-      "TTL": "300",
-      "Urgency": "normal"
-    }
-  });
+async function pushHKDF(secret, salt, info, length) {
+  const key = await crypto.subtle.importKey("raw", secret, "HKDF", false, ["deriveBits"]);
+  return new Uint8Array(await crypto.subtle.deriveBits({name:"HKDF",hash:"SHA-256",salt,info},key,length*8));
+}
+function pushConcat(...arrays) {
+  const out=new Uint8Array(arrays.reduce((n,a)=>n+a.length,0));let i=0;
+  for(const a of arrays){out.set(a,i);i+=a.length;}return out;
+}
+async function sendEmptyWebPush(env, endpoint, notificationKey = null) {
+  const subscription = await env.DB.prepare("SELECT p256dh, auth FROM push_subscriptions WHERE endpoint = ?").bind(endpoint).first();
+  const note = await env.DB.prepare("SELECT id, notification_key, title, body, url FROM push_pending WHERE endpoint = ? AND (? IS NULL OR notification_key = ?) ORDER BY created_at ASC LIMIT 1").bind(endpoint,notificationKey,notificationKey).first();
+  if(!subscription || !note) return new Response(null,{status:204});
+  const enc=new TextEncoder(), ua=base64UrlDecode(subscription.p256dh);
+  const pair=await crypto.subtle.generateKey({name:"ECDH",namedCurve:"P-256"},true,["deriveBits"]);
+  const pub=new Uint8Array(await crypto.subtle.exportKey("raw",pair.publicKey));
+  const receiver=await crypto.subtle.importKey("raw",ua,{name:"ECDH",namedCurve:"P-256"},false,[]);
+  const shared=new Uint8Array(await crypto.subtle.deriveBits({name:"ECDH",public:receiver},pair.privateKey,256));
+  const ikm=await pushHKDF(shared,base64UrlDecode(subscription.auth),pushConcat(enc.encode("WebPush: info\0"),ua,pub),32);
+  const salt=crypto.getRandomValues(new Uint8Array(16));
+  const cek=await pushHKDF(ikm,salt,enc.encode("Content-Encoding: aes128gcm\0"),16);
+  const nonce=await pushHKDF(ikm,salt,enc.encode("Content-Encoding: nonce\0"),12);
+  const key=await crypto.subtle.importKey("raw",cek,"AES-GCM",false,["encrypt"]);
+  const ciphertext=new Uint8Array(await crypto.subtle.encrypt({name:"AES-GCM",iv:nonce},key,pushConcat(enc.encode(JSON.stringify(note)),new Uint8Array([2]))));
+  const record=new Uint8Array(5);new DataView(record.buffer).setUint32(0,4096);record[4]=pub.length;
+  const vapid=await vapidToken(env,endpoint);
+  return fetch(endpoint,{method:"POST",headers:{Authorization:`vapid t=${vapid.token},k=${vapid.publicKey}`,TTL:"86400",Urgency:"normal","Content-Encoding":"aes128gcm","Content-Type":"application/octet-stream"},body:pushConcat(salt,record,pub,ciphertext)});
 }
 
 /* =========================================================
@@ -3748,4 +3775,59 @@ async function shopCatalogImage(env,id,request){
  const contentType=object.httpMetadata?.contentType||'image/jpeg';
  if(!['image/jpeg','image/png','image/webp','image/gif','image/avif'].includes(contentType))return new Response('Unsupported image.',{status:415});
  return new Response(object.body,{headers:{'Content-Type':contentType,'Cache-Control':'public, max-age=300','X-Content-Type-Options':'nosniff'}});
+}
+
+/* Public party booking intake: bounded fields, same-origin only, atomic deduplication. */
+async function handlePartyBooking(request, env, ctx) {
+  if(request.method!=="POST") return error("POST required.",405);
+  if(request.headers.get("Origin")!==new URL(request.url).origin) return error("Invalid origin.",403);
+  if(Number(request.headers.get("Content-Length")||0)>50000) return error("Booking too large.",413);
+  try {
+    const raw=await request.text();if(raw.length>50000)return error("Booking too large.",413);
+    const form=new URLSearchParams(raw), data={};
+    for(const [k,v] of form){if(k.length>80||v.length>6000)return error("Field too long.");data[k]=v;}
+    if(data._gotcha) return error("Unable to submit.");
+    for(const k of ["name","email","phone","event_date","experience_start","street_address","city","state","zip","signature"])
+      if(!data[k]?.trim())return error("Missing "+k);
+    if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(data.email)||!/^\d{4}-\d{2}-\d{2}$/.test(data.event_date)||!/^([01]\d|2[0-3]):[0-5]\d$/.test(data.experience_start))return error("Invalid email or date/time.");
+    for(const k of ["policy_ack","deposit_ack","supervision_ack","signature_ack"])if(data[k]!=="Agreed")return error("Please accept the agreements.");
+    const qty=Number(data.estimated_participants);if(!Number.isInteger(qty)||qty<1||qty>2000)return error("Invalid guest count.");
+    const rates={"Plush Party — $30 / child":30,"Deluxe Plush Party — $35 / child":35,"Ultimate Plush Party — $40 / child":40,"Previously discussed custom arrangement":0};
+    if(!(data.package in rates))return error("Invalid package.");
+    const counts=["outfit_quantity","voice_chip_quantity","shirt_quantity","vinyl_quantity"].map(k=>Number(data[k]||0));
+    if(counts.some(n=>!Number.isInteger(n)||n<0||n>2000))return error("Invalid add-on count.");
+    if(!/^[a-f0-9-]{36}$/.test(data.submission_id||""))return error("Invalid submission ID.");
+    delete data.agreed_policy_snapshot;
+    const id="booking-"+data.submission_id,now=new Date().toISOString();
+    const existing=await env.DB.prepare("SELECT id FROM events WHERE id = ?").bind(id).first();
+    if(existing)return json({ok:true});
+    // Per-email cap limits automated repeats; retries of the same ID remain safe.
+    const recent=await env.DB.prepare("SELECT COUNT(*) AS n FROM events WHERE created_at > ? AND json_extract(data, '$.hostEmail') = ?").bind(new Date(Date.now()-3600000).toISOString(),data.email).first();
+    if(recent?.n>=5)return error("Too many bookings. Please contact us.",429);
+    const rate=rates[data.package],total=rate?Math.max(10,qty)*rate+counts[0]*8+counts[1]*10+counts[2]*5+counts[3]*5:0;
+    const event={id,name:`${data.birthday_child||data.name} — Birthday Party`,eventType:"Birthday Party",date:data.event_date,time:data.experience_start,endDate:data.event_date,endTime:data.party_end||"",hostName:data.name,hostEmail:data.email,hostPhone:data.phone,address:[data.street_address,data.city,data.state,data.zip].join(", "),guestCount:qty,swlCapacity:Math.max(10,qty),eventAttendance:qty,bagQuantity:Math.max(10,qty),package:rate?`$${rate} Package`:"Custom",specialGuestName:data.birthday_child||"",specialGuestAge:data.birthday_age||"",extraOutfits:counts[0],voiceChips:counts[1],extraShirts:counts[2],extraVinyl:counts[3],customRequirements:[data.custom_arrangement,data.vinyl_requests,data.birthday_outfit,data.customization_notes].filter(Boolean).join("\n"),eventNotes:"PARTY BOOKING — review details and send deposit invoice.\n\n"+Object.entries(data).filter(([k])=>k!=="_gotcha").map(([k,v])=>`${k}: ${v}`).join("\n"),bookingDetails:data,bookingStatus:"Pending deposit",depositAmount:100,depositPaid:false,total,balanceDue:total,selectedPlush:[],plushQuantities:{},reservations:[],loadOut:{},packing:[],extraPackInventory:[],extraPackItems:[],closed:false,createdAt:now};
+    const result=await env.DB.prepare("INSERT OR IGNORE INTO events (id,data,created_at,updated_at) VALUES (?,?,?,?)").bind(id,JSON.stringify(event),now,now).run();
+    if(result.meta?.changes){
+      // Independent tasks: email or push failure never discards the stored event.
+      ctx.waitUntil(forwardPartyEmail(env,id,data));
+      ctx.waitUntil(notifyPartyBooking(env,event).catch(e=>console.error("Booking push failed",String(e))));
+    }
+    return json({ok:true});
+  } catch(e){console.error("Party intake failed",String(e));return error("Could not save booking. Please retry or contact us.",500);}
+}
+async function forwardPartyEmail(env,id,data){
+  try{
+    const body=new FormData();for(const [k,v] of Object.entries(data))body.set(k,v);
+    body.set("form_type","Birthday Party Booking Details");body.set("subject","Fluff On Wheels — Party Booking Details");
+    const r=await fetch("https://formspree.io/f/mbdvjnow",{method:"POST",headers:{Accept:"application/json"},body,signal:AbortSignal.timeout(15000)});
+    if(!r.ok)console.error("Booking saved; Formspree notification rejected",{id,status:r.status});
+  }catch(e){console.error("Booking saved; email failed",{id,error:String(e)});}
+}
+async function notifyPartyBooking(env,event){
+  await ensurePushTables(env);
+  const subs=(await env.DB.prepare("SELECT endpoint FROM push_subscriptions").all()).results||[];
+  for(const sub of subs){
+    await env.DB.prepare("INSERT OR IGNORE INTO push_pending (id,endpoint,notification_key,title,body,url,created_at) VALUES (?,?,?,?,?,?,?)").bind(crypto.randomUUID(),sub.endpoint,"booking:"+event.id,"New party booking",`${event.name} · ${event.date} · Review and send deposit invoice`,"/admin/?screen=events",new Date().toISOString()).run();
+    if(env.VAPID_PRIVATE_JWK) await sendEmptyWebPush(env,sub.endpoint,"booking:"+event.id);
+  }
 }
