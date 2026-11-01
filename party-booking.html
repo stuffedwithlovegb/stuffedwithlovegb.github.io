@@ -147,127 +147,12 @@
       Every package includes our wishing ceremony, where guests add a little magic to bring their friend to life.
      </p>
     </div>
-    <form action="https://formspree.io/f/mbdvjnow" class="contact-form party-booking-form" id="party-booking-form" method="POST">
+    <form action="/booking/api/submit" class="contact-form party-booking-form" id="party-booking-form" method="POST">
      <input name="subject" type="hidden" value="Fluff On Wheels — Party Booking Details"/>
      <input name="form_type" type="hidden" value="Birthday Party Booking Details"/>
      <input name="event_timezone" type="hidden" value="America/Chicago"/>
      <input name="policy_version" type="hidden" value="Rebrand copy update 2026-10-10 / original terms 2026-10-07"/>
      <input id="submitted-at" name="submitted_at_client" type="hidden"/>
-     <textarea hidden="" name="agreed_policy_snapshot">Reservation Deposit
-A $100 deposit locks in your date and time. This deposit is non-refundable, and your event isn't officially on our calendar until it's received and we've confirmed your booking.
-
-Final Payment
-The remaining balance is due on or before your event, unless we've made other arrangements ahead of time.
-
-Schools, daycares, corporate partners, and nonprofit or community organizations can be invoiced according to the terms we agree on during booking.
-
-We accept major credit cards and other approved electronic payment methods.
-
-Guest Count
-We ask for your final guest count at least 7 days before the event. Your package includes a set number of participants.
-
-Need to add more guests? We'll do our best to accommodate based on supply and staffing availability, billed at your package's per-guest rate.
-
-The earlier you can let us know about changes, the better — it helps us make sure we bring enough plushes, certificates, and take-home bags for everyone.
-
-Cancellation Policy
-Reservation deposits are non-refundable.
-
-Life happens — if you need to cancel more than 14 days before your event, we'll gladly transfer your deposit to one new date within the next 6 months, based on availability.
-
-Cancellations within 14 days of the event will forfeit the deposit. Any custom, personalized, or special-order items already purchased or made for your event may also be non-refundable.
-
-Rescheduling Policy
-We offer one complimentary reschedule when you let us know at least 14 days before your original event date.
-
-Your new date needs to fall within 6 months and is subject to availability. Additional reschedules may come with a small fee.
-
-Unforeseen Circumstances
-On the rare occasion something beyond our control keeps us from making it to your event, we'll work with you to reschedule or find a solution that feels fair.
-
-This includes things like severe weather, unsafe travel conditions, power outages, government restrictions, equipment failure, illness, or other genuine emergencies.
-
-Travel Policy
-Travel within 15 miles of Green Bay is always included, no extra charge.
-
-Events further out may include a travel fee — but we'll always let you know the exact amount and get your okay before your booking is finalized.
-
-Arrival &amp; Setup
-We typically arrive 30–45 minutes before your event start time to get everything set up.
-
-Bigger events, custom installations, or extra experience stations may need a little more setup time.
-
-We just ask that the setup area be clean, dry, accessible, and ready for us when we arrive.
-
-Event Space Requirements
-Our full setup fits comfortably in a space about the size of one parking spot.
-
-We're happy to set up indoors or outdoors and can adjust our layout for smaller spaces when needed. The area should be level, clean, dry, accessible, and free of hazards.
-
-We bring our own portable power source, so you typically won't need to provide an outlet.
-
-Event Start Time
-We'll start right at the scheduled time whenever possible.
-
-If guests or the host run late, we may still need to end at the originally scheduled time so we can make it to our next commitment.
-
-Weather Policy
-Planning an outdoor event? We just ask that you have a backup plan in place.
-
-If rain, high winds, extreme temperatures, storms, or other unsafe conditions are in the forecast, we'll work with you to move things indoors or find a new date.
-
-A covered pavilion or tent can work depending on conditions, as long as it fully protects our equipment, plushes, paperwork, and everyone involved.
-
-The safety of our guests, staff, and supplies always comes first.
-
-Adult Supervision
-We'll bring the magic, but we need a responsible adult present the whole time. Our team runs the experience, we're not there to supervise kids.
-
-Parents, guardians, hosts, and event organizers stay responsible for guest behavior and supervision throughout.
-
-Guest Safety
-We work hard to keep things fun, organized, and safe. We ask guests to follow the instructions our team gives during the event.
-
-Parents, guardians, and hosts are best positioned to know whether certain activities, accessories, or small pieces are appropriate for each participant.
-
-Fluff On Wheels isn't responsible for injuries resulting from unsafe behavior, not following instructions, inadequate supervision, or conditions at the host's venue.
-
-Food &amp; Beverages
-To help keep our stuffing machine, plushes, certificates, and supplies in good shape, we kindly ask that food and drinks stay away from our setup when possible.
-
-Please let us know ahead of time about any venue restrictions, allergy concerns, or accommodations we should be aware of.
-
-Personal Belongings
-We're not able to take responsibility for lost, stolen, damaged, or unattended personal belongings during an event.
-
-Equipment &amp; Supplies
-We do everything we can to bring the plush styles, clothing, and accessories you've requested.
-
-Every so often, supplier delays, inventory changes, or discontinued products mean we need to substitute with a comparable option of equal or greater value.
-
-Plush Selection
-Plush options depend on availability and can vary by package, season, event size, and what our suppliers have in stock.
-
-Unless we've confirmed a specific plush selection with you in writing, we'll bring an assortment of available friends for guests to choose from.
-
-Custom Items &amp; Themes
-We love helping bring your vision to life! Custom vinyl designs, themed items, personalized apparel, specialty plushes, branded accessories, and other special requests need at least 14 days' notice.
-
-Larger custom orders, corporate branding, or specialty products may need extra production time.
-
-We'll always do our best to make your custom request happen, but availability, design complexity, materials, and production timelines can sometimes limit what's possible.
-
-If we ever need to decline or adjust a custom request, we'll communicate clearly and work with you to find something you'll love just as much.
-
-Personalized &amp; Special-Order Items
-Personalized, branded, or special-order items usually can't be reused for another event, so they may be non-refundable once we've started production or purchasing.
-
-Photography
-We love capturing the sweet moments from our events. With permission, photos or videos may be used on our website, social media, promotional materials, and business listings.
-
-If you'd rather certain guests not be photographed, just let us know before the event — we'll always honor that.
-
-For schools, corporate events, and organizations with their own media policies, we'll follow whatever photography guidelines you provide.</textarea>
      <fieldset class="party-fieldset">
       <legend>
        <span>
@@ -1084,17 +969,21 @@ For schools, corporate events, and organizations with their own media policies, 
  }
  form.addEventListener('change',update);count.addEventListener('input',update);update();
  let sending=false;
+ let submissionId;
+ try{submissionId=sessionStorage.getItem('fow-party-submission')||crypto.randomUUID();sessionStorage.setItem('fow-party-submission',submissionId);}catch{submissionId=crypto.randomUUID();}
  form.addEventListener('submit',async function(e){
   e.preventDefault();if(sending)return;update();if(!form.reportValidity())return;
   sending=true;const button=form.querySelector('[type="submit"]'),status=document.getElementById('form-status');
   button.disabled=true;button.textContent='Sending your party details…';status.textContent='';
   document.getElementById('submitted-at').value=new Date().toISOString();
   const data=new FormData(form);
+  data.set("submission_id",submissionId);
   const names={'30':'Plush Party — $30 / child','35':'Deluxe Plush Party — $35 / child','40':'Ultimate Plush Party — $40 / child','custom':'Previously discussed custom arrangement'};
   data.set('package',names[data.get('package')]);data.set('planning_estimate',document.getElementById('estimate').textContent);
   try{
-   const response=await fetch(form.action,{method:'POST',body:data,headers:{Accept:'application/json'}});
-   if(!response.ok)throw new Error('Submission rejected');
+   const response=await fetch(form.action,{method:'POST',body:new URLSearchParams(data),headers:{Accept:'application/json'}});
+   if(!response.ok)throw new Error((await response.json()).error||'Submission rejected');
+   try{sessionStorage.removeItem('fow-party-submission');}catch{}
    window.location.assign('booking-received.html');
   }catch(error){
    status.textContent='We couldn’t confirm that your details were received. Your answers are still here. If you saw a connection error, contact us before retrying to avoid a duplicate; otherwise try again or email hello@fluffonwheels.com.';
