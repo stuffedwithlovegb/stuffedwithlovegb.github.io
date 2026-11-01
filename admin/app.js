@@ -737,6 +737,7 @@ async function saveReminderToServer(reminder) {
    PUSH NOTIFICATIONS
 ========================================================= */
 
+let pushDeviceSubscribed = false;
 const SWL_VAPID_PUBLIC_KEY = "BOyv9e4JdzUNpAIb8RA877ScMncpw3lRyhdl0QGLjKISC2rXHrM9y2FSncoC5yrgQQJhUNA0guclbB0_GL2tXSQ";
 
 function swlBase64UrlToUint8Array(value) {
@@ -753,7 +754,7 @@ function pushNotificationsSupported() {
 function pushNotificationStatus() {
   if (!pushNotificationsSupported()) return "unsupported";
   if (Notification.permission === "denied") return "denied";
-  if (Notification.permission === "granted") return "enabled";
+  if (Notification.permission === "granted" && pushDeviceSubscribed) return "enabled";
   return "off";
 }
 
@@ -809,7 +810,8 @@ function pushNotificationSettingsHTML() {
   `;
 }
 
-function openNotificationSettings() {
+async function openNotificationSettings() {
+  if(pushNotificationsSupported()){try{const r=await navigator.serviceWorker.ready;pushDeviceSubscribed=Boolean(await r.pushManager.getSubscription());}catch{pushDeviceSubscribed=false;}}
   document.getElementById("modalRoot").innerHTML = `
     <div class="modal-backdrop" onclick="closeModalFromBackdrop(event)">
       <section class="swl-notification-settings-sheet" role="dialog" aria-modal="true" aria-label="Notification settings">
@@ -841,12 +843,13 @@ async function sendTestPushNotification() {
       button.textContent = "Sending…";
     }
 
+    await apiRequest("push/subscribe", {method:"POST",body:JSON.stringify(subscription.toJSON())});
     await apiRequest("push/test", {
       method: "POST",
       body: JSON.stringify({ endpoint: subscription.endpoint })
     });
 
-    showSWLToast("🧸 Test nudge sent");
+    showSWLToast("Test accepted by push service — check for the notification");
     closeModal();
   } catch (err) {
     console.error(err);
@@ -870,10 +873,14 @@ async function enablePushNotifications() {
     const registration = await navigator.serviceWorker.ready;
     let subscription = await registration.pushManager.getSubscription();
 
+    const config=await apiRequest("push/config");
+    const expected=swlBase64UrlToUint8Array(config.publicKey);
+    const oldKey=subscription?.options?.applicationServerKey;
+    if(subscription && oldKey && base64Key(oldKey)!==base64Key(expected)){await subscription.unsubscribe();subscription=null;}
     if (!subscription) {
       subscription = await registration.pushManager.subscribe({
         userVisibleOnly: true,
-        applicationServerKey: swlBase64UrlToUint8Array(SWL_VAPID_PUBLIC_KEY)
+        applicationServerKey: expected
       });
     }
 
@@ -882,7 +889,8 @@ async function enablePushNotifications() {
       body: JSON.stringify(subscription.toJSON())
     });
 
-    showSWLToast("♥ SWL nudges are on");
+    pushDeviceSubscribed=true;
+    showSWLToast("Notifications registered — use Send test notification to verify delivery");
     render();
   } catch (err) {
     console.error(err);
@@ -903,7 +911,8 @@ async function disablePushNotifications() {
       await subscription.unsubscribe();
     }
 
-    showSWLToast("SWL nudges are off");
+    pushDeviceSubscribed=false;
+    showSWLToast("FOW notifications are off");
     render();
   } catch (err) {
     console.error(err);
@@ -11856,3 +11865,5 @@ async function saveOpsShopSettings(event){
 }
 function retryOpsShop(){opsShopProducts=null;document.querySelectorAll('[data-shop-inventory]').forEach(el=>loadOpsShopControls(el.dataset.shopInventory));}
 function lockOpsShop(){opsShopKey='';opsShopProducts=null;try{sessionStorage.removeItem('swl-shop-admin-key');}catch(e){}document.querySelectorAll('[data-shop-inventory]').forEach(el=>opsShopLocked(el));}
+
+function base64Key(value){return btoa(String.fromCharCode(...new Uint8Array(value)));}
